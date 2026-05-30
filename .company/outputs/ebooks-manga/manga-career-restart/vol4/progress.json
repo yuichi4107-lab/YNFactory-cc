@@ -1,0 +1,74 @@
+{
+  "book_id": "manga-career-restart",
+  "vol": 4,
+  "title": "出産でキャリアを失った元事務職ママが、AIで初めて稼ぐまで 第4巻（完結巻）",
+  "rebuild_job_id": "manga-career-restart_vol4_20260520_235905",
+  "last_updated": "2026-05-22",
+  "steps": {
+    "4_csv": {
+      "status": "done",
+      "pages": 55,
+      "text_pages": [
+        1,
+        2,
+        23,
+        24,
+        38,
+        39,
+        51,
+        52,
+        53,
+        55
+      ],
+      "image_pages": 45
+    },
+    "5_images": {
+      "status": "done",
+      "generated_by": "codex",
+      "pass": 45,
+      "needs_manual_review_pages": [],
+      "qc": "full"
+    },
+    "6_cover": {
+      "status": "done",
+      "generated_by": "codex",
+      "format": "1024x1536",
+      "saved_as": [
+        "cover.jpg",
+        "cover.png"
+      ]
+    },
+    "5_5_text_pages": {
+      "status": "done",
+      "renderer": "_scripts/gen_text_pages_vol4.py",
+      "count": 10
+    },
+    "7_epub": {
+      "status": "done",
+      "output": "出産でキャリアを失った元事務職ママがAIで初めて稼ぐまで 第4巻.epub",
+      "size_bytes": 29146940,
+      "page_xhtml": 55,
+      "page_image": 45,
+      "image_format": "jpeg_q90",
+      "spine": "cover+1..55 sequential",
+      "validated": true
+    },
+    "8_kdp_metadata": {
+      "status": "done",
+      "files": [
+        "書籍情報.md",
+        "ジャンル・キーワード.md",
+        "書籍紹介文_HTML.html"
+      ]
+    }
+  },
+  "notes": [
+    "vol3 と同じ全面再ビルド系。Codex が 44 本文画像 + 表紙を done/ に生成（status=success, manual_review 0）。",
+    "EPUB は PNG(125MB) ではなく JPEG q90(29MB) で製本し vol3(23MB) 水準に統一。",
+    "テキストページ（目次/前巻あらすじ/コラム⑧⑨⑩/著者紹介/奥付）は CSV 本文から vol3 品質で XHTML 化。",
+    "旧4月版 EPUB は vol4/_archive_april_epub/ に退避。旧表紙 cover.jpg は cover_april_backup.jpg.bak に退避。",
+    "April 版 KDP メタの誤り（主人公をひなたと混同・報酬523円・第9話/第10話表記）を実内容（ミサキ・1,280円・第7/8章+エピローグ）に修正。",
+    "2026-05-22: プレビュー全44枚スキャンでp025(振込¥38500捏造)/p050(退職届->逆境屈)/p031(リビング->ビング)/p042(背表紙文字化け)を発見し gpt-image-2(high)で再生成・差替。さらに著者紹介(53)の後にvol3共通CTA画像をp054として挿入、奥付をp055へ繰り下げ。EPUB=55ページ/画像45。",
+    "2026-05-22(追補): オーナー指摘によりp031/p042/p050のミサキ髪型を『短いボブ・下ろした状態』に再修正(前回は服装欄『髪を緩くまとめ』に引っ張られ後ろ結びになっていた)。p042はナレーション全文(4つの『どれくらい〜』)を保つ候補c2を採用。EPUB=55ページ/画像45で再製本。"
+  ]
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "panel_id": 1,
+    "type": "dialogue",
+    "speaker": "ミサキ",
+    "text": "ねえ、赤ちゃんが産まれたら、どんな名前にする？"
+  },
+  {
+    "panel_id": 2,
+    "type": "dialogue",
+    "speaker": "ケンタ",
+    "text": "気が早いよ"
+  },
+  {
+    "panel_id": 3,
+    "type": "dialogue",
+    "speaker": "ミサキ",
+    "text": "でも考えるの楽しいじゃん"
+  },
+  {
+    "panel_id": 3,
+    "type": "narration",
+    "speaker": null,
+    "text": "ケンタは微笑みながらコーヒーを飲んだ。ミサキはタブレットを取り出して、名付け辞典のアプリを開く。"
+  }
+]

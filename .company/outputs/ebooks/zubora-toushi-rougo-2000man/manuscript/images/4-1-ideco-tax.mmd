@@ -1,0 +1,21 @@
+graph LR
+    A["iDeCoの3段階節税"] --> B["入り口<br/>掛金拠出時"]
+    A --> C["運用中"]
+    A --> D["出口<br/>受取時"]
+
+    B --> B1["掛金が全額<br/>所得控除"]
+    B1 --> B2["年間 約8.3万円<br/>の節税効果<br/>年収500万円の場合"]
+
+    C --> C1["運用益が<br/>非課税"]
+    C1 --> C2["通常20%の<br/>税金がゼロ<br/>複利効果を最大化"]
+
+    D --> D1["退職所得控除<br/>公的年金等控除"]
+    D1 --> D2["30年拠出なら<br/>1,500万円まで<br/>非課税"]
+
+    style A fill:#4A90D9,stroke:#2C5F8A,color:#fff
+    style B fill:#2ECC71,stroke:#27AE60,color:#fff
+    style C fill:#F1C40F,stroke:#F39C12,color:#333
+    style D fill:#E67E22,stroke:#D35400,color:#fff
+    style B2 fill:#D5F5E3,stroke:#27AE60
+    style C2 fill:#FEF9E7,stroke:#F39C12
+    style D2 fill:#FDEBD0,stroke:#D35400

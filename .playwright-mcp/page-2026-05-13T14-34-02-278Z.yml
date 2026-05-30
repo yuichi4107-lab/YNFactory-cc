@@ -1,0 +1,41 @@
+- generic [active] [ref=e1]:
+  - main [ref=e6]:
+    - generic [ref=e8]:
+      - generic [ref=e10]:
+        - heading "noteアカウントを作成" [level=2] [ref=e11]
+        - link "法人の方" [ref=e13] [cursor=pointer]:
+          - /url: /biz_signup
+      - generic [ref=e15]:
+        - generic [ref=e16]:
+          - heading "メールアドレス" [level=3] [ref=e18]
+          - textbox "メールアドレス" [ref=e20]:
+            - /placeholder: mail@example.com
+          - generic:
+            - alert
+        - generic [ref=e21]:
+          - heading "パスワード" [level=3] [ref=e23]
+          - paragraph [ref=e24]: 8文字以上の半角英数記号
+          - generic [ref=e26]:
+            - textbox "パスワード" [ref=e27]
+            - button "パスワードを表示します" [ref=e28] [cursor=pointer]:
+              - generic [ref=e29]: 
+          - generic:
+            - alert
+        - button "同意して登録" [disabled] [ref=e31]:
+          - generic [ref=e32]: 同意して登録
+        - generic [ref=e33]:
+          - text: 会員登録には、
+          - link "利用規約" [ref=e34] [cursor=pointer]:
+            - /url: https://terms.help-note.com/hc/ja/articles/44943817565465
+          - text: と
+          - link "プライバシーポリシー" [ref=e35] [cursor=pointer]:
+            - /url: https://terms.help-note.com/hc/ja/articles/44948981050649
+          - text: への同意が必要です。
+        - generic [ref=e36]:
+          - link "ログイン" [ref=e37] [cursor=pointer]:
+            - /url: https://note.com/login
+          - generic [ref=e38]: /
+          - link "登録でお困りの方" [ref=e39] [cursor=pointer]:
+            - /url: https://help-note.com/hc/ja/articles/900000936783
+  - iframe [ref=e43]:
+    

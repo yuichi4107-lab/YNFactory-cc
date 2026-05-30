@@ -1,0 +1,58 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - link "メインコンテンツへスキップ" [ref=e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - banner [ref=e4]:
+      - generic [ref=e35]:
+        - link "note" [ref=e38] [cursor=pointer]:
+          - /url: /
+          - img "note" [ref=e39]
+        - search [ref=e48]:
+          - generic [ref=e52]:
+            - searchbox "キーワードやクリエイターで検索" [ref=e53]
+            - button "検索" [ref=e55] [cursor=pointer]:
+              - img "検索" [ref=e59]
+        - navigation "自分のコンテンツや通知" [ref=e61]:
+          - generic [ref=e63]:
+            - link "メッセージ" [ref=e65] [cursor=pointer]:
+              - /url: /messages/rooms
+              - img "メッセージ" [ref=e66]
+            - generic [ref=e68]:
+              - button "通知" [ref=e70] [cursor=pointer]:
+                - img "通知" [ref=e71]
+              - generic [ref=e73]: "1"
+            - generic "メニュー" [ref=e75] [cursor=pointer]:
+              - button "続く関係の手前で" [ref=e79]:
+                - generic [ref=e80]:
+                  - generic:
+                    - img "続く関係の手前で"
+            - generic [ref=e82]:
+              - link "新規投稿" [ref=e83] [cursor=pointer]:
+                - /url: /notes/new
+                - generic [ref=e84]:
+                  - img [ref=e85]
+                  - generic [ref=e87]: 投稿
+              - button "投稿メニュー" [ref=e89] [cursor=pointer]:
+                - img [ref=e91]
+    - main [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - heading "お探しのページが見つかりません。" [level=1] [ref=e8]
+          - paragraph [ref=e9]: あなたがアクセスしたページは削除されたか URLが変更されているため表示することができません。
+          - generic [ref=e11]:
+            - textbox "キーワードやクリエイターで検索" [ref=e16]
+            - button "検索" [ref=e18] [cursor=pointer]:
+              - img "検索" [ref=e22]
+        - generic [ref=e24]:
+          - heading "note 404美術館" [level=2] [ref=e25]
+          - link "404美術館とは" [ref=e26] [cursor=pointer]:
+            - /url: https://note.com/info/n/nb56ddb9bb070
+          - generic [ref=e27]:
+            - link "水に潜れば青の世界" [ref=e28] [cursor=pointer]:
+              - /url: https://note.com/kirimare/n/na111ad40d987
+              - img "水に潜れば青の世界" [ref=e29]
+            - link "水に潜れば青の世界 きりまれ" [ref=e30] [cursor=pointer]:
+              - /url: https://note.com/kirimare/n/na111ad40d987
+              - paragraph [ref=e31]: 水に潜れば青の世界
+              - paragraph [ref=e32]: きりまれ
+  - alert [ref=e33]

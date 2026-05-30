@@ -1,0 +1,53 @@
+{
+  "book_slug": "chatgpt55-now-only",
+  "title": "ChatGPT 5.5時代の結論",
+  "subtitle": "一周回って、いまはChatGPTだけでいい",
+  "author": "Yuichi",
+  "created_at": "2026-05-06",
+  "status": "draft_v1",
+  "steps": {
+    "1_planning": {
+      "status": "completed",
+      "score": 90,
+      "notes": "GPT-5.5時点の実務判断としてChatGPT中心の主張を採用。将来変化への注意を中核に含めた。"
+    },
+    "2_outline": {
+      "status": "completed",
+      "score": 91,
+      "notes": "長編版へ増補しやすいよう、はじめに+5章+おわりにを節・小見出し単位まで細分化。第1章〜第5章は各20,000字目安、全体約109,000字の文字数配分に更新。"
+    },
+    "3_project_md": {
+      "status": "completed",
+      "score": 90
+    },
+    "4_manuscript": {
+      "status": "completed_with_front_back_matter",
+      "score": 92,
+      "notes": "長編版本文ドラフト完了。ユーザー確認後、本文として読める目次、著者紹介、CTA、奥付を追加。"
+    },
+    "5_images": {
+      "status": "completed",
+      "score": 92,
+      "notes": "本文画像13点、表紙PNG、表紙JPEGを配置済み。表紙はユーザーが提示した案を正式採用。API経路は使用していない。"
+    },
+    "6_kdp_metadata": {
+      "status": "completed",
+      "score": 95,
+      "notes": "KDP提出用フォルダにEPUB、cover.jpg、cover.png、書籍情報、紹介文HTML、ジャンル・キーワード、アップロード前チェックリストを配置。発行日は2026年5月7日に統一。書籍情報にタイトル・サブタイトル・著者名のカタカナ読みとローマ字表記を追加し、KDPキーワードを3ワード程度×7枠へ修正。"
+    },
+    "7_epub": {
+      "status": "completed",
+      "score": 95,
+      "notes": "EPUB3を再生成。本文目次は見える本文上で「目次」が1回のみになるよう修正。巻末の出版情報は「書籍紹介」として表示し、発行日は2026年5月7日に更新。奥付という見出し・表記は出さない形。内部構造、XML、目次、画像参照を検証し、参照切れ0件。"
+    },
+    "7_final_qc": {
+      "status": "completed_pre_kdp",
+      "score": 95,
+      "notes": "KDP提出前チェックとして、EPUB内部タイトル、発行日、目次7項目、書籍紹介ページ、表紙サイズ、画像参照、XML構造を確認済み。残タスクはKDP Previewerでの表示確認のみ。"
+    }
+  },
+  "source_notes": [
+    "OpenAI, Introducing GPT-5.5, 2026-04-23",
+    "OpenAI Help Center, GPT-5.5 in ChatGPT, checked 2026-05-06"
+  ]
+}

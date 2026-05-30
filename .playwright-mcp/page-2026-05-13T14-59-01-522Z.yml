@@ -1,0 +1,53 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - main [ref=e33]:
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - heading "X連携をしよう！" [level=2] [ref=e38]
+          - paragraph [ref=e39]: noteでは連携されたXアカウントの情報を以下の目的で使用します
+          - list [ref=e40]:
+            - listitem [ref=e41]: Xアカウントでログイン
+            - listitem [ref=e42]: 記事がシェアされるときに、Xのユーザー名も表示
+            - listitem [ref=e43]:
+              - text: プロフィールに、あなたのXへのリンクを表示
+              - generic [ref=e44]: ※あとから設定画面にてOFFにできます
+        - button "同意して連携" [ref=e46] [cursor=pointer]:
+          - generic [ref=e47]: 同意して連携
+        - button "今はしない" [ref=e50] [cursor=pointer]:
+          - generic [ref=e51]: 今はしない
+    - contentinfo [ref=e52]:
+      - list [ref=e53]:
+        - listitem [ref=e54]:
+          - link "noteプレミアム" [ref=e55] [cursor=pointer]:
+            - /url: https://premium.lp-note.com
+        - listitem [ref=e56]:
+          - link "note pro" [ref=e57] [cursor=pointer]:
+            - /url: https://pro.lp-note.com/?utm_source=notecom&utm_medium=footer
+        - listitem [ref=e58]:
+          - link "ヘルプ" [ref=e59] [cursor=pointer]:
+            - /url: https://help-note.com/hc/ja
+        - listitem [ref=e60]:
+          - link "プライバシー" [ref=e61] [cursor=pointer]:
+            - /url: https://terms.help-note.com/hc/ja/articles/44948981050649
+        - listitem [ref=e62]:
+          - link "フィードバック" [ref=e63] [cursor=pointer]:
+            - /url: https://help-note.com/hc/ja/requests/new?ticket_form_id=360000081181
+        - listitem [ref=e64]:
+          - link "ご利用規約" [ref=e65] [cursor=pointer]:
+            - /url: https://terms.help-note.com/hc/ja/articles/44943817565465
+        - listitem [ref=e66]:
+          - link "通常ポイント利用特約" [ref=e67] [cursor=pointer]:
+            - /url: /terms/paid_point
+        - listitem [ref=e68]:
+          - link "加盟店規約" [ref=e69] [cursor=pointer]:
+            - /url: /terms/seller_creators
+        - listitem [ref=e70]:
+          - link "資金決済法に基づく表示" [ref=e71] [cursor=pointer]:
+            - /url: /terms/payment_service_act
+        - listitem [ref=e72]:
+          - link "特商法表記" [ref=e73] [cursor=pointer]:
+            - /url: /terms/specified
+        - listitem [ref=e74]:
+          - link "投資情報の免責事項" [ref=e75] [cursor=pointer]:
+            - /url: /terms/investment_disclaimer
+  - generic [ref=e29]: note ――つくる、つながる、とどける。

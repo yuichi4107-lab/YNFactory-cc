@@ -1,0 +1,15 @@
+{
+  "job_id": "scene_19_p116-117_recap_second",
+  "status": "completed",
+  "generated_pages": [
+    "page_116.png",
+    "page_117.png"
+  ],
+  "pending_pages": [],
+  "needs_manual_review_pages": [
+    "page_116.png",
+    "page_117.png"
+  ],
+  "updated_at": "2026-05-10T22:24:30",
+  "note": "Images were generated from the CSV batch and organized per scene. Japanese text should receive manual review before final KDP packaging."
+}

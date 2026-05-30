@@ -1,0 +1,64 @@
+{
+  "job_id": "scene_05_p030-034_ch2_steps34_objections",
+  "status": "scene_complete_manual_text_review_needed",
+  "generation_mode": "codex_builtin_image_generation_no_api",
+  "generated_pages": [
+    "page_030.png",
+    "page_031.png",
+    "page_032.png",
+    "page_033.png",
+    "page_034.png"
+  ],
+  "pending_pages": [],
+  "needs_manual_review_pages": [
+    "page_030.png",
+    "page_031.png",
+    "page_032.png",
+    "page_033.png",
+    "page_034.png"
+  ],
+  "score": 87,
+  "checks": [
+    {
+      "file": "page_030.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2310795
+    },
+    {
+      "file": "page_031.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2196392
+    },
+    {
+      "file": "page_032.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2287583
+    },
+    {
+      "file": "page_033.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2254751
+    },
+    {
+      "file": "page_034.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2071406
+    }
+  ],
+  "note": "All 5 scene pages generated and saved. Visual layout and manga style are acceptable; Japanese text should be manually reviewed because built-in image generation may alter exact characters."
+}

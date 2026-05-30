@@ -1,0 +1,16 @@
+{
+  "book_name": "manga-ai-company",
+  "source_path": ".company/outputs/ebooks/manga-ai-company/",
+  "target_pages": 100,
+  "genre": "副業",
+  "steps": {
+    "1_source": {"status": "done", "completed_at": "2026-03-29T22:30:00"},
+    "2_scenario": {"status": "done", "characters": ["ミサキ", "タクヤ", "ケンタ"]},
+    "3_characters": {"status": "done", "images": ["ミサキ_20260329_224433.png", "タクヤ_20260329_224437.png", "ケンタ_20260329_224440.png"]},
+    "4_panels": {"status": "done", "page_count": 100},
+    "5_images": {"status": "pending", "completed": 0, "total": 0, "failed": []},
+    "6_cover": {"status": "pending"},
+    "7_epub": {"status": "pending"},
+    "8_metadata": {"status": "pending"}
+  }
+}

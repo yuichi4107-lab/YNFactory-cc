@@ -1,0 +1,97 @@
+- generic [ref=e1]:
+  - generic [ref=e11]:
+    - link "メインコンテンツへスキップ" [ref=e12] [cursor=pointer]:
+      - /url: "#main-content"
+    - banner [ref=e13]:
+      - generic [ref=e15]:
+        - link "note" [ref=e18] [cursor=pointer]:
+          - /url: https://note.com/
+          - img "note" [ref=e19]
+        - search [ref=e28]:
+          - generic [ref=e32]:
+            - searchbox "キーワードやクリエイターで検索" [ref=e33]
+            - button "検索" [ref=e35] [cursor=pointer]:
+              - img "検索" [ref=e39]
+        - navigation "自分のコンテンツや通知" [ref=e41]:
+          - generic [ref=e43]:
+            - link "メッセージ" [ref=e45] [cursor=pointer]:
+              - /url: https://note.com/messages/rooms
+              - img "メッセージ" [ref=e46]
+            - generic [ref=e48]:
+              - button "通知" [ref=e50] [cursor=pointer]:
+                - img "通知" [ref=e51]
+              - generic [ref=e53]: "1"
+            - generic "メニュー" [ref=e55] [cursor=pointer]:
+              - button "続く関係の手前で" [ref=e59]:
+                - generic [ref=e60]:
+                  - generic:
+                    - img "続く関係の手前で"
+            - generic [ref=e62]:
+              - link "新規投稿" [ref=e63] [cursor=pointer]:
+                - /url: https://note.com/notes/new
+                - generic [ref=e64]:
+                  - img [ref=e65]
+                  - generic [ref=e67]: 投稿
+              - button "投稿メニュー" [ref=e69] [cursor=pointer]:
+                - img [ref=e71]
+    - main [ref=e73]:
+      - generic [ref=e74]:
+        - generic [ref=e75]:
+          - heading "設定" [level=1] [ref=e76]
+          - navigation "アカウント設定" [ref=e78]:
+            - list [ref=e79]:
+              - listitem [ref=e80]:
+                - link "アカウント" [ref=e81] [cursor=pointer]:
+                  - /url: /settings/account
+              - listitem [ref=e82]:
+                - link "通知" [ref=e83] [cursor=pointer]:
+                  - /url: /settings/notifications
+              - listitem [ref=e84]:
+                - link "メッセージ" [ref=e85] [cursor=pointer]:
+                  - /url: /settings/messages
+              - listitem [ref=e86]:
+                - link "リアクション" [ref=e87] [cursor=pointer]:
+                  - /url: /settings/reactions
+              - listitem [ref=e88]:
+                - link "購入・チップ履歴" [ref=e89] [cursor=pointer]:
+                  - /url: /settings/purchase_history
+              - listitem [ref=e90]:
+                - link "ポイント管理" [ref=e91] [cursor=pointer]:
+                  - /url: https://note.com/settings/point_history
+              - listitem [ref=e92]:
+                - link "カード情報" [ref=e93] [cursor=pointer]:
+                  - /url: /settings/credit_card
+              - listitem [ref=e94]:
+                - link "お支払先" [ref=e95] [cursor=pointer]:
+                  - /url: /settings/fee
+              - listitem [ref=e96]:
+                - link "有料オプション" [ref=e97] [cursor=pointer]:
+                  - /url: /settings/feature_subscriptions
+        - generic [ref=e98]:
+          - generic [ref=e99]:
+            - link "戻る" [ref=e101] [cursor=pointer]:
+              - /url: /settings/account
+              - img "戻る" [ref=e105]
+            - heading "note ID変更" [level=2] [ref=e107]
+          - generic [ref=e109]:
+            - paragraph [ref=e110]: note ID変更
+            - generic [ref=e113]:
+              - heading "変更前に以下の３点をご確認ください。" [level=3] [ref=e114]:
+                - generic [ref=e115]:
+                  - img [ref=e116]
+                  - text: 変更前に以下の３点をご確認ください。
+              - list [ref=e119]:
+                - listitem [ref=e120]: クリエイターページやすべての記事のURLが変わります。
+                - listitem [ref=e121]: 過去のクリエイターページや記事へのリンクもつながらなくなります。
+                - listitem [ref=e122]: 変更後は、このnote IDを別のクリエイターが取得する場合があります。
+            - generic [ref=e123]:
+              - generic [ref=e124]: https://note.com/
+              - generic [ref=e126]:
+                - textbox "note ID" [active] [ref=e130]: tsuduku_kankei
+                - generic [ref=e132]: 3〜16文字で設定してください
+            - generic [ref=e134]:
+              - button "キャンセル" [ref=e135] [cursor=pointer]:
+                - generic [ref=e137]: キャンセル
+              - button "保存" [ref=e138] [cursor=pointer]:
+                - generic [ref=e140]: 保存
+  - alert [ref=e10]

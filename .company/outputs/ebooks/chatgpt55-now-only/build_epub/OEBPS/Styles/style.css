@@ -1,0 +1,10 @@
+body { font-family: serif; line-height: 1.8; writing-mode: horizontal-tb; }
+h1 { font-size: 1.7em; margin: 2em 0 1em; line-height: 1.4; }
+h2 { font-size: 1.35em; margin: 1.8em 0 0.8em; line-height: 1.5; border-bottom: 1px solid #ddd; padding-bottom: 0.2em; }
+h3 { font-size: 1.15em; margin: 1.4em 0 0.6em; }
+p { margin: 0 0 1em; }
+figure { margin: 1.6em auto; text-align: center; page-break-inside: avoid; }
+img { max-width: 100%; height: auto; }
+figcaption { font-size: 0.85em; color: #555; margin-top: 0.4em; }
+.cover { text-align: center; margin: 0; padding: 0; }
+.cover img { width: 100%; max-height: 100%; }

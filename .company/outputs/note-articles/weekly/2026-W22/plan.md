@@ -1,0 +1,39 @@
+# 週次計画 2026-W22 (2026-05-25 月 〜 2026-05-31 日)
+
+| 日付 | 曜日 | account | theme_id | タイトル | 出典 |
+|---|---|---|---|---|---|
+| 2026-05-25 | 月 | ai | ai-utilization | Claudeに任せて気づいた、人間が残すべき仕事の境界線 | topics/ai.md |
+| 2026-05-25 | 月 | money | money-investing | 新NISA月3万円15年シミュレーション私が選ばなかった選択肢 | topics/money.md |
+| 2026-05-25 | 月 | career | 40s-career | 40歳で転職3回給与より優先した3条件 | topics/career.md |
+| 2026-05-25 | 月 | spiritual | spiritual-daily | 新月の夜にやめてよかった3つの頑張り | topics/spiritual.md |
+| 2026-05-25 | 月 | love | love-partnership | 察してほしいをやめたら彼の言葉が変わった | topics/love.md |
+| 2026-05-26 | 火 | ai | ai-utilization | Claudeに任せて気づいた人間が残すべき仕事の境界 | topics/ai.md |
+| 2026-05-26 | 火 | money | money-investing | 家計簿アプリ3つ比較で結局戻った1つ | topics/money.md |
+| 2026-05-26 | 火 | career | 40s-career | 副業を始める前に決めておいた1つのルール | topics/career.md |
+| 2026-05-26 | 火 | spiritual | spiritual-daily | 満月の前にゆっくり書き出す3つの問い | topics/spiritual.md |
+| 2026-05-26 | 火 | love | love-partnership | 同棲3年目で気づいた言わないと伝わらない3つ | topics/love.md |
+| 2026-05-27 | 水 | ai | ai-utilization | 社内でAIエージェントを導入して失敗した3つ | topics/ai.md |
+| 2026-05-27 | 水 | money | money-investing | つみたて投資で40代が忘れがちな前提3つ | topics/money.md |
+| 2026-05-27 | 水 | career | 40s-career | 辞めますを切り出す前に試した社内交渉3つ | topics/career.md |
+| 2026-05-27 | 水 | spiritual | spiritual-daily | なんだか疲れたを放っておかない夜の小さな儀式 | topics/spiritual.md |
+| 2026-05-27 | 水 | love | love-partnership | なんで分かってくれないのを口に出す前に試した1つの問い | topics/love.md |
+| 2026-05-28 | 木 | ai | ai-utilization | プロンプトに前提を書きすぎて精度が落ちた話 | topics/ai.md |
+| 2026-05-28 | 木 | money | money-investing | ボーナスの使い方を毎年見直す3ステップ | topics/money.md |
+| 2026-05-28 | 木 | career | 40s-career | 管理職になるかプレイヤーで残るかを決めた基準 | topics/career.md |
+| 2026-05-28 | 木 | spiritual | spiritual-daily | 朝5分のひとり時間で取り戻したもの | topics/spiritual.md |
+| 2026-05-28 | 木 | love | love-partnership | 喧嘩のあと最初に戻すべき1つの動作 | topics/love.md |
+| 2026-05-29 | 金 | ai | ai-utilization | AIに英語メール下書きを任せるときの最低限のチェック | topics/ai.md |
+| 2026-05-29 | 金 | money | money-investing | 固定費見直しで効果が大きかった順ベスト3 | topics/money.md |
+| 2026-05-29 | 金 | career | 40s-career | 副業の最初の3ヶ月で出した小さなお金の話 | topics/career.md |
+| 2026-05-29 | 金 | spiritual | spiritual-daily | 手帳の余白に書く今日の小さな祈り | topics/spiritual.md |
+| 2026-05-29 | 金 | love | love-partnership | LINEの既読を待つ自分を整える夜の習慣 | topics/love.md |
+| 2026-05-30 | 土 | ai | ai-utilization | ChatGPTで提案書骨子を5分で作る手順 | topics/ai.md |
+| 2026-05-30 | 土 | money | money-investing | 住宅ローン繰上返済を私が見送った理由 | topics/money.md |
+| 2026-05-30 | 土 | career | 40s-career | 転職エージェントを使う前に整理した自分の譲れない条件 | topics/career.md |
+| 2026-05-30 | 土 | spiritual | spiritual-daily | お風呂上がりに整える3つの動作 | topics/spiritual.md |
+| 2026-05-30 | 土 | love | love-partnership | 一緒に住む前に話しておけばよかった3つ | topics/love.md |
+| 2026-05-31 | 日 | ai | ai-utilization | 営業ロープレ相手にClaudeを使った1週間 | topics/ai.md |
+| 2026-05-31 | 日 | money | money-investing | 新NISA成長投資枠を1年使わずに置いた話 | topics/money.md |
+| 2026-05-31 | 日 | career | 40s-career | 社内異動で役割を変えるための準備6ヶ月 | topics/career.md |
+| 2026-05-31 | 日 | spiritual | spiritual-daily | 眠れない夜に閉じる5つの思考の扉 | topics/spiritual.md |
+| 2026-05-31 | 日 | love | love-partnership | 彼との温度差を放っておかない週1の問い | topics/love.md |

@@ -1,0 +1,19 @@
+{
+  "job_id": "scene_15_p093-096_supplement_ch2_ch3",
+  "status": "completed",
+  "generated_pages": [
+    "page_093.png",
+    "page_094.png",
+    "page_095.png",
+    "page_096.png"
+  ],
+  "pending_pages": [],
+  "needs_manual_review_pages": [
+    "page_093.png",
+    "page_094.png",
+    "page_095.png",
+    "page_096.png"
+  ],
+  "updated_at": "2026-05-10T22:24:30",
+  "note": "Images were generated from the CSV batch and organized per scene. Japanese text should receive manual review before final KDP packaging."
+}

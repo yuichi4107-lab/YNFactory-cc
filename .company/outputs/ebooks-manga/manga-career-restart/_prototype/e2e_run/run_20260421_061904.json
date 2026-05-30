@@ -1,0 +1,47 @@
+{
+  "run_id": "20260421_061904",
+  "iterations": [
+    {
+      "iter": 1,
+      "image": "G:\\マイドライブ\\YNFactory-cc\\.company\\outputs\\ebooks-manga\\manga-career-restart\\_prototype\\e2e_run\\iter_1_20260421_061904.jpg",
+      "gen_time": 25.778191089630127,
+      "judge_time": 16.953619241714478,
+      "verdict": {
+        "overall_verdict": "PASS",
+        "bubbles": [
+          {
+            "panel_id": 1,
+            "expected": "…ねえ、子供ができたら、名前は何がいいかな",
+            "detected": "…ねえ、子供ができたら、名前は何がいいかな",
+            "match": true,
+            "issue": ""
+          },
+          {
+            "panel_id": 2,
+            "expected": "気が早いって",
+            "detected": "気が早いって",
+            "match": true,
+            "issue": ""
+          },
+          {
+            "panel_id": 3,
+            "expected": "でも考えるの楽しいじゃん",
+            "detected": "でも考えるの楽しいじゃん",
+            "match": true,
+            "issue": ""
+          },
+          {
+            "panel_id": 3,
+            "expected": "ケンタは笑いながらコーヒーを啜った。ミサキはスマホを取り出して、名前辞典のサイトを開く。",
+            "detected": "ケンタは笑いながらコーヒーを啜った。ミサキはスマホを取り出して、名前辞典のサイトを開く。",
+            "match": true,
+            "issue": ""
+          }
+        ],
+        "extra_text_found": [],
+        "summary": "すべての期待テキストが画像内で正確に検出され、一字一句一致しました。"
+      }
+    }
+  ],
+  "converged_at": 1
+}

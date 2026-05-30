@@ -1,0 +1,39 @@
+{
+  "schema_version": "2",
+  "updated_at": "2026-04-24T04:16:10",
+  "iter": "iter_1_simple",
+  "mode": "simple",
+
+  "completed": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+  "skipped_text": [1, 33, 53, 82, 83, 84],
+  "skipped_exist_iter1": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+  "failed_billing": [11],
+
+  "pending": [
+    11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+    31, 32, 34, 35, 36, 37, 38, 39, 40, 41,
+    42, 43, 44, 45, 46, 47, 48, 49, 50, 51,
+    52, 54, 55, 56, 57, 58, 59, 60, 61, 62,
+    63, 64, 65, 66, 67, 68, 69, 70, 71, 72,
+    73, 74, 75, 76, 77, 78, 79, 80, 81
+  ],
+
+  "stats": {
+    "total_csv_pages": 84,
+    "skipped_text": 6,
+    "completed_simple_iter1": 9,
+    "failed_billing_count": 1,
+    "pending_count": 69,
+    "estimated_cost_this_session_usd": 0.0,
+    "note": "iter_1 simple 実行は page_011 到達直後に Billing hard limit で全停止。page_002〜010 は前回セッション生成済み（progress.json v1 より継承）。"
+  },
+
+  "legacy": {
+    "description": "前セッション（iter_0 / ocr+vision パイプライン）の成果物",
+    "files": {
+      "_legacy_jpg": "page_002〜page_081 (うち page_003 欠け) の .jpg 計54枚",
+      "_legacy_png": "iter_1 dry-run 後に退避された .png 23枚 (page_037〜079 の一部)"
+    }
+  }
+}

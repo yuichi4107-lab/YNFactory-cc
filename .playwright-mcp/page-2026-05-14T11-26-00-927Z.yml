@@ -1,0 +1,60 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - link "メインコンテンツへスキップ" [ref=e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - banner [ref=e4]
+    - main [ref=e5]:
+      - complementary [ref=e7]:
+        - generic [ref=e9]:
+          - generic [ref=e11]:
+            - button "続く関係の手前でのプロフィール画像。クリックで拡大表示します。" [ref=e12] [cursor=pointer]
+            - heading "続く関係の手前で" [level=1] [ref=e16]
+          - generic [ref=e17]:
+            - generic [ref=e21]:
+              - link "1フォロー" [ref=e22] [cursor=pointer]:
+                - /url: /tsuduku_kankei/followings
+              - link "0フォロワー" [ref=e23] [cursor=pointer]:
+                - /url: /tsuduku_kankei/followers
+            - button "フォロー" [ref=e26] [cursor=pointer]:
+              - generic [ref=e29]:
+                - img [ref=e30]
+                - text: フォロー
+    - contentinfo [ref=e34]:
+      - list [ref=e35]:
+        - listitem [ref=e36]:
+          - link "noteプレミアム" [ref=e37] [cursor=pointer]:
+            - /url: https://premium.lp-note.com
+        - listitem [ref=e38]:
+          - link "note pro" [ref=e39] [cursor=pointer]:
+            - /url: https://pro.lp-note.com/?utm_source=notecom&utm_medium=footer
+        - listitem [ref=e40]:
+          - link "ヘルプ" [ref=e41] [cursor=pointer]:
+            - /url: https://help-note.com/hc/ja
+        - listitem [ref=e42]:
+          - link "プライバシー" [ref=e43] [cursor=pointer]:
+            - /url: https://terms.help-note.com/hc/ja/articles/44948981050649
+        - listitem [ref=e44]:
+          - link "クリエイターへのお問い合わせ" [ref=e45] [cursor=pointer]:
+            - /url: /tsuduku_kankei/message
+        - listitem [ref=e46]:
+          - link "フィードバック" [ref=e47] [cursor=pointer]:
+            - /url: https://help-note.com/hc/ja/requests/new?ticket_form_id=360000081181
+        - listitem [ref=e48]:
+          - link "ご利用規約" [ref=e49] [cursor=pointer]:
+            - /url: https://terms.help-note.com/hc/ja/articles/44943817565465
+        - listitem [ref=e50]:
+          - link "通常ポイント利用特約" [ref=e51] [cursor=pointer]:
+            - /url: https://note.com/terms/paid_point
+        - listitem [ref=e52]:
+          - link "加盟店規約" [ref=e53] [cursor=pointer]:
+            - /url: https://note.com/terms/seller_creators
+        - listitem [ref=e54]:
+          - link "資金決済法に基づく表示" [ref=e55] [cursor=pointer]:
+            - /url: https://note.com/terms/payment_service_act
+        - listitem [ref=e56]:
+          - link "特商法表記" [ref=e57] [cursor=pointer]:
+            - /url: https://note.com/tsuduku_kankei/terms/specified
+        - listitem [ref=e58]:
+          - link "投資情報の免責事項" [ref=e59] [cursor=pointer]:
+            - /url: https://note.com/terms/investment_disclaimer
+  - alert [ref=e60]

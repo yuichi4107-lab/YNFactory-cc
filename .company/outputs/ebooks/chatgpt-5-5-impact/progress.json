@@ -1,0 +1,59 @@
+{
+  "book_name": "chatgpt-5-5-impact",
+  "title": "ChatGPT5.5の衝撃",
+  "subtitle": "GPT-5.5は何を変えたのか",
+  "author": "Yuichi",
+  "created_at": "2026-05-04",
+  "target_chars": 100000,
+  "status": "kdp_submitted",
+  "steps": {
+    "1_planning": "done",
+    "2_outline": "done",
+    "3_project": "done",
+    "4_manuscript": "draft_done",
+    "5_image_plan": "done",
+    "6_images": "done_chatgpt_codex",
+    "7_metadata": "done",
+    "8_quality_check": "done",
+    "9_epub": "done"
+  },
+  "char_counts": {
+    "total": 44560,
+    "00_はじめに": 4514,
+    "01_第1章": 7122,
+    "02_第2章": 7352,
+    "03_第3章": 7030,
+    "04_第4章": 6359,
+    "05_第5章": 6510,
+    "06_おわりに": 3393,
+    "00_00_目次": 247,
+    "07_著者紹介": 339,
+    "08_CTA": 884,
+    "09_奥付": 560
+  },
+  "images": {
+    "planned": 15,
+    "generated": 15
+  },
+  "notes": [
+    "2026-05-04時点の公式情報を前提に、GPT-5.4、GPT-5.5、Gemini 3.1 Pro / Deep Think、Claude Opus 4.7を比較対象にする。",
+    "比較は勝敗ではなく、用途別の向き不向きを中心に扱う。",
+    "工程4は42,280字の初稿として完了。標準10万字には未達のため、出版前に増補する場合は各章へ事例・プロンプト集・比較表解説を追加する。",
+    "工程5は本文プレースホルダ14点に対応する画像設計を images/image_plan.md に作成済み。",
+    "工程6はgpt-image-2で生成を試行したが、OpenAI APIのBilling hard limit reachedで停止。NanoBanana生成分は削除済み。",
+    "工程6はAPIではなくChatGPT/Codex画像生成ジョブとして .company/codex/queue/chatgpt55-ebook-diagrams_20260504_2237/ に14点分を準備済み。",
+    "工程6はChatGPT/Codex画像生成で14点を作成し、本文参照先 images/diagram_001.png〜diagram_014.png に配置済み。画像内日本語は出版前に目視確認推奨。",
+    "工程7はKDP出版用メタデータ3点とcover.png/cover.jpgを作成済み。表紙はChatGPT/Codex画像生成を使用。",
+    "追加要望により、目次・著者紹介・CTA・奥付を manuscript に追加し、KDP書籍情報にも著者紹介文を追記。本文は11ファイル、合計44,335字。",
+    "CTAにLINE QRコード images/line_qr.png を追加し、奥付の発行日を2026年5月5日に更新。",
+    "工程8 最終品質チェック完了。総合スコア89/100。final_quality_report.mdをKDP出版用フォルダに作成。",
+    "EPUB化完了: KDP出版用/ChatGPT5.5の衝撃.epub を作成。ローカルバリデーターは17項目中Fail 0、Warn 1（日本語フォント未埋め込み）、スコア97.1。",
+    "目次と最終ページの表示見出しから「奥付」を外し、「書誌情報」に変更。EPUBを再生成し、バリデーターFail 0を再確認。",
+    "2026-05-05: KDP出版申請済み（ユーザー報告）。審査結果待ち。"
+  ],
+  "kdp_submission": {
+    "status": "submitted",
+    "submitted_at": "2026-05-05",
+    "note": "User reported KDP publication submission completed."
+  }
+}

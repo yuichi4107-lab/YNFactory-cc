@@ -1,0 +1,27 @@
+{
+  "job_id": "scene_09_p053-060_ch4_workflow_basic",
+  "status": "completed",
+  "generated_pages": [
+    "page_053.png",
+    "page_054.png",
+    "page_055.png",
+    "page_056.png",
+    "page_057.png",
+    "page_058.png",
+    "page_059.png",
+    "page_060.png"
+  ],
+  "pending_pages": [],
+  "needs_manual_review_pages": [
+    "page_053.png",
+    "page_054.png",
+    "page_055.png",
+    "page_056.png",
+    "page_057.png",
+    "page_058.png",
+    "page_059.png",
+    "page_060.png"
+  ],
+  "updated_at": "2026-05-10T22:24:30",
+  "note": "Images were generated from the CSV batch and organized per scene. Japanese text should receive manual review before final KDP packaging."
+}

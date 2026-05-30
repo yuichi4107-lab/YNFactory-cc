@@ -1,0 +1,270 @@
+{
+  "version": 2,
+  "login_strategy": "browser_profile",
+  "notes": [
+    "パスワード、Cookie、セッション情報は保存しない。",
+    "各アカウントは専用ブラウザプロファイルで手動ログインして使う。",
+    "投稿前に予定account_idと現在ログイン中のnote IDを必ず照合する。",
+    "実投稿自動化時も、最初は下書き保存までを標準にし、即時投稿・予約投稿・公開はユーザー承認後に行う。",
+    "標準運用は即時投稿。予約投稿はユーザーが明示した場合のみ使う。"
+  ],
+  "accounts": [
+    {
+      "account_id": "you-ai-dx",
+      "display_name": "you_ai_dx",
+      "proposed_display_name": "仕事で使うAI活用メモ",
+      "note_url": "https://note.com/you_ai_dx",
+      "theme_ids": [
+        "ai-utilization"
+      ],
+      "browser_profile": "note-you-ai-dx",
+      "email_alias": "yuichi4107+note-ai@gmail.com",
+      "default_tags": [
+        "AI活用",
+        "生成AI",
+        "DX",
+        "業務効率化",
+        "ChatGPT"
+      ],
+      "tone": "実務で使えるAI活用を、専門用語を増やしすぎず、具体例と小さな行動に落として伝える。",
+      "profile_concept": "AIに詳しくない人でも、明日の仕事で1つ試せるAI活用を届ける。",
+      "status": "active"
+    },
+    {
+      "account_id": "career",
+      "display_name": "未設定",
+      "proposed_display_name": "40代からのキャリア再設計",
+      "note_url": null,
+      "theme_ids": [
+        "40s-career"
+      ],
+      "browser_profile": "note-career",
+      "email_alias": "yuichi4107+note-career@gmail.com",
+      "default_tags": [
+        "キャリア",
+        "40代",
+        "働き方",
+        "転職",
+        "キャリア再設計"
+      ],
+      "tone": "落ち着いた実践寄り。煽りすぎず、読者の不安に寄り添い、具体的な行動に落とす。",
+      "profile_concept": "40代が焦りではなく設計で働き方を変えるための実践メモ。",
+      "status": "setup-required"
+    },
+    {
+      "account_id": "side-business",
+      "display_name": "未設定",
+      "proposed_display_name": "小さく始める個人ビジネス",
+      "note_url": null,
+      "theme_ids": [
+        "side-business"
+      ],
+      "browser_profile": "note-side-business",
+      "email_alias": "yuichi4107+note-sidebusiness@gmail.com",
+      "default_tags": [
+        "副業",
+        "個人ビジネス",
+        "スモールビジネス",
+        "起業準備",
+        "収益化"
+      ],
+      "tone": "夢を煽りすぎず、会社員や個人が小さく検証できる副業の始め方を具体的に伝える。",
+      "profile_concept": "大きく賭けずに、月1万円から育てる個人ビジネスの実験室。",
+      "status": "setup-required"
+    },
+    {
+      "account_id": "money",
+      "display_name": "40代からのお金と資産形成",
+      "proposed_display_name": "40代からのお金と資産形成",
+      "note_url": "https://note.com/money_40s_note",
+      "note_id": "money_40s_note",
+      "theme_ids": [
+        "money-investing"
+      ],
+      "browser_profile": "note-money",
+      "email_alias": "yuichi4107+note-money@gmail.com",
+      "default_tags": [
+        "お金",
+        "資産運用",
+        "家計管理",
+        "投資初心者",
+        "資産形成"
+      ],
+      "tone": "不安を煽らず、家計・投資・老後資金を実務的に整理する。断定的な金融助言は避け、考え方と行動手順を中心にする。",
+      "profile_concept": "40代からでも遅くない、お金の不安を数字と習慣で整えるノート。",
+      "status": "active"
+    },
+    {
+      "account_id": "personal-brand",
+      "display_name": "未設定",
+      "proposed_display_name": "個人で仕事につながる発信術",
+      "note_url": null,
+      "theme_ids": [
+        "sns-personal-brand"
+      ],
+      "browser_profile": "note-personal-brand",
+      "email_alias": "yuichi4107+note-sns@gmail.com",
+      "default_tags": [
+        "SNS運用",
+        "個人発信",
+        "note運用",
+        "発信術",
+        "コンテンツ作成"
+      ],
+      "tone": "フォロワー数だけを追わず、信頼・仕事・問い合わせにつながる発信を実例ベースで伝える。",
+      "profile_concept": "発信が苦手な人でも、個人の経験を仕事につなげるための実践メモ。",
+      "status": "setup-required"
+    }
+  ],
+  "themes": [
+    {
+      "theme_id": "ai-utilization",
+      "theme_name": "AI活用",
+      "account_id": "you-ai-dx",
+      "audience": "AIに興味はあるが、日々の仕事でどう使えばよいか分からない会社員・個人事業主・中小企業担当者",
+      "default_tags": [
+        "AI活用",
+        "生成AI",
+        "ChatGPT",
+        "業務効率化",
+        "DX",
+        "仕事術"
+      ],
+      "avoid_angles": [
+        "まず1日1時間だけAIに任せる"
+      ],
+      "preferred_angles": [
+        "AI導入で失敗する会社の共通点",
+        "AIを部下ではなく壁打ち相手として使う",
+        "中小企業のAI活用は大きなDXより小さな定型業務から",
+        "40代・50代のための生成AI入門",
+        "会議メモ・メール・資料作成のAI時短術",
+        "AI時代に人間がやるべき仕事を残す"
+      ],
+      "image_avoid_patterns": [
+        "過度に未来的な青いホログラム",
+        "ロボットが人間の仕事を奪う構図",
+        "読める文字入りの架空UI"
+      ],
+      "status": "active"
+    },
+    {
+      "theme_id": "40s-career",
+      "theme_name": "40代キャリア再設計",
+      "account_id": "career",
+      "audience": "40代で、今の働き方・会社員人生・収入・将来に不安があり、「このままでいいのか」と感じている人",
+      "default_tags": [
+        "キャリア",
+        "40代",
+        "働き方",
+        "転職",
+        "キャリア再設計",
+        "ミドル世代"
+      ],
+      "avoid_angles": [
+        "手放すものを決めて自分の使い方を変える"
+      ],
+      "preferred_angles": [
+        "副業を始める前の小さな実験",
+        "社内で役割を変える交渉術",
+        "AI時代に経験を翻訳する",
+        "管理職にならない40代の生存戦略",
+        "転職せずに市場価値を上げる",
+        "50代を見据えた仕事の棚卸し"
+      ],
+      "image_avoid_patterns": [
+        "窓辺の仕事部屋で考える人物",
+        "ノートと付箋の棚卸し",
+        "朝の街を歩く後ろ姿"
+      ],
+      "status": "active"
+    },
+    {
+      "theme_id": "side-business",
+      "theme_name": "副業・個人ビジネス",
+      "account_id": "side-business",
+      "audience": "会社員収入だけに不安があり、副業を始めたいが何から検証すればよいか分からない人",
+      "default_tags": [
+        "副業",
+        "個人ビジネス",
+        "スモールビジネス",
+        "起業準備",
+        "収益化",
+        "会社員副業"
+      ],
+      "avoid_angles": [],
+      "preferred_angles": [
+        "月1万円を作る最初の商品設計",
+        "スキル販売を始める前の棚卸し",
+        "副業で失敗しやすい人の共通点",
+        "会社員が時間を壊さず副業を試す方法",
+        "AIを使った小さなサービスづくり",
+        "最初の顧客を見つける発信と提案"
+      ],
+      "image_avoid_patterns": [
+        "札束や派手な成功者",
+        "高級車・タワーマンション",
+        "過度な煽りのビジネス演出"
+      ],
+      "status": "active"
+    },
+    {
+      "theme_id": "money-investing",
+      "theme_name": "お金・資産運用",
+      "account_id": "money",
+      "audience": "40代以降で家計、老後資金、投資、資産形成に不安があり、まず何を整えるべきか知りたい人",
+      "default_tags": [
+        "お金",
+        "資産運用",
+        "家計管理",
+        "投資初心者",
+        "資産形成",
+        "老後資金"
+      ],
+      "avoid_angles": [],
+      "preferred_angles": [
+        "投資の前に家計の固定費を整える",
+        "40代から資産形成を始める順番",
+        "新NISAを始める前に決めること",
+        "老後不安を数字に変える家計棚卸し",
+        "投資でやらないことリスト",
+        "副業収入を浪費せず資産に変える"
+      ],
+      "image_avoid_patterns": [
+        "札束・金塊・爆益チャート",
+        "特定銘柄や具体的な売買推奨に見える画像",
+        "不安を煽る老後破産イメージ"
+      ],
+      "status": "active"
+    },
+    {
+      "theme_id": "sns-personal-brand",
+      "theme_name": "SNS運用・個人発信",
+      "account_id": "personal-brand",
+      "audience": "noteやSNSで発信したいが、何を書けばよいか分からず、仕事や信頼につながる発信を育てたい人",
+      "default_tags": [
+        "SNS運用",
+        "個人発信",
+        "note運用",
+        "発信術",
+        "コンテンツ作成",
+        "個人ブランド"
+      ],
+      "avoid_angles": [],
+      "preferred_angles": [
+        "フォロワーより先に決めるべき読者像",
+        "毎日投稿が続かない人の設計ミス",
+        "経験をコンテンツに変える棚卸し",
+        "noteとXを使い分ける導線づくり",
+        "仕事につながるプロフィール設計",
+        "バズより信頼を積む記事テーマの選び方"
+      ],
+      "image_avoid_patterns": [
+        "スマホ画面に読めるSNSロゴ",
+        "インフルエンサー風の派手な自撮り",
+        "フォロワー数だけを強調する画像"
+      ],
+      "status": "active"
+    }
+  ]
+}

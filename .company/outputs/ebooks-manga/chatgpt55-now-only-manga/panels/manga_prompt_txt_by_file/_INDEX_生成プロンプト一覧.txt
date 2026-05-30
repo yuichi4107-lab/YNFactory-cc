@@ -1,0 +1,26 @@
+# 生成プロンプト一覧
+
+添付CSVを1ファイルごとにtxt化した一覧です。
+各txtは共通ルール＋ページ別指定で構成されています。
+
+| txtファイル | ページ | 枚数 | 文字数 |
+|---|---:|---:|---:|
+| prompt_scene_02_p008-015_ch1_gpt55_change.txt | P008, P009, P010, P011, P012, P013, P014, P015 | 8 | 5812 |
+| prompt_scene_03_p016-022_ch2_reason_core.txt | P016, P017, P018, P019, P020, P021, P022 | 7 | 5224 |
+| prompt_scene_04_p023-029_ch2_cases_steps12.txt | P023, P024, P025, P026, P027, P028, P029 | 7 | 5237 |
+| prompt_scene_05_p030-034_ch2_steps34_objections.txt | P030, P031, P032, P033, P034 | 5 | 4222 |
+| prompt_scene_06_p035-042_ch3_positioning.txt | P035, P036, P037, P038, P039, P040, P041, P042 | 8 | 5764 |
+| prompt_scene_07_p043-049_ch3_tests_usecases.txt | P043, P044, P045, P046, P047, P048, P049 | 7 | 5116 |
+| prompt_scene_08_p050-052_ch3_return_timing.txt | P050, P051, P052 | 3 | 2992 |
+| prompt_scene_09_p053-060_ch4_workflow_basic.txt | P053, P054, P055, P056, P057, P058, P059, P060 | 8 | 5667 |
+| prompt_scene_10_p061-065_ch4_prompts_examples.txt | P061, P062, P063, P064, P065 | 5 | 3994 |
+| prompt_scene_11_p066-072_ch4_failures_improvement.txt | P066, P067, P068, P069, P070, P071, P072 | 7 | 5040 |
+| prompt_scene_12_p073-080_ch5_strategy_first.txt | P073, P074, P075, P076, P077, P078, P079, P080 | 8 | 5685 |
+| prompt_scene_13_p081-088_ch5_strategy_second.txt | P081, P082, P083, P084, P085, P086, P087, P088 | 8 | 5549 |
+| prompt_scene_14_p089-092_ending_conclusion.txt | P089, P090, P091, P092 | 4 | 3468 |
+| prompt_scene_15_p093-096_supplement_ch2_ch3.txt | P093, P094, P095, P096 | 4 | 3490 |
+| prompt_scene_16_p097-103_supplement_ch4.txt | P097, P098, P099, P100, P101, P102, P103 | 7 | 4942 |
+| prompt_scene_17_p104-107_supplement_ch5_action.txt | P104, P105, P106, P107 | 4 | 3475 |
+| prompt_scene_18_p108-115_recap_first.txt | P108, P109, P110, P111, P112, P113, P114, P115 | 8 | 5532 |
+| prompt_scene_19_p116-117_recap_second.txt | P116, P117 | 2 | 2458 |
+| prompt_scene_20_p118-120_author_book_info.txt | P118, P119, P120 | 3 | 2125 |

@@ -1,0 +1,25 @@
+{
+  "job_id": "scene_07_p043-049_ch3_tests_usecases",
+  "status": "completed",
+  "generated_pages": [
+    "page_043.png",
+    "page_044.png",
+    "page_045.png",
+    "page_046.png",
+    "page_047.png",
+    "page_048.png",
+    "page_049.png"
+  ],
+  "pending_pages": [],
+  "needs_manual_review_pages": [
+    "page_043.png",
+    "page_044.png",
+    "page_045.png",
+    "page_046.png",
+    "page_047.png",
+    "page_048.png",
+    "page_049.png"
+  ],
+  "updated_at": "2026-05-10T22:24:30",
+  "note": "Images were generated from the CSV batch and organized per scene. Japanese text should receive manual review before final KDP packaging."
+}

@@ -1,0 +1,84 @@
+{
+  "job_id": "scene_04_p023-029_ch2_cases_steps12",
+  "status": "scene_complete_manual_text_review_needed",
+  "generation_mode": "codex_builtin_image_generation_no_api",
+  "generated_pages": [
+    "page_023.png",
+    "page_024.png",
+    "page_025.png",
+    "page_026.png",
+    "page_027.png",
+    "page_028.png",
+    "page_029.png"
+  ],
+  "pending_pages": [],
+  "needs_manual_review_pages": [
+    "page_023.png",
+    "page_024.png",
+    "page_025.png",
+    "page_026.png",
+    "page_027.png",
+    "page_028.png",
+    "page_029.png"
+  ],
+  "score": 87,
+  "checks": [
+    {
+      "file": "page_023.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2027313
+    },
+    {
+      "file": "page_024.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2145221
+    },
+    {
+      "file": "page_025.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2251516
+    },
+    {
+      "file": "page_026.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2170120
+    },
+    {
+      "file": "page_027.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2198499
+    },
+    {
+      "file": "page_028.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 2081508
+    },
+    {
+      "file": "page_029.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 1953619
+    }
+  ],
+  "note": "All 7 scene pages generated and saved. Visual layout and manga style are acceptable; Japanese text should be manually reviewed because built-in image generation may alter exact characters."
+}

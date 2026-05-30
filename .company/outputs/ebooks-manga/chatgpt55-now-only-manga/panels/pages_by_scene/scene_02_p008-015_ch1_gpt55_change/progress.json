@@ -1,0 +1,26 @@
+{
+  "job_id": "scene_02_p008-015_ch1_gpt55_change",
+  "status": "prepared",
+  "generated_pages": [],
+  "pending_pages": [
+    "page_008.png",
+    "page_009.png",
+    "page_010.png",
+    "page_011.png",
+    "page_012.png",
+    "page_013.png",
+    "page_014.png",
+    "page_015.png"
+  ],
+  "needs_manual_review_pages": [
+    "page_008.png",
+    "page_009.png",
+    "page_010.png",
+    "page_011.png",
+    "page_012.png",
+    "page_013.png",
+    "page_014.png",
+    "page_015.png"
+  ],
+  "note": "Prepared for Codex built-in image generation; API not used."
+}

@@ -1,0 +1,28 @@
+{
+  "job_id": "chatgpt-5-5-impact_manga_vol1_20260505_051500",
+  "book_id": "chatgpt-5-5-impact",
+  "vol": 1,
+  "completed_at": "2026-05-06T18:26:23+09:00",
+  "status": "success",
+  "generation_mode": "mixed_chatgpt_builtin_and_local_manga_renderer_no_api",
+  "qc_mode": "file_completeness_and_dimension_check",
+  "pages": {
+    "total": 131,
+    "generated_images_png_master": 128,
+    "final_images_jpeg": 131,
+    "copied_existing": 106,
+    "locally_rendered_missing": 0,
+    "skipped_text_only": 0,
+    "needs_manual_review": 0
+  },
+  "needs_manual_review_pages": [],
+  "needs_manual_review_reasons": {},
+  "cover": {
+    "status": "success",
+    "path": "cover.png"
+  },
+  "epub": {
+    "status": "done",
+    "path": "KDP出版用\\マンガでわかる ChatGPT5.5の衝撃.epub"
+  }
+}

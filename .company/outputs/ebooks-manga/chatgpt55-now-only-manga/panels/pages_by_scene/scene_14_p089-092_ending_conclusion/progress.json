@@ -1,0 +1,19 @@
+{
+  "job_id": "scene_14_p089-092_ending_conclusion",
+  "status": "completed",
+  "generated_pages": [
+    "page_089.png",
+    "page_090.png",
+    "page_091.png",
+    "page_092.png"
+  ],
+  "pending_pages": [],
+  "needs_manual_review_pages": [
+    "page_089.png",
+    "page_090.png",
+    "page_091.png",
+    "page_092.png"
+  ],
+  "updated_at": "2026-05-10T22:24:30",
+  "note": "Images were generated from the CSV batch and organized per scene. Japanese text should receive manual review before final KDP packaging."
+}

@@ -1,0 +1,961 @@
+- generic [ref=e4]:
+  - generic:
+    - banner:
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - link:
+                - /url: /
+                - img
+          - search [ref=e7]:
+            - combobox [expanded] [ref=e8]
+            - button [ref=e9] [cursor=pointer]:
+              - img [ref=e10]
+          - navigation:
+            - generic:
+              - link:
+                - /url: /messages/rooms
+                - img
+            - button:
+              - img
+            - generic: "1"
+            - generic:
+              - button:
+                - img
+            - generic:
+              - link:
+                - /url: /notes/new
+                - generic:
+                  - generic:
+                    - generic:
+                      - img
+                    - generic: 投稿
+              - button:
+                - generic:
+                  - generic:
+                    - img
+    - generic:
+      - generic:
+        - link:
+          - /url: https://note.com/info/n/n7675e5d8c06d
+          - text: 5月27日から、AI翻訳であなたの記事が海外にも届きます。翻訳の設定は、いつでも変えられます。
+      - generic:
+        - button:
+          - generic:
+            - img
+    - main:
+      - generic:
+        - generic:
+          - generic:
+            - navigation:
+              - generic:
+                - link:
+                  - /url: /
+                  - text: すべて
+                - link:
+                  - /url: /following
+                  - text: フォロー中
+                - link:
+                  - /url: /recommend
+                  - text: 注目
+                - link:
+                  - /url: /contests
+                  - text: 投稿企画
+              - generic:
+                - button [expanded]: 急上昇
+                - generic:
+                  - generic:
+                    - link:
+                      - /url: /tag/Command%20Line%20Interface
+                      - text: Command Line Interface
+                  - generic:
+                    - link:
+                      - /url: /tag/%E5%B0%BE%E5%BD%A2%E5%B4%87%E6%96%97
+                      - text: 尾形崇斗
+                  - generic:
+                    - link:
+                      - /url: /tag/%E3%83%9E%E3%82%B9%E3%82%BF%E3%83%BC%E3%82%AA%E3%83%96%E3%82%BB%E3%83%AC%E3%83%A2%E3%83%8B%E3%83%BC
+                      - text: マスターオブセレモニー
+                  - generic:
+                    - link:
+                      - /url: /tag/%E3%83%9E%E3%83%B3%E3%82%AC%E9%83%A8%E9%96%80
+                      - text: マンガ部門
+                  - generic:
+                    - link:
+                      - /url: /tag/%E3%82%A2%E3%83%B3%E3%83%89%E3%83%AA%E3%83%A5%E3%83%BC%E3%83%BB%E3%83%AF%E3%82%A4%E3%82%A8%E3%82%B9%E5%B1%95
+                      - text: アンドリュー・ワイエス展
+              - link:
+                - /url: /topic/challenge
+                - text: やってみた
+              - heading [level=2]: カテゴリ
+              - generic:
+                - generic:
+                  - button [expanded]:
+                    - generic: くらし
+                    - generic:
+                      - generic: 
+                  - generic:
+                    - generic:
+                      - link:
+                        - /url: /topic/lifestyle
+                        - text: ライフスタイル
+                    - generic:
+                      - link:
+                        - /url: /topic/lifestyle/housing_living
+                        - text: 住まい・暮らし
+                    - generic:
+                      - link:
+                        - /url: /topic/review
+                        - text: レビュー
+                    - generic:
+                      - link:
+                        - /url: /topic/health_medical
+                        - text: 健康・医療
+                    - generic:
+                      - link:
+                        - /url: /topic/childcare_education/parenting
+                        - text: 子育て
+                    - generic:
+                      - link:
+                        - /url: /topic/lifestyle/love_marriage_divorce
+                        - text: 恋愛・結婚・離婚
+                    - generic:
+                      - link:
+                        - /url: /topic/fortune_telling_psychology
+                        - text: 占い・心理
+                - generic:
+                  - button [expanded]:
+                    - generic: 社会・経済
+                    - generic:
+                      - generic: 
+                  - generic:
+                    - generic:
+                      - link:
+                        - /url: /topic/social_issues_current_affairs
+                        - text: 社会問題・時事
+                    - generic:
+                      - link:
+                        - /url: /topic/social_issues_current_affairs/domestic_news
+                        - text: 国内ニュース
+                    - generic:
+                      - link:
+                        - /url: /topic/politics_economics
+                        - text: 政治・経済
+                    - generic:
+                      - link:
+                        - /url: /topic/business
+                        - text: ビジネス
+                    - generic:
+                      - link:
+                        - /url: /topic/people_society
+                        - text: 人物・社会
+                    - generic:
+                      - link:
+                        - /url: /topic/investment_money
+                        - text: 投資
+                    - generic:
+                      - link:
+                        - /url: /topic/local
+                        - text: 地域・行政
+                - generic:
+                  - button [expanded]:
+                    - generic: テクノロジー
+                    - generic:
+                      - generic: 
+                  - generic:
+                    - generic:
+                      - link:
+                        - /url: /topic/science_technology
+                        - text: 科学・テクノロジー
+                    - generic:
+                      - link:
+                        - /url: /topic/computer_it
+                        - text: コンピュータ・IT
+                    - generic:
+                      - link:
+                        - /url: /topic/science_technology/ai_machine_learning
+                        - text: AI・機械学習
+                    - generic:
+                      - link:
+                        - /url: /topic/computer_it/programming
+                        - text: プログラミング
+                    - generic:
+                      - link:
+                        - /url: /topic/review/gadget_review
+                        - text: ガジェット
+                - generic:
+                  - button [expanded]:
+                    - generic: エンタメ
+                    - generic:
+                      - generic: 
+                  - generic:
+                    - generic:
+                      - link:
+                        - /url: /topic/entertainment
+                        - text: エンタメ全般
+                    - generic:
+                      - link:
+                        - /url: /topic/manga
+                        - text: マンガ
+                    - generic:
+                      - link:
+                        - /url: /topic/entertainment/anime
+                        - text: アニメ
+                    - generic:
+                      - link:
+                        - /url: /topic/review/book_reviews
+                        - text: 本レビュー
+                    - generic:
+                      - link:
+                        - /url: /topic/movie_drama
+                        - text: 映画・ドラマ
+                    - generic:
+                      - link:
+                        - /url: /topic/games
+                        - text: ゲーム
+                    - generic:
+                      - link:
+                        - /url: /topic/music
+                        - text: 音楽
+                    - generic:
+                      - link:
+                        - /url: /topic/sports
+                        - text: スポーツ
+                    - generic:
+                      - link:
+                        - /url: /topic/sports/baseball
+                        - text: 野球
+                    - generic:
+                      - link:
+                        - /url: /topic/sports/soccer_futsal
+                        - text: サッカー
+                    - generic:
+                      - link:
+                        - /url: /topic/keiba
+                        - text: 競馬
+                    - generic:
+                      - link:
+                        - /url: /topic/keirin
+                        - text: 競輪
+                    - generic:
+                      - link:
+                        - /url: /topic/boatrace
+                        - text: ボートレース
+                - generic:
+                  - button [expanded]:
+                    - generic: 趣味・関心
+                    - generic:
+                      - generic: 
+                  - generic:
+                    - generic:
+                      - link:
+                        - /url: /topic/hobby
+                        - text: ホビー
+                    - generic:
+                      - link:
+                        - /url: /topic/travel_outing
+                        - text: 旅行・お出かけ
+                    - generic:
+                      - link:
+                        - /url: /topic/cooking_gourmet
+                        - text: 料理・グルメ
+                    - generic:
+                      - link:
+                        - /url: /topic/outdoor
+                        - text: アウトドア
+                    - generic:
+                      - link:
+                        - /url: /topic/fashion
+                        - text: ファッション
+                    - generic:
+                      - link:
+                        - /url: /topic/lifestyle/pets
+                        - text: ペット
+                    - generic:
+                      - link:
+                        - /url: /topic/beauty
+                        - text: 美容
+                - generic:
+                  - button [expanded]:
+                    - generic: 創作
+                    - generic:
+                      - generic: 
+                  - generic:
+                    - generic:
+                      - link:
+                        - /url: /topic/creative_writing
+                        - text: 創作全般
+                    - generic:
+                      - link:
+                        - /url: /topic/creative_writing/novels
+                        - text: 小説
+                    - generic:
+                      - link:
+                        - /url: /topic/design
+                        - text: デザイン
+                    - generic:
+                      - link:
+                        - /url: /topic/diy
+                        - text: DIY
+                    - generic:
+                      - link:
+                        - /url: /topic/handmade
+                        - text: ハンドメイド
+                    - generic:
+                      - link:
+                        - /url: /topic/art_design/photography
+                        - text: 写真
+                - generic:
+                  - button [expanded]:
+                    - generic: まなび
+                    - generic:
+                      - generic: 
+                  - generic:
+                    - generic:
+                      - link:
+                        - /url: /topic/career
+                        - text: キャリア
+                    - generic:
+                      - link:
+                        - /url: /topic/interview_discussion
+                        - text: インタビュー・対談
+                    - generic:
+                      - link:
+                        - /url: /topic/education_learning
+                        - text: 教育・学び
+                    - generic:
+                      - link:
+                        - /url: /topic/art_design
+                        - text: アート・デザイン
+                    - generic:
+                      - link:
+                        - /url: /topic/humanities_thought
+                        - text: 人文・思想
+                    - generic:
+                      - link:
+                        - /url: /topic/literature_arts
+                        - text: 文学・文芸
+                    - generic:
+                      - link:
+                        - /url: /topic/language_learning
+                        - text: 語学
+              - generic:
+                - generic:
+                  - paragraph: note公式SNS
+                  - generic:
+                    - link:
+                      - /url: https://twitter.com/note_PR
+                      - generic:
+                        - img
+                    - link:
+                      - /url: https://www.instagram.com/note_ig_official/
+                      - generic:
+                        - img
+                    - link:
+                      - /url: https://www.facebook.com/note.poc
+                      - generic:
+                        - img
+                - generic:
+                  - link:
+                    - /url: https://help-note.com/hc/ja
+                    - text: noteの使い方
+                  - link:
+                    - /url: https://note.jp
+                    - text: 運営会社
+                  - link:
+                    - /url: https://note.jp/n/nc0fe1a230633
+                    - text: 採用情報
+                  - link:
+                    - /url: https://note.com/topic/noteprolist
+                    - text: 利用企業一覧
+        - generic:
+          - heading [level=2]: すべて
+          - generic:
+            - generic:
+              - generic:
+                - link:
+                  - /url: https://note.com/hashtag/%E3%83%97%E3%83%A9%E3%83%80%E3%82%92%E7%9D%80%E3%81%9F%E6%82%AA%E9%AD%94?f=hot&paid_only=false
+                  - generic:
+                    - generic:
+                      - img
+                    - paragraph: 映画『プラダを着た悪魔2』の考察・感想が読まれています！話題の記事をチェックしよう
+                - generic:
+                  - button: 
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /following
+                            - generic:
+                              - heading [level=2]: フォロー中
+                              - generic: 
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: /info/m/m39abc74d7d13
+                                - generic:
+                                  - generic: 
+                                - generic: 「 noteからのお知らせ 」から
+                        - generic:
+                          - link:
+                            - /url: /info/n/nfb589036d885
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: 読者の「聞きたい」が届く「note質問箱」の先行利用者を募集します
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /info
+                                  - text: note公式
+                              - generic:
+                                - time: 10時間前
+                          - generic [ref=e12]:
+                            - generic [ref=e15]:
+                              - button [ref=e18] [cursor=pointer]:
+                                - generic [ref=e19]: 
+                              - generic [ref=e20]: "780"
+                            - button [ref=e22] [cursor=pointer]: 
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /info/n/n76e772417a3e
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: 有料記事の購入がもっとスムーズに！Webでもnoteポイントがチャージできます
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /info
+                                  - text: note公式
+                              - generic:
+                                - time: 13時間前
+                          - generic [ref=e23]:
+                            - generic [ref=e26]:
+                              - button [ref=e29] [cursor=pointer]:
+                                - generic [ref=e30]: 
+                              - generic [ref=e31]: "581"
+                            - button [ref=e33] [cursor=pointer]: 
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /info/n/n3c66c189903f
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: LIFULLとnoteで開催した、「#この住まいに決めた理由」投稿コンテストの審査結果を発表します！
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /info
+                                  - text: note公式
+                              - generic:
+                                - time: 1日前
+                          - generic [ref=e34]:
+                            - generic [ref=e37]:
+                              - button [ref=e40] [cursor=pointer]:
+                                - generic [ref=e41]: 
+                              - generic [ref=e42]: "747"
+                            - button [ref=e44] [cursor=pointer]: 
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /info/n/n8415d884b400
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: J-WAVEとnoteで開催した「#わたしと東京」投稿コンテストの結果を発表します！
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /info
+                                  - text: note公式
+                              - generic:
+                                - time: 5日前
+                          - generic [ref=e45]:
+                            - generic [ref=e48]:
+                              - button [ref=e51] [cursor=pointer]:
+                                - generic [ref=e52]: 
+                              - generic [ref=e53]: 1,142
+                            - button [ref=e55] [cursor=pointer]: 
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /info/n/nbf3b707bc3b7
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: noteでは「#読書感想文」を募集中！あなたのレビューが「話題の本ランキング」に反映されます
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /info
+                                  - text: note公式
+                              - generic:
+                                - time: 12日前
+                          - generic [ref=e56]:
+                            - generic [ref=e59]:
+                              - button [ref=e62] [cursor=pointer]:
+                                - generic [ref=e63]: 
+                              - generic [ref=e64]: 1,964
+                            - button [ref=e66] [cursor=pointer]: 
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /info/n/n73b298028efc
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: クリエイターのnoteが本に！noteで試し読みできる、4月発売の書籍をまとめました
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /info
+                                  - text: note公式
+                              - generic:
+                                - time: 13日前
+                          - generic [ref=e67]:
+                            - generic [ref=e70]:
+                              - button [ref=e73] [cursor=pointer]:
+                                - generic [ref=e74]: 
+                              - generic [ref=e75]: 1,311
+                            - button [ref=e77] [cursor=pointer]: 
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: /info/m/m4bd0825e8f53
+                                - generic:
+                                  - generic: 
+                                - generic: 「 今月のおすすめ記事 」から
+                        - generic:
+                          - link:
+                            - /url: /info/n/nbfac66311b8a
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: 今月のおすすめnote10選！港区から小田原に移住した / 疲れやすい私の「1グラムでも軽くしたい」旅支度 など
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /info
+                                  - text: note公式
+                              - generic:
+                                - time: 2週間前
+                          - generic [ref=e78]:
+                            - generic [ref=e81]:
+                              - button [ref=e84] [cursor=pointer]:
+                                - generic [ref=e85]: 
+                              - generic [ref=e86]: 1,448
+                            - button [ref=e88] [cursor=pointer]: 
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /info/n/n7675e5d8c06d
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: 世界中の読者に記事が届くように！5/27から自動での多言語対応をスタートします
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /info
+                                  - text: note公式
+                              - generic:
+                                - time: 3週間前
+                          - generic [ref=e89]:
+                            - generic [ref=e92]:
+                              - button [ref=e95] [cursor=pointer]:
+                                - generic [ref=e96]: 
+                              - generic [ref=e97]: 4,985
+                            - button [ref=e99] [cursor=pointer]: 
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /info/n/n149496117e1b
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: 新社会人へのエールを聞かせてください！お題企画「#社会人1年目のわたしへ」で募集します。
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /info
+                                  - text: note公式
+                              - generic:
+                                - time: 3週間前
+                          - generic [ref=e100]:
+                            - generic [ref=e103]:
+                              - button [ref=e106] [cursor=pointer]:
+                                - generic [ref=e107]: 
+                              - generic [ref=e108]: 1,653
+                            - button [ref=e110] [cursor=pointer]: 
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /info/n/n316475d0368d
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: マイナビとnoteで開催した、「#未来に向けた挑戦」投稿コンテストの審査結果を発表します！
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /info
+                                  - text: note公式
+                              - generic:
+                                - time: 3週間前
+                          - generic [ref=e111]:
+                            - generic [ref=e114]:
+                              - button [ref=e117] [cursor=pointer]:
+                                - generic [ref=e118]: 
+                              - generic [ref=e119]: 1,098
+                            - button [ref=e121] [cursor=pointer]: 
+                      - generic:
+                        - link:
+                          - /url: /following
+                          - text: もっとみる
+                  - text: 
+                  - button [ref=e122] [cursor=pointer]: 
+            - generic:
+              - link:
+                - /url: https://note.com/creative-award
+                - img
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /tag/Command%20Line%20Interface
+                            - generic:
+                              - heading [level=2]: Command Line Interface
+                              - generic: 
+                          - generic:
+                            - button: 
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /cuon/n/nc1bc97c22892
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: 日常の仕事をほぼAI経由でどう回しているか、またはやりたいことを全部持って行かれる為の備忘録
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /cuon
+                                  - text: cuon
+                              - generic:
+                                - time: 2日前
+                          - generic [ref=e123]:
+                            - generic [ref=e126]:
+                              - button [ref=e129] [cursor=pointer]:
+                                - generic [ref=e130]: 
+                              - generic [ref=e131]: "87"
+                            - button [ref=e133] [cursor=pointer]: 
+                            - button [ref=e135] [cursor=pointer]: 
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /sai_ai_master/n/n5b8e42e99c2f
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: Claude code 初心者必見🔰（便利な機能&操作集）
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /sai_ai_master
+                                  - text: Sai.AI
+                              - generic:
+                                - time: 8時間前
+                          - generic [ref=e136]:
+                            - generic [ref=e139]:
+                              - button [ref=e142] [cursor=pointer]:
+                                - generic [ref=e143]: 
+                              - generic [ref=e144]: "13"
+                            - button [ref=e146] [cursor=pointer]: 
+                            - button [ref=e148] [cursor=pointer]: 
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /issa12/n/nb5a9825a9505
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: Hermes Agentの最強コマンド「/goal」で目標を最後まで完遂させる
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /issa12
+                                  - text: Issa
+                              - generic:
+                                - time: 11時間前
+                          - generic [ref=e149]:
+                            - generic [ref=e152]:
+                              - button [ref=e155] [cursor=pointer]:
+                                - generic [ref=e156]: 
+                              - generic [ref=e157]: "6"
+                            - button [ref=e159] [cursor=pointer]: 
+                            - button [ref=e161] [cursor=pointer]: 
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /nexus_ai1ab/n/n633d3d6efdcc
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: 非エンジニア・初心者よ、コレだけは覚えろ！Claude Code「神」コマンド完全ガイド【永久保存版】
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /nexus_ai1ab
+                                  - text: nexus ai lab
+                              - generic:
+                                - time: 14時間前
+                          - generic [ref=e162]:
+                            - generic [ref=e165]:
+                              - button [ref=e168] [cursor=pointer]:
+                                - generic [ref=e169]: 
+                              - generic [ref=e170]: "16"
+                            - button [ref=e172] [cursor=pointer]: 
+                            - button [ref=e174] [cursor=pointer]: 
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /iam_lima/n/n398c68aa3bd5
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: Claude Codeの「Agent View」とは？複数セッションを1画面に集約する新機能の話
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /iam_lima
+                                  - text: リマ（Lima）
+                              - generic:
+                                - time: 17時間前
+                          - generic [ref=e175]:
+                            - generic [ref=e178]:
+                              - button [ref=e181] [cursor=pointer]:
+                                - generic [ref=e182]: 
+                              - generic [ref=e183]: "6"
+                            - button [ref=e185] [cursor=pointer]: 
+                            - button [ref=e187] [cursor=pointer]: 
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /satokenx/n/n3db228198cbd
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: 人間であることを実感。やっぱりアプリとしての細部にこだわりたくなり、改善してみた。指示通りに動けるagent teamsは超優秀。
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /satokenx
+                                  - text: 佐藤健二
+                              - generic:
+                                - time: 2時間前
+                          - generic [ref=e188]:
+                            - generic [ref=e191]:
+                              - button [ref=e194] [cursor=pointer]:
+                                - generic [ref=e195]: 
+                              - generic [ref=e196]: "2"
+                            - button [ref=e198] [cursor=pointer]: 
+                            - button [ref=e200] [cursor=pointer]: 
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /masa_wunder/n/n4d7c89c71584
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: BeadsでClaudeCodeやCodexにより最適なタスク管理を！外部知識機能も？！解説します
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /masa_wunder
+                                  - text: まさお@未経験からプロまでAI活用
+                              - generic:
+                                - time: 3時間前
+                          - generic [ref=e201]:
+                            - generic [ref=e204]:
+                              - button [ref=e207] [cursor=pointer]:
+                                - generic [ref=e208]: 
+                              - generic [ref=e209]: "4"
+                            - button [ref=e211] [cursor=pointer]: 
+                            - button [ref=e213] [cursor=pointer]: 
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /kagen_shin/n/nd2098728e8db
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: "【S.H.A.P.E モデル深掘り①】 Event Storming ── Power Platform 技術者が「業務理解」を武器にする方法 #0257"
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /kagen_shin
+                                  - text: Shinichi Kawara
+                              - generic:
+                                - time: 11時間前
+                          - generic [ref=e214]:
+                            - generic [ref=e217]:
+                              - button [ref=e220] [cursor=pointer]:
+                                - generic [ref=e221]: 
+                              - generic [ref=e222]: "5"
+                            - button [ref=e224] [cursor=pointer]: 
+                            - button [ref=e226] [cursor=pointer]: 
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /aikatuyou00/n/n2a530beeac4a
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: 「GUIを捨てて、黒い画面の住人になった話。——エンジニアとして一生食いっぱぐれないための『CLI思考法』」
+                              - generic:
+                                - generic:
+                                  - generic: ¥300
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /aikatuyou00
+                                  - text: AIの未来予想
+                              - generic:
+                                - time: 2時間前
+                          - generic [ref=e227]:
+                            - generic [ref=e230]:
+                              - button [ref=e233] [cursor=pointer]:
+                                - generic [ref=e234]: 
+                              - generic [ref=e235]: "3"
+                            - button [ref=e237] [cursor=pointer]: 
+                            - button [ref=e239] [cursor=pointer]: 
+                      - generic:
+                        - generic:
+                          - link:
+                            - /url: /jitan_lab/n/nf82f83beb5be
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading [level=3]: 「Win+Rにipconfig打ったら画面が閉じた」その後で覚えた、本当に使える4コマンド
+                          - generic:
+                            - generic:
+                              - generic:
+                                - link:
+                                  - /url: /jitan_lab
+                                  - text: 時短ラボ
+                              - generic:
+                                - time: 2日前
+                          - generic [ref=e240]:
+                            - generic [ref=e243]:
+                              - button [ref=e246] [cursor=pointer]:
+                                - generic [ref=e247]: 
+                              - generic [ref=e248]: "76"
+                            - button [ref=e250] [cursor=pointer]: 
+                            - button [ref=e252] [cursor=pointer]: 
+                      - generic:
+                        - link:
+                          - /url: /tag/Command%20Line%20Interface
+                          - text: もっとみる
+                  - text: 
+                  - button [ref=e253] [cursor=pointer]: 
+    - contentinfo:
+      - list:
+        - listitem:
+          - link:
+            - /url: https://premium.lp-note.com
+            - text: noteプレミアム
+        - listitem:
+          - link:
+            - /url: https://pro.lp-note.com/?utm_source=notecom&utm_medium=footer
+            - text: note pro
+        - listitem:
+          - link:
+            - /url: https://help-note.com/hc/ja
+            - text: ヘルプ
+        - listitem:
+          - link:
+            - /url: https://terms.help-note.com/hc/ja/articles/44948981050649
+            - text: プライバシー
+        - listitem:
+          - link:
+            - /url: https://help-note.com/hc/ja/requests/new?ticket_form_id=360000081181
+            - text: フィードバック
+        - listitem:
+          - link:
+            - /url: https://terms.help-note.com/hc/ja/articles/44943817565465
+            - text: ご利用規約
+        - listitem:
+          - link:
+            - /url: /terms/paid_point
+            - text: 通常ポイント利用特約
+        - listitem:
+          - link:
+            - /url: /terms/seller_creators
+            - text: 加盟店規約
+        - listitem:
+          - link:
+            - /url: /terms/payment_service_act
+            - text: 資金決済法に基づく表示
+        - listitem:
+          - link:
+            - /url: /terms/specified
+            - text: 特商法表記
+        - listitem:
+          - link:
+            - /url: /terms/investment_disclaimer
+            - text: 投資情報の免責事項
+  - dialog [ref=e256]:
+    - main [ref=e259]:
+      - generic [ref=e260]:
+        - button "閉じる" [ref=e261] [cursor=pointer]:
+          - generic [ref=e262]: 
+        - generic [ref=e264]:
+          - heading "おめでとうございます！" [level=1] [ref=e265]:
+            - generic [ref=e266]: おめでとうございます！
+          - paragraph [ref=e267]:
+            - generic [ref=e268]: おめでとうございます！
+            - generic [ref=e269]: noteをはじめて1年を記念した
+            - link "バッジを獲得" [ref=e271] [cursor=pointer]:
+              - /url: https://note.mu/badges?type=JoinNoteAnniversaryEveryYearUserBadge
+            - generic [ref=e272]: しました。
+  - generic [ref=e273]: note ――つくる、つながる、とどける。

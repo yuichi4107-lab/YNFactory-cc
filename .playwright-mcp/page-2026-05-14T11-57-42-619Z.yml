@@ -1,0 +1,42 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - region "通知2"
+    - region "通知1"
+    - generic [ref=e14]:
+      - complementary [ref=e15]:
+        - generic [ref=e16]: 0 文字
+      - generic [ref=e17]:
+        - navigation [ref=e18]:
+          - generic [ref=e19]:
+            - button "閉じる" [ref=e21] [cursor=pointer]:
+              - generic [ref=e23]: 閉じる
+            - generic [ref=e25]:
+              - button "その他" [ref=e27] [cursor=pointer]:
+                - img [ref=e29]:
+                  - img [ref=e31]
+              - button "下書き保存" [ref=e33] [cursor=pointer]:
+                - generic [ref=e35]: 下書き保存
+              - button "公開に進む" [ref=e36] [cursor=pointer]:
+                - generic [ref=e38]: 公開に進む
+        - main [ref=e39]:
+          - button "画像を追加" [ref=e41] [cursor=pointer]:
+            - img [ref=e43]:
+              - img [ref=e45]
+          - textbox "記事タイトル" [ref=e47]: 「察してほしい」をやめたら、彼の言葉が変わった話
+          - generic [ref=e48]: テキスト未選択のときにタブキーでメニューボタンへ移動できます
+          - textbox [active] [ref=e51]:
+            - paragraph [ref=e52]
+      - generic:
+        - toolbar:
+          - generic: 現在の縮小状態：拡大
+          - generic: 現在の縮小状態：縮小
+      - generic [ref=e53]:
+        - generic [ref=e54]: 段落1、空白の段落
+        - button "メニューを開く" [ref=e55] [cursor=pointer]:
+          - img [ref=e56]
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - math
+  - alert [ref=e11]: 記事編集 | note

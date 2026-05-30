@@ -1,0 +1,15 @@
+graph LR
+    subgraph 銀行預金
+        A["金利: 年0.02〜0.1%"] --> B["100万円 → 10年後も約100万円"]
+    end
+    subgraph インフレ
+        C["物価上昇: 年2〜3%"] --> D["100万円の価値 → 10年後 約82万円相当"]
+    end
+    B --> E["実質的に毎年<br/>2〜3%目減り"]
+    D --> E
+
+    style A fill:#3498DB,stroke:#2980B9,color:#fff
+    style B fill:#3498DB,stroke:#2980B9,color:#fff
+    style C fill:#E74C3C,stroke:#C0392B,color:#fff
+    style D fill:#E74C3C,stroke:#C0392B,color:#fff
+    style E fill:#E74C3C,stroke:#C0392B,color:#fff

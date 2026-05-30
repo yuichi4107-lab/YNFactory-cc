@@ -1,0 +1,396 @@
+{
+  "book_name": "somatid-introduction-manga",
+  "source_path": ".company/outputs/ebooks/somatid-introduction/",
+  "title": "ソマチッドとは何か",
+  "subtitle": "未確立な生命観を、歴史・主張・科学的視点から読み解く",
+  "author": "ソマチッド研究所",
+  "handoff_mode": "codex-handoff",
+  "format": "full_color_manga",
+  "page_size": "1024x1536",
+  "planned_volumes": 5,
+  "target_pages_per_volume": "80-110",
+  "status": "vol5_ready_for_kdp_upload",
+  "steps": {
+    "1_source_analysis": {
+      "status": "done",
+      "score": 91
+    },
+    "2_scenario": {
+      "status": "done",
+      "score": 90
+    },
+    "3_characters": {
+      "status": "done",
+      "score": 92
+    },
+    "4_panels_csv": {
+      "status": "done",
+      "score": 89
+    },
+    "5_codex_image_bundle": {
+      "status": "done",
+      "score": 91
+    },
+    "6_images_and_cover": {
+      "status": "done",
+      "score": 89,
+      "note": "Vol.1 cover plus pages 003-088 generated. Text pages 001-002 and 089-090 are not image outputs."
+    },
+    "7_epub": {
+      "status": "done",
+      "score": 94,
+      "note": "Vol.1 fixed-layout EPUB generated and validated. Fail 0 / Warn 2 / Score 94.1. Warnings are fixed-layout notice and 197.4MB file size."
+    },
+    "8_metadata": {
+      "status": "done",
+      "score": 92,
+      "note": "Vol.1 KDP metadata generated: 書籍情報.md, ジャンル・キーワード.md, 書籍紹介文_HTML.html. QC PASS 92."
+    },
+    "vol2_6_images_and_cover": {
+      "status": "done",
+      "score": 89,
+      "note": "Vol.2 cover plus pages 003-088 generated/imported. Text pages 001-002 and 089-090 are rendered in EPUB."
+    },
+    "vol2_7_epub": {
+      "status": "done",
+      "score": 92,
+      "note": "Vol.2 fixed-layout EPUB generated. ZIP integrity passed; 90 total pages / 86 image / 4 text; 61.3 MB."
+    },
+    "vol2_8_metadata": {
+      "status": "done",
+      "score": 93,
+      "note": "Vol.2 KDP metadata generated: 書籍情報.md, ジャンル・キーワード.md, 書籍紹介文_HTML.html. QC PASS 93."
+    },
+    "vol2_kdp_submission": {
+      "status": "done",
+      "score": 100,
+      "note": "User reported KDP publication application submitted."
+    },
+    "vol3_prebuild_readiness": {
+      "status": "done",
+      "score": 88,
+      "note": "Vol.3 CSV, manual prompt package, import helper, build_epub.py, and KDP metadata prepared. Image generation assets are still missing: cover.png and page_003.png-page_088.png must be placed in manual/import/."
+    },
+    "vol3_codex_gpt_image2_generation": {
+      "status": "in_progress",
+      "completed": 39,
+      "total": 87,
+      "next_page": "page_041.png",
+      "note": "Generated and placed cover.png plus page_003.png through page_040.png in manual/import/. Continue from page_041.png."
+    },
+    "vol4_prebuild_readiness": {
+      "status": "done",
+      "score": 92,
+      "note": "Vol.4 manual prompt package, import helper, build_epub.py, and KDP metadata prepared. Image generation assets are still missing: cover.png and page_003.png-page_088.png must be placed in manual/import/."
+    },
+    "vol4_codex_gpt_image2_generation": {
+      "status": "done",
+      "score": 89,
+      "completed": 87,
+      "total": 87,
+      "note": "Generated and imported cover.png plus page_003.png through page_088.png. page_030 square output was regenerated to 1024x1536."
+    },
+    "vol4_6_images_and_cover": {
+      "status": "done",
+      "score": 90,
+      "note": "Vol.4 cover plus pages 003-088 generated/imported. Text pages 001-002 and 089-090 are rendered in EPUB. All 86 final PNG pages are 1024x1536."
+    },
+    "vol4_7_epub": {
+      "status": "done",
+      "score": 92,
+      "note": "Vol.4 fixed-layout EPUB generated. ZIP integrity passed; 90 total pages / 86 image / 4 text; 62.1 MB."
+    },
+    "vol4_8_metadata": {
+      "status": "done",
+      "score": 92,
+      "note": "Vol.4 KDP metadata prepared: 書籍情報.md, ジャンル・キーワード.md, 書籍紹介文_HTML.html, and upload checklist. QC PASS 92."
+    },
+    "vol5_codex_gpt_image2_generation": {
+      "status": "done",
+      "score": 90,
+      "completed": 87,
+      "total": 87,
+      "note": "Generated and imported cover.png plus page_003.png through page_088.png. page_030.png, page_051.png, page_058.png, and page_086.png were regenerated to 1024x1536 after square outputs."
+    },
+    "vol5_6_images_and_cover": {
+      "status": "done",
+      "score": 91,
+      "note": "Vol.5 cover plus pages 003-088 generated/imported. Text pages 001-002 and 089-090 are rendered in EPUB. All 87 image assets are 1024x1536."
+    },
+    "vol5_7_epub": {
+      "status": "done",
+      "score": 93,
+      "note": "Vol.5 fixed-layout EPUB generated. ZIP integrity passed; 90 total pages / 86 image / 4 text; 56.5 MB."
+    },
+    "vol5_8_metadata": {
+      "status": "done",
+      "score": 93,
+      "note": "Vol.5 KDP metadata prepared: 書籍情報.md, ジャンル・キーワード.md, 書籍紹介文_HTML.html, upload checklist, and KDP申請入力ガイド.md. QC PASS 93."
+    }
+  },
+  "safety_policy": [
+    "ソマチッドを診断法・治療法として推奨しない",
+    "標準医療の中止や延期を促さない",
+    "主張、仮説、体験談、科学的根拠を分ける",
+    "医療判断は専門家相談を促す"
+  ],
+  "notes": [
+    "ソース本文は約98,000字。単巻100ページでは圧縮が強すぎるため、5巻分冊設計を採用",
+    "画像生成はCodex側のcodex-handoff方式を前提にする",
+    "表紙はcover.pngとcover.jpgを必ず保存する"
+  ],
+  "codex_jobs": [
+    {
+      "vol": 1,
+      "job_id": "somatid-introduction-manga_vol1_20260504_203001",
+      "status": "kdp_submitted",
+      "pages": 90,
+      "image_outputs_expected": 86
+    },
+    {
+      "vol": 2,
+      "job_id": "somatid-introduction-manga_vol2_20260504_203002",
+      "status": "kdp_submitted",
+      "pages": 90,
+      "image_outputs_expected": 86,
+      "epub": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol2/KDP出版用/ソマチッドとは何か 第2巻.epub",
+      "metadata_status": "submitted",
+      "submitted_at": "2026-05-07T21:12:15.192530+09:00"
+    },
+    {
+      "vol": 3,
+      "job_id": "somatid-introduction-manga_vol3_20260504_203003",
+      "status": "ready_for_kdp_upload",
+      "pages": 90,
+      "image_outputs_expected": 87,
+      "manual_import_dir": ".company/codex/done/somatid-introduction-manga_vol3_20260504_203003/manual/import",
+      "import_helper": ".company/codex/done/somatid-introduction-manga_vol3_20260504_203003/manual/import_and_place_vol3.py",
+      "metadata_status": "prepared",
+      "model": "gpt-image-2",
+      "run_guide": ".company/codex/done/somatid-introduction-manga_vol3_20260504_203003/manual/RUN_GPT_IMAGE2_VOL3.md",
+      "generated_import_count": 39,
+      "next_missing": "page_041.png"
+    },
+    {
+      "vol": 4,
+      "job_id": "somatid-introduction-manga_vol4_20260504_203004",
+      "status": "ready_for_kdp_upload",
+      "pages": 90,
+      "image_outputs_expected": 87,
+      "manual_import_dir": ".company/codex/done/somatid-introduction-manga_vol4_20260504_203004/manual/import",
+      "import_helper": ".company/codex/done/somatid-introduction-manga_vol4_20260504_203004/manual/import_and_place_vol4.py",
+      "metadata_status": "prepared",
+      "model": "gpt-image-2",
+      "run_guide": ".company/codex/done/somatid-introduction-manga_vol4_20260504_203004/manual/RUN_GPT_IMAGE2_VOL4.md",
+      "generated_import_count": 87,
+      "next_missing": null,
+      "epub": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol4/KDP出版用/マンガでわかる ソマチッドとは何か 第4巻.epub"
+    },
+    {
+      "vol": 5,
+      "job_id": "somatid-introduction-manga_vol5_20260504_203005",
+      "status": "codex_gpt_image2_generation_in_progress",
+      "pages": 90,
+      "image_outputs_expected": 87,
+      "manual_import_dir": ".company/codex/done/somatid-introduction-manga_vol5_20260504_203005/manual/import",
+      "metadata_status": "prepared",
+      "model": "gpt-image-2",
+      "generated_import_count": 87,
+      "cover_generated": true,
+      "next_missing": null,
+      "note": "Vol.5 cover plus page_003.png through page_088.png are saved in manual/import/. All 87 expected image assets are 1024x1536.",
+      "epub": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol5/KDP出版用/マンガでわかる ソマチッドとは何か 第5巻.epub"
+    }
+  ],
+  "updated_at": "2026-05-11T07:27:12+09:00",
+  "pilot_outputs": {
+    "vol1_cover_png": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol1/KDP出版用/cover.png",
+    "vol1_cover_jpg": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol1/KDP出版用/cover.jpg",
+    "vol1_page_005": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol1/pages/page_005.png",
+    "vol1_epub": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol1/KDP出版用/ソマチッドとは何か 第1巻.epub",
+    "vol1_book_info": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol1/KDP出版用/書籍情報.md",
+    "vol1_keywords": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol1/KDP出版用/ジャンル・キーワード.md",
+    "vol1_description_html": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol1/KDP出版用/書籍紹介文_HTML.html",
+    "qc_report": ".company/outputs/ebooks-manga/somatid-introduction-manga/quality_reports/vol1_metadata_qc.md",
+    "vol2_cover_png": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol2/KDP出版用/cover.png",
+    "vol2_cover_jpg": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol2/KDP出版用/cover.jpg",
+    "vol2_epub": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol2/KDP出版用/ソマチッドとは何か 第2巻.epub",
+    "vol2_book_info": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol2/KDP出版用/書籍情報.md",
+    "vol2_keywords": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol2/KDP出版用/ジャンル・キーワード.md",
+    "vol2_description_html": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol2/KDP出版用/書籍紹介文_HTML.html",
+    "vol2_epub_qc_report": ".company/outputs/ebooks-manga/somatid-introduction-manga/quality_reports/vol2_epub_build_qc_20260507.md",
+    "vol2_metadata_qc_report": ".company/outputs/ebooks-manga/somatid-introduction-manga/quality_reports/vol2_metadata_qc_20260507.md",
+    "vol3_book_info": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol3/KDP出版用/書籍情報.md",
+    "vol3_keywords": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol3/KDP出版用/ジャンル・キーワード.md",
+    "vol3_description_html": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol3/KDP出版用/書籍紹介文_HTML.html",
+    "vol3_build_epub": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol3/build_epub.py",
+    "vol3_prebuild_qc_report": ".company/outputs/ebooks-manga/somatid-introduction-manga/quality_reports/vol3_prebuild_readiness_qc_20260507.md",
+    "vol3_gpt_image2_run_guide": ".company/codex/done/somatid-introduction-manga_vol3_20260504_203003/manual/RUN_GPT_IMAGE2_VOL3.md",
+    "vol4_book_info": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol4/KDP出版用/書籍情報.md",
+    "vol4_keywords": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol4/KDP出版用/ジャンル・キーワード.md",
+    "vol4_description_html": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol4/KDP出版用/書籍紹介文_HTML.html",
+    "vol4_build_epub": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol4/build_epub.py",
+    "vol4_gpt_image2_run_guide": ".company/codex/done/somatid-introduction-manga_vol4_20260504_203004/manual/RUN_GPT_IMAGE2_VOL4.md"
+  },
+  "vol1_generation_status": {
+    "cover_done": true,
+    "generated_page_png_count": 86,
+    "generated_pages": [
+      "page_003.png",
+      "page_004.png",
+      "page_005.png",
+      "page_006.png",
+      "page_007.png",
+      "page_008.png",
+      "page_009.png",
+      "page_010.png",
+      "page_011.png",
+      "page_012.png",
+      "page_013.png",
+      "page_014.png",
+      "page_015.png",
+      "page_016.png",
+      "page_017.png",
+      "page_018.png",
+      "page_019.png",
+      "page_020.png",
+      "page_021.png",
+      "page_022.png",
+      "page_023.png",
+      "page_024.png",
+      "page_025.png",
+      "page_026.png",
+      "page_027.png",
+      "page_028.png",
+      "page_029.png",
+      "page_030.png",
+      "page_031.png",
+      "page_032.png",
+      "page_033.png",
+      "page_034.png",
+      "page_035.png",
+      "page_036.png",
+      "page_037.png",
+      "page_038.png",
+      "page_039.png",
+      "page_040.png",
+      "page_041.png",
+      "page_042.png",
+      "page_043.png",
+      "page_044.png",
+      "page_045.png",
+      "page_046.png",
+      "page_047.png",
+      "page_048.png",
+      "page_049.png",
+      "page_050.png",
+      "page_051.png",
+      "page_052.png",
+      "page_053.png",
+      "page_054.png",
+      "page_055.png",
+      "page_056.png",
+      "page_057.png",
+      "page_058.png",
+      "page_059.png",
+      "page_060.png",
+      "page_061.png",
+      "page_062.png",
+      "page_063.png",
+      "page_064.png",
+      "page_065.png",
+      "page_066.png",
+      "page_067.png",
+      "page_068.png",
+      "page_069.png",
+      "page_070.png",
+      "page_071.png",
+      "page_072.png",
+      "page_073.png",
+      "page_074.png",
+      "page_075.png",
+      "page_076.png",
+      "page_077.png",
+      "page_078.png",
+      "page_079.png",
+      "page_080.png",
+      "page_081.png",
+      "page_082.png",
+      "page_083.png",
+      "page_084.png",
+      "page_085.png",
+      "page_086.png",
+      "page_087.png",
+      "page_088.png"
+    ],
+    "remaining_image_pages_estimate": 0
+  },
+  "submission_status": {
+    "vol1": {
+      "status": "kdp_submitted",
+      "submitted_at": "2026-05-06T07:25:04+09:00",
+      "note": "User reported KDP publication submission completed."
+    }
+  },
+  "vol3_codex_gpt_image2_generation": {
+    "status": "complete",
+    "completed": 87,
+    "total": 87,
+    "next_page": null,
+    "note": "All expected images generated and placed in manual/import/."
+  },
+  "vol3": {
+    "status": "ready_for_kdp_upload",
+    "generated_import_count": 87,
+    "next_missing": null,
+    "epub_path": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol3/KDP出版用/マンガでわかる ソマチッドとは何か 第3巻.epub",
+    "qc_report": ".company/outputs/ebooks-manga/somatid-introduction-manga/quality_reports/vol3_epub_build_qc_20260508.md",
+    "qc_score": 92,
+    "qc_status": "PASS",
+    "kdp_dir": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol3/KDP出版用",
+    "metadata_qc_report": ".company/outputs/ebooks-manga/somatid-introduction-manga/quality_reports/vol3_kdp_package_qc_20260508.md",
+    "metadata_qc_score": 94,
+    "metadata_qc_status": "PASS",
+    "pre_submission_qc_report": ".company/outputs/ebooks-manga/somatid-introduction-manga/quality_reports/vol3_pre_submission_qc_20260508.md",
+    "pre_submission_qc_score": 91,
+    "pre_submission_qc_status": "PASS",
+    "upload_checklist": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol3/KDP出版用/KDPアップロード前チェックリスト.md",
+    "remaining_step": "KDP upload and online preview confirmation"
+  },
+  "vol3_epub_build_qc": {
+    "status": "PASS",
+    "score": 92,
+    "epub_path": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol3/KDP出版用/ソマチッドとは何か 第3巻.epub",
+    "epub_size_mb": 54.6,
+    "logical_pages": 90,
+    "image_pages": 86,
+    "text_pages": 4,
+    "jpeg_images_in_epub": 87,
+    "xhtml_files_in_epub": 92,
+    "zip_integrity": "ok",
+    "qc_report": ".company/outputs/ebooks-manga/somatid-introduction-manga/quality_reports/vol3_epub_build_qc_20260508.md",
+    "note": "Manual PNG import, JPEG conversion, fixed-layout EPUB build, and structural QC completed. Final visual review in Kindle Previewer is recommended before KDP upload."
+  },
+  "vol3_kdp_package_qc": {
+    "status": "PASS",
+    "score": 94,
+    "title": "マンガでわかる ソマチッドとは何か 第3巻",
+    "subtitle": "何が主張されてきたのか",
+    "author": "ソマチッド研究所",
+    "epub_path": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol3/KDP出版用/マンガでわかる ソマチッドとは何か 第3巻.epub",
+    "cover_jpg": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol3/KDP出版用/cover.jpg",
+    "book_info": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol3/KDP出版用/書籍情報.md",
+    "keywords": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol3/KDP出版用/ジャンル・キーワード.md",
+    "description_html": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol3/KDP出版用/書籍紹介文_HTML.html",
+    "qc_report": ".company/outputs/ebooks-manga/somatid-introduction-manga/quality_reports/vol3_kdp_package_qc_20260508.md",
+    "note": "KDP directory contains one final EPUB aligned with KDP metadata. Old short-title EPUB archived under vol3/archive/."
+  },
+  "vol3_pre_submission_qc": {
+    "status": "PASS",
+    "score": 91,
+    "kindle_previewer_app_found": false,
+    "upload_checklist": ".company/outputs/ebooks-manga/somatid-introduction-manga/vol3/KDP出版用/KDPアップロード前チェックリスト.md",
+    "qc_report": ".company/outputs/ebooks-manga/somatid-introduction-manga/quality_reports/vol3_pre_submission_qc_20260508.md",
+    "next_step": "KDP upload and online preview confirmation"
+  }
+}

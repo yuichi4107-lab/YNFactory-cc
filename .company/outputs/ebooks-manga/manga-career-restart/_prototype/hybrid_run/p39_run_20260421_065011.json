@@ -1,0 +1,281 @@
+{
+  "run_id": "20260421_065011",
+  "page": 39,
+  "iterations": [
+    {
+      "iter": 1,
+      "image": "G:\\マイドライブ\\YNFactory-cc\\.company\\outputs\\ebooks-manga\\manga-career-restart\\_prototype\\hybrid_run\\p39_iter_1_20260421_065011.jpg",
+      "gen_time": 23.703553199768066,
+      "ocr_time": 9.173234701156616,
+      "ocr": {
+        "bubbles": [
+          {
+            "panel_id": 1,
+            "type": "narration",
+            "detected_text": "翌日、ミサキは会士に電薪かかけた、電薪口の曉敷が、しく感じた。"
+          },
+          {
+            "panel_id": 1,
+            "type": "dialogue",
+            "detected_text": "保完園致な、宗さいで、の、保板根板はあけなてあなか?"
+          },
+          {
+            "panel_id": 2,
+            "type": "narration",
+            "detected_text": "山田課長 宵紀長に暇かかが、倉えは狸態した。"
+          },
+          {
+            "panel_id": 2,
+            "type": "dialogue",
+            "detected_text": "いも肘とワ日出にりばトーと時眼出ごう、禅社は達な一手ごう、どけてごいていないとよ"
+          },
+          {
+            "panel_id": 3,
+            "type": "narration",
+            "detected_text": "電話紀却った席、じよくスマホを掲じわまま動さわなし。"
+          },
+          {
+            "panel_id": 3,
+            "type": "dialogue",
+            "detected_text": "考面と販かな、名とな、雨だなとな待しけなんばど"
+          }
+        ]
+      },
+      "verdict": {
+        "overall_verdict": "FAIL",
+        "bubbles": [
+          {
+            "panel_id": 1,
+            "type": "dialogue",
+            "expected": "あの、保育園が決まらなくて…。在宅勤務の制度はありますか？",
+            "detected": "保完園致な、宗さいで、の、保板根板はあけなてあなか?",
+            "match": false
+          },
+          {
+            "panel_id": 1,
+            "type": "narration",
+            "expected": "翌日、ミサキは会社に電話をかけた。電話口の沈黙が、長く感じた。",
+            "detected": "翌日、ミサキは会士に電薪かかけた、電薪口の曉敷が、しく感じた。",
+            "match": false
+          },
+          {
+            "panel_id": 2,
+            "type": "dialogue",
+            "expected": "佐藤さん、うちはまだリモートワーク対応していなくてね。コロナのときは一時的にやったんだけど、今は原則出社に戻ってるんだよ",
+            "detected": "いも肘とワ日出にりばトーと時眼出ごう、禅社は達な一手ごう、どけてごいていないとよ",
+            "match": false
+          },
+          {
+            "panel_id": 2,
+            "type": "narration",
+            "expected": "山田課長の声は穏やかだったが、答えは明確だった。",
+            "detected": "山田課長 宵紀長に暇かかが、倉えは狸態した。",
+            "match": false
+          },
+          {
+            "panel_id": 3,
+            "type": "dialogue",
+            "expected": "制度としてはないんだ。申し訳ないけど",
+            "detected": "考面と販かな、名とな、雨だなとな待しけなんばど",
+            "match": false
+          },
+          {
+            "panel_id": 3,
+            "type": "narration",
+            "expected": "電話を切った後、しばらくスマホを握りしめたまま動けなかった。",
+            "detected": "電話紀却った席、じよくスマホを掲じわまま動さわなし。",
+            "match": false
+          }
+        ]
+      }
+    },
+    {
+      "iter": 2,
+      "image": "G:\\マイドライブ\\YNFactory-cc\\.company\\outputs\\ebooks-manga\\manga-career-restart\\_prototype\\hybrid_run\\p39_iter_2_20260421_065011.jpg",
+      "gen_time": 24.361480236053467,
+      "ocr_time": 12.32749629020691,
+      "ocr": {
+        "bubbles": [
+          {
+            "panel_id": 1,
+            "type": "narration",
+            "detected_text": "翌日、公金はミシキ全能しか記面の転隊。電涼たなれなじした"
+          },
+          {
+            "panel_id": 1,
+            "type": "dialogue",
+            "detected_text": "あの、メシ保管園殺な在式国禄の眼とんて税筋いなのか?"
+          },
+          {
+            "panel_id": 2,
+            "type": "narration",
+            "detected_text": "山田課員（電話荷寸）"
+          },
+          {
+            "panel_id": 2,
+            "type": "dialogue",
+            "detected_text": "方れんな囲はをそけにコリって時をかして隣かっとよるよよいなど…"
+          },
+          {
+            "panel_id": 2,
+            "type": "dialogue",
+            "detected_text": "あれっケコではりょなトイクンウったコクトな鼻は即即っか得わが餓弛てなげだ。"
+          },
+          {
+            "panel_id": 3,
+            "type": "dialogue",
+            "detected_text": "等連とら眼けなしていなさに弊れのげな"
+          },
+          {
+            "panel_id": 3,
+            "type": "narration",
+            "detected_text": "毛気っはを掘を毛れタルェコのをとなら掘述際無からな胖マッれは誹肝けななよっ"
+          },
+          {
+            "panel_id": 3,
+            "type": "narration",
+            "detected_text": "証厳も、毛要いア捏が眼のは誤認したも弊していわくなくけ"
+          }
+        ]
+      },
+      "verdict": {
+        "overall_verdict": "FAIL",
+        "bubbles": [
+          {
+            "panel_id": 1,
+            "type": "dialogue",
+            "expected": "あの、保育園が決まらなくて…。在宅勤務の制度はありますか？",
+            "detected": "あの、メシ保管園殺な在式国禄の眼とんて税筋いなのか?",
+            "match": false
+          },
+          {
+            "panel_id": 1,
+            "type": "narration",
+            "expected": "翌日、ミサキは会社に電話をかけた。電話口の沈黙が、長く感じた。",
+            "detected": "翌日、公金はミシキ全能しか記面の転隊。電涼たなれなじした",
+            "match": false
+          },
+          {
+            "panel_id": 2,
+            "type": "dialogue",
+            "expected": "佐藤さん、うちはまだリモートワーク対応していなくてね。コロナのときは一時的にやったんだけど、今は原則出社に戻ってるんだよ",
+            "detected": "方れんな囲はをそけにコリって時をかして隣かっとよるよよいなど…",
+            "match": false
+          },
+          {
+            "panel_id": 2,
+            "type": "narration",
+            "expected": "山田課長の声は穏やかだったが、答えは明確だった。",
+            "detected": "山田課員（電話荷寸）",
+            "match": false
+          },
+          {
+            "panel_id": 3,
+            "type": "dialogue",
+            "expected": "制度としてはないんだ。申し訳ないけど",
+            "detected": "等連とら眼けなしていなさに弊れのげな",
+            "match": false
+          },
+          {
+            "panel_id": 3,
+            "type": "narration",
+            "expected": "電話を切った後、しばらくスマホを握りしめたまま動けなかった。",
+            "detected": "毛気っはを掘を毛れタルェコのをとなら掘述際無からな胖マッれは誹肝けななよっ",
+            "match": false
+          }
+        ]
+      }
+    },
+    {
+      "iter": 3,
+      "image": "G:\\マイドライブ\\YNFactory-cc\\.company\\outputs\\ebooks-manga\\manga-career-restart\\_prototype\\hybrid_run\\p39_iter_3_20260421_065011.jpg",
+      "gen_time": 22.927159309387207,
+      "ocr_time": 11.099228620529175,
+      "ocr": {
+        "bubbles": [
+          {
+            "panel_id": 1,
+            "type": "dialogue",
+            "detected_text": "あの、保育園保育を右たなあげな?!"
+          },
+          {
+            "panel_id": 1,
+            "type": "narration",
+            "detected_text": "翌日、ミツキは全敵きなな……全に電かった、電耗口の神電叔の強殺者聞がしく感じた。"
+          },
+          {
+            "panel_id": 2,
+            "type": "dialogue",
+            "detected_text": "女猪さはうはなにと裸らクラこが田恨をっれをしまったてるよんなよ"
+          },
+          {
+            "panel_id": 2,
+            "type": "narration",
+            "detected_text": "山讃貴、うはんばもーック対応にきれてな、コロのがにまてけげととけど、今喉咥別出缶醒っるんよ。"
+          },
+          {
+            "panel_id": 3,
+            "type": "dialogue",
+            "detected_text": "香瓶とななな、齢しい敵ななは"
+          },
+          {
+            "panel_id": 3,
+            "type": "narration",
+            "detected_text": "電話祀ったが席、じょくスマホと禍はちしたたままま動でなじた。"
+          }
+        ]
+      },
+      "verdict": {
+        "overall_verdict": "FAIL",
+        "bubbles": [
+          {
+            "panel_id": 1,
+            "type": "dialogue",
+            "expected": "あの、保育園が決まらなくて…。在宅勤務の制度はありますか？",
+            "detected": "あの、保育園保育を右たなあげな?!",
+            "match": false
+          },
+          {
+            "panel_id": 1,
+            "type": "narration",
+            "expected": "翌日、ミサキは会社に電話をかけた。電話口の沈黙が、長く感じた。",
+            "detected": "翌日、ミツキは全敵きなな……全に電かった、電耗口の神電叔の強殺者聞がしく感じた。",
+            "match": false
+          },
+          {
+            "panel_id": 2,
+            "type": "dialogue",
+            "expected": "佐藤さん、うちはまだリモートワーク対応していなくてね。コロナのときは一時的にやったんだけど、今は原則出社に戻ってるんだよ",
+            "detected": "女猪さはうはなにと裸らクラこが田恨をっれをしまったてるよんなよ",
+            "match": false
+          },
+          {
+            "panel_id": 2,
+            "type": "narration",
+            "expected": "山田課長の声は穏やかだったが、答えは明確だった。",
+            "detected": "山讃貴、うはんばもーック対応にきれてな、コロのがにまてけげととけど、今喉咥別出缶醒っるんよ。",
+            "match": false
+          },
+          {
+            "panel_id": 3,
+            "type": "dialogue",
+            "expected": "制度としてはないんだ。申し訳ないけど",
+            "detected": "香瓶とななな、齢しい敵ななは",
+            "match": false
+          },
+          {
+            "panel_id": 3,
+            "type": "narration",
+            "expected": "電話を切った後、しばらくスマホを握りしめたまま動けなかった。",
+            "detected": "電話祀ったが席、じょくスマホと禍はちしたたままま動でなじた。",
+            "match": false
+          }
+        ]
+      }
+    }
+  ],
+  "fallback_used": true,
+  "clean_image": "G:\\マイドライブ\\YNFactory-cc\\.company\\outputs\\ebooks-manga\\manga-career-restart\\_prototype\\hybrid_run\\p39_clean_20260421_065011.jpg",
+  "final_image": "G:\\マイドライブ\\YNFactory-cc\\.company\\outputs\\ebooks-manga\\manga-career-restart\\_prototype\\hybrid_run\\p39_final_20260421_065011.jpg",
+  "converged_at": null
+}

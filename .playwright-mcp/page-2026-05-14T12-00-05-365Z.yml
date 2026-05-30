@@ -1,0 +1,185 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - region "通知2"
+    - region "通知1"
+    - generic [ref=e14]:
+      - complementary [ref=e15]:
+        - generic [ref=e16]: 1,939 文字
+      - generic [ref=e17]:
+        - navigation [ref=e18]:
+          - generic [ref=e19]:
+            - button "閉じる" [ref=e21] [cursor=pointer]:
+              - generic [ref=e23]: 閉じる
+            - generic [ref=e25]:
+              - button "その他" [ref=e27] [cursor=pointer]:
+                - img [ref=e29]:
+                  - img [ref=e31]
+              - button "下書き保存" [ref=e33] [cursor=pointer]:
+                - generic [ref=e35]: 下書き保存
+              - button "公開に進む" [ref=e36] [cursor=pointer]:
+                - generic [ref=e38]: 公開に進む
+        - main [ref=e39]:
+          - generic [ref=e40]:
+            - button "画像を追加" [active] [ref=e41] [cursor=pointer]:
+              - img [ref=e43]:
+                - img [ref=e45]
+            - generic [ref=e268]:
+              - button "画像をアップロード 推奨サイズ：1280×670px" [ref=e270] [cursor=pointer]:
+                - img [ref=e272]:
+                  - img [ref=e274]
+                - generic [ref=e276]:
+                  - text: 画像をアップロード
+                  - generic [ref=e277]: 推奨サイズ：1280×670px
+              - button "記事にあう画像を選ぶ" [ref=e279] [cursor=pointer]:
+                - img [ref=e281]:
+                  - img [ref=e283]
+                - generic [ref=e285]: 記事にあう画像を選ぶ
+              - generic [ref=e286]:
+                - button "Adobe Expressで画像をつくる Adobeの無料会員登録が必要です" [ref=e287] [cursor=pointer]:
+                  - img [ref=e289]:
+                    - img [ref=e291]
+                  - generic [ref=e293]:
+                    - text: Adobe Expressで画像をつくる
+                    - generic [ref=e294]: Adobeの無料会員登録が必要です
+                - button "Adobe Expressのヘルプ" [ref=e295] [cursor=pointer]:
+                  - img [ref=e297]:
+                    - img [ref=e299]
+          - textbox "記事タイトル" [ref=e47]: 「察してほしい」をやめたら、彼の言葉が変わった話
+          - generic [ref=e48]: テキスト未選択のときにタブキーでメニューボタンへ移動できます
+          - textbox [ref=e51]:
+            - paragraph [ref=e60]: また察してもらえなかった、あの夜
+            - paragraph [ref=e61]
+            - paragraph [ref=e62]: 疲れて帰ってきた夜、ソファでうなだれている私を見て、彼はスマホをいじっていました。
+            - paragraph [ref=e63]
+            - paragraph [ref=e64]: 「声くらいかけてくれてもいいのに」と思いながら、私は何も言わなかった。
+            - paragraph [ref=e65]
+            - paragraph [ref=e66]: 言わなくても分かるでしょ、と思っていたから。
+            - paragraph [ref=e67]: いや、本当は「分かってくれるはず」と期待していたから。
+            - paragraph [ref=e68]
+            - paragraph [ref=e69]: でも彼は声をかけてくれなかった。
+            - paragraph [ref=e70]: そしてその夜、私はひとりでしずかに傷ついていました。
+            - paragraph [ref=e71]
+            - paragraph [ref=e72]: こういう夜、ありませんか。
+            - paragraph [ref=e73]
+            - paragraph [ref=e74]: 「言わなくても伝わるはず」の罠
+            - paragraph [ref=e75]
+            - paragraph [ref=e76]: 私がずっとそうでした。
+            - paragraph [ref=e77]
+            - paragraph [ref=e78]: 「察してほしい」という気持ちは、悪いものではないと思います。
+            - paragraph [ref=e79]: 大切な相手だからこそ、「言わなくても分かってほしい」と願う。
+            - paragraph [ref=e80]: それは愛着の深さの表れでもある。
+            - paragraph [ref=e81]
+            - paragraph [ref=e82]: でもあるとき気づいたんです。
+            - paragraph [ref=e83]
+            - paragraph [ref=e84]: 私が察してほしかったことは、彼に「届いていなかった」のではなく、そもそも「見えていなかった」のかもしれない、と。
+            - paragraph [ref=e85]
+            - paragraph [ref=e86]: 私が「疲れた」と感じていることは、私の内側にある感覚。
+            - paragraph [ref=e87]: それを言葉にしない限り、相手には伝わらない。
+            - paragraph [ref=e88]
+            - paragraph [ref=e89]: 「気づいてくれない彼が鈍い」のではなく、「伝えていない私が届けていない」。
+            - paragraph [ref=e90]
+            - paragraph [ref=e91]: この違いに気づいたとき、少しだけ楽になりました。
+            - paragraph [ref=e92]: 同時に、「じゃあどうすればいいんだろう」と考え始めました。
+            - paragraph [ref=e93]
+            - paragraph [ref=e94]: 「察して」を「お願い」に変える
+            - paragraph [ref=e95]
+            - paragraph [ref=e96]: 試したのは、シンプルなことでした。
+            - paragraph [ref=e97]
+            - paragraph [ref=e98]: 「察してほしい」という気持ちを、「お願い」に変換して言葉にする、それだけです。
+            - paragraph [ref=e99]
+            - paragraph [ref=e100]: たとえばあの夜なら、こう言う。
+            - paragraph [ref=e101]
+            - paragraph [ref=e102]: 「今日すごく疲れてて。少し話しかけてもらえると嬉しいな」
+            - paragraph [ref=e103]
+            - paragraph [ref=e104]: これだけ。
+            - paragraph [ref=e105]
+            - paragraph [ref=e106]: 最初はすごく恥ずかしかったです。
+            - paragraph [ref=e107]: 「こんなこと言うの？」「大げさじゃない？」という気持ちもありました。
+            - paragraph [ref=e108]
+            - paragraph [ref=e109]: でも口に出してみると、思っていたより自然でした。
+            - paragraph [ref=e110]: 彼は「あ、そうなんだ」と言って、スマホを置いてくれた。
+            - paragraph [ref=e111]
+            - paragraph [ref=e112]: 「ちゃんと言えばよかったんだ」と、その瞬間に思いました。
+            - paragraph [ref=e113]
+            - paragraph [ref=e114]: もちろん、毎回うまくいくわけではありません。
+            - paragraph [ref=e115]: タイミングや言い方によっては、ぎこちなくなることもある。
+            - paragraph [ref=e116]
+            - paragraph [ref=e117]: でも「言わない」より「言う」ほうが、圧倒的に届きやすかった。
+            - paragraph [ref=e118]
+            - paragraph [ref=e119]: ここで少し、注意したいことがあります。
+            - paragraph [ref=e120]
+            - paragraph [ref=e121]: 「言葉にする」というのは、要求を押し付けることではありません。
+            - paragraph [ref=e122]
+            - paragraph [ref=e123]: 「察してよ」とは違って、「お願い」には相手に選択肢があります。
+            - paragraph [ref=e124]: 「こうしてほしい」と伝えつつ、彼が「今はちょっと無理」と言える余白も残す。
+            - paragraph [ref=e125]
+            - paragraph [ref=e126]: 一方的な要求ではなく、「私はこう感じている、こうしてもらえると嬉しい」という分かち合い。
+            - paragraph [ref=e127]
+            - paragraph [ref=e128]: この感覚を意識してから、話し合いがぐんと楽になりました。
+            - paragraph [ref=e129]
+            - paragraph [ref=e130]: 彼の言葉が変わっていった
+            - paragraph [ref=e131]
+            - paragraph [ref=e132]: 「察してほしい」をやめてから、少しずつ変化が出てきました。
+            - paragraph [ref=e133]
+            - paragraph [ref=e134]: まず私が変わりました。
+            - paragraph [ref=e135]: 何かあったとき、「言わなきゃ伝わらないんだ」という前提で動くようになった。
+            - paragraph [ref=e136]
+            - paragraph [ref=e137]: すると彼も変わりました。
+            - paragraph [ref=e138]
+            - paragraph [ref=e139]: 以前なら、帰宅してしばらく黙っていることが多かった彼が、「今日どうだった？」と聞いてくれるようになった。
+            - paragraph [ref=e140]
+            - paragraph [ref=e141]: 「私が話すようになったから、彼も話しやすくなったのかもしれない」と、あとから気づきました。
+            - paragraph [ref=e142]
+            - paragraph [ref=e143]: コミュニケーションは一方通行じゃない。
+            - paragraph [ref=e144]: 私が変わることで、相手も変わる余地が生まれる。
+            - paragraph [ref=e145]
+            - paragraph [ref=e146]: 「察してもらえない」と傷ついていた頃の私は、その可能性を見落としていたなと思います。
+            - paragraph [ref=e147]
+            - paragraph [ref=e148]: もちろん、全部うまくいったわけではないです。
+            - paragraph [ref=e149]: 言い方がきつくなってしまった日もあった。
+            - paragraph [ref=e150]: 「なんで言わないといけないの」と腹が立った日もあった。
+            - paragraph [ref=e151]
+            - paragraph [ref=e152]: でも「言わない」より「言う」を続けていると、少しずつ会話の質が変わっていきました。
+            - paragraph [ref=e153]
+            - paragraph [ref=e154]: 今日から試せる小さな変換
+            - paragraph [ref=e155]
+            - paragraph [ref=e156]: 「察してほしいをやめる」というのは、感情を消すことではありません。
+            - paragraph [ref=e157]
+            - paragraph [ref=e158]: 察してほしいという気持ちはそのまま持っていい。
+            - paragraph [ref=e159]: ただ、それを言葉に変換する一手間を加えるだけ。
+            - paragraph [ref=e160]
+            - paragraph [ref=e161]: 試してみてほしいのは、この変換です。
+            - paragraph [ref=e162]
+            - paragraph [ref=e163]: 「また気づいてくれなかった」から「今こういう状態で、こうしてもらえると助かる」へ。
+            - paragraph [ref=e164]
+            - paragraph [ref=e165]: こう言い換えると、相手への怒りではなく、自分のリクエストとして届く。
+            - paragraph [ref=e166]
+            - paragraph [ref=e167]: 最初は難しく感じるかもしれません。
+            - paragraph [ref=e168]: 「なんで私が言わないといけないの」という気持ちが出てくるかもしれない。
+            - paragraph [ref=e169]
+            - paragraph [ref=e170]: その気持ちはおかしくないです。私もそう思っていた時期があります。
+            - paragraph [ref=e171]
+            - paragraph [ref=e172]: でも、「察してもらえない」と傷つき続けるより、「言ったら分かってもらえた」という経験を積むほうが、長い目で見て関係が楽になることが多い。
+            - paragraph [ref=e173]
+            - paragraph [ref=e174]: まずは一つだけ。
+            - paragraph [ref=e175]: 今夜、言わずにいたことを、小さな言葉にしてみませんか。
+            - paragraph [ref=e176]
+            - paragraph [ref=e177]: 保存用チェックリスト
+            - paragraph [ref=e178]
+            - paragraph [ref=e179]: ・「察してほしい」を感じたとき、まず自分の感情を一言で言語化してみる
+            - paragraph [ref=e180]: ・「〇〇してほしい」という形のお願いに変換する
+            - paragraph [ref=e181]: ・タイミングを選ぶ（相手が余裕のある瞬間を選ぶと届きやすい）
+            - paragraph [ref=e182]: ・責める言い方ではなく「私はこう感じている」という伝え方を試す
+            - paragraph [ref=e183]: ・相手が「今はちょっと無理」と言える余白を残す
+      - generic:
+        - toolbar:
+          - generic: 現在の縮小状態：拡大
+          - generic: 現在の縮小状態：縮小
+      - button "メニューを開く" [ref=e55] [cursor=pointer]:
+        - img [ref=e56]
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - math
+  - alert [ref=e11]: 記事編集 | note

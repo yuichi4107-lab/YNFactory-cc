@@ -1,0 +1,51 @@
+- generic [ref=e5]:
+  - banner [ref=e6]:
+    - generic [ref=e8]:
+      - link "note" [ref=e11] [cursor=pointer]:
+        - /url: https://note.com/
+        - img "note" [ref=e12]
+      - button "検索" [ref=e17] [cursor=pointer]:
+        - img [ref=e18]
+      - navigation "アカウント" [ref=e20]:
+        - link "ログイン" [ref=e22] [cursor=pointer]:
+          - /url: https://note.com/login?redirectPath=
+          - generic [ref=e23]: ログイン
+        - link "会員登録" [ref=e25] [cursor=pointer]:
+          - /url: https://note.com/signup
+          - generic [ref=e26]: 会員登録
+  - main [ref=e27]
+  - contentinfo [ref=e33]:
+    - list [ref=e34]:
+      - listitem [ref=e35]:
+        - link "noteプレミアム" [ref=e36] [cursor=pointer]:
+          - /url: https://premium.lp-note.com
+      - listitem [ref=e37]:
+        - link "note pro" [ref=e38] [cursor=pointer]:
+          - /url: https://pro.lp-note.com/?utm_source=notecom&utm_medium=footer
+      - listitem [ref=e39]:
+        - link "ヘルプ" [ref=e40] [cursor=pointer]:
+          - /url: https://help-note.com/hc/ja
+      - listitem [ref=e41]:
+        - link "プライバシー" [ref=e42] [cursor=pointer]:
+          - /url: https://terms.help-note.com/hc/ja/articles/44948981050649
+      - listitem [ref=e43]:
+        - link "フィードバック" [ref=e44] [cursor=pointer]:
+          - /url: https://help-note.com/hc/ja/requests/new?ticket_form_id=360000081181
+      - listitem [ref=e45]:
+        - link "ご利用規約" [ref=e46] [cursor=pointer]:
+          - /url: https://terms.help-note.com/hc/ja/articles/44943817565465
+      - listitem [ref=e47]:
+        - link "通常ポイント利用特約" [ref=e48] [cursor=pointer]:
+          - /url: /terms/paid_point
+      - listitem [ref=e49]:
+        - link "加盟店規約" [ref=e50] [cursor=pointer]:
+          - /url: /terms/seller_creators
+      - listitem [ref=e51]:
+        - link "資金決済法に基づく表示" [ref=e52] [cursor=pointer]:
+          - /url: /terms/payment_service_act
+      - listitem [ref=e53]:
+        - link "特商法表記" [ref=e54] [cursor=pointer]:
+          - /url: /terms/specified
+      - listitem [ref=e55]:
+        - link "投資情報の免責事項" [ref=e56] [cursor=pointer]:
+          - /url: /terms/investment_disclaimer

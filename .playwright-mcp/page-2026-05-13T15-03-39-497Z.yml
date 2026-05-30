@@ -1,0 +1,71 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - banner [ref=e6]:
+        - generic [ref=e8]:
+          - link "note" [ref=e11] [cursor=pointer]:
+            - /url: /
+            - img "note" [ref=e12]
+          - search [ref=e69]:
+            - combobox "キーワードやクリエイターで検索" [ref=e70]
+            - button "検索" [ref=e71] [cursor=pointer]:
+              - img [ref=e72]
+          - navigation "アカウント" [ref=e74]:
+            - link "ログイン" [ref=e76] [cursor=pointer]:
+              - /url: /login?redirectPath=https%3A%2F%2Fnote.com%2Freset_password
+              - generic [ref=e77]: ログイン
+            - link "会員登録" [ref=e79] [cursor=pointer]:
+              - /url: /signup
+              - generic [ref=e80]: 会員登録
+      - main [ref=e81]:
+        - generic [ref=e82]:
+          - heading "パスワード再設定" [level=1] [ref=e83]
+          - generic [ref=e84]:
+            - generic [ref=e85]:
+              - generic [ref=e87]: メールアドレス
+              - textbox "メールアドレス" [ref=e89]
+            - generic [ref=e90]:
+              - button "キャンセル" [ref=e92] [cursor=pointer]:
+                - generic [ref=e93]: キャンセル
+              - button "送信" [disabled] [ref=e95]:
+                - generic [ref=e96]: 送信
+      - contentinfo [ref=e97]:
+        - list [ref=e98]:
+          - listitem [ref=e99]:
+            - link "noteプレミアム" [ref=e100] [cursor=pointer]:
+              - /url: https://premium.lp-note.com
+          - listitem [ref=e101]:
+            - link "note pro" [ref=e102] [cursor=pointer]:
+              - /url: https://pro.lp-note.com/?utm_source=notecom&utm_medium=footer
+          - listitem [ref=e103]:
+            - link "ヘルプ" [ref=e104] [cursor=pointer]:
+              - /url: https://help-note.com/hc/ja
+          - listitem [ref=e105]:
+            - link "プライバシー" [ref=e106] [cursor=pointer]:
+              - /url: https://terms.help-note.com/hc/ja/articles/44948981050649
+          - listitem [ref=e107]:
+            - link "フィードバック" [ref=e108] [cursor=pointer]:
+              - /url: https://help-note.com/hc/ja/requests/new?ticket_form_id=360000081181
+          - listitem [ref=e109]:
+            - link "ご利用規約" [ref=e110] [cursor=pointer]:
+              - /url: https://terms.help-note.com/hc/ja/articles/44943817565465
+          - listitem [ref=e111]:
+            - link "通常ポイント利用特約" [ref=e112] [cursor=pointer]:
+              - /url: /terms/paid_point
+          - listitem [ref=e113]:
+            - link "加盟店規約" [ref=e114] [cursor=pointer]:
+              - /url: /terms/seller_creators
+          - listitem [ref=e115]:
+            - link "資金決済法に基づく表示" [ref=e116] [cursor=pointer]:
+              - /url: /terms/payment_service_act
+          - listitem [ref=e117]:
+            - link "特商法表記" [ref=e118] [cursor=pointer]:
+              - /url: /terms/specified
+          - listitem [ref=e119]:
+            - link "投資情報の免責事項" [ref=e120] [cursor=pointer]:
+              - /url: /terms/investment_disclaimer
+    - generic [ref=e63]: パスワード再設定｜note
+  - iframe [ref=e66]:
+    - generic [ref=f49e6]:
+      - strong [ref=f49e7]: reCAPTCHA
+      - text: で保護されています

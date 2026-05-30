@@ -1,0 +1,36 @@
+@charset "UTF-8";
+html, body { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #ffffff; }
+.page {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  text-align: center;
+}
+.page img {
+  display: block;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  margin: 0 auto;
+}
+.text-page {
+  padding: 5% 7%;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  font-size: 38px;
+  line-height: 1.7;
+  color: #333;
+}
+.text-page h2 { font-size: 52px; margin-bottom: 16px; border-bottom: 2px solid #ddd; padding-bottom: 8px; }
+.text-page h3 { font-size: 44px; margin-top: 20px; margin-bottom: 8px; }
+.text-page p { margin: 8px 0; text-indent: 1em; }
+.text-page .subtitle { font-size: 32px; color: #666; font-style: italic; margin-bottom: 16px; }
+.colophon {
+  padding: 5% 7%;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  font-size: 30px;
+  line-height: 1.5;
+  color: #333;
+}
+.colophon h2 { font-size: 36px; margin: 14px 0 6px 0; border-bottom: 2px solid #ddd; padding-bottom: 4px; }
+.colophon h2:first-child { margin-top: 0; }
+.colophon p { margin: 4px 0; text-indent: 0; }
