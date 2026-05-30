@@ -39,31 +39,25 @@ description: セッション終了時のハンドオフ処理。HANDOFF.md更新
 - 完了したタスクにチェックを入れる
 - 新たに発生したタスクを追加
 
-### Step 3: git commit（Google Drive同期 一時停止 必須）
+### Step 3: git commit（Google Drive同期 一時停止 任意）
 
-Google Drive同期と `.git/` の競合でハンドオフが失敗・破損するため、**毎回必ず先にDrive同期を一時停止する**。
-（過去は失敗時のみ案内していたが、停止し忘れによる事故が複数回発生したため、ハンドオフのたびに必須化した。）
+#### 3-1. （任意）Drive 同期の一時停止
 
-#### 3-1. 【必須】オーナーに Drive 同期の一時停止を依頼する
+`.git` はローカル `C:\dev\YNFactory-git` に移設済みのため、commit が Drive 同期で壊れる問題は解消した。Drive 同期の一時停止はもう必須ではない（HANDOFF/TODO 書き込み中の "(1)" 重複ファイル発生をやや減らす程度の効果）。停止せずそのまま進めてよい。
 
-**先に commit を試行してはいけない。** 必ずユーザーに以下を一言で依頼し、停止完了の返事を待ってから次へ進む:
+念のため停止したい場合のみ、以下をユーザーに案内する（停止完了を待つブロッキングは不要）:
 
-> 「ハンドオフ前に Google Drive for desktop の同期を一時停止してください。
-> （タスクバーのGoogle Drive アイコン → 歯車 → 『同期を一時停止』）
-> 完了したら『停止した』とお返事ください。」
-
-ユーザーが「停止した」「OK」「進めて」等の確認を返すまで Step 3-2 以降に進まない。
+> 「（任意）気になる場合は Google Drive for desktop の同期を一時停止できます。
+> （タスクバーのGoogle Drive アイコン → 歯車 → 『同期を一時停止』）」
 
 #### 3-2. 事前チェック（lock残留の除去）
 
 ```bash
 cd "g:/マイドライブ/YNFactory-cc"
 
-# .git/index.lock が残っていれば削除（Drive同期で残ることがある）
-if [ -f .git/index.lock ]; then
-  echo "[WARN] .git/index.lock 残留を検出 → 削除"
-  rm -f .git/index.lock
-fi
+# index.lock が残っていれば削除（.git はローカル C:\dev\YNFactory-git に移設済み）
+LOCK="C:/dev/YNFactory-git/.git/index.lock"
+if [ -f "$LOCK" ]; then echo "[WARN] lock 残留 → 削除"; rm -f "$LOCK"; fi
 ```
 
 #### 3-3. ステージ前に想定外の巻き込みをチェック
@@ -82,13 +76,13 @@ git add -A
 for i in 1 2 3; do
   if git commit -m "handoff: [作業サマリーを1行で]
 
-Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>"; then
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"; then
     echo "[OK] commit 成功 (試行 $i 回目)"
     break
   fi
   echo "[WARN] commit 失敗 (試行 $i 回目) → 10秒待って再試行"
   sleep 10
-  rm -f .git/index.lock  # lock残留再除去
+  rm -f "C:/dev/YNFactory-git/.git/index.lock"  # lock残留再除去
 done
 ```
 
@@ -96,14 +90,27 @@ done
 - 作業内容を簡潔に記述する
 - `git add .` ではなく `git add -A` を使う（削除も検出）
 
-#### 3-5. 【必須】Drive 同期を再開してもらう
+#### 3-5. GitHub へ push
 
-commit 成功・失敗にかかわらず、最後にユーザーに同期再開を必ず依頼する:
+```bash
+# GitHub軸: commit後に main を push（複数台同期の要）。最大3回リトライ
+for i in 1 2 3; do
+  if git push origin main; then echo "[OK] push 成功 (試行 $i)"; break; fi
+  echo "[WARN] push 失敗 (試行 $i) → pull --rebase して再試行"
+  git pull --rebase origin main 2>&1 | tail -3
+done
+```
+
+push が認証で失敗する場合は `gh auth status` を確認する。リモートが無い／別構成の端末ではこの Step をスキップしてよい。
+
+#### 3-6. （任意）Drive 同期を再開してもらう
+
+もし Step 3-1 で Drive 同期を一時停止した場合のみ、再開を依頼する:
 
 > 「commit が完了しました。Google Drive の同期を再開してください。
 > （同じメニューから『同期を再開』）」
 
-再開漏れ防止のため、Step 4 の完了報告と同じレスポンスで案内すること。
+停止した場合は再開漏れ防止のため、Step 4 の完了報告と同じレスポンスで案内すること。
 
 ### Step 4: 完了報告
 
@@ -119,17 +126,17 @@ commit 成功・失敗にかかわらず、最後にユーザーに同期再開�
 ## 注意事項
 
 - HANDOFF.md は全端末で共有される最重要ファイル。正確に記述すること
-- **Drive 同期の一時停止依頼は必ず最初に行う**（条件付きではなく毎回）
+- Drive 同期の一時停止は任意（`.git` はローカル移設済みのため必須ではない）
 - git commit が失敗した場合（lock等）はリトライし、それでもダメなら手動対応を案内する
-- 機密情報（APIキー等）は HANDOFF.md に直接書かず、「.env参照」と記述する
+- 機密情報（APIキー等）は HANDOFF.md に直接書かず、「.env参照」と記述する。コード／設定ファイルにもトークン・パスワードを直書きしない。必ず環境変数か .env 経由。2026-05-30 に機密混入の GitHub 誤push が発生したため、push 前に機密スキャンを行うこと。
 
 ## 3回リトライしても失敗する場合
 
-Drive 同期は既に停止しているはずなので、以下を案内する:
+以下を案内する:
 
-1. `.git/index.lock` を再度削除
+1. index.lock を再度削除
    ```bash
-   rm -f .git/index.lock
+   rm -f "C:/dev/YNFactory-git/.git/index.lock"
    ```
 2. 手動で commit 実行
    ```bash
@@ -137,7 +144,7 @@ Drive 同期は既に停止しているはずなので、以下を案内する:
    git add -A
    git commit -m "handoff: ..."
    ```
-3. それでも失敗する場合は Drive 同期再開前にユーザーに状況報告する
+3. それでも失敗する場合はユーザーに状況報告する（Drive 同期を停止していた場合は再開前に報告する）
 
-根本対応として `.git/` 自体を Drive 同期から除外する手順は
+`.git` をローカル `C:\dev\YNFactory-git` へ移設した経緯・構成は
 [.company/engineering/docs/gdrive-git-setup.md](.company/engineering/docs/gdrive-git-setup.md) を参照。
