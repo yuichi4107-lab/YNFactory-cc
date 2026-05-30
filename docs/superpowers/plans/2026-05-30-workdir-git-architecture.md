@@ -162,10 +162,15 @@ Expected: `Switched to a new branch 'main'`。この時点で index は旧ブラ
 Run:
 ```bash
 cd "g:/マイドライブ/YNFactory-cc"
-git rm -r --cached . >/dev/null 2>&1; echo "index cleared (exit稼働=$?)"
+git rm -r --cached . >/dev/null 2>&1; echo "index cleared (exit=$?)"
 git status --short | head -1
 ```
-Expected: `index cleared`。`--cached` なので Drive 上の実ファイルは一切削除されない（重要）。
+Expected: `index cleared (exit=0)`。`--cached` なので Drive 上の実ファイルは一切削除されない（重要）。
+
+> ⚠️ **2026-05-30 実績の落とし穴**: `exit=1` になり index が空にならない場合、**埋め込みgitリポジトリ（gitlink, mode 160000）**が
+> 原因のことがある（本リポジトリでは `yn-tools` が該当）。`git rm -r --cached .` は gitlink で停止し全体を中断する。
+> その場合は `git rm -r --cached --force .` を使うか、`git ls-files -s | awk '$1==160000{print $4}'` で gitlink を特定して
+> `git rm --cached -f <path>` で先に外してから再実行する。`--cached` なので実体は消えない。
 
 - [ ] **Step 3: .gitignore を尊重して再ステージ**
 
@@ -215,17 +220,45 @@ echo "--- 上に何も出なければ機密ファイルなし ✓ ---"
 ```
 Expected: 出力なし。1件でも出たら `.gitignore` に追加 → `git rm --cached <該当>` → 再検証。
 
-- [ ] **Step 3: ファイル内容に API キー等が埋まっていないかスキャン**
+- [ ] **Step 3: ファイル内容に生の機密が埋まっていないか全種スキャン（最重要ゲート）**
+
+> ⚠️ **2026-05-30 インシデント教訓**: 初回実行時、このゲートで `AIzaSy: 2 / Telegram: 6` の検出が
+> 出ていたのに処理をバッチ化して止まらず、機密入りコミットを GitHub に push してしまった。
+> **このスキャンで1件でも検出が出たら、commit にも push にも絶対に進まないこと。** 値を除去し
+> 再スキャンで全項目0になるまで繰り返す。下記は実際に本リポジトリで検出された全パターンを網羅する。
+
+Run（venv/site-packages 等は誤検知のため除外）:
+```bash
+cd "g:/マイドライブ/YNFactory-cc"
+EXCL='\.venvs/|/site-packages/|Trust Tokens|chrome-cover-profile|chrome_profiles|node_modules/'
+echo "Telegram     : $(git grep -lI --cached -E '[0-9]{8,12}:AA[A-Za-z0-9_-]{30,}' 2>/dev/null | grep -vE "$EXCL" | wc -l)"
+echo "Gemini       : $(git grep -lI --cached -E 'AIzaSy[A-Za-z0-9_-]{20,}' 2>/dev/null | grep -vE "$EXCL" | wc -l)"
+echo "OpenAI/汎用sk: $(git grep -lI --cached -E 'sk-[A-Za-z0-9]{20,}' 2>/dev/null | grep -vE "$EXCL" | wc -l)"
+echo "Stripe sk/wh : $(git grep -lI --cached -E 'whsec_[A-Za-z0-9]{20,}|sk_(live|test)_[A-Za-z0-9]{20,}' 2>/dev/null | grep -vE "$EXCL" | wc -l)"
+echo "Google GOCSPX: $(git grep -lI --cached -E 'GOCSPX-[A-Za-z0-9_-]{10,}' 2>/dev/null | grep -vE "$EXCL" | wc -l)"
+echo "GitHub/Slack : $(git grep -lI --cached -E 'gh[pousr]_[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}' 2>/dev/null | grep -vE "$EXCL" | wc -l)"
+echo "PEM秘密鍵    : $(git grep -lI --cached -E '\-\-\-\-\-BEGIN [A-Z ]*PRIVATE KEY' 2>/dev/null | grep -vE "$EXCL" | wc -l)"
+echo "VPSパスワード: $(git grep -lI --cached -E 'sshpass -p|VPS_PASS\s*=\s*\"[^\"]|PASSWORD\s*=\s*.[A-Za-z0-9@]{6,}' 2>/dev/null | grep -vE "$EXCL" | wc -l)  # 旧root PWの平文/ sshpass直書きを検出"
+echo "env形式実値  : $(git grep -lI --cached -E '^(SECRET_KEY|DB_PASSWORD|ENCRYPTION_KEY|GOOGLE_CLIENT_SECRET)=[A-Za-z0-9_+/=-]{16,}' 2>/dev/null | grep -vE "$EXCL" | grep -viE 'replace-with|your[_-]|placeholder|example|dummy|change[_-]?me' | wc -l)"
+```
+Expected: **全項目 0**。1件でも非ゼロなら：①コード→`os.environ.get(...)` 化、②記録/手順書→プレースホルダに伏字化、
+③マシン固有設定→`.gitignore` 追加＋`git rm --cached`。除去後に `git add -A && git commit --amend --no-edit` し、再度このスキャンで全0を確認してから次へ。
+
+> 注: `SECRET_KEY=replace-with-...` のようなプレースホルダは誤検知。値が実在のキーか説明文字列かを目視で判別する。
+> 機密値そのものは画面に出さず、退避は `[Environment]::SetEnvironmentVariable('NAME',$val,'User')`（PowerShell）で行う。
+
+- [ ] **Step 4: 機密ファイル名・gitlink の確認**
 
 Run:
 ```bash
 cd "g:/マイドライブ/YNFactory-cc"
-git grep -nIE '(sk-[A-Za-z0-9]{20,}|AIzaSy[A-Za-z0-9_-]{20,}|gh[pousr]_[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|-----BEGIN [A-Z ]*PRIVATE KEY-----)' --cached 2>/dev/null | head -20
-echo "--- 上に何も出なければ生キー混入なし ✓ ---"
+echo "## settings.local.json（全階層・マシン固有設定）##"
+git ls-files | grep 'settings.local.json' || echo "なし ✓"
+echo "## gitlink（mode 160000・埋め込みリポジトリ）##"
+git ls-files -s | awk '$1==160000{print $4}' || echo "なし"
 ```
-Expected: 出力なし。検出されたらそのファイルを `.gitignore`／該当箇所を `.env` 参照へ修正してから再検証。
-
-> 注: ドキュメント中に過去の失効キーが例示として書かれている場合がある（メモリに旧Geminiキー等の記録あり）。検出時は「失効済みの記録か／現用の生キーか」を必ず確認し、現用なら除去、記録なら問題なし。判断に迷えばオーナーに確認。
+Expected: `settings.local.json` は 0件（`**/.claude/settings.local.json` でignore済みのはず）。gitlink が出たら
+（例: `yn-tools` が埋め込みgitだと `git rm -r --cached .` がそこで停止する）→ `git rm --cached -f <path>` で個別解除してから Task 2 Step2 を続行。
 
 ---
 
@@ -364,6 +397,30 @@ Run:
 gh api repos/yuichi4107-lab/YNFactory-cc --jq '"size="+(.size|tostring)+" KB  private="+(.private|tostring)'
 ```
 Expected: `size` が概ね 300,000 KB（≒300MB）以下、`private=true`。極端に大きければ大容量混入を疑い Task 3 を再確認。
+
+---
+
+## Task 7.5: 漏洩シークレットのローテーション（2026-05-30 インシデント対応・オーナー実行）
+
+**Files:** 参照のみ — [.company/engineering/debug-log/2026-05-31-secret-rotation-after-github-leak.md](../../../.company/engineering/debug-log/2026-05-31-secret-rotation-after-github-leak.md)
+
+> 背景: 移行作業中に機密入りコミットを private リポジトリへ誤 push（同日削除済み・実被害リスク低）。
+> 念のため露出した認証情報をローテーションする。コードからの機密除去自体は完了済み（コミット `e760dc2`）。
+> 本Taskは**オーナーが手動で実施**する外部サービス側の作業。
+
+- [ ] **Step 1: 優先度[高] をローテーション**
+  - Stripe ライブ secret key（`sk_live_`）+ Webhook secret（`whsec_`）→ VPS `/opt/yn-tools/.env` 更新 → `docker compose up -d`
+  - Google OAuth クライアントシークレット（`GOCSPX-`）→ `.env` 更新 → ログイン確認
+  - DB パスワード / `SECRET_KEY`（`ENCRYPTION_KEY` は既存暗号化データ確認後）→ `.env` 更新
+  - VPS root パスワード（ConoHa パネル or `passwd root`）→ ローカル環境変数 `VPS_ROOT_PW` 更新
+  - 手順詳細は上記ローテーション手順書を参照
+
+- [ ] **Step 2: 優先度[低] は判断（private・短時間のため様子見可）**
+  - Telegram bot トークン4種 / Gemini キー2種（Gemini は失効済みの可能性大）
+
+- [ ] **Step 3: 完了チェック**
+  - 各サービスが新シークレットで正常動作することを確認（手順書のチェックリスト）
+  - 旧値が VPS `.env`・ローカル・GitHub のどこにも残っていないこと
 
 ---
 
