@@ -138,3 +138,6 @@ keiba-unified/jra/data/
 # 全階層に対応（リポジトリ直下・サブプロジェクト両方）
 **/.claude/settings.local.json
 settings.local.json
+
+# Playwright MCP snapshots (debug artifacts)
+.playwright-mcp/

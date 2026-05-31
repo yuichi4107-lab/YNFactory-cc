@@ -81,6 +81,12 @@ function hideError() {
  * @returns {boolean}
  */
 function checkBrowserSupport() {
+  // file:// で直接開かれた場合（マイクはセキュアコンテキスト必須のため使えない）
+  if (location.protocol === 'file:') {
+    showError('このファイルを直接開いています。録音機能はブラウザのセキュリティ仕様により、ローカルサーバ経由（http://localhost）でしか動作しません。同じフォルダの「start.bat」をダブルクリックして起動してください（自動でブラウザが開きます）。');
+    dom.btnRecord().disabled = true;
+    return false;
+  }
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     showError('お使いのブラウザは録音に対応していません。Chrome / Firefox / Safari の最新版をご利用ください。');
     dom.btnRecord().disabled = true;
