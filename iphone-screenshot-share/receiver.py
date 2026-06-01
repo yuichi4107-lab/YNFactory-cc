@@ -104,6 +104,7 @@ class Receiver:
             except SystemExit:
                 raise
             except Exception as e:
+                conflict_tries = 0  # a non-conflict error breaks the 409 streak
                 log.warning("polling error: %s (retry in %ss)", e, backoff)
                 time.sleep(backoff)
                 backoff = min(backoff * 2, 30)

@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import sys
 import tempfile
@@ -47,6 +48,10 @@ def photo_update(chat_id=123, update_id=10):
 class ProcessUpdate(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.mkdtemp()
+        logging.disable(logging.CRITICAL)  # keep test output clean
+
+    def tearDown(self):
+        logging.disable(logging.NOTSET)
 
     def test_saves_authorized_photo(self):
         client = FakeClient()
@@ -60,6 +65,7 @@ class ProcessUpdate(unittest.TestCase):
         make_receiver(self.tmp, client, confirm=True).process_update(photo_update())
         self.assertEqual(len(client.messages), 1)
         self.assertEqual(client.messages[0][0], 123)
+        self.assertIn("OK saved:", client.messages[0][1])
 
     def test_no_reply_when_disabled(self):
         client = FakeClient()
@@ -89,6 +95,10 @@ class ProcessUpdate(unittest.TestCase):
 class RunLoop(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.mkdtemp()
+        logging.disable(logging.CRITICAL)  # keep test output clean
+
+    def tearDown(self):
+        logging.disable(logging.NOTSET)
 
     def test_offset_advances_and_loop_stops(self):
         # client returns one batch, then raises StopIteration-like to end the loop
