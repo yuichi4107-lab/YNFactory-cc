@@ -71,5 +71,20 @@ class BuildFilename(unittest.TestCase):
                          "20260602_140509_02.png")
 
 
+class ExpandSaveDir(unittest.TestCase):
+    def test_default_when_empty(self):
+        result = core.expand_save_dir("")
+        self.assertTrue(result.endswith(os.path.join("Pictures", "iPhoneScreenshots")))
+
+    def test_default_when_none(self):
+        result = core.expand_save_dir(None)
+        self.assertTrue(result.endswith(os.path.join("Pictures", "iPhoneScreenshots")))
+
+    def test_expands_env_var(self):
+        os.environ["ISS_TEST_VAR"] = "ZZZ_BASE"
+        result = core.expand_save_dir(os.path.join("%ISS_TEST_VAR%", "sub"))
+        self.assertIn("ZZZ_BASE", result)
+
+
 if __name__ == "__main__":
     unittest.main()

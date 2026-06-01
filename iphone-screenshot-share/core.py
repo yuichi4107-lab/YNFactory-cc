@@ -67,3 +67,18 @@ def build_filename(dt, ext, existing):
         if candidate not in existing:
             return candidate
         n += 1
+
+
+def default_save_dir():
+    return os.path.join(
+        os.environ.get("USERPROFILE", os.path.expanduser("~")),
+        "Pictures",
+        "iPhoneScreenshots",
+    )
+
+
+def expand_save_dir(raw):
+    """Expand %VARS% and ~ in a configured path; fall back to default."""
+    if not raw:
+        return default_save_dir()
+    return os.path.expanduser(os.path.expandvars(raw))
