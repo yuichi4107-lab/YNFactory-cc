@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-from datetime import datetime
 
 
 def is_allowed(chat_id, allowlist):
