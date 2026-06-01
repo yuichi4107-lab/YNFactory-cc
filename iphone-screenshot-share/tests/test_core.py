@@ -48,5 +48,28 @@ class ExtractImage(unittest.TestCase):
         self.assertIsNone(core.extract_image(None))
 
 
+class BuildFilename(unittest.TestCase):
+    def setUp(self):
+        self.dt = datetime(2026, 6, 2, 14, 5, 9)
+
+    def test_basic(self):
+        self.assertEqual(core.build_filename(self.dt, ".png", set()),
+                         "20260602_140509.png")
+
+    def test_adds_leading_dot(self):
+        self.assertEqual(core.build_filename(self.dt, "jpg", set()),
+                         "20260602_140509.jpg")
+
+    def test_collision_adds_counter(self):
+        existing = {"20260602_140509.png"}
+        self.assertEqual(core.build_filename(self.dt, ".png", existing),
+                         "20260602_140509_01.png")
+
+    def test_double_collision(self):
+        existing = {"20260602_140509.png", "20260602_140509_01.png"}
+        self.assertEqual(core.build_filename(self.dt, ".png", existing),
+                         "20260602_140509_02.png")
+
+
 if __name__ == "__main__":
     unittest.main()

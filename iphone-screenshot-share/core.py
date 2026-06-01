@@ -51,3 +51,19 @@ def extract_image(message):
         if mime.startswith("image/"):
             return (doc["file_id"], _ext_from_document(doc))
     return None
+
+
+def build_filename(dt, ext, existing):
+    """Build 'YYYYMMDD_HHMMSS<ext>', adding _NN to avoid names in 'existing'."""
+    if not ext.startswith("."):
+        ext = "." + ext
+    base = dt.strftime("%Y%m%d_%H%M%S")
+    candidate = base + ext
+    if candidate not in existing:
+        return candidate
+    n = 1
+    while True:
+        candidate = "%s_%02d%s" % (base, n, ext)
+        if candidate not in existing:
+            return candidate
+        n += 1
