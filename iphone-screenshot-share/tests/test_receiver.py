@@ -123,5 +123,23 @@ class RunLoop(unittest.TestCase):
             self.assertEqual(json.load(f)["offset"], 42)
 
 
+class MainEntry(unittest.TestCase):
+    def setUp(self):
+        logging.disable(logging.CRITICAL)
+        self._orig = receiver.load_config
+
+    def tearDown(self):
+        logging.disable(logging.NOTSET)
+        receiver.load_config = self._orig
+
+    def test_missing_config_exits_with_friendly_message(self):
+        def _raise(*a, **k):
+            raise FileNotFoundError("config.json")
+        receiver.load_config = _raise
+        with self.assertRaises(SystemExit) as ctx:
+            receiver.main()
+        self.assertIn("config.json not found", str(ctx.exception))
+
+
 if __name__ == "__main__":
     unittest.main()

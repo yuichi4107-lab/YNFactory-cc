@@ -114,7 +114,12 @@ def main():
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(message)s")
-    config = load_config()
+    try:
+        config = load_config()
+    except FileNotFoundError:
+        raise SystemExit(
+            "config.json not found. Copy config.example.json to config.json "
+            "and set your bot_token (see README.md).")
     token = config.get("bot_token")
     if not token or token.startswith("PUT-"):
         raise SystemExit("config.json: set your bot_token first (see README.md).")
