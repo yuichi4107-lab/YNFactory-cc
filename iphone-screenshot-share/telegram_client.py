@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -53,8 +54,19 @@ class TelegramClient:
     def download_file(self, file_path, dest_path):
         url = "%s/file/bot%s/%s" % (self._base, self._token, file_path)
         req = urllib.request.Request(url)
-        with self._opener.open(req, timeout=60) as resp, open(dest_path, "wb") as f:
-            f.write(resp.read())
+        # Download to a .part file and atomically rename on success so a failed
+        # transfer never leaves a truncated image in the save folder.
+        tmp = dest_path + ".part"
+        try:
+            with self._opener.open(req, timeout=60) as resp, open(tmp, "wb") as f:
+                f.write(resp.read())
+            os.replace(tmp, dest_path)
+        except BaseException:
+            try:
+                os.remove(tmp)
+            except OSError:
+                pass
+            raise
 
     def send_message(self, chat_id, text):
         self._request("sendMessage", {"chat_id": chat_id, "text": text})

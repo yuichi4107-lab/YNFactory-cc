@@ -2,6 +2,7 @@ import io
 import json
 import os
 import sys
+import tempfile
 import unittest
 import urllib.error
 
@@ -58,6 +59,31 @@ class GetFilePath(unittest.TestCase):
         opener = FakeOpener(payload={"ok": True, "result": {"file_path": "photos/f.jpg"}})
         c = telegram_client.TelegramClient("TOKEN", opener=opener)
         self.assertEqual(c.get_file_path("FID"), "photos/f.jpg")
+
+
+class _BoomOpener:
+    def open(self, req, timeout=None):
+        raise urllib.error.URLError("network down")
+
+
+class DownloadFile(unittest.TestCase):
+    def setUp(self):
+        self.dir = tempfile.mkdtemp()
+        self.dest = os.path.join(self.dir, "img.jpg")
+
+    def test_success_writes_dest_and_leaves_no_part(self):
+        opener = FakeOpener(payload={"ok": True, "result": []})  # any bytes
+        c = telegram_client.TelegramClient("TOKEN", opener=opener)
+        c.download_file("photos/f.jpg", self.dest)
+        self.assertTrue(os.path.exists(self.dest))
+        self.assertFalse(os.path.exists(self.dest + ".part"))
+
+    def test_failure_leaves_no_dest_and_no_part(self):
+        c = telegram_client.TelegramClient("TOKEN", opener=_BoomOpener())
+        with self.assertRaises(urllib.error.URLError):
+            c.download_file("photos/f.jpg", self.dest)
+        self.assertFalse(os.path.exists(self.dest))
+        self.assertFalse(os.path.exists(self.dest + ".part"))
 
 
 if __name__ == "__main__":

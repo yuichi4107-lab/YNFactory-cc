@@ -72,8 +72,10 @@ class Receiver:
         if self._send_confirmation:
             try:
                 self._client.send_message(chat_id, "OK saved: %s" % name)
-            except TelegramError as e:
-                log.warning("confirmation reply failed: %s", e)
+            except (TelegramError, OSError) as e:
+                # The image is already saved; a failed reply (incl. network
+                # errors, which are OSError subclasses) must not undo that.
+                log.warning("confirmation reply failed (image was saved): %s", e)
 
     def run(self):
         backoff = 1

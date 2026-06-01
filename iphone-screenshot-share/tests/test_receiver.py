@@ -91,6 +91,18 @@ class ProcessUpdate(unittest.TestCase):
             {"update_id": 11, "message": {"chat": {"id": 123}, "text": "hi"}})
         self.assertEqual(client.downloaded, [])
 
+    def test_reply_network_failure_does_not_undo_save(self):
+        import urllib.error
+        client = FakeClient()
+
+        def boom(chat_id, text):
+            raise urllib.error.URLError("net down")
+
+        client.send_message = boom
+        # process_update must not raise even though the reply fails
+        make_receiver(self.tmp, client).process_update(photo_update())
+        self.assertEqual(len(client.downloaded), 1)
+
 
 class RunLoop(unittest.TestCase):
     def setUp(self):
@@ -139,6 +151,13 @@ class MainEntry(unittest.TestCase):
         with self.assertRaises(SystemExit) as ctx:
             receiver.main()
         self.assertIn("config.json not found", str(ctx.exception))
+
+    def test_placeholder_token_exits(self):
+        receiver.load_config = lambda *a, **k: {
+            "bot_token": "PUT-YOUR-BOT-TOKEN-HERE", "allowed_chat_ids": [1]}
+        with self.assertRaises(SystemExit) as ctx:
+            receiver.main()
+        self.assertIn("bot_token", str(ctx.exception))
 
 
 if __name__ == "__main__":
