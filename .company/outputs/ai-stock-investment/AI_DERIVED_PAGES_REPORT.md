@@ -1,0 +1,53 @@
+# AI派生ページレポート
+
+画像生成サービスの一時エラーにより直接生成できなかったページへ、保存済みAI生成素材をローカル加工して適用した記録です。
+
+- P052: `マンガ版/pages_ai/page_042_art.png` -> `マンガ版/pages_ai/page_052_art.png`
+- P053: `マンガ版/pages_ai/page_042_art.png` -> `マンガ版/pages_ai/page_053_art.png`
+- P054: `マンガ版/pages_ai/page_042_art.png` -> `マンガ版/pages_ai/page_054_art.png`
+- P055: `マンガ版/pages_ai/page_045_art.png` -> `マンガ版/pages_ai/page_055_art.png`
+- P056: `マンガ版/pages_ai/page_045_art.png` -> `マンガ版/pages_ai/page_056_art.png`
+- P057: `マンガ版/pages_ai/page_045_art.png` -> `マンガ版/pages_ai/page_057_art.png`
+- P058: `マンガ版/pages_ai/page_049_art.png` -> `マンガ版/pages_ai/page_058_art.png`
+- P059: `マンガ版/pages_ai/page_049_art.png` -> `マンガ版/pages_ai/page_059_art.png`
+- P060: `マンガ版/pages_ai/page_049_art.png` -> `マンガ版/pages_ai/page_060_art.png`
+- P061: `文字本/images_ai/illustration_009_core_satellite_art.png` -> `マンガ版/pages_ai/page_061_art.png`
+- P062: `マンガ版/pages_ai/page_012_art.png` -> `マンガ版/pages_ai/page_062_art.png`
+- P063: `マンガ版/pages_ai/page_012_art.png` -> `マンガ版/pages_ai/page_063_art.png`
+- P064: `マンガ版/pages_ai/page_012_art.png` -> `マンガ版/pages_ai/page_064_art.png`
+- P065: `マンガ版/pages_ai/page_045_art.png` -> `マンガ版/pages_ai/page_065_art.png`
+- P066: `マンガ版/pages_ai/page_045_art.png` -> `マンガ版/pages_ai/page_066_art.png`
+- P067: `マンガ版/pages_ai/page_045_art.png` -> `マンガ版/pages_ai/page_067_art.png`
+- P068: `マンガ版/pages_ai/page_049_art.png` -> `マンガ版/pages_ai/page_068_art.png`
+- P069: `マンガ版/pages_ai/page_049_art.png` -> `マンガ版/pages_ai/page_069_art.png`
+- P070: `マンガ版/pages_ai/page_049_art.png` -> `マンガ版/pages_ai/page_070_art.png`
+- P071: `文字本/images_ai/illustration_010_drawdown_art.png` -> `マンガ版/pages_ai/page_071_art.png`
+- P072: `マンガ版/pages_ai/page_033_art.png` -> `マンガ版/pages_ai/page_072_art.png`
+- P073: `マンガ版/pages_ai/page_033_art.png` -> `マンガ版/pages_ai/page_073_art.png`
+- P074: `マンガ版/pages_ai/page_033_art.png` -> `マンガ版/pages_ai/page_074_art.png`
+- P075: `マンガ版/pages_ai/page_045_art.png` -> `マンガ版/pages_ai/page_075_art.png`
+- P076: `マンガ版/pages_ai/page_045_art.png` -> `マンガ版/pages_ai/page_076_art.png`
+- P077: `マンガ版/pages_ai/page_045_art.png` -> `マンガ版/pages_ai/page_077_art.png`
+- P078: `マンガ版/pages_ai/page_049_art.png` -> `マンガ版/pages_ai/page_078_art.png`
+- P079: `マンガ版/pages_ai/page_049_art.png` -> `マンガ版/pages_ai/page_079_art.png`
+- P080: `マンガ版/pages_ai/page_049_art.png` -> `マンガ版/pages_ai/page_080_art.png`
+- P081: `文字本/images_ai/illustration_012_fraud_check_art.png` -> `マンガ版/pages_ai/page_081_art.png`
+- P082: `マンガ版/pages_ai/page_042_art.png` -> `マンガ版/pages_ai/page_082_art.png`
+- P083: `マンガ版/pages_ai/page_042_art.png` -> `マンガ版/pages_ai/page_083_art.png`
+- P084: `マンガ版/pages_ai/page_042_art.png` -> `マンガ版/pages_ai/page_084_art.png`
+- P085: `マンガ版/pages_ai/page_045_art.png` -> `マンガ版/pages_ai/page_085_art.png`
+- P086: `マンガ版/pages_ai/page_045_art.png` -> `マンガ版/pages_ai/page_086_art.png`
+- P087: `マンガ版/pages_ai/page_045_art.png` -> `マンガ版/pages_ai/page_087_art.png`
+- P088: `マンガ版/pages_ai/page_049_art.png` -> `マンガ版/pages_ai/page_088_art.png`
+- P089: `マンガ版/pages_ai/page_049_art.png` -> `マンガ版/pages_ai/page_089_art.png`
+- P090: `マンガ版/pages_ai/page_049_art.png` -> `マンガ版/pages_ai/page_090_art.png`
+- P091: `マンガ版/pages_ai/page_008_art.png` -> `マンガ版/pages_ai/page_091_art.png`
+- P092: `マンガ版/pages_ai/page_042_art.png` -> `マンガ版/pages_ai/page_092_art.png`
+- P093: `マンガ版/pages_ai/page_042_art.png` -> `マンガ版/pages_ai/page_093_art.png`
+- P094: `マンガ版/pages_ai/page_042_art.png` -> `マンガ版/pages_ai/page_094_art.png`
+- P095: `マンガ版/pages_ai/page_045_art.png` -> `マンガ版/pages_ai/page_095_art.png`
+- P096: `マンガ版/pages_ai/page_045_art.png` -> `マンガ版/pages_ai/page_096_art.png`
+- P097: `マンガ版/pages_ai/page_045_art.png` -> `マンガ版/pages_ai/page_097_art.png`
+- P098: `マンガ版/pages_ai/page_049_art.png` -> `マンガ版/pages_ai/page_098_art.png`
+- P099: `マンガ版/pages_ai/page_049_art.png` -> `マンガ版/pages_ai/page_099_art.png`
+- P100: `マンガ版/pages_ai/page_049_art.png` -> `マンガ版/pages_ai/page_100_art.png`

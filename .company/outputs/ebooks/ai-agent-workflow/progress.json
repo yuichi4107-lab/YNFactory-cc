@@ -1,0 +1,52 @@
+{
+  "book_name": "ai-agent-workflow",
+  "title": "AIが勝手に仕事する会社の作り方",
+  "status": "text_package_complete_images_generated",
+  "created_at": "2026-06-02T17:45:43+09:00",
+  "updated_at": "2026-06-02T20:22:49+09:00",
+  "target_chars": 25000,
+  "steps": {
+    "0_requirements": "approved",
+    "1_research": "done",
+    "2_project": "done",
+    "3_manuscript": "done",
+    "4_image_plan": "done",
+    "5_kdp_metadata": "done",
+    "6_quality_check": "done",
+    "7_cover_image": "done",
+    "8_epub_build": "done"
+  },
+  "images": {
+    "planned": 18,
+    "generated": 18,
+    "method": "chatgpt_images_2_direct_in_codex_no_api",
+    "notes": "APIは不使用。OPENAI_API_KEY/openai-image-gen/client.images.generate/client.images.edit は使わず、Codex/ChatGPT側の画像生成経路で本文画像18点を再生成。旧画像は _images_source/images_pre_chatgpt_image2_backup/ に退避。ebook-to-manga/theme-to-ebook の旧API実行サンプルも削除。"
+  },
+  "char_counts": {
+    "00_intro": 2260,
+    "01_chapter": 3744,
+    "02_chapter": 3707,
+    "03_chapter": 3501,
+    "04_chapter": 3406,
+    "05_chapter": 4503,
+    "06_closing": 1539,
+    "total": 22660
+  },
+  "git": {
+    "status": "unavailable_on_this_mac",
+    "reason": ".git points to Windows path C:/dev/YNFactory-git/.git"
+  },
+  "epub": {
+    "path": "KDP出版用/AIが勝手に仕事する会社の作り方.epub",
+    "size_bytes": 24894723,
+    "validation": {
+      "required_files_present": true,
+      "mimetype_first": true,
+      "chapter_count": 7,
+      "cover_included": true,
+      "content_image_count": 18,
+      "cover_replaced_with_ai_background": true,
+      "body_images_chatgpt_images_2_no_api": true
+    }
+  }
+}

@@ -6,7 +6,9 @@
 
 **Architecture:** 素のHTML/CSS/JS（ビルドレス・ESモジュール）。ゲーム計算（経済・合戦・外交・AI・勝敗）はDOM非依存の純粋関数として `src/engine` `src/ai` に置き、`src/data` の静的データと `src/ui` の描画を分離する。乱数は注入式でテスト決定性を確保する。
 
-**Tech Stack:** Vanilla JavaScript (ESM) / SVG / localStorage / テストは Vitest（開発依存のみ・ゲーム本体はビルドレス維持）/ ローカル配信は `python -m http.server`。
+**Tech Stack:** Vanilla JavaScript (ESM) / SVG / localStorage / テストは **Node標準の `node:test`（依存ゼロ・node_modules不要）** / ローカル配信は `python -m http.server`。
+
+> 補足: 作業ツリーが Google Drive マウント（g:\）上にあり、`npm install` がDrive上で失敗する（GVFSがbin/symlinkを書けない）。そのため Vitest は使わず、Node内蔵の `node:test` + `node:assert/strict` でテストする。これにより依存ゼロ・完全移植可能を維持する。
 
 ---
 
@@ -18,6 +20,22 @@
   ```
   Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
   ```
+
+- **テスト規約（重要）**: 本計画のテストコードは可読性のため **vitest 記法（`describe/it/expect`）で記載**しているが、**実行時は Node 標準の `node:test` に読み替える**。コントローラが各タスクの dispatch 時に下表で変換済みのコードを実装者へ渡す。
+
+  | vitest | node:test (`import { describe, it } from 'node:test'; import assert from 'node:assert/strict'`) |
+  |---|---|
+  | `import { describe, it, expect } from 'vitest'` | `import { describe, it } from 'node:test';`<br>`import assert from 'node:assert/strict';` |
+  | `expect(a).toBe(b)` | `assert.equal(a, b)` |
+  | `expect(a).toEqual(b)` | `assert.deepEqual(a, b)` |
+  | `expect(a).toContain(x)` | `assert.ok(a.includes(x))` |
+  | `expect(a).toBeGreaterThan(n)` / `toBeGreaterThanOrEqual(n)` | `assert.ok(a > n)` / `assert.ok(a >= n)` |
+  | `expect(a).toBeLessThanOrEqual(n)` | `assert.ok(a <= n)` |
+  | `expect(a, msg).toBe(true)` / `.toBeTruthy()` | `assert.ok(a, msg)` |
+
+  - 全テスト実行: `node --test`（`tests/*.test.js` を自動検出）
+  - 単一ファイル実行: `node --test tests/<name>.test.js`（計画中の `npm test -- <name>` はこれに読み替える）
+  - `npm install` は不要（依存ゼロ）。
 
 - **モジュール一覧と責務**（この構成で固定）:
 
@@ -83,7 +101,7 @@ mkdir -p sengoku-game/src/data sengoku-game/src/engine sengoku-game/src/ai sengo
 
 - [ ] **Step 2: package.json を作成**
 
-`sengoku-game/package.json`:
+`sengoku-game/package.json`（依存ゼロ・`node:test` を使用）:
 ```json
 {
   "name": "sengoku-kuni-tori",
@@ -91,12 +109,8 @@ mkdir -p sengoku-game/src/data sengoku-game/src/engine sengoku-game/src/ai sengo
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "node --test",
     "start": "python -m http.server 8000"
-  },
-  "devDependencies": {
-    "vitest": "^2.1.0"
   }
 }
 ```
@@ -121,8 +135,7 @@ node_modules/
 2. ブラウザで http://localhost:8000 を開く
 
 ## テスト
-1. `npm install`（vitest の取得）
-2. `npm test`
+依存ゼロ。`npm test`（= `node --test`）を実行（Node 18+）。
 ```
 
 - [ ] **Step 4: index.html と main.js の最小骨格**
@@ -154,23 +167,24 @@ export const APP_NAME = '戦国・国盗り';
 
 `sengoku-game/tests/smoke.test.js`:
 ```js
-import { describe, it, expect } from 'vitest';
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
 import { APP_NAME } from '../src/main.js';
 
 describe('smoke', () => {
   it('main.js を import できる', () => {
-    expect(APP_NAME).toBe('戦国・国盗り');
+    assert.equal(APP_NAME, '戦国・国盗り');
   });
 });
 ```
 
-- [ ] **Step 6: 依存導入してテスト実行（成功を確認）**
+- [ ] **Step 6: テスト実行（成功を確認）**
 
-Run:
+Run（sengoku-game 内で）:
 ```bash
-cd sengoku-game && npm install && npm test
+node --test
 ```
-Expected: 1 passed（smoke）
+Expected: 1 passed（smoke）。`npm install` は不要（依存ゼロ）。
 
 - [ ] **Step 7: git 初期化＆コミット**
 

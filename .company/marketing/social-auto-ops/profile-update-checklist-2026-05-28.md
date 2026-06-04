@@ -20,7 +20,7 @@ AI活用・AI導入の最初の一歩を整理しています。業務効率化�
 |---|---|---|---|
 | X | `https://ai.yn-factory.com/` | 未完了 | Chromeでは `y-nakada@yn-factory.com` が新規作成画面へ進んだため停止 |
 | Threads | `https://ai.yn-factory.com/` | 未完了 | Chromeではログイン画面 |
-| Instagram | `https://ai.yn-factory.com/` | 未完了 | Chromeではログイン画面 |
+| Instagram | `https://ai.yn-factory.com/` | 確認待ち | Chromeの保存済みログイン候補に `yuichi121@ymail.ne.jp` / `fcmdt743@yahoo.co.jp` が表示。対象アカウントの指定待ち |
 | note | `https://ai.yn-factory.com/` | 未完了 | Chromeではログイン画面 |
 
 ## 作業手順
@@ -34,3 +34,5 @@ AI活用・AI導入の最初の一歩を整理しています。業務効率化�
 ## 注意
 
 Xは `y-nakada@yn-factory.com` で入ると新規アカウント作成フローに進んだ。既存Xアカウントが別メールまたは別ログイン方式の場合は、そのアカウントでログインしてから更新する。
+
+2026-05-31 16:38 JST追記: Instagramログインで保存済み候補が2つ表示されたため、誤アカウント更新防止のため選択前に停止。

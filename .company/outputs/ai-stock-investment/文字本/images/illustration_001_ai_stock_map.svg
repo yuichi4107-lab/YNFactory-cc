@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="640" viewBox="0 0 1024 640">
+<rect width="1024" height="640" rx="0" fill="#26324f"/>
+<circle cx="850" cy="110" r="150" fill="#ffe08a" opacity="0.20"/>
+<rect x="58" y="48" width="908" height="544" rx="30" fill="none" stroke="#ffe08a" stroke-width="5" opacity="0.75"/>
+<text x="512" y="118" text-anchor="middle" font-family="Hiragino Sans, Yu Gothic, sans-serif" font-size="46" font-weight="800" fill="#ffffff">AI株は一枚岩ではない</text>
+<g transform="translate(185,285)">
+<rect x="0" y="180" width="74" height="120" rx="10" fill="#ffe08a" opacity="0.42"/>
+<rect x="135" y="95" width="74" height="205" rx="10" fill="#ffe08a" opacity="0.51"/>
+<rect x="270" y="145" width="74" height="155" rx="10" fill="#ffe08a" opacity="0.6"/>
+<rect x="405" y="30" width="74" height="270" rx="10" fill="#ffe08a" opacity="0.69"/>
+<rect x="540" y="80" width="74" height="220" rx="10" fill="#ffe08a" opacity="0.78"/>
+<polyline points="0,250 135,180 270,205 405,110 540,55" fill="none" stroke="#60a5fa" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<text x="512" y="520" text-anchor="middle" font-family="Hiragino Sans, Yu Gothic, sans-serif" font-size="30" fill="#f8fafc">AI株を半導体、クラウド、ソフト、電力、</text>
+<text x="512" y="562" text-anchor="middle" font-family="Hiragino Sans, Yu Gothic, sans-serif" font-size="30" fill="#f8fafc">ETFに分けて考える図</text>
+</svg>

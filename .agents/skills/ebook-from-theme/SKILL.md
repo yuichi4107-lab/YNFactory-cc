@@ -1,21 +1,21 @@
 ---
 name: ebook-from-theme
-description: テーマ入力だけでゼロから電子書籍本文を制作するフロントオーケストレーター。5層Webリサーチ→指定文字数（15,000/25,000/35,000字）の原稿（画像タグ付き）→挿絵をcodeximageキュー方式でCodexに委任→ebook-to-mangaが期待するproject.md＋manuscript/形式へ橋渡しするまでを一気通貫で実行する。
+description: テーマ入力または添付素材からゼロから電子書籍本文を制作するフロントオーケストレーター。初回に選択式＋自由記述で制作条件を確認し、5層Webリサーチ→指定文字数（15,000/25,000/35,000字）の原稿（画像タグ付き）→ChatGPT/Codex側の画像生成→ebook-to-mangaが期待するproject.md＋manuscript/形式へ橋渡しするまでを一気通貫で実行する。
 allowed-tools: Read, Write, Edit, Bash, Glob, WebSearch, WebFetch
 ---
 
 # ebook-from-theme: テーマ起点電子書籍制作オーケストレーター
 
-テーマを受け取り、Phase 0〜4 の順に実行して `.company/outputs/ebooks/{slug}/` に成果物を生成し、最後に `ebook-to-manga` スキルへの引き渡し案内を出力する。
+テーマまたは添付素材を受け取り、Phase 0〜4 の順に実行して `.company/outputs/ebooks/{slug}/` に成果物を生成し、最後に `ebook-to-manga` スキルへの引き渡し案内を出力する。
 
 ---
 
-## Phase 0: 制作開始前の5項目一括質問
+## Phase 0: 制作開始前の選択式質問＋自由記述
 
-スキル起動直後、リサーチや原稿作成を始める前に、以下の5項目をまとめて提示してユーザーの回答を待つ。
+スキル起動直後、リサーチや原稿作成を始める前に、以下の項目をまとめて提示してユーザーの回答を待つ。必ず選択式にし、最後に自由記述欄を付ける。
 
 ```text
-電子書籍と漫画を作成する前に、以下の5項目を選択してください。
+電子書籍と漫画を作成する前に、以下の項目を選択してください。最後に自由記述があれば追記してください。
 
 項目1
 テーマ
@@ -52,8 +52,13 @@ A. 25,000字（推奨）
 B. 15,000字
 C. 35,000字
 
+項目7
+自由記述
+入れたい具体例、避けたい表現、読者像、タイトル案、著者名、必ず触れたい論点などがあれば自由に書いてください。
+
 回答例:
 1A、2A、3A、4A、5A、6A
+自由記述: 経営者向け。営業色は弱め。自社の属人化業務をAI化する話を中心に。
 ```
 
 **回答処理ルール:**
@@ -65,12 +70,13 @@ C. 35,000字
   - 漫画の配置位置: 章末
   - 本文の文字数: 25,000字
 - 選択値を変数として記録し、Phase 4 の `ebook-to-manga` 引き渡し案内に引き継ぐ。
+- 自由記述は選択値より優先して、Phase 1 の検索クエリ、Phase 2 の構成、Phase 4 の `project.md` に反映する。
 
 ---
 
 ## Phase 1: 5層リサーチ
 
-Phase 0 の確定テーマでリサーチを実行し、以下2ファイルを出力する。
+Phase 0 の確定テーマと自由記述をもとにリサーチを実行し、以下2ファイルを出力する。原稿作成や構成設計より前に必ず実行する。
 
 **出力パス:**
 - `.company/outputs/ebooks/{slug}/_research/research.md`
@@ -95,6 +101,8 @@ mkdir -p ".company/outputs/ebooks/{slug}/manuscript"
 | 3 | SNS/Xトレンド | `{テーマ} Twitter OR X 話題` |
 | 4 | 市場・競合書籍 | `{テーマ} 本 おすすめ Amazon` |
 | 5 | 読者の悩み・ニーズ | `{テーマ} できない 悩み 初心者` |
+
+自由記述に業界、読者、避けたい切り口、必須論点が含まれる場合は、検索クエリにその語句を加える。
 
 各層で WebSearch → 上位3件を WebFetch で詳細取得する。
 
@@ -203,9 +211,9 @@ Phase 0 項目6で選択した文字数に応じて、リサーチ結果から�
 
 ---
 
-## Phase 3: 挿絵生成（codeximageキュー方式）
+## Phase 3: 挿絵生成（ChatGPT/Codex直生成）
 
-**重要: 画像生成はAPI直叩きせず、必ず codeximageキュー方式で Codex に委任する。**
+**重要: 画像生成はAPI直叩きせず、このCodexセッション内でChatGPT/Codex側の画像生成経路により直接生成・保存・QCする。** `.company/codex/queue/` へのジョブ投入や別セッションへの引き渡しは行わない。
 
 ### Step 3-1: 画像タグ抽出とプロンプト変換
 
@@ -257,166 +265,66 @@ STYLE: Flat design, chapter header, landscape (3:2 ratio, 1536x1024px).
 | illustration | Flat illustration depicting: {description} |
 | その他 | パターン名に応じた構図。タイトル・要素は text reads "日本語" 形式で指定 |
 
-### Step 3-2: ジョブフォルダ作成
+### Step 3-2: image_plan.json 作成
 
-現在日付を確認し、以下のパスにジョブフォルダを作成する:
-
-```
-.company/codex/queue/{slug}-ebook-images_{YYYYMMDD}_{連番}/
-├── manifest.json
-├── TASK.md
-└── START_HERE.md
-```
-
-**連番ルール:** `01` から始め、同日に複数ジョブがあれば `02`, `03` と増やす。
-
-#### manifest.json の形式（items配列型）
-
-**この manifest は chatgpt55-ebook-diagrams 実例の items 配列型に準拠する。** `prompt_file`（別txtファイル参照方式）は使わない。`prompt` を各 item に直接埋め込む方式を採用する。`common_requirements` は chatgpt55 型には存在しないため使わない（共通要件は TASK.md の完了条件に記載する）。
+変換済みプロンプトを `.company/outputs/ebooks/{slug}/_images_source/image_plan.json` に保存する。`items` 配列に全画像の生成指示を直接入れる。
 
 ```json
 {
-  "job_id": "{slug}-ebook-images_{YYYYMMDD}_{連番}",
-  "created_at": "{ISO8601日時}",
-  "generation_mode": "chatgpt_plus_image_generation_manual_codex",
+  "generation_mode": "chatgpt_codex_direct_no_api",
   "book_title": "{meta.jsonのtitle}",
   "source_image_plan": ".company/outputs/ebooks/{slug}/_images_source/manuscript_raw.md",
   "final_image_dir": ".company/outputs/ebooks/{slug}/_images_source/images",
-  "aspect_ratio": "3:2",
   "expected_count": {画像タグ総数},
   "items": [
     {
       "id": "{filename_stem}",
       "type": "diagram|illustration|header",
       "filename": "{filename}.png",
-      "prompt": "{変換済みプロンプト（日本語テキストは text reads 形式）。Kindle電子書籍本文用。実在企業ロゴ・商標ロゴ禁止。日本語テキストは大きく短く読みやすく。PNGとして保存。}",
-      "insert_file": "{挿入先章ファイル名（例: 00_はじめに.md）}",
+      "prompt": "{変換済みプロンプト}",
+      "insert_file": "{挿入先章ファイル名}",
       "purpose": "{この画像が果たす役割}",
       "description": "{画像タグのdescriptionを日本語で}",
-      "target_output": ".company/outputs/ebooks/{slug}/_images_source/images/{filename}.png",
-      "done_output": ".company/codex/done/{job_id}/pages/{filename}.png"
+      "target_output": ".company/outputs/ebooks/{slug}/_images_source/images/{filename}.png"
     }
-  ],
-  "quality_checks": [
-    "全{N}ファイルがPNGとして保存されている",
-    "ファイル名がitems配列と完全一致している",
-    "画像内の日本語テキストが破綻していない",
-    "実在ロゴや商標が含まれていない",
-    "電子書籍本文として違和感のないシンプルな図解・挿絵になっている"
   ]
 }
 ```
 
-#### TASK.md の形式
+### Step 3-3: ChatGPT/Codex直生成
 
-実例ジョブ `chatgpt55-ebook-diagrams_20260504_2237` の形式に準拠する:
+`image_plan.json` の `items` を上から順に処理する。
 
-```markdown
-# {title} 本文挿絵生成ジョブ
+1. 各 item の `prompt` をChatGPT/Codex側の画像生成に投入する
+2. 生成PNGを `target_output` に保存する
+3. 生成直後に目視確認する
+4. 日本語崩れ、細かすぎる文字、実在ロゴ、本文との不一致があればプロンプトを短くして再生成する
+5. APIキー、OpenAI SDK、NanoBanana/Gemini API、`.company/codex/queue/` は使わない
 
-## ゴール
+### Step 3-4: 画像QCレポート
 
-Codex経由の画像生成を使い、電子書籍 `{title}` の本文用画像{N}点を作成する。
-
-## スコープ
-
-- 生成対象: `manifest.json` の `items` {N}件
-- 画像形式: PNG
-- 画像比率: 横長3:2 基本（パターンにより正方形・縦長あり）
-- 出力先:
-  - 一時完了: `.company/codex/done/{job_id}/pages/`
-  - 最終配置: `.company/outputs/ebooks/{slug}/_images_source/images/`
-- API・NanoBanana・Gemini画像生成は使わない
-
-## 完了条件
-
-- `manifest.json` の `items` 全{N}点が生成されている
-- ファイル名が本文Markdownの画像タグ参照名と一致している
-- 日本語テキストが大きく読みやすい
-- 実在企業ロゴを含まない
-- 電子書籍本文に入れても違和感のないシンプルな図解・挿絵になっている
-- `progress.json`、`report.md`、`DONE.txt` を done フォルダに作成する
-
-## 品質基準
-
-85点以上で合格。
-
-採点観点:
-- ファイル名一致: 20点
-- 本文内容との対応: 20点
-- 視認性・読みやすさ: 20点
-- 日本語安全表現: 20点
-- 電子書籍内での統一感: 20点
-```
-
-#### START_HERE.md の形式
-
-実例ジョブ `somatid-ebook-images_20260504_01` の形式に準拠する:
+全画像生成後、`.company/outputs/ebooks/{slug}/_images_source/image_report.md` を作成する。
 
 ```markdown
-# START HERE
+# 画像生成レポート
 
-このジョブは、Codex経由の画像生成で電子書籍本文用画像{N}点を作成するためのハンドオフです。
+## 方針
+- API不使用
+- ChatGPT/Codex側の画像生成経路で直接生成
+- 別セッションへのジョブ引き渡しなし
 
-## 目的
+## 生成結果
+- 予定枚数: {N}
+- 生成枚数: {N}
+- 保存先: `_images_source/images/`
 
-`{title}` の本文内に差し込む図解・挿絵を、APIキーを使わず Codex 経由で生成します。
-
-## 入力
-
-- `manifest.json`: {N}点分の生成指示（プロンプト・ファイル名・出力先を含む）
-
-## 出力先（done_output）
-
-生成したPNGは manifest.json の各 item の `done_output` に記載されたパスへ保存してください。
-
-**Windowsフルパス（実行時にプロジェクトの絶対パスを記入すること）:**
-`{Windowsフルパス}\.company\codex\done\{job_id}\pages\`
-
-## 作業順
-
-1. `manifest.json` を開き `items` を上から順に読む
-2. 各 item の `prompt` を使って画像を1点ずつ生成する
-3. `done_output` に記載されたファイル名でPNG保存する
-4. 全{N}点が揃ったら品質チェックする（`quality_checks` 参照）
-5. `report.md` と `DONE.txt` と `progress.json` をこのdoneフォルダに作成する
-
-## 注意
-
-- NanoBanana/Gemini/APIは使用しない
-- 実在企業ロゴは入れない
-- 日本語文字は短く、大きく、読みやすくする
-- 画像内の細かい長文は避ける
-- 日本語が崩れる場合は文字量を減らしてアイコン・線・カード配置で表現する
+## 品質確認
+- ファイル名一致
+- 本文内容との対応
+- 日本語テキストの可読性
+- 実在企業ロゴ・商標なし
+- 電子書籍内での統一感
 ```
-
-### Step 3-3: Codex 実行の依頼とウェイト
-
-ジョブフォルダ作成後、以下のメッセージでユーザーに Codex 実行を依頼し、完了通知を待つ:
-
-```
-.company/codex/queue/{job_id}/ を配置しました。
-
-別セッション（Codex/ChatGPT）で以下を実行してください:
-1. .company/codex/queue/{job_id}/START_HERE.md を開く
-2. manifest.json の items を順に処理して画像を生成する
-3. 完了後「Codex完了しました」と教えてください
-
-生成画像の保存先: .company/codex/done/{job_id}/pages/
-```
-
-**ここで一時停止する。「Codex完了しました」通知を受けるまで Phase 3 後続処理に進まない。**
-
-### Step 3-4: 完了後の画像受け取り
-
-「Codex完了しました」通知を受けたら:
-
-1. `.company/codex/done/{job_id}/pages/` の PNG を確認する
-2. 全点が揃っていれば `.company/outputs/ebooks/{slug}/_images_source/images/` にコピーする:
-   ```bash
-   cp ".company/codex/done/{job_id}/pages/"*.png ".company/outputs/ebooks/{slug}/_images_source/images/"
-   ```
-3. `progress.json` を確認し、`needs_manual_review_pages` があれば日本語が崩れているページをユーザーに報告する
 
 ### Step 3-5: manuscript.md 生成
 
@@ -518,6 +426,7 @@ ebook-to-manga でマンガ化できる状態になりました。
 - カラーモード: {Phase0で選択した値（フルカラー/白黒）}
 - キャラクター設定: {Phase0で選択した値}
 - 漫画の配置位置: {Phase0で選択した値（章末/章頭）}
+- 自由記述メモ: {Phase0自由記述の要約}
 - ジャンル指定: 未指定（自動判定）
 
 次のステップ:
@@ -531,17 +440,17 @@ ebook-to-manga でマンガ化できる状態になりました。
 ## 実行フロー早見表
 
 ```
-Phase 0: 5項目一括質問 → 回答待ち
+Phase 0: 選択式質問＋自由記述 → 回答待ち
     ↓ 回答確定
 Phase 1: 5層リサーチ → research.md + meta.json
     ↓
 Phase 2: 原稿執筆 → manuscript_raw.md（Phase0選択文字数・画像タグは文字数に比例）
     ↓
-Phase 3-1〜2: 画像タグ→プロンプト変換 → ジョブフォルダ作成（manifest.json/TASK.md/START_HERE.md）
+Phase 3-1〜2: 画像タグ→プロンプト変換 → image_plan.json作成
     ↓
-Phase 3-3: ユーザーに Codex 実行依頼 → 完了通知待ち
-    ↓ 「Codex完了しました」
-Phase 3-4〜5: 画像コピー → manuscript.md 生成
+Phase 3-3〜4: ChatGPT/Codex直生成 → 画像QCレポート
+    ↓
+Phase 3-5: manuscript.md 生成
     ↓
 Phase 4-1〜2: project.md + manuscript/章別.md 生成
     ↓
@@ -553,6 +462,7 @@ Phase 4-3: ebook-to-manga 引き渡し案内を出力
 ## 制約（厳守）
 
 - インラインAPI直叩き（`client.images.generate` 等）を一切記述・実行しない
+- `.company/codex/queue/` へのジョブ投入や別セッションへの画像生成ハンドオフは行わない
 - 著者名は固定しない。お任せ（自動生成）を既定とし、ユーザー指定があればそれを優先する
 - `HANDOFF_MODE=codex-handoff` や `.company/handoff/codex-image-gen/_spec/SPEC.md` は実在しないため参照・依存しない
 - `ebook-to-manga` skill.md は変更しない

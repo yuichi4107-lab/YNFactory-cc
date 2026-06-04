@@ -24,6 +24,7 @@ CONVERSATIONS_DIR = os.path.join(BASE_DIR, "conversations")
 INBOX_DIR = os.path.join(COMPANY_DIR, "secretary", "inbox")
 
 MODEL_NAME = "gemini-2.5-flash"
+GEMINI_TIMEOUT_SECONDS = int(os.getenv("GEMINI_TIMEOUT_SECONDS", "60"))
 
 EXTRACTION_PROMPT = """あなたはオーナーの1日の会話ログを分析し、事業に役立つ情報を抽出・整理するアシスタントです。
 
@@ -99,8 +100,15 @@ def extract(date: datetime.date, force: bool = False) -> bool:
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel(MODEL_NAME)
 
-    print(f"  [{date}] Calling Gemini ({len(content)} chars)...")
-    resp = model.generate_content(EXTRACTION_PROMPT + content)
+    print(f"  [{date}] Calling Gemini ({len(content)} chars)...", flush=True)
+    try:
+        resp = model.generate_content(
+            EXTRACTION_PROMPT + content,
+            request_options={"timeout": GEMINI_TIMEOUT_SECONDS},
+        )
+    except Exception as e:
+        print(f"  [{date}] Gemini call failed: {type(e).__name__}: {e}", flush=True)
+        return False
     raw = resp.text.strip()
 
     # Strip markdown code fence if present

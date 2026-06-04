@@ -23,12 +23,28 @@ CONVERSATIONS_DIR = os.path.join(os.path.dirname(__file__), "conversations")
 def save_daily_lifelogs(client, date, output_dir):
     """Fetch and save lifelogs for a single date as markdown."""
     lifelogs = client.fetch_lifelogs(date=date)
-    if not lifelogs:
-        print(f"  No lifelogs for {date}")
-        return 0
-
     filename = f"{date.strftime('%Y-%m-%d')}-lifelogs.md"
     filepath = os.path.join(output_dir, filename)
+
+    if not lifelogs:
+        lines = [
+            f"---",
+            f"date: {date.strftime('%Y-%m-%d')}",
+            f"source: limitless-ai",
+            f"type: lifelogs",
+            f"count: 0",
+            f"synced_at: {datetime.datetime.now().isoformat()}",
+            f"---",
+            f"",
+            f"# Lifelogs - {date.strftime('%Y-%m-%d')}",
+            f"",
+            "_No lifelogs returned by the Limitless API for this date._",
+            f"",
+        ]
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines))
+        print(f"  No lifelogs for {date}; saved empty marker → {filepath}")
+        return 0
 
     lines = [
         f"---",

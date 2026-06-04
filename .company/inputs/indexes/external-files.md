@@ -1,0 +1,14 @@
+---
+source: import_drive_inbox.py
+type: input-index
+scope: external-drive-inbox
+generated_at: 2026-06-05T07:15:53+09:00
+---
+
+# External Files
+
+外部インプットに含まれるファイル・資料の入口。
+
+> 自動生成ファイル。必要な修正は元の organized input または importer に反映する。
+
+- テスト | type:folder | source:`.company/inputs/organized/external/2026-06-03-20260603-161245-input-8fcecfaa.md`

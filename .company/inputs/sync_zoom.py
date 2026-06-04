@@ -22,6 +22,15 @@ from zoom_client import ZoomClient
 CONVERSATIONS_DIR = os.path.join(os.path.dirname(__file__), "conversations")
 
 
+def meeting_start_date(entry, fallback_date):
+    start = entry.get("meeting_start_time", "")
+    try:
+        parsed = datetime.datetime.fromisoformat(start.replace("Z", "+00:00"))
+        return parsed.date()
+    except (ValueError, TypeError, AttributeError):
+        return fallback_date
+
+
 def save_zoom_data(client, from_date, to_date, output_dir):
     """Fetch and save Zoom meeting summaries and transcripts."""
     total_saved = 0
@@ -29,6 +38,15 @@ def save_zoom_data(client, from_date, to_date, output_dir):
     # Get meeting summaries via list endpoint
     print(f"=== Fetching meeting summaries ({from_date} ~ {to_date}) ===")
     summaries_list = client.list_meeting_summaries(from_date=from_date, to_date=to_date)
+    filtered_summaries = [
+        summary
+        for summary in summaries_list
+        if from_date <= meeting_start_date(summary, from_date) < to_date
+    ]
+    skipped = len(summaries_list) - len(filtered_summaries)
+    if skipped:
+        print(f"  Filtered out {skipped} summaries outside requested meeting_start_time range")
+    summaries_list = filtered_summaries
 
     # Get recordings (for transcripts)
     print(f"=== Fetching recordings ({from_date} ~ {to_date}) ===")
@@ -48,12 +66,7 @@ def save_zoom_data(client, from_date, to_date, output_dir):
     # Group summaries by date
     by_date = {}
     for s in summaries_list:
-        start = s.get("meeting_start_time", "")
-        try:
-            dt = datetime.datetime.fromisoformat(start.replace("Z", "+00:00"))
-            date_key = dt.strftime("%Y-%m-%d")
-        except (ValueError, TypeError):
-            date_key = from_date.strftime("%Y-%m-%d")
+        date_key = meeting_start_date(s, from_date).strftime("%Y-%m-%d")
         by_date.setdefault(date_key, []).append(s)
 
     for date_key in sorted(by_date.keys()):

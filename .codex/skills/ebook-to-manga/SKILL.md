@@ -10,6 +10,15 @@ description: 既存のKindle電子書籍（Markdown原稿）をマンガ形式�
 このスキルは、既存のKindle電子書籍（Markdown原稿）をマンガ形式の電子書籍に変換する。
 8ステップのパイプラインでソース分析からKDP出版準備まで一気通貫で実行する。
 
+## 最優先ルール: 画像生成でAPIを使わない
+
+2026-06-02以降、このワークスペースでは画像生成に **OpenAI API / `OPENAI_API_KEY` / `openai-image-gen` / `client.images.generate` / `client.images.edit` を使わない**。
+
+- 画像生成は **ChatGPT Images 2.0（Codex/ChatGPT側の画像生成経路）** で行う。
+- Codexで作業中の場合、`.company/codex/queue/` への引き渡しを作らず、このCodexセッション内でそのまま生成・保存・QC・EPUB反映まで進める。
+- 以前のAPI直呼び運用は廃止済み。画像生成ではAPIキー確認もSDK呼び出しも行わない。
+- 日本語文字を画像内に入れる場合も、まず ChatGPT Images 2.0 で生成する。文字崩れが大きい場合はユーザーに確認して再生成する。
+
 ## 入力
 
 - **ソースフォルダ**（必須）: ebookフォルダのパス（例: `.company/outputs/ebooks/01-worker-positive/`）。`project.md` と `manuscript/` ディレクトリを含むこと。
@@ -19,21 +28,22 @@ description: 既存のKindle電子書籍（Markdown原稿）をマンガ形式�
 
 ## 前提条件
 
-- `OPENAI_API_KEY` 環境変数が設定されていること（必須）
-- `openai` Pythonパッケージがインストールされていること（必須）
+- ChatGPT Images 2.0 を利用できる Codex/ChatGPT 画像生成環境であること（必須）
+- `OPENAI_API_KEY` は不要。設定確認もしない。
+- `openai` Pythonパッケージは画像生成には使わない。
 - Python 3.x が `python` コマンドで利用可能なこと（Windows環境）
-- `GOOGLE_AI_STUDIO_API_KEY` 環境変数（任意・レガシー。移行後別PRで整理予定）
-- `google-genai` Pythonパッケージ（任意・レガシー。移行後別PRで整理予定）
+- `GOOGLE_AI_STUDIO_API_KEY` / `google-genai` も使わない。
 
 ## 画像生成の実行モード（HANDOFF_MODE）
 
-本スキルは画像生成について 2 つのモードをサポートする:
+本スキルの画像生成は、現在は **ChatGPT Images 2.0 直生成モード** を標準とする:
 
-- **`HANDOFF_MODE=inline`**（デフォルト・従来動作）: Claude Code が OpenAI API を直接呼び出す
-- **`HANDOFF_MODE=codex-handoff`**: Claude が `.company/codex/queue/<job-id>/` にバンドル（manifest.json + characters/ + gen_manga_bundle.py + TASK.md）を 1 回投入するだけで、Step 5（本文全ページ）と Step 6（表紙）が **Codex 側で QC ループ込みで自律完走**する。Claude の介在は queue 投入時と done/ 受け取り時の 2 回のみ（fire-and-forget 方式）
+- **標準**: このCodexセッション内で ChatGPT Images 2.0 により生成し、保存・QC・EPUB反映まで行う。
+- **旧 `HANDOFF_MODE=codex-handoff` 相当**: 別セッションへのキュー引き渡しは作らず、同じ考え方をこのCodex内で実行する。
+- **旧 `HANDOFF_MODE=inline`**: OpenAI API直呼びモードなので使用禁止。
 
-モード切替はユーザー指示で決定する。スキル開始時にモードを確認し、以降の Step 5 / Step 6 で同じモードを貫く。
-Step 3（キャラデザイン）は HANDOFF_MODE に関わらず常に Claude Code が inline で実行する。
+モード切替が必要な場合も、API直呼びには戻らない。
+Step 3（キャラデザイン）も ChatGPT Images 2.0 経路で生成する。
 
 ハンドオフ仕様の詳細: `.company/codex/_spec/SPEC.md`
 
@@ -373,61 +383,17 @@ Step 1（ソース分析）→ Step 2（シナリオ）→ Step 3（キャラデ
 - 白背景
 ```
 
-#### 3-2-B: 生成実行（モード別）
+#### 3-2-B: 生成実行（ChatGPT Images 2.0直生成）
 
-**inline モード時（`HANDOFF_MODE=inline` またはデフォルト）:**
+APIは使わない。`OPENAI_API_KEY`、OpenAI SDK、`openai-image-gen`、`client.images.generate/edit` は使用禁止。
 
-openai パッケージ（gpt-image-2）を使用する。
+1. 上記のキャラクターデザインプロンプトを ChatGPT/Codex 側の画像生成機能に渡す
+2. 生成サイズは 2:3 縦長（目安: 1024x1536）、高品質を指定する
+3. 生成されたPNGを `manuscript/characters/` に保存する
+4. ファイル名は `{キャラID}_{YYYYMMDD_HHMMSS}.png` 形式にする
+5. 生成後、Read/Viewで表示し、白背景・全身・日本のマンガ調・文字なしを確認する
 
-```bash
-export OPENAI_API_KEY="$OPENAI_API_KEY" && python << 'PYTHON_SCRIPT'
-import os, sys, base64, datetime
-try:
-    from openai import OpenAI
-except ImportError:
-    print("ERROR: openai not found. Run: pip install openai")
-    sys.exit(1)
-
-API_KEY = os.environ.get("OPENAI_API_KEY")
-if not API_KEY:
-    print("ERROR: OPENAI_API_KEY is not set.")
-    sys.exit(1)
-
-PROMPT = """{{キャラクターデザインプロンプト}}"""
-OUTPUT_DIR = r"{{出力ディレクトリ}}"
-FILE_PREFIX = "{{キャラ名}}"
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-client = OpenAI(api_key=API_KEY)
-try:
-    result = client.images.generate(
-        model="gpt-image-2",
-        prompt=PROMPT,
-        size="1024x1536",
-        quality="high",
-        n=1,
-    )
-except Exception as e:
-    print(f"ERROR: gpt-image-2 generate failed: {e}")
-    sys.exit(1)
-
-timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-filename = f"{FILE_PREFIX}_{timestamp}.png"
-filepath = os.path.join(OUTPUT_DIR, filename)
-with open(filepath, "wb") as f:
-    f.write(base64.b64decode(result.data[0].b64_json))
-print(f"OK: {filepath}")
-PYTHON_SCRIPT
-```
-
-- 各キャラクターを**並列実行**（`run_in_background: true`）で同時生成する
-- サイズ: `size="1024x1536"`, `quality="high"`
-- 保存先: `manuscript/characters/`
-
-**codex-handoff モード時（`HANDOFF_MODE=codex-handoff`）:**
-
-Step 3 は HANDOFF_MODE に関わらず常に Claude Code が inline で実行する。このブロックは参照不要。
-Step 5-A のバンドル投入時に、`manuscript/characters/` の生成済み PNG を `queue/<job-id>/characters/` にコピーして Codex に渡す。
+旧 `HANDOFF_MODE=inline` / `HANDOFF_MODE=codex-handoff` のAPI実行手順は使わない。Codexで作業している場合は、このセッション内で生成・保存・QCまで進める。
 
 **3-2-C: 受け取りと後処理:**
 
@@ -768,8 +734,8 @@ CSV の `コマ別テキストJSON` 列が空配列 `[]` のページはテキ�
 - `SIZE`: `"1024x1536"`（2:3縦長）
 - `FILE_PREFIX`: `page_{ページ番号3桁ゼロ埋め}_iter_{iter}` （例: `page_039_iter_1`）
 - **保存形式**: 生成直後はPNG（`.png`）で保存し、QC PASS後に同寸法JPEG（`.jpg`）も作成する。EPUB製本にはJPEG版を使用する
-- **モデル名**: `gpt-image-2`（openai SDK。`client.images.edit` を使用）
-- **参照画像**: プロンプト内の `添付の([^\s、,]+?\.png)` から抽出したキャラクターリファレンス PNG を `image=` に渡す
+- **生成経路**: ChatGPT Images 2.0（Codex/ChatGPT側の画像生成。API不使用）
+- **参照画像**: プロンプト内の `添付の([^\s、,]+?\.png)` から抽出したキャラクターリファレンス PNG を、ChatGPT/Codexの画像生成に参照画像として添付する
 
 **codex-handoff モード時の Step 5-A（バンドル投入）:**
 
@@ -812,49 +778,24 @@ CSV の `コマ別テキストJSON` 列が空配列 `[]` のページはテキ�
 
 なお、codex-handoff モードでは QC ループ（Blind-OCR・Vision-check・ベストエフォート採用）はすべて Codex 側で実行され、結果が `progress.json` の `needs_manual_review_pages` に反映される。
 
-```python
-import base64, re
-from openai import OpenAI
+ChatGPT Images 2.0で生成する:
 
-client = OpenAI(api_key=OPENAI_API_KEY)
-
-# プロンプトから参照画像ファイル名を抽出
-refs = re.findall(r"添付の([^\s、,]+?\.png)", IMAGE_PROMPT)
-refs = list(dict.fromkeys(refs))  # 重複除去・順序維持
-char_ref_files = []
-for name in refs:
-    p = os.path.join(CHAR_DIR, name)  # manuscript/characters/*.png
-    if os.path.exists(p):
-        char_ref_files.append(open(p, "rb"))
-
-try:
-    result = client.images.edit(
-        model="gpt-image-2",
-        image=char_ref_files[0] if len(char_ref_files) == 1 else char_ref_files,
-        prompt=IMAGE_PROMPT,  # 既存プロンプト構造をそのまま使用（追加ルール挿入禁止）
-        size="1024x1536",
-        quality="high",
-        n=1,
-    )
-finally:
-    for f in char_ref_files:
-        f.close()
-
-out_path = f"pages/page_{NNN:03d}_iter_{iter}.png"
-with open(out_path, "wb") as f:
-    f.write(base64.b64decode(result.data[0].b64_json))
-```
+1. プロンプトから参照画像ファイル名を抽出する
+2. `manuscript/characters/*.png` の該当画像を参照画像として添付する
+3. `IMAGE_PROMPT` をそのまま投入し、2:3縦長で生成する
+4. 生成PNGを `pages/page_{NNN:03d}_iter_{iter}.png` に保存する
+5. APIキー、SDK、`client.images.*` は使わない
 
 **4. Blind-OCR 判定（→ Step 5-QC 参照）**
 
 生成した `pages/page_{NNN}_iter_{iter}.png` を `### Step 5-QC` の仕様に従って OCR する。
-OCR は `gpt-4o`（openai、temperature=0.0）で実行し、期待テキストは一切渡さない。
+OCR はAPIではなく、ChatGPT/Codex上の視覚確認またはローカルOCRで実行し、期待テキストは一切渡さない。
 セリフなしページ（`コマ別テキストJSON == []`）は OCR をスキップし、自動 PASS 扱いとする。
 
 **5. Vision-check 判定（→ Step 5-QC 参照）**
 
 `### Step 5-QC` の「Vision-check」仕様に従い、`pages/page_{NNN}_iter_{iter}.png` に対して
-gpt-4o vision でキャラ存在チェックを実行する。
+ChatGPT/Codex上の視覚確認でキャラ存在チェックを実行する。
 - 画像生成が発生したすべてのページ（セリフあり・セリフなし問わず）を対象とする
 - セリフなしページも必ず Vision-check を実行する（OCR オートPASS の穴を塞ぐ）
 - `extract_page_chars(prompt, char_defs)` で当該ページの登場キャラを絞り込み、そのキャラのみをチェックする
@@ -1019,27 +960,17 @@ Step 5 の画像生成ループ内で使用する OCR 品質判定の仕様。
 OCR が対象外を拾っても比較対象が存在せず無視される。
 
 **OCR の粒度: 画像全体を一括で渡す。**
-コマ領域ごとにクロップして個別 OCR するのではなく、ページ全体画像を1回の API 呼び出しで処理する。
+コマ領域ごとにクロップして個別 OCR するのではなく、ページ全体画像を1回の視覚確認で処理する。
 OCR モデルはページ全体から各吹き出しを自動検出し、`panel_id` と `type` を推定する。
 （コマ領域の切り出し機能は現在未使用。将来の手動レビューツール用に保持。）
 
 #### OCR プロンプトテンプレート
 
-モデル: `gpt-4o`（openai。テキスト専用。画像生成モデルは使用しない）
-temperature: `0.0`（決定論的出力）
-response_format: `{"type": "json_object"}`（JSON 以外の出力を防ぐ）
-max_tokens: `4096`
+実行経路: ChatGPT/Codex上の視覚確認またはローカルOCR（API不使用）
+出力形式: JSONのみ
 
-```python
-import base64
-from openai import OpenAI
-
-client = OpenAI(api_key=OPENAI_API_KEY)
-
-with open(image_path, "rb") as f:
-    b64img = base64.b64encode(f.read()).decode()
-
-OCR_PROMPT = """添付のマンガ画像を見て、下記の要素を画像に描かれている通り正確に読み取ってください。
+```text
+添付のマンガ画像を見て、下記の要素を画像に描かれている通り正確に読み取ってください。
 推測や補完は一切せず、画像に実際に見える文字列だけを返してください。
 読めない崩し字や意味不明な文字列も、見える通りに書いてください（勝手に正しい日本語に補正しない）。
 
@@ -1058,24 +989,7 @@ OCR_PROMPT = """添付のマンガ画像を見て、下記の要素を画像に�
   "bubbles": [
     {"panel_id": int, "type": "dialogue"|"narration", "detected_text": str}
   ]
-}"""
-
-response = client.chat.completions.create(
-    model="gpt-4o",
-    temperature=0.0,
-    max_tokens=4096,
-    response_format={"type": "json_object"},
-    messages=[
-        {
-            "role": "user",
-            "content": [
-                {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64img}"}},
-                {"type": "text", "text": OCR_PROMPT},
-            ],
-        }
-    ],
-)
-ocr_result = json.loads(response.choices[0].message.content)
+}
 ```
 
 **重要**: このプロンプトには期待テキスト（CSV の `text` フィールドの値）を一切含めない。
@@ -1279,9 +1193,8 @@ def extract_page_chars(prompt: str, char_defs: list[dict]) -> list[dict]:
 
 #### Vision-check プロンプトテンプレート
 
-モデル: `gpt-4o`（vision 機能）
-temperature: `0.0`（決定論的出力）
-response_format: `{"type": "json_object"}`
+実行経路: ChatGPT/Codex上の視覚確認（API不使用）
+出力形式: JSONのみ
 
 **システムプロンプト:**
 ```
@@ -1300,72 +1213,13 @@ response_format: `{"type": "json_object"}`
 {{"vision_checks": [{{"char_name": "ミサキ", "result": "YES", "reason": "..."}}]}}
 ```
 
-**Python コード例（base64 エンコード + gpt-4o Vision 呼び出し）:**
+**確認手順:**
 
-```python
-import base64
-import json
-from openai import OpenAI
-
-client = OpenAI(api_key=OPENAI_API_KEY)
-
-def vision_check(image_path: str, page_chars: list[dict]) -> dict:
-    """
-    gpt-4o でキャラ存在チェックを実施する。
-
-    Args:
-        image_path: チェック対象の PNG ファイルパス
-        page_chars: [{"name": "ミサキ", "appearance": "30代女性..."}, ...]
-
-    Returns:
-        {"vision_checks": [{"char_name": str, "result": "YES"|"NO", "reason": str}, ...]}
-    """
-    with open(image_path, "rb") as f:
-        b64img = base64.b64encode(f.read()).decode("utf-8")
-
-    n = len(page_chars)
-    name_list = "、".join(c["name"] for c in page_chars)
-    # キャラごとに外見補足付きの質問文を構築
-    char_questions = "\n".join(
-        f"- {c['name']}（{c['appearance']}）" for c in page_chars
-    )
-
-    system_msg = (
-        "あなたは画像品質チェッカーです。与えられたマンガ画像を分析し、"
-        "指定されたキャラクターが全身イラストとして描かれているかを1人ずつ YES または NO で判定してください。"
-        "テキスト枠・名前ラベルのみでキャラクターのイラスト本体が存在しない場合は NO としてください。"
-        "イラストが実際に画像内に描かれているかを画像の内容から判断してください。必ず JSON で返してください。"
-    )
-    user_msg = (
-        f"以下のマンガ画像に、キャラクター{n}人 [{name_list}] がそれぞれ"
-        f"全身イラストとして描かれているか、1人ずつ YES/NO で答えてください。"
-        "テキスト枠のみ（名前タグのみでイラストなし）は NO とします。\n\n"
-        f"確認対象:\n{char_questions}\n\n"
-        '出力形式（JSONのみ。説明文禁止）:\n'
-        '{"vision_checks": [{"char_name": "ミサキ", "result": "YES", "reason": "..."}]}'
-    )
-
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        temperature=0.0,
-        max_tokens=1024,
-        response_format={"type": "json_object"},
-        messages=[
-            {"role": "system", "content": system_msg},
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "image_url",
-                        "image_url": {"url": f"data:image/png;base64,{b64img}"},
-                    },
-                    {"type": "text", "text": user_msg},
-                ],
-            },
-        ],
-    )
-    return json.loads(response.choices[0].message.content)
-```
+1. チェック対象のPNGを表示する
+2. `page_chars` から確認対象キャラ名と外見補足を抽出する
+3. 上記のシステムプロンプトとユーザープロンプトに沿って、ChatGPT/Codex上で視覚確認する
+4. 下記スキーマのJSONとして結果を記録する
+5. APIキー、SDK、外部API呼び出しは使わない
 
 **レスポンス JSON スキーマ:**
 ```json
@@ -1461,52 +1315,15 @@ processing_steps:
 
 #### 6-B: 生成実行（モード別）
 
-**inline モード時（`HANDOFF_MODE=inline` またはデフォルト）:**
+**ChatGPT Images 2.0直生成モード（標準）:**
 
-gpt-image-2 で生成する。主人公キャラのリファレンス画像を `image=` に渡し、`images.edit` を使用する。
+APIは使わない。主人公キャラのリファレンス画像をChatGPT/Codex側の画像生成に添付し、`COVER_PROMPT` を投入して生成する。
 
-```python
-import base64, glob, os, re
-from openai import OpenAI
-
-OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
-client = OpenAI(api_key=OPENAI_API_KEY)
-
-# キャラクターリファレンス画像の取得
-# 正規表現で添付PNG一覧から主人公キャラの画像ファイルを抽出する
-# 例: character_defs.json や Step 3 で生成した chara_*.png を指定
-char_ref_paths = []
-# 方法A: 正規表現で添付ファイル名から抽出
-char_ref_paths = re.findall(r'添付の([^\s、,]+?\.png)', COVER_PROMPT_TEXT)
-# 方法B: Step 3 生成済みキャラPNGを直接指定（A が空の場合）
-if not char_ref_paths:
-    char_ref_paths = sorted(glob.glob(os.path.join(OUTPUT_DIR, "chara_*.png")))
-
-char_ref_files = [open(p, "rb") for p in char_ref_paths]
-
-result = client.images.edit(
-    model="gpt-image-2",
-    image=char_ref_files[0] if len(char_ref_files) == 1 else char_ref_files,
-    prompt=COVER_PROMPT,
-    size="1024x1536",
-    quality="high",
-    n=1,
-)
-
-# gpt-image-2 は b64_json で PNG バイナリを返す
-# PNGをマスター保存し、KDP申請用に同寸法のJPEG版も保存する
-img_bytes = base64.b64decode(result.data[0].b64_json)
-cover_path = os.path.join(OUTPUT_DIR, "KDP出版用", "cover.png")
-os.makedirs(os.path.dirname(cover_path), exist_ok=True)
-with open(cover_path, "wb") as f:
-    f.write(img_bytes)
-
-cover_jpg_path = os.path.join(OUTPUT_DIR, "KDP出版用", "cover.jpg")
-subprocess.run([
-    "sips", "-s", "format", "jpeg", "-s", "formatOptions", "95",
-    cover_path, "--out", cover_jpg_path
-], check=True)
-```
+1. `COVER_PROMPT_TEXT` に含まれる `添付の*.png`、または Step 3 で生成済みの `chara_*.png` を参照画像にする
+2. ChatGPT Images 2.0で 2:3 縦長の表紙を生成する
+3. 生成PNGを `KDP出版用/cover.png` に保存する
+4. 同寸法の `KDP出版用/cover.jpg` をKDP申請用に作成する
+5. `OPENAI_API_KEY`、OpenAI SDK、`openai-image-gen`、`client.images.edit` は使用禁止
 
 - サイズ: `size="1024x1536"`（2:3縦長形式）
 - 品質: `quality="high"`
@@ -2059,23 +1876,18 @@ KDP商品説明欄にそのまま貼り付けられるHTML形式で作成する�
 
 ---
 
-## コスト見積もり
+## 生成量・所要時間の目安
 
-以下は **`HANDOFF_MODE=inline`（Claude 内完結）時** の試算。
+このスキルでは画像生成にAPIを使わないため、API従量課金の見積もりは作らない。
 
-| 項目 | 枚数（100ページの場合） | 推定コスト |
-|------|----------------------|-----------|
-| Step 5: ページ画像（1024x1536 high, 平均1.5 iter） | 100 × 1.5 = 150 | ~$31.50 |
-| Step 3: キャラリファレンス（2:3） | 2-3 | ~$0.63 |
-| Step 6: 表紙（2:3） | 1 | ~$0.21 |
-| Step 5-QC: Blind-OCR（gpt-4o vision × 150コール） | 150 | ~$1.50 |
-| Step 5-QC: Vision-check（gpt-4o vision × 150コール、キャラ存在確認） | 150 | ~$1.50 |
-| **合計** | - | **~$35.34/冊** |
+| 項目 | 枚数（100ページの場合） | 目安 |
+|------|----------------------|------|
+| Step 5: ページ画像（平均1.5 iter） | 100 × 1.5 = 150 | ChatGPT/Codex側で順次生成 |
+| Step 3: キャラリファレンス | 2-3 | 参照画像として保存 |
+| Step 6: 表紙 | 1 | KDP用PNG/JPEGに変換 |
+| Step 5-QC: Blind-OCR / Vision-check | 生成枚数分 | ChatGPT/Codex上の視覚確認またはローカルOCR |
 
-※ gpt-image-2 単価: 1024x1536 high = $0.21/枚（OpenAI 公式料金 2026-04-22 時点）
-※ gpt-4o OCR: 入力トークン $2.50/1Mトークン換算、画像1枚あたり約 $0.01 相当
-
-**`HANDOFF_MODE=codex-handoff` 時のコスト**: 同じ OpenAI API（gpt-image-2）を使うため、画像生成 API コストは inline モードと同額。codex-handoff 時は OCR・Vision-check（gpt-4o）も Codex 側で実行されるため、その分のコストも同様に発生する。実測コストは `done/<job-id>/progress.json` の `api_cost_estimate` フィールドに記録される。
+所要時間は生成待ち時間と再生成回数に依存する。100枚規模では数十分以上を見込む。
 
 ---
 
@@ -2084,12 +1896,11 @@ KDP商品説明欄にそのまま貼り付けられるHTML形式で作成する�
 | エラー | 対処 |
 |--------|------|
 | ソースフォルダが見つからない | エラー表示し、利用可能なebookフォルダを一覧する |
-| APIキー未設定 | `~/.bashrc` から読み込みを試みる。それでも未設定ならセットアップ手順を表示 |
-| 画像生成失敗（inline モード） | 失敗ページをログに記録し、バッチ続行。当該ページは次 iter でリトライ、max_iter 超過時はベストエフォート採用 |
+| ChatGPT Images 2.0生成に失敗 | 失敗ページをログに記録し、同じセッション内でプロンプトを調整して再生成する。max_iter 超過時はベストエフォート採用 |
 | EPUB構築エラー | エラー詳細を表示し、画像ファイルの存在を確認 |
 | ページ数超過 | Step 2のシナリオを凝縮して再生成 |
 | キャラ外見の不一致 | キャラ定義の詳細を強化してプロンプトを再生成 |
-| **codex-handoff: done/<job-id>/progress.json が出現しない** | Codex CLI の実行状況をユーザーに確認する。スクリプトが異常終了している可能性があるため、ターミナルのエラーメッセージを確認し `gen_manga_bundle.py` を再実行するよう案内する。また `OPENAI_API_KEY` が Codex 側ターミナルの環境変数として設定されているか確認する |
+| **codex-handoff: done/<job-id>/progress.json が出現しない** | 現在の標準運用ではhandoffを使わない。ユーザーが明示的にhandoffを指定した場合のみ、Codex側の進行状況を確認する |
 | **codex-handoff: progress.json の status が "failed"** | `.company/codex/done/<job-id>/progress.json` の `errors[]` を確認し、ユーザーに通知する。新 job-id で queue に再投入するか手動対応を促す |
 | **codex-handoff: needs_manual_review_pages が多数** | ユーザーに該当ページ番号リストを提示して手動確認を案内する。再生成が必要な場合は新 job-id で該当ページのみを manifest に含めて再投入する |
 | **codex-handoff: partial（部分生成）** | `progress.json` の `status: "partial"` を検出したら不足 items を確認し、ユーザーに通知する。新 job-id で不足分のみを manifest に含めて再投入する |
@@ -2097,8 +1908,7 @@ KDP商品説明欄にそのまま貼り付けられるHTML形式で作成する�
 ## 注意事項
 
 - Windows環境では `python3` ではなく `python` を使用する
-- 100枚の画像生成は約50-60分かかる（10枚並列×10バッチ、バッチ間5秒待機）
-- OpenAI APIのレート制限に注意: バッチ間に5秒の待機を入れる
+- 100枚規模の画像生成は時間がかかるため、進捗を `progress.json` に記録しながら進める
 - 生成画像の品質にはばらつきがある: QCループ（Step 5）が自動的にリトライを行う。max_iter 超過ページはベストエフォート採用となり、progress.json の needs_manual_review_pages で確認できる
 - 固定レイアウトEPUBはKindle Unlimitedの対象外となる場合がある（KDPの最新規約を確認）
 - EPUBの表示確認はKindleプレビューアで必ず行うこと
@@ -2158,43 +1968,17 @@ Step 5 の Blind-OCR が正しく動作していることを確認する。
 
 **重要チェック**: プロンプトに期待テキスト（CSV の `text` フィールド値）が含まれていないこと（confirmation bias 排除）。
 
-**サンプル確認スクリプト:**
-```python
-import os, json, base64
-from openai import OpenAI
-
-API_KEY = os.environ["OPENAI_API_KEY"]
-client = OpenAI(api_key=API_KEY)
-
-IMAGE_PATH = r"panels/pages/page_039_iter_1.png"
-
-OCR_PROMPT = """添付のマンガ画像を見て、吹き出し（楕円・雲形）と
+**確認用プロンプト:**
+```text
+添付のマンガ画像を見て、吹き出し（楕円・雲形）と
 ナレーションボックス（四角枠）の文字を画像に見える通り正確に読み取ってください。
 推測・補完禁止。
 
 出力形式: JSONのみ。
-{"bubbles": [{"panel_id": 1, "type": "dialogue"|"narration", "detected_text": "..."}]}"""
-
-with open(IMAGE_PATH, "rb") as f:
-    b64img = base64.b64encode(f.read()).decode()
-
-response = client.chat.completions.create(
-    model="gpt-4o",
-    temperature=0.0,
-    max_tokens=4096,
-    response_format={"type": "json_object"},
-    messages=[
-        {
-            "role": "user",
-            "content": [
-                {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64img}"}},
-                {"type": "text", "text": OCR_PROMPT},
-            ],
-        }
-    ],
-)
-print(json.dumps(json.loads(response.choices[0].message.content), ensure_ascii=False, indent=2))
+{"bubbles": [{"panel_id": 1, "type": "dialogue"|"narration", "detected_text": "..."}]}
 ```
+
+APIは使わず、生成済みページ画像をChatGPT/Codex上で表示して上記プロンプトに沿って確認する。
 
 ---
 

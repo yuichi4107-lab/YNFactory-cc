@@ -20,10 +20,36 @@ Limitless などから取り込まれる会話記録には、予定、約束、�
 
 ## サブフォルダ
 - `context-map.md` - コンテキスト運用の判断地図
+- `00_GOOGLE_MEET_BOX/` - Google Meet 議事録・文字起こしの投入口
 - `conversations/` - 自分の会話記録
+- `intake/` - Google Drive 投入口から取り込んだ raw 原本と重複防止 state
 - `organized/` - 抽出・要約・タグ付け済みの整理済みインプット
 - `indexes/` - 人物・プロジェクト・予定・決定事項などの索引
 - `references/` - 参考記事・データ
 - `competitors/` - 競合情報・スクリーンショット
 - `clients/` - クライアントからの依頼書・資料
 - `misc/` - その他
+
+## Google Drive 投入口
+
+PC / スマホ / タブレット共通の登録口として、`.company/inputs/00_INPUT_BOX/` を使う。
+
+- 端末から `.company/inputs/00_INPUT_BOX/` にテキスト、URLメモ、画像、PDF、資料ファイルを置く
+- `import_drive_inbox.py` が raw コピーを `intake/raw/` に保存する
+- 活用版は `organized/external/` に生成する
+- 横断索引は `indexes/external-*.md` に生成する
+- 原本は `.company/inputs/00_INPUT_BOX/` から削除しない
+- 同一パス・同一内容は `intake/state/drive_inbox_imported.json` で重複取り込みを防ぐ
+- 保存先を選ぶ手間を減らす場合は `start_upload_server_mac.sh` / `start_upload_server_windows.bat` で一発アップロード画面を起動する
+- AIが拡張子を直接読めない場合に備え、取り込み時に `intake/raw/YYYY-MM-DD/<input-id>/normalized/` へMarkdown化した正規化テキストを保存する
+
+## Google Meet 投入口
+
+Google Meet の会議メモ・文字起こし・議事録は、`.company/inputs/00_GOOGLE_MEET_BOX/` に置く。
+
+- `.txt`, `.md`, `.docx`, `.pdf`, 会議ごとのフォルダを取り込める
+- raw コピーは `.company/inputs/intake/google_meet/raw/YYYY-MM-DD/` に保存する
+- 会話原本形式は `.company/inputs/conversations/YYYY-MM-DD-google-meet.md` に生成する
+- 活用版は `.company/inputs/organized/google-meet/YYYY-MM-DD-google-meet-meetings.md` に生成する
+- 横断索引は `indexes/google-meet-meetings.md`, `indexes/google-meet-next-steps.md`, `indexes/google-meet-topics.md` に生成する
+- Google Docs ネイティブの `.gdoc` は本文を含まないショートカットなので、URLと `needs_export` 状態を保存し、本文が必要な場合は Google Docs から `.docx`, `.txt`, `.pdf` で保存する
