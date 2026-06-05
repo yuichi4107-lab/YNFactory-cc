@@ -36,7 +36,8 @@
           "take_profit": 0.01,
           "stop_loss": 0.02,
           "hold_bars": 15,
-          "trend_filter": false,
+          "trend_filter": true,
+          "reentry_confirm_days": 5,
           "optimized": "PF inf, +44.0%, DD 0.0% (TP=1%, Hold=15) | backtest_20260327_210209 | SL=2% added for safety"
         },
         {
@@ -46,7 +47,8 @@
           "take_profit": null,
           "stop_loss": 0.01,
           "hold_bars": 15,
-          "trend_filter": false,
+          "trend_filter": true,
+          "reentry_confirm_days": 5,
           "optimized": "PF 2.34, +114.2%, DD 28.5% (SL=1%, Hold=15) | backtest_20260327_221754"
         },
         {

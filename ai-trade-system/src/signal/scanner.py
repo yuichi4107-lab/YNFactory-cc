@@ -70,6 +70,8 @@ def get_currency_strategies(config, symbol):
                 "stop_loss": s.get("stop_loss"),
                 "hold_bars": s.get("hold_bars", default_config["hold_bars"]),
                 "trend_filter": s.get("trend_filter", False),
+                # bull trap ガード（BTC限定・デフォルト0=無効。他通貨はreentry_confirm_days未設定で不変）
+                "reentry_confirm_days": s.get("reentry_confirm_days", 0),
             })
         return strategies
 
@@ -176,6 +178,8 @@ def scan_symbol(symbol, config, model=None, dry_run=False,
         hold_bars = strategy["hold_bars"]
         strategy_id = strategy["id"]
         uses_trend_filter = strategy.get("trend_filter", False)
+        # bull trap ガード（BTC限定・他通貨は0=無効のまま後方互換）
+        reentry_confirm_days = strategy.get("reentry_confirm_days", 0)
     else:
         # 旧互換: config から直接読み込み
         safe_symbol = symbol.replace("/", "-")
@@ -188,6 +192,7 @@ def scan_symbol(symbol, config, model=None, dry_run=False,
         hold_bars = currency_config.get("hold_bars", default_config["hold_bars"])
         strategy_id = pattern
         uses_trend_filter = True
+        reentry_confirm_days = 0  # 旧互換: bull trap ガード無効
 
     print(f"\n{'='*50}")
     print(f"  Scanning: {symbol} [{strategy_id}]")
@@ -229,7 +234,8 @@ def scan_symbol(symbol, config, model=None, dry_run=False,
             filtered = check_short_trend_filter(candles, filter_config, strategy_uses_filter=True)
             filter_log = f"[SHORT_FILTERED] Uptrend detected"
         else:
-            filtered = check_trend_filter(candles, filter_config)
+            filtered = check_trend_filter(candles, filter_config,
+                                          reentry_confirm_days=reentry_confirm_days)
             filter_log = f"[FILTERED] Downtrend detected"
 
         if filtered:
