@@ -17,8 +17,6 @@ from playwright.sync_api import (
     sync_playwright,
 )
 
-STORAGE_STATE_FILENAME = "storage_state.json"
-
 
 def _css_escape_attr(s: str) -> str:
     """CSSセレクタ属性値のクォート内に入れる前にエスケープする。"""
@@ -53,13 +51,15 @@ class NotebookLMClient:
 
     def __init__(
         self,
-        user_data_dir: str,
+        cdp_endpoint: str = "http://localhost:9222",
+        user_data_dir: str = "",
         headless: bool = True,
         navigation_timeout_ms: int = 60000,
         source_add_timeout_ms: int = 30000,
         notebooklm_url: str = "https://notebooklm.google.com",
     ) -> None:
-        self._user_data_dir = Path(user_data_dir)
+        self._cdp_endpoint = cdp_endpoint
+        self._user_data_dir = Path(user_data_dir) if user_data_dir else None
         self._headless = headless
         self._nav_timeout = navigation_timeout_ms
         self._add_timeout = source_add_timeout_ms
@@ -68,44 +68,39 @@ class NotebookLMClient:
         self._browser: Optional[Browser] = None
         self._context: Optional[BrowserContext] = None
         self._page: Optional[Page] = None
-
-    def _storage_state_path(self) -> Path:
-        return self._user_data_dir / STORAGE_STATE_FILENAME
+        self._owns_page = False
 
     def _start(self) -> None:
+        """常駐している素の実Chrome(remote-debugging)へCDP接続する。
+        Playwrightが自前でChromeを起動するとheadless/自動化フラグによりGoogleに
+        bot判定されセッションが弾かれるため、別途常駐させた通常Chromeにattachする。
+        操作は専用の新規ページで行い、終了時もそのページのみ閉じる（Chrome本体は維持）。"""
         self._playwright = sync_playwright().start()
-        self._browser = self._playwright.chromium.launch(
-            headless=self._headless,
-            args=["--disable-blink-features=AutomationControlled"],
-        )
-        ctx_kwargs = {}
-        storage_state = self._storage_state_path()
-        if storage_state.exists():
-            ctx_kwargs["storage_state"] = str(storage_state)
-        else:
-            logger.warning(
-                "storage_state not found at %s. Browser starts with empty session.",
-                storage_state,
-            )
-        self._context = self._browser.new_context(**ctx_kwargs)
+        self._browser = self._playwright.chromium.connect_over_cdp(self._cdp_endpoint)
+        contexts = self._browser.contexts
+        self._context = contexts[0] if contexts else self._browser.new_context()
         self._context.set_default_navigation_timeout(self._nav_timeout)
         self._context.set_default_timeout(self._add_timeout)
         self._page = self._context.new_page()
-
-    def _stop(self) -> None:
+        # NotebookLMはレスポンシブで、狭いビューポートだとソースパネルが畳まれ
+        # 「ソースを追加」やソース一覧のセレクタが出現しない。広い幅を強制する。
         try:
-            if self._context:
-                self._context.close()
+            self._page.set_viewport_size({"width": 1600, "height": 1000})
         except Exception:
             pass
+        self._owns_page = True
+
+    def _stop(self) -> None:
+        # CDP接続では自分が開いたページのみ閉じる。Chrome本体・既存タブ・
+        # コンテキストは閉じない（context.close()/browser.close()は常駐Chromeを巻き込むため禁止）。
         try:
-            if self._browser:
-                self._browser.close()
+            if self._page and self._owns_page:
+                self._page.close()
         except Exception:
             pass
         try:
             if self._playwright:
-                self._playwright.stop()
+                self._playwright.stop()  # remote Chromeは終了させずdisconnectのみ
         except Exception:
             pass
 

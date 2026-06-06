@@ -4,7 +4,7 @@
   "output_path": ".company/outputs/ai-stock-investment/マンガ版",
   "source_title": "AI株に投資すべきか？",
   "manga_title": "マンガでわかる！AI株に投資すべきか？",
-  "target_pages": 56,
+  "target_pages": 100,
   "genre": "ビジネス・投資学習マンガ",
   "batch_size": 8,
   "created_at": "2026-06-04T22:47:06",
@@ -46,10 +46,12 @@
     },
     "5_images": {
       "status": "done",
-      "completed": 52,
-      "total": 52,
+      "completed": 96,
+      "total": 96,
       "failed": [],
-      "last_completed_batch": "batch_007"
+      "last_completed_batch": "batch_007",
+      "missing_pages": [],
+      "blocker": ""
     },
     "6_cover": {
       "status": "done",

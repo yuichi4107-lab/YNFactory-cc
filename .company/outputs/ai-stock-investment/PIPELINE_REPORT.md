@@ -94,3 +94,28 @@ OpenAI API、OPENAI_API_KEY、openai-image-gen、client.images.generate/edit は
 
 - 画像生成サービスが途中から `ServerError` を返したため、P052以降の一部ページは保存済みAI生成素材をローカル加工して適用。
 - Kindle Previewerでの最終目視は未実施。
+
+---
+
+# マンガ版EPUBページ構成修正 v4
+
+作成日: 2026-06-06
+
+## 修正内容
+
+- 保存済みページ画像を確認し、現行 `マンガ版/panels/pages/` が96ページ分、アーカイブ `_archives/マンガ版_rejected_20260604_224236/pages/` が100ページ分であることを確認
+- EPUB製本用の正本として `マンガ版/panels/pages/page_001.*` - `page_100.*` を補完
+- EPUB内部を `page_001.xhtml` - `page_100.xhtml` の100連番に変更
+- `page_098` を著者紹介、`page_099` をCTA、`page_100` を最後の書籍紹介として配置
+- 非連番のCTAページを廃止し、CTAを `page_099` に統合
+
+## 検証結果
+
+- ZIP整合性: OK
+- EPUB spine: 100
+- EPUB本文XHTML: 100
+- EPUB本文画像: 100
+- XHTML連番: page_001 - page_100
+- 画像連番: page_001 - page_100
+- 最終spine: `page_100`
+- 最終ページ内容: 書籍紹介

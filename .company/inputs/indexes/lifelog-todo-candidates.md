@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-05T07:01:32
+generated_at: 2026-06-06T07:01:09
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,35 @@ generated_at: 2026-06-05T07:01:32
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-05
+
+- [ ] 取材対応の準備と実施（10日16時半頃） | time:17:15 | priority:high | due:2026-06-10 | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 京都ブライトンホテルの修繕工事案件に関する紹介料交渉（10%目標、手付金・仲介金支払い検討） | time:16:25 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 制服レンタル業者への問い合わせ（費用、交換頻度、新品/中古の有無、複数枚利用時の料金体系など） | time:16:12 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 制服発注にかかる現在のコスト（1着あたり）の確認 | time:16:12 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] コンサルティング面談の実施（2026-06-08 10:30、30分程度） | time:13:11 | priority:high | due:2026-06-08 | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 助成金に関する社長への説明（外壁塗装単体では不可、防水とのセット、事前申請の必要性） | time:12:21 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] フィットネス関連の経費精算における元データ修正 | time:11:53 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 各担当者の経費精算額の確認・修正（村松さん、隅田さん、清水さん） | time:11:54 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 報告書提出遅延に関する対応（監督官サクマ様への連絡） | time:11:47 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 重要書類の担当者明確化と作成指示 | time:11:33 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 6/30期限の契約更新に関する本人意向確認（全員へ周知、メール送信） | time:11:34 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 新規メンバーの半休申請（0.5日）がルール通りか確認し、必要であれば担当者に指摘・周知 | time:11:05 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 名古屋市、国、県における外壁塗装・防水工事関連助成金制度の詳細調査（事前申請の可否、組み合わせ条件、業者代行の有無） | time:11:00 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 社長への助成金に関する再確認と正確な情報提供（防水工事との組み合わせ、事前申請の原則、業者対応の可能性） | time:11:00 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 青い大学の未払い賃金（5分単位計算）の支払い根拠の確認 | time:10:20 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 給与計算システムの単価設定の修正（平日深夜、休日深夜の単価統一と基準の見直し） | time:10:08 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 深夜手当・休日手当計算方法の再確認と入力担当者への周知 | time:10:15 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 助成金に関する問い合わせ内容の確認と担当者の特定 | time:09:27 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 請求書/受注表のフォーマット改善検討（料金・時間の表示方法、縦長の解消） | time:09:04 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 勤務開始前の労働時間管理方法の確認 | time:08:46 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 残業時の休憩取得の実態調査（現場での15分休憩取得状況、ルールと実態の乖離確認） | time:08:48 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] やごとでの残業時休憩運用状況の確認 | time:08:49 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 残業時休憩未取得の場合のリスク評価と対応策検討 | time:08:49 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 午後に銀行業務の実施 | time:08:28 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] 顧客対応における業務分担の明確化と課題解決策の検討 | time:08:03 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- [ ] シミュレーター完成後の次ステップ（顧客への報告、展開、テストなど）の検討・実行 | time:07:03 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
 
 ## 2026-06-04
 

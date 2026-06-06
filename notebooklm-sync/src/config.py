@@ -32,6 +32,7 @@ class SyncConfig:
 @dataclass
 class PlaywrightConfig:
     user_data_dir: str = "./.auth/chromium"
+    cdp_endpoint: str = "http://localhost:9222"
     headless: bool = True
     navigation_timeout_ms: int = 60000
     source_add_timeout_ms: int = 30000
@@ -100,6 +101,7 @@ def load_config(
     yaml_user_data_dir = pw_raw.get("user_data_dir", "./.auth/chromium")
     playwright = PlaywrightConfig(
         user_data_dir=os.getenv("NOTEBOOKLM_AUTH_DIR", yaml_user_data_dir),
+        cdp_endpoint=pw_raw.get("cdp_endpoint", "http://localhost:9222"),
         headless=pw_raw.get("headless", True),
         navigation_timeout_ms=pw_raw.get("navigation_timeout_ms", 60000),
         source_add_timeout_ms=pw_raw.get("source_add_timeout_ms", 30000),

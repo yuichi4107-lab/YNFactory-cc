@@ -351,6 +351,7 @@ def main() -> None:
 
     with StateDB() as db:
         with NotebookLMClient(
+            cdp_endpoint=cfg.playwright.cdp_endpoint,
             user_data_dir=cfg.playwright.user_data_dir,
             headless=cfg.playwright.headless,
             navigation_timeout_ms=cfg.playwright.navigation_timeout_ms,

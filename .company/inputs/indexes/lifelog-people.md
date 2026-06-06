@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-05T07:01:32
+generated_at: 2026-06-06T07:01:09
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,20 @@ generated_at: 2026-06-05T07:01:32
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-05
+
+- - **コバさん** — 取材対応に関する調整 (17:15) | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- - **ロータリーの人** — 京都ブライトンホテルの修繕工事案件の紹介元 (16:25) | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- - **京都の業者** — 京都ブライトンホテルの修繕工事の受託先候補 (16:25) | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- - **サクマ様** — 第一方面の監督官、報告書提出遅延に関する連絡先 (11:47) | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- - **日比の中田** — 報告書提出遅延に関する連絡者 (11:47) | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- - **カラスミさん** — 新規メンバーの環境設定確認者、半休申請に関する確認 (11:05) | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- - **マーキュリー** — 過去の取引先、詳細説明を求める相手 (12:04) | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- - **社長** — 助成金に関する誤解を持つ人物、情報提供が必要 (12:12) | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- - **ふきつさん** — 残業時休憩未取得をコメントした人物 (08:48) | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- - **やごと** — 他部署/他拠点、残業時休憩運用実態確認の相手 (08:49) | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- - **佐藤さん** — 営業担当者？顧客対応における業務分担に関連 (08:01) | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
 
 ## 2026-06-04
 
