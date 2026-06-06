@@ -141,3 +141,8 @@ settings.local.json
 
 # Playwright MCP snapshots (debug artifacts)
 .playwright-mcp/
+
+# ─── アーカイブ済み大容量成果物（svg/xhtml/pdf/ini 等も含むためディレクトリごと除外）2026-06-06 マルチPC移行 ───
+# 画像本体は上の *.png/*.jpg 等で除外済みだが、付随する svg/xhtml/pdf 等を取り込まないようディレクトリ単位で除外しDrive専用にする
+.company/outputs/picture-books/
+.company/outputs/ai-stock-investment/_archives/

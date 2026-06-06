@@ -4,7 +4,6 @@ from __future__ import annotations
 import csv
 import html
 import json
-import shutil
 import uuid
 import zipfile
 from datetime import date
@@ -15,7 +14,6 @@ ROOT = Path(".company/outputs/ai-stock-investment/マンガ版")
 CSV_PATH = ROOT / "panels" / "comicle_output.csv"
 PAGES_DIR = ROOT / "panels" / "pages"
 KDP_DIR = ROOT / "KDP出版用"
-CTA_IMAGE = Path(".codex/skills/ebook-to-manga/assets/cta.png")
 
 TITLE = "マンガでわかる！AI株に投資すべきか？"
 SUBTITLE = "熱狂に乗る前に知っておきたい企業分析・分散・リスク管理の実践入門"
@@ -52,7 +50,8 @@ def image_page_xhtml(page_id: str, img_name: str, alt: str) -> str:
 
 def text_page_xhtml(title: str, text: str) -> str:
     lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
-    body_parts = ['  <div class="page text-page">']
+    page_class = "page text-page toc-page" if title == "目次" else "page text-page"
+    body_parts = [f'  <div class="{page_class}">']
     for i, ln in enumerate(lines):
         if i == 0:
             body_parts.append(f"    <h1>{html.escape(ln)}</h1>")
@@ -86,7 +85,19 @@ def main() -> None:
     for row in rows:
         page_num = int(row["ページ番号"])
         page_id = f"page_{page_num:03d}"
-        if row["使用するコマ割りテンプレ"] == "テキストページ":
+        img_name = f"{page_id}.jpg"
+        img_path = PAGES_DIR / img_name
+        if img_path.exists():
+            page_entries.append(
+                {
+                    "id": page_id,
+                    "kind": "image",
+                    "title": f"ページ {page_num:03d}",
+                    "xhtml": image_page_xhtml(page_id, img_name, f"ページ {page_num:03d}"),
+                    "img": img_name,
+                }
+            )
+        elif row["使用するコマ割りテンプレ"] == "テキストページ":
             title, text = text_from_prompt(row["漫画作成のプロンプト"])
             page_entries.append(
                 {
@@ -98,34 +109,11 @@ def main() -> None:
                 }
             )
         else:
-            img_name = f"{page_id}.jpg"
-            img_path = PAGES_DIR / img_name
-            if not img_path.exists():
-                raise FileNotFoundError(img_path)
-            page_entries.append(
-                {
-                    "id": page_id,
-                    "kind": "image",
-                    "title": f"ページ {page_num:03d}",
-                    "xhtml": image_page_xhtml(page_id, img_name, f"ページ {page_num:03d}"),
-                    "img": img_name,
-                }
-            )
+            raise FileNotFoundError(img_path)
 
-    # Insert fixed CTA page after author profile page and before colophon.
-    final_entries: list[dict[str, str]] = []
-    for entry in page_entries:
-        final_entries.append(entry)
-        if entry["id"] == "page_055":
-            final_entries.append(
-                {
-                    "id": "page_cta",
-                    "kind": "image_cta",
-                    "title": "CTA",
-                    "xhtml": image_page_xhtml("page_cta", "page_cta.png", "CTA"),
-                    "img": "page_cta.png",
-                }
-            )
+    final_entries = page_entries
+    if len(final_entries) != 100:
+        raise RuntimeError(f"EPUB本文ページ数が100ではありません: {len(final_entries)}")
 
     epub_path = KDP_DIR / EPUB_NAME
     book_uuid = f"urn:uuid:{uuid.uuid4()}"
@@ -142,15 +130,24 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Goth
 .text-page h1 { font-size: 56px; line-height: 1.22; margin: 0 0 34px; color: #0f2d55; }
 .text-page p { font-size: 34px; line-height: 1.55; margin: 0 0 18px; }
 .text-page .check { padding-left: 0.5em; border-left: 10px solid #2f78c4; background: #fff; border-radius: 6px; padding-top: 10px; padding-bottom: 10px; }
+.toc-page { justify-content: flex-start; padding-top: 78px; }
+.toc-page h1 { font-size: 44px; margin-bottom: 28px; }
+.toc-page p { font-size: 30px; line-height: 1.45; margin-bottom: 12px; }
+nav { padding: 72px 68px; font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif; }
+nav h1 { font-size: 42px; margin: 0 0 30px; color: #0f2d55; }
+nav ol { margin: 0; padding-left: 1.2em; }
+nav li { margin: 0 0 18px; line-height: 1.35; }
+nav a { color: #172033; text-decoration: none; }
+.nav-main { display: block; font-size: 28px; font-weight: 700; }
+.nav-sub { display: block; font-size: 21px; color: #506070; margin-top: 3px; }
 '''
 
     manifest_items = [
         '    <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>',
         '    <item id="style" href="style.css" media-type="text/css"/>',
-        '    <item id="cover-xhtml" href="text/cover.xhtml" media-type="application/xhtml+xml"/>',
         '    <item id="cover-image" href="images/cover.jpg" media-type="image/jpeg" properties="cover-image"/>',
     ]
-    spine_items = ['    <itemref idref="cover-xhtml"/>']
+    spine_items: list[str] = []
 
     for entry in final_entries:
         manifest_items.append(f'    <item id="{entry["id"]}" href="text/{entry["id"]}.xhtml" media-type="application/xhtml+xml"/>')
@@ -160,9 +157,26 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Goth
                 f'    <item id="{entry["id"]}-img" href="images/{entry["img"]}" media-type="{media_type(Path(entry["img"]))}"/>'
             )
 
-    nav_items = ['    <li><a href="text/cover.xhtml">表紙</a></li>']
-    for entry in final_entries:
-        nav_items.append(f'    <li><a href="text/{entry["id"]}.xhtml">{html.escape(entry["title"])}</a></li>')
+    nav_targets = [
+        ("page_001", "目次", "本書の流れ"),
+        ("page_003", "プロローグ", "AI株への焦りを判断軸に変える"),
+        ("page_010", "第1章", "AI株ブームの正体"),
+        ("page_023", "第2章", "AI関連銘柄を分解する"),
+        ("page_036", "第3章", "企業分析とバリュエーション"),
+        ("page_049", "第4章", "ポートフォリオにどう入れるか"),
+        ("page_054", "巻末実践ワーク", "自分の投資条件を作る"),
+        ("page_098", "著者紹介", "著者情報"),
+        ("page_099", "読者特典", "次の学びへ"),
+        ("page_100", "書籍紹介", "本書の使い方"),
+    ]
+    valid_ids = {entry["id"] for entry in final_entries}
+    nav_items = []
+    for target_id, main, sub in nav_targets:
+        if target_id not in valid_ids:
+            raise RuntimeError(f"目次リンク先が見つかりません: {target_id}")
+        nav_items.append(
+            f'    <li><a href="text/{target_id}.xhtml"><span class="nav-main">{html.escape(main)}</span><span class="nav-sub">{html.escape(sub)}</span></a></li>'
+        )
 
     content_opf = f'''<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://www.idpf.org/2007/opf" unique-identifier="bookid" version="3.0" prefix="rendition: http://www.idpf.org/vocab/rendition/#">
@@ -204,22 +218,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Goth
 </container>
 '''
 
-    cover_xhtml = image_page_xhtml("cover", "cover.jpg", "表紙")
-
     with zipfile.ZipFile(epub_path, "w") as z:
         z.writestr("mimetype", "application/epub+zip", compress_type=zipfile.ZIP_STORED)
         z.writestr("META-INF/container.xml", container_xml, compress_type=zipfile.ZIP_DEFLATED)
         z.writestr("OEBPS/content.opf", content_opf, compress_type=zipfile.ZIP_DEFLATED)
         z.writestr("OEBPS/nav.xhtml", nav_xhtml, compress_type=zipfile.ZIP_DEFLATED)
         z.writestr("OEBPS/style.css", style_css, compress_type=zipfile.ZIP_DEFLATED)
-        z.writestr("OEBPS/text/cover.xhtml", cover_xhtml, compress_type=zipfile.ZIP_DEFLATED)
         z.write(KDP_DIR / "cover.jpg", "OEBPS/images/cover.jpg", compress_type=zipfile.ZIP_DEFLATED)
         for entry in final_entries:
             z.writestr(f"OEBPS/text/{entry['id']}.xhtml", entry["xhtml"], compress_type=zipfile.ZIP_DEFLATED)
             if entry["kind"] == "image":
                 z.write(PAGES_DIR / entry["img"], f"OEBPS/images/{entry['img']}", compress_type=zipfile.ZIP_DEFLATED)
-            elif entry["kind"] == "image_cta":
-                z.write(CTA_IMAGE, "OEBPS/images/page_cta.png", compress_type=zipfile.ZIP_DEFLATED)
 
     (KDP_DIR / "書籍情報.md").write_text(
         f"""# 書籍情報

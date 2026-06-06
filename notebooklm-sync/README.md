@@ -2,6 +2,43 @@
 
 指定 YouTube チャンネルの新規動画を、Playwright 経由で NotebookLM ノートブックに自動追加するツール。
 
+> **現行構成（2026-06-06〜）: このMacで launchd 常駐 + CDP 接続方式**
+> VPS の `storage_state` 静的注入方式は Google に bot 判定され、データセンターIPでセッションが
+> 約2時間で失効したため廃止。**このMac（residential IP）上で「常駐 headless 実Chrome ＋ CDP接続」方式**へ移行した。
+> 下記「Mac運用（現行）」が現行手順。さらに下の VPS 手順はレガシー/フォールバック参照用。
+
+## Mac運用（現行）
+
+### 構成
+- **ランタイム**: `~/notebooklm-sync/`（**Google Drive外**。`.venv` / `.auth` / `state.sqlite` / `logs` / `secrets.yaml` を格納）
+- **コード正本/バックアップ**: Drive上 `notebooklm-sync/`（runtime へ rsync で配布。secrets と runtime 成果物は除外）
+- **認証**: 専用プロファイル `~/notebooklm-sync/.auth/chromium` に**実Chromeでログイン**。Playwright は自前で Chrome を起動せず、常駐 Chrome に **CDP接続**する（`cdp_endpoint: http://localhost:9222`）。※Playwright 起動の Chrome は headless/自動化フラグで Google に弾かれるため CDP 必須。
+- **常駐Chrome**: launchd `com.ynfactory.notebooklm-chrome`（`scripts/start_chrome_mac.sh`、**headless** `--headless=new`・`--remote-debugging-port=9222`・`KeepAlive`・`RunAtLoad`）
+- **同期ジョブ**: launchd `com.ynfactory.notebooklm-sync`（`.venv/bin/python src/sync.py`、WorkingDirectory=`~/notebooklm-sync`、`StartInterval=1800`＝30分毎）
+
+### 初回ログイン / 再ログイン（セッション切れ時）
+Telegram に `Google session expired` アラートが来たら:
+1. 常駐Chromeを停止: `launchctl unload ~/Library/LaunchAgents/com.ynfactory.notebooklm-chrome.plist`
+2. ログイン用Chrome起動: `bash ~/notebooklm-sync/scripts/login_mac.sh`（実Chromeが開く）
+3. Googleにログイン → NotebookLM 表示を確認 → ウィンドウを閉じる
+4. 常駐Chrome再開: `launchctl load ~/Library/LaunchAgents/com.ynfactory.notebooklm-chrome.plist`
+5. 確認: `cd ~/notebooklm-sync && .venv/bin/python scripts/check_session.py` → `SESSION OK`
+
+### 運用コマンド
+| 目的 | コマンド |
+|---|---|
+| セッション確認 | `cd ~/notebooklm-sync && .venv/bin/python scripts/check_session.py` |
+| 手動同期 | `launchctl start com.ynfactory.notebooklm-sync`（ログ: `logs/launchd-stdout.log` / `logs/sync.log`） |
+| dry-run | `cd ~/notebooklm-sync && .venv/bin/python src/sync.py --dry-run` |
+| 登録状況 | `launchctl list \| grep notebooklm` |
+| 常駐Chrome再起動 | `launchctl kickstart -k gui/$(id -u)/com.ynfactory.notebooklm-chrome` |
+| 通知テスト | `cd ~/notebooklm-sync && .venv/bin/python scripts/test_notify.py` |
+
+### Telegram通知
+専用ボット **@mnb121_bot**。`~/notebooklm-sync/secrets.yaml`（Drive外・git管理外）に `bot_token` / `chat_id`(=`8571447808`) を保存。失敗時アラート＋完了サマリを送信する。
+
+---
+
 ## 前提条件
 
 - Python 3.10 以上
@@ -115,6 +152,29 @@ python src/sync.py --dry-run
 # ヘルプ
 python src/sync.py --help
 ```
+
+---
+
+## 通知テスト方法
+
+`secrets.yaml` に `bot_token` / `chat_id` を記入した後、以下のコマンドで送信確認できる。
+
+```bash
+cd /opt/notebooklm-sync    # VPS の場合
+source .venv/bin/activate
+
+# サマリ + アラートの両方を送信（引数なし）
+python scripts/test_notify.py
+
+# サマリのみ送信
+python scripts/test_notify.py --summary
+
+# アラートのみ送信
+python scripts/test_notify.py --alert
+```
+
+`secrets.yaml` が未設定（bot_token / chat_id が空）の場合はTelegramへの送信を試みず、
+設定方法の案内を表示して終了する。
 
 ---
 

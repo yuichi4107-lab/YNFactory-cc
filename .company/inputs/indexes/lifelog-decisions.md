@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-05T07:01:32
+generated_at: 2026-06-06T07:01:09
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,10 @@ generated_at: 2026-06-05T07:01:32
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-05
+
+- - シミュレーターの完成 | time:07:03 | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
 
 ## 2026-06-04
 

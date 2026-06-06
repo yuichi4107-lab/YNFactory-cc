@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-05T07:01:32
+generated_at: 2026-06-06T07:01:09
 ---
 
 # Lifelog Topics
@@ -10,6 +10,25 @@ generated_at: 2026-06-05T07:01:32
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-05
+
+- - **空調服の補助金制度について** (16:21) | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+-   - 理由: 補助金活用の可能性を探るため | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- - **制服レンタルサービスの現状と費用対効果** (16:03) | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+-   - 理由: 業務改善、コスト削減、機会損失防止の可能性を検討するため | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- - **外壁塗装・防水工事に関する助成金制度の詳細（国・県・市レベル）** (12:21) | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+-   - 理由: 顧客からの問い合わせや社長の誤解を解消し、正確な情報を提供するため | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- - **収入印紙の変更について** (11:15) | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+-   - 理由: 契約書等におけるコスト増や契約形態の変更を示唆するため | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- - **労働基準法に基づく深夜・休日手当の正しい計算方法とシステムへの反映方法** (10:08) | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+-   - 理由: 給与計算の正確性を確保し、システム設定を最適化するため | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- 1. **京都ブライトンホテルの修繕工事案件の紹介ビジネス** [other] ★★★★☆ (16:25) | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+-    - 自社では直接受注できない大規模修繕工事案件（京都ブライトンホテル）を他社に紹介し、紹介料（10%目標、手付金・仲介金での支払い検討）を得るモデル。リスクなく収益を得る可能性がある。 | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- 2. **派遣社員の業務効率化コンサルティング** [freelance] ★★★☆☆ (15:55) | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+-    - 派遣社員に関する書類不備対応の効率化や、営業担当者の業務役割を見直すことで、全体的な業務フローを改善するコンサルティングサービス。 | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+- 3. **制服レンタル導入によるコスト削減・機会損失防止提案** [freelance] ★★★★☆ (16:02) | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
+-    - 派遣先企業に対し、制服レンタルサービスの導入を提案することで、制服発注待ちによる機会損失を防ぎ、管理コストや手間を削減する。 | source:`.company/inputs/organized/lifelogs/2026-06-05-lifelog-insights.md`
 
 ## 2026-06-04
 

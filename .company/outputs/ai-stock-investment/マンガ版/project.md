@@ -8,7 +8,7 @@
 - 入力フォルダ: `.company/outputs/ai-stock-investment/文字本`
 - 出力フォルダ: `.company/outputs/ai-stock-investment/マンガ版`
 - 作画ジャンル: ビジネス・投資学習マンガ
-- 目標ページ数: 56
+- 目標ページ数: 100
 - 画像生成バッチ: 8ページ単位
 
 ## 進捗
@@ -17,7 +17,7 @@
 - Step 2 マンガ用シナリオ: done
 - Step 3 キャラクターデザイン定義: done
 - Step 4 コマ割りCSV: done
-- Step 5 画像生成: pending
+- Step 5 画像生成: pending (100ページ版追加生成)
 - Step 6 表紙作成: pending
 - Step 7 EPUB製本: pending
 - Step 8 メタデータ: pending

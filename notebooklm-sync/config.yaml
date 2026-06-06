@@ -19,7 +19,10 @@ sync:
 
 # Playwright
 playwright:
+  # user_data_dir: 常駐Chrome(scripts/start_chrome_mac.sh)が使う専用プロファイル
   user_data_dir: "./.auth/chromium"
+  # cdp_endpoint: 常駐Chromeのremote-debugging接続先。sync.pyはここへCDP接続する
+  cdp_endpoint: "http://localhost:9222"
   headless: true
   navigation_timeout_ms: 60000
   source_add_timeout_ms: 30000
