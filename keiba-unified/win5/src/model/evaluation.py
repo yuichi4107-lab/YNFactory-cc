@@ -32,7 +32,9 @@ def compute_metrics(y_true: np.ndarray, y_pred_proba: np.ndarray) -> dict[str, f
     except ValueError:
         metrics["auc"] = 0.5
 
-    metrics["logloss"] = float(log_loss(y_true, y_pred_proba, eps=1e-7))
+    # 確率を(0,1)内にクリップ（新しいsklearnは log_loss の eps 引数を廃止）
+    y_pred_clipped = np.clip(y_pred_proba, 1e-7, 1 - 1e-7)
+    metrics["logloss"] = float(log_loss(y_true, y_pred_clipped))
     metrics["brier"] = float(brier_score_loss(y_true, y_pred_proba))
     metrics["accuracy"] = float(accuracy_score(y_true, y_pred_binary))
 
