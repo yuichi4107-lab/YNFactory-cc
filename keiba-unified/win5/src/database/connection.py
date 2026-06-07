@@ -13,9 +13,11 @@ logger = logging.getLogger(__name__)
 class Database:
     """SQLiteデータベース接続を管理するクラス"""
 
-    def __init__(self, db_path: Path | str | None = None):
+    def __init__(self, db_path: Path | str | None = None, keep_open: bool = False):
         self.db_path = str(db_path or DB_PATH)
         self._shared_conn: sqlite3.Connection | None = None
+        # keep_open=True: 単一接続を使い回す（大量read時の接続/commit/close往復を削減）
+        self._keep_open = keep_open
         if self.db_path != ":memory:":
             self._ensure_db_dir()
 
@@ -28,6 +30,16 @@ class Database:
             if self._shared_conn is None:
                 self._shared_conn = sqlite3.connect(":memory:")
                 self._shared_conn.row_factory = sqlite3.Row
+                self._shared_conn.execute("PRAGMA foreign_keys=ON")
+            return self._shared_conn
+
+        # keep_open: ファイルDBでも単一接続を使い回す（PRAGMAは初回のみ）
+        if self._keep_open:
+            if self._shared_conn is None:
+                self._shared_conn = sqlite3.connect(self.db_path)
+                self._shared_conn.row_factory = sqlite3.Row
+                self._shared_conn.execute("PRAGMA journal_mode=WAL")
+                self._shared_conn.execute("PRAGMA synchronous=OFF")
                 self._shared_conn.execute("PRAGMA foreign_keys=ON")
             return self._shared_conn
 
@@ -48,7 +60,7 @@ class Database:
             conn.rollback()
             raise
         finally:
-            if self.db_path != ":memory:":
+            if self.db_path != ":memory:" and not self._keep_open:
                 conn.close()
 
     @contextmanager
@@ -63,8 +75,18 @@ class Database:
             conn.rollback()
             raise
         finally:
-            if self.db_path != ":memory:":
+            if self.db_path != ":memory:" and not self._keep_open:
                 conn.close()
+
+    def close(self):
+        """keep_open で保持している永続接続を明示的に閉じる。"""
+        if self._shared_conn is not None:
+            try:
+                self._shared_conn.commit()
+            except Exception:
+                pass
+            self._shared_conn.close()
+            self._shared_conn = None
 
     def initialize(self):
         """データベースを初期化し、全テーブルを作成する"""
