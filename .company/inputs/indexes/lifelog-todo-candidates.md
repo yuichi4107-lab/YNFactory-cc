@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-06T07:01:09
+generated_at: 2026-06-13T07:00:54
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,117 @@ generated_at: 2026-06-06T07:01:09
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-12
+
+- [ ] Yuichi氏の新しい仕事に関する連絡を継続し、進捗を確認する。 | time:15:30 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- [ ] Yuichi氏の新しい仕事のデスクトップデータを整理し、サーバー（または適切な場所）へ移行する。 | time:08:29 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- [ ] Yuichi氏のアドレスのメール受信設定を行う。 | time:13:02 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- [ ] Yuichi氏の新しい仕事環境の電源供給元を確認する。 | time:08:32 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- [ ] TikTokに動画をアップロードし、適切なハッシュタグを作成・設定する。 | time:04:35 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- [ ] 有料AIプラン（例: ChatGPTの有料プラン）の導入を検討・実施する。 | time:12:14 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- [ ] 新規追加車両に関するパークダイレクトの支払い計算と、今後の支払い額を確認する。 | time:15:48 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+
+## 2026-06-11
+
+- [ ] 新しい仕事の画像準備の要否を確認する | time:20:13 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- [ ] ショート動画制作の効率を試し、調整する | time:20:05 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- [ ] 外部サービス費用（月額3,000円または2万円＋初期5万円）の詳細を確認する | time:17:26 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- [ ] 2026年6月分の給料チェックを開始し、7月上旬の支払いに間に合わせる | time:17:37 | priority:high | due:2026-07-01 | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- [ ] Yuumi-sanの管理表を作成する | time:17:42 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- [ ] Yuichi関連の請求書とセコムの書類が不足しているため、再発送を依頼する | time:11:52 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- [ ] 採用活動のため、来週から「龍蛇」で8週間募集をかける | time:11:03 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- [ ] 「アイコーダー」の「基本給食品対応」という運用が正しいか確認し、履歴を残す | time:11:03 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- [ ] 入社処理関連書類の押印タイミングを考慮し、先行して作成・回送を進める | time:11:22 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- [ ] 休憩時間運用の実態（17時以降の休憩報告、休憩時間ゼロの記載）について、いつからの運用か病院側の認識を含め調査し記録する | time:11:34 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- [ ] アイエンヌファクトリーから送付される電子書籍出版サービスの資料を確認し、今後の連携タイミングを検討する | time:10:15 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- [ ] 未払いの請求書が到着次第、振り込みを実行する | time:09:29 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- [ ] 6:30の放送の編集を行う | time:07:31 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+
+## 2026-06-10
+
+- [ ] 個別販売のLPに「自分市LP」への導線を追加する | time:07:04 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- [ ] 住民税の入力処理を行う | time:13:07 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- [ ] デューダダイレクトに関する打ち合わせと内容確認を行う | time:13:09 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- [ ] リストとアンケート内容のチェックを行う | time:13:10 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- [ ] 新プロジェクトの人員採用条件（給与、勤務時間など）を早めに決定する | time:13:25 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- [ ] 求人に関する訂正を豆印で処理する仕組みを検討/適用する | time:15:46 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- [ ] 求人票に「スタッフ管理・指導、現場作業あり」という記載を米印程度で追加する | time:16:56 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- [ ] 経験者・未経験者で給与を分ける記載を求人票に追加する | time:16:57 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- [ ] 求人掲載用の写真を選定し、必要であれば撮影を指示する | time:17:20 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- [ ] 企業マイページの作成とスカウトメールの文面を作成する | time:17:37 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- [ ] 求人掲載日程を調整する（18日設定、間に合わなければ22日にずらす） | time:17:42 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- [ ] マイナビにおける決済権のある人物を確認する | time:10:36 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- [ ] 杉浦氏退職に伴う請求書作成方法（調整分を別途作成するか）を確認する | time:08:55 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- [ ] 返信メールの対応を行う | time:08:46 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- [ ] デューダ取材対応を行う（夕方） | time:08:30 | priority:high | due:2026-06-10 | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- [ ] Kobaさん宛てのメールにCCを設定する | time:13:00 | priority:low | due:- | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+
+## 2026-06-09
+
+- [ ] 別荘の投稿を削除する | time:21:59 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- [ ] 「正しいAIの使い方」勉強会の案内をQRコード/概要欄から友だち追加した人に送る | time:20:50 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- [ ] パスワード関連の問題を確認・解決する | time:17:45 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- [ ] 新しい動画を近いうちにアップロードする | time:17:05 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- [ ] 5月分の請求に関する不明点（請求不可の理由、5分単位から15分単位への変更の影響など）を確認・解決する | time:16:39 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- [ ] きつ井さんの休憩時間記録の正確性について、人事および現場と連携し、病院側の見解も確認の上、事実に基づいた対応方針を決定する | time:16:26 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- [ ] 法人登録に必要な社員証明書作成と送付を行う | time:15:58 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- [ ] Yuichiの法人アカウント登録のためのパスワード（日備5553）の確認を促す | time:15:55 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- [ ] 以前の問題の解決状況を確認する | time:14:51 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- [ ] 大学案件に関する詳細（スケジュール感、既存会社からの切り替えタイミングなど）の打ち合わせを行う | time:14:38 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- [ ] 利用通知書を確認し、PC給与と共通の問い合わせ先番号を探す | time:14:32 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- [ ] 営業評価システムの具体的な仕組みを検討する | time:14:01 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- [ ] メールが届かない技術的な問題を解決する | time:14:06 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- [ ] 新規入札案件のクライアントへ挨拶に行く | time:14:15 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- [ ] 名古屋市内の日本語学校をピックアップし、外国人留学生のアルバイト募集について電話またはメールで問い合わせる | time:13:33 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- [ ] 65歳定年を迎える社員に関する発券契約の変更について、先方と協議する | time:11:58 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- [ ] 契約変更後、受注表を提出する | time:11:58 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- [ ] 絵本企画の「練習式」の詳細を確認し、制作・販売フローを自走できるよう構築する | time:07:22 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- [ ] 自分史作成サービスの仕組みを自走できるよう作り上げる | time:07:23 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- [ ] 営業戦略を立案し、その仕組み化を進める | time:05:14 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+
+## 2026-06-08
+
+- [ ] Yuichi氏との打ち合わせ設定（今週土曜日10時半頃） | time:10:18 | priority:high | due:2026-06-13 | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- [ ] 経費精算関連の伝票作成とコンサルタントへのカード渡し | time:10:33 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- [ ] 駐車場を2台1件で探す | time:08:13 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- [ ] 受信メール200件の確認と対応 | time:08:13 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- [ ] アンケート実施のため、3人へのアンケート依頼とオンライン会議設定の技術的検討 | time:09:57 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- [ ] 従業員の健康診断費用に関する本人への確認と、支払い上限（一般検診金額の範囲内）の検討 | time:08:54 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- [ ] 契約更新判断時期の再確認（1ヶ月前より前倒しで判断できるよう調整） | time:11:40 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- [ ] 求人プラットフォームでの候補者へのアプローチ状況（スカウトメッセージ、応募状況）の確認と今後の様子見 | time:10:59 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- [ ] 自動バックアップ設定（毎日夜中の3時） | time:03:05 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- [ ] バックアップボタンの表示権限設定（全員に見せないように同期モードで設定） | time:02:47 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- [ ] Yuichi氏の業務状況確認と、成果物の修正・回収・再送に関するタスクの推進 | time:10:41 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- [ ] クライアントのITリテラシー不足や固定観念に対し、「できるか聞く」ことの重要性を伝えるコミュニケーション戦略の検討 | time:13:53 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+
+## 2026-06-07
+
+- [ ] 各ユーザーの所持部署のデータについてバックアップを取り、良い方法や仕組みを構築する。 | time:21:03 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+- [ ] YouTube活動を再開する（7年ぶり）。 | time:20:54 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+- [ ] AIを活用した営業アポイント調整の自動化ツールを検討/導入する。 | time:18:52 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+- [ ] AIを活用して商談後のフォローアップや次のプロセス準備のリマインダー機能を導入する。 | time:18:54 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+- [ ] 部署登録が解除されている理由を調査・確認する。 | time:18:40 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+- [ ] 証券口座の登録状況を確認する。 | time:18:19 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+- [ ] KDPの出版作業を行う。 | time:18:05 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+- [ ] 書籍情報について、フリガナをカタカナにし、サブタイトルにもフリガナとローマ字表記を追加する。 | time:16:57 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+- [ ] マンガコンテンツの2ページ目のセリフが子供の顔にかぶっているので、セリフの場所を修正する。 | time:15:08 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+- [ ] マンガコンテンツの主人公が途中で女の子に変わってしまっているので、最後まで最初の男の子に統一する。 | time:15:09 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+- [ ] テキストボックスと文字の配置を中央に調整する。 | time:11:08 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+- [ ] ページの画像（ピドー画像）を作り直す。 | time:10:36 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+- [ ] ペーパーバック版の画像も作り直す。 | time:10:36 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+- [ ] 書籍の複数ページの修正を行う。 | time:08:45 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+- [ ] 書籍の表紙の次ページにあるコピーライトを最終ページの下部に移動するよう見直す。 | time:08:45 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+- [ ] マンガ内の室内で靴を履いているシーンを修正/確認する。 | time:08:45 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+
+## 2026-06-06
+
+- [ ] Yuichiに対し、FAQに「修正は2回まで」という回数制限と「ただし納品時期が遅れる場合がある」というただし書きを追加するよう指示。 | time:16:36 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
+- [ ] Yuichiに対し、写真や個人情報利用に関する個人情報取り扱いの文章を作成するよう指示。 | time:16:37 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
+- [ ] Yuichiに対し、絵本に関するLPを、今回の絵本だけでなく将来の複数絵本にも使える汎用的なものとして作成するよう指示。 | time:16:39 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
+- [ ] LPO（ランディングページ最適化）を作成する。 | time:15:32 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
+- [ ] 途中で止まっている現状の作業について、進捗を確認し、再開・推進する。 | time:08:23 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
+- [ ] ベストセラーとなる一冊目の制作に向けて、その手順を検討する。 | time:04:54 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
 
 ## 2026-06-05
 

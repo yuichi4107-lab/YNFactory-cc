@@ -1,0 +1,86 @@
+{
+  "id": "2026-06-13_ok-3-chatgpt",
+  "created_at": "2026-06-13T08:42:55+09:00",
+  "topic": "ChatGPTに議事録を3分でまとめさせる方法",
+  "title": "【コピペOK】議事録を3分で作るChatGPT術",
+  "caption": "議事録作成に毎回30分…その時間、もったいないです。ChatGPTなら会議のメモを貼り付けるだけで、3分で議事録が完成します。コツは「決定事項・TODO・期限の3つに分けて要約して」と形式まで指定すること。箇条書き指定を足すと、さらに読みやすくなります。社外秘の情報を入れないことだけは注意してくださいね。浮いた時間で次の仕事にすぐ取りかかれます。フォローで毎日使えるAI活用術を発信中。保存していつでも見返してください。",
+  "hashtags": [
+    "#ChatGPT",
+    "#AI活用術",
+    "#仕事術",
+    "#業務効率化",
+    "#時短"
+  ],
+  "video": {
+    "path": "/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc/.company/outputs/shorts-factory/2026-06-13_ok-3-chatgpt/final.mp4",
+    "duration": 51.03,
+    "size_mb": 5.18
+  },
+  "output_dir": "/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc/.company/outputs/shorts-factory/2026-06-13_ok-3-chatgpt",
+  "quality": {
+    "pass": true,
+    "avg_cer": 0.0365,
+    "report_path": "/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc/.company/outputs/shorts-factory/2026-06-13_ok-3-chatgpt/quality_report.json"
+  },
+  "status": "posted",
+  "review": {
+    "owner_approved": true,
+    "decided_at": "2026-06-13T08:55:16.464832",
+    "via": "telegram"
+  },
+  "telegram": {
+    "message_id": 28
+  },
+  "platforms": {
+    "x": {
+      "enabled": true,
+      "status": "posted",
+      "url": "https://x.com/i/status/2065583818959180201",
+      "error": null,
+      "posted_at": "2026-06-13T08:55:34+09:00"
+    },
+    "youtube": {
+      "enabled": false,
+      "status": "pending",
+      "url": null,
+      "error": null,
+      "posted_at": null
+    },
+    "instagram": {
+      "enabled": false,
+      "status": "pending",
+      "url": null,
+      "error": null,
+      "posted_at": null
+    },
+    "tiktok": {
+      "enabled": false,
+      "status": "pending",
+      "url": null,
+      "error": null,
+      "posted_at": null
+    }
+  },
+  "history": [
+    {
+      "ts": "2026-06-13T08:42:55+09:00",
+      "event": "created"
+    },
+    {
+      "ts": "2026-06-13T08:42:55+09:00",
+      "event": "Telegram承認待ち"
+    },
+    {
+      "ts": "2026-06-13T08:55:16+09:00",
+      "event": "Telegramで承認"
+    },
+    {
+      "ts": "2026-06-13T08:55:34+09:00",
+      "event": "x:posted https://x.com/i/status/2065583818959180201"
+    },
+    {
+      "ts": "2026-06-13T08:55:34+09:00",
+      "event": "全媒体投稿完了"
+    }
+  ]
+}

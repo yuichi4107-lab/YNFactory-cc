@@ -138,6 +138,9 @@ YYYY-MM-DD_slug.json
 ## 6. 実装方針
 
 - 初期版では、投稿キュー生成とdry-run確認までをローカルで行う。
-- Xは既存 `scripts/post_to_x.py` を後続で呼び出す。
-- Threads / InstagramはMeta Step6完了後に `scripts/post_to_meta.py` を実装して接続する。
+- Xは既存 `scripts/post_to_x.py` を呼び出す。2026-06-09時点で `--dry-run` に対応済み。
+- Threads / Instagramは `scripts/post_to_meta.py` でdry-runに対応済み。本番投稿はMeta Step6完了後に接続する。
+- 共通キュー単位では `scripts/social_auto_ops.py dry-run <queue.json>` で X / Threads / Instagram をまとめて検証する。
+- dry-run結果は `.company/marketing/social-auto-ops/dry-runs/` にJSON保存する。
+- dry-runでは文字数上限、Instagram画像必須、画像ファイル存在、未解決プレースホルダー、オーナー承認状態を確認する。
 - noteは既存noteワークフローを使い、AIアカウントの下書き保存までを基本にする。

@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-06T07:01:09
+generated_at: 2026-06-13T07:00:54
 ---
 
 # Lifelog Topics
@@ -10,6 +10,153 @@ generated_at: 2026-06-06T07:01:09
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-12
+
+- - **企業向けSNSショート動画広告の最適なツール・プラットフォーム** (03:52) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+-   - 理由: 企業へのSNSショート動画広告提供を検討しており、効果的なプラットフォーム選定のため。 | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- - **役職手当と固定残業代の法的解釈と判例** (10:01) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+-   - 理由: 企業の労務問題において、役職手当が固定残業代として認められるかどうかの判例や法的定義の動向を理解するため。 | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- - **就業規則・雇用契約における各種手当（特に役職手当・固定残業代）の適切な記載方法** (10:46) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+-   - 理由: 労務トラブルを避けるため、労働基準法に準拠しつつ、明確で争いの余地のない文言で手当を定義する方法を模索するため。 | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- - **AI利用におけるセキュリティとデータプライバシーのベストプラクティス** (12:09) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+-   - 理由: AIを業務に活用する際、顧客データなどの機密情報を安全に扱うためのリスク管理として。 | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- - **効果的な人材育成プログラムと明確な職務記述書（ジョブディスクリプション）の作成方法** (11:41) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+-   - 理由: 他社の採用・人材定着の課題から、自身のフリーランス・コンサルティング業務に活かすため、また将来的な自身の事業拡大に備えるため。 | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- - **AIを活用した業務自動化の具体的なケーススタディ** (12:04) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+-   - 理由: 自身のフリーランス（AI活用・業務自動化）事業の拡大に向け、様々な業界でのAI導入事例や成功パターンを学ぶため。 | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- 1. **AIを活用した業務自動化・開発案件** [freelance] ★★★★★ (12:04) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+-    - AI (ChatGPTなど) を利用して、日常のチェック業務、プログラミング支援、PDFデータ（タイムカードなど）の整形・Excelへの転記といった業務を自動化するサービスを提供。月額数千円〜数万円の有料AIプランの費用対効果（1人分の人件費で10人以上の仕事をこなすなど）を強調し、組織的導入の価値を訴える。 | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- 2. **会話ログ分析・自己分析サービスの提供** [freelance] ★★★★☆ (12:09) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+-    - 自身の会話ログをAIで文字起こし・分析し、思考パターンやタスク・アイデアを抽出する仕組みを構築。これを個人事業主や経営者向けの自己分析・業務効率化ツールとして提供する可能性。 | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- 3. **デジタル変革コンサルティング（保守的業界向け）** [freelance] ★★★★☆ (11:29) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+-    - ビルメンテナンスのような保守的な業界の企業に対し、AIやデジタルツールの導入を推進し、業務効率化や組織成長を支援するコンサルティングサービス。特に、古い世代のITリテラシー不足や変化への抵抗に対応するノウハウを活かす。 | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- 4. **企業向けSNSショート動画広告制作** [other] ★★★★☆ (03:51) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+-    - 企業がSNSを活用してショート動画を広告として配信したいというニーズに応え、企画・制作を行うサービス。最適なツールやプラットフォームの選定から支援。 | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- 5. **TikTokを活用したコンテンツプロモーション** [instagram|youtube|manga|ebook] ★★★☆☆ (04:35) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+-    - 電子書籍、マンガ、YouTube動画などのコンテンツをプロモーションするため、TikTokでの動画アップロードとハッシュタグ戦略を継続的に実施。 | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+
+## 2026-06-11
+
+- - **電子書籍市場の動向と漫画コンテンツの若年層への親和性** (10:09) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+-   - 理由: アイエンヌファクトリーからの提案に基づき、10代20代の若年層における電子書籍（特に漫画）の消費動向と、コンテンツ制作への応用可能性を深く理解するため。 | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **新規事業におけるノウハウ継承と標準化のベストプラクティス** (14:17) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+-   - 理由: 新規事業でのノウハウ不足、過去の失敗事例（コン長）、及び機械的な管理システムの導入提案があり、効果的な業務引き継ぎ・標準化の方法論を確立するため。 | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **労働環境における従業員への配慮とフォロー体制の改善** (17:04) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+-   - 理由: 19歳のシングルファーザー従業員への配慮不足が指摘されており、若年層や特別な家庭環境を持つ従業員に対する適切な情報共有とフォロー体制を構築するため。 | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **SpaceX上場がネットワーク業界に与える影響とフリーランス事業への応用** (12:20) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+-   - 理由: SpaceXの上場によるネットワーク関係の変化が言及されており、フリーランス事業（AI活用・業務自動化）における技術トレンドや新たなビジネス機会を探るため。 | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- 1. **電子書籍/マンガコンテンツを活用した学校向けパンフレット制作** [ebook|manga] ★★★★★ (10:06) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+-    - 採用課題を持つ企業向けに漫画で仕事内容を視覚的に説明するノウハウを、学校向けパンフレットに応用。10代20代に漫画が効果的で、電子書籍市場の9割が漫画である背景から。データ納品（PDF, 画像）が可能で、ホームページ掲載、印刷、QRコード誘導など多様な活用方法が提案された。 | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- 2. **漫画コンテンツを活用した企業向け採用支援サービス** [manga] ★★★★☆ (10:06) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+-    - 企業の仕事内容が伝わりにくいという課題を漫画で解決し、新卒学生が仕事内容をイメージしやすくするサービス。 | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- 3. **機械的な業務管理・アラートシステムの導入** [freelance|other] ★★★★☆ (16:21) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+-    - 現場管理の効率化とミス防止のため、年間予定を登録しアラートを出すような機械的な管理システムの導入。フリーランス事業（AI活用・業務自動化）で開発し、他社にも展開できる可能性。 | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- 4. **ショート動画の効率的な制作・運用** [youtube] ★★★☆☆ (20:05) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+-    - 月額1万円で30秒前後のショート動画を10〜20本制作する目安。YouTubeチャンネル運用における効率化の検討。 | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- 5. **他社の無料広告の活用** [other] ★★☆☆☆ (13:32) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+-    - コストをかけずに利用できる広告媒体の有無について検討する。 | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+
+## 2026-06-10
+
+- - **備研の現場立ち上げ・管理の実態** (12:34) | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+-   - 理由: 採用戦略を立てる上で、現場業務の具体的な困難や必要なスキルを理解するため。 | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - **メールアドレス変更時のシステムエラー原因** (10:56) | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+-   - 理由: システム側で発生しているメールアドレス変更時のエラー（ロックアウトの可能性）を特定するため。 | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - **過去のメール送信状況** (10:56) | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+-   - 理由: システムエラー発生時の状況把握と、メールが正しく届いているかの確認のため。 | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- 1. **電子書籍LPからの導線強化** [ebook] ★★★☆☆ (07:04) | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+-    - 個別販売のLPから「自分市LP」への導線を追加することで、関連コンテンツへの流入を増やす。 | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- 2. **外部紹介による採用チャネル活用** [other] ★★☆☆☆ (12:35) | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+-    - 営業人材の採用において、外部からの紹介や「古本メーカー」のような新たなチャネルに頼る戦略を検討。 | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- 3. **管理能力重視の採用方針** [other] ★★★☆☆ (13:05) | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+-    - 採用において、特定の経験よりも管理能力や正確性、堅実な性格を持つ人材を重視する。 | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+
+## 2026-06-09
+
+- - **AI時代におけるビジネス知識とアウトプット判断軸の重要性** (21:09) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+-   - 理由: 若手社員のAI活用能力とビジネス知識のギャップ、及びAI導入企業での課題についての考察がされたため。 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- - **AIを活用した業務自動化の具体的な事例と課題** (21:09) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+-   - 理由: 多くの会社でAIを使った業務が想定されているが、具体的な活用方法や「クリア」の意味、使いこなしの苦労が言及されたため。 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- - **AIによるフリーランス市場の変化と生き残り戦略** (20:37) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+-   - 理由: AIによる仕事の減少がフリーランスにも影響を与え、正社員に戻る人もいるという言及があったため。 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- - **AIを活用した業務自動化の具体的な事例（スプレッドシート整理、支払い処理など）** (20:38) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+-   - 理由: AIが代替可能な仕事の具体例として挙げられており、フリーランスのAI活用開発案件領域に直接関連するため。 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- - **新しい動画編集方法の習得** (17:05) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+-   - 理由: 新しい編集方法を試行錯誤したがうまくいかなかったため、今後の動画品質向上のために。 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- - **競合他社のサービス価格と価格設定戦略の調査** (16:31) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+-   - 理由: 自社の価格が安いと感じていること、および妥当性の判断材料として。 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- - **特定技能ビザを持つ外国人人材の直接雇用におけるメリット・デメリット、および関連法規・プロセス** (16:01) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+-   - 理由: 自社雇用とエージェント経由の比較、双方のメリット、手続きの難易度について詳しく調べる必要があるため。 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- - **特定技能ビザ関連の紹介機関の実態と手数料、透明性に関する調査** (16:02) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+-   - 理由: 間に入る機関が不当に手数料を徴収している可能性が言及されたため。 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- - **外国人留学生の雇用における法的制約（週28時間制限など）と、成功事例・課題** (13:06) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+-   - 理由: 雇用における具体的な課題が複数挙げられており、対策を講じる必要があるため。 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- - **フォークリフト免許取得費用に関する企業負担と、人材定着のためのインセンティブ設計** (13:28) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+-   - 理由: 免許取得後の早期退職を懸念しているため、免許取得支援と定着を両立させる方策を検討するため。 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- - **「コデックス」における「ゴール」に類似する営業戦略/自動化関連のスキルや機能の調査** (05:16) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+-   - 理由: 営業戦略の仕組み化に活用できるツールを探しているため。 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- - **会話を通じて業務を進める手法（「ブレッドオフ」）に関する調査** (04:56) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+-   - 理由: 効率的な業務推進方法を模索しているため。 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- 1. **AI活用・業務自動化セミナー/勉強会** [freelance] ★★★★☆ (20:50) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+-    - AI時代を生き残るための「正しいAIの使い方」や「AIの土台」に関する勉強会を提供。QRコードや概要欄から友だち追加で案内する。 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- 2. **Yuichiとの共同動画制作** [youtube] ★★★☆☆ (17:08) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+-    - 新しいカメラ、マイク、編集ソフトを互いに購入したため、共同で動画を撮影・制作する。 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- 3. **営業評価システムの改善** [other] ★★★★☆ (14:00) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+-    - 新規・喪失顧客の評価を3年間で持ち越すなど、営業と管理の割合を考慮した評価システムを考案する。 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- 4. **日本語学校の留学生を活用した人材採用** [other] ★★★★☆ (13:06) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+-    - 労働人口減少や人手不足に対応するため、日本語学校の留学生（週28時間制限）をアルバイトとして採用する。シフトの柔軟性やコスト効率を考慮した運用を検討。 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- 5. **絵本企画** [ebook] ★★★★☆ (07:22) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+-    - 絵本を制作し、ペーパーバック化、QRコードからLPへ誘導し個別受注を受ける流れを構築。ターゲットは親、両親、祖父母。 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- 6. **自分史作成サービス** [ebook] ★★★★★ (07:22) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+-    - 祖父母をターゲットに、文字中心版とフルマンガ版の2種類の自分史を作成するサービス。電子書籍/マンガ制作スキルを活用。 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- 7. **営業戦略の仕組み化** [other] ★★★★☆ (05:14) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+-    - 営業戦略を立案し、その実行プロセスをシステムとして構築する。 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+
+## 2026-06-08
+
+- - **地域ごとの健康診断補助制度と医療機関（名古屋市：巡狩階、岡崎市：宇野病院）** (08:52) | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+-   - 理由: 従業員の健康診断の義務と費用負担を効率的に行うため | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- - **協会けんぽ以外の健康保険組合の補助金制度** (08:54) | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+-   - 理由: 従業員の健康診断費用を補助する制度の活用を検討するため | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- - **世界的ブランド（例：バナナで有名な企業）のビジネスモデル** (05:53) | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+-   - 理由: 自身の事業のブランド戦略構築の参考とするため | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- - **新しい採用手法「ダイレクトリクルーティング」の効果と導入可能性** (11:23) | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+-   - 理由: Instagram転職系アカウント運用での採用支援や、自身の採用活動の改善のため | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- 1. **自身のプロモーション活動（企業モデル）** [other] ★★★★☆ (18:38) | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+-    - 若いうちにしかできない仕事として企業モデルに意欲を示しており、自身のInstagramや電子書籍でのプロモーションに繋がる可能性がある。 | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- 2. **ITリテラシー教育コンテンツの開発** [freelance] ★★★★★ (13:53) | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+-    - AI活用・業務自動化の案件において、顧客のITリテラシーの低さや固定観念、質問への抵抗が課題。これらを解決するための教育コンテンツ（電子書籍、YouTube）やサービス提供を検討。 | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- 3. **Instagram転職系アカウントでの求職者向け情報提供** [instagram] ★★★★☆ (11:11) | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+-    - 求職者にとって理想的な面接時間帯（夜間オンライン）や、経験者採用の給与条件・年齢制限（初年度年収420-480万、45歳くらいまで）など、具体的な転職市場の情報を提供。 | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- 4. **電子書籍でのポーカー関連コンテンツ収益化** [ebook] ★★★★☆ (07:17) | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+-    - 電子書籍においてポーカーレベルで食べさせていくことを目標とし、5000円の収益化を目指す。 | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- 5. **YouTubeでの社会・歴史問題解説コンテンツ** [youtube] ★★★☆☆ (06:49) | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+-    - 台湾の歴史と独立、競馬の判定問題、マレーシア航空機内トラブル、ガンジー主義、死刑制度、共産主義国家など、YouTubeで解説動画チャンネルで取り上げるテーマの候補。 | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- 6. **リモートワーク支援サービス/ツール開発** [freelance] ★★★★☆ (05:35) | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+-    - リモートワークの課題（生産性低下）と、テクノロジー活用による将来性を踏まえ、フリーランスとしてリモートワークを促進するサービスやツールの開発。 | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+
+## 2026-06-07
+
+- - **AIで収益を得る方法（自分のスキルを活かす、AIをツールとして提供する、AI関連コンテンツを販売する）** (18:51) | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+-   - 理由: AIを活用した収益化について深掘りするため。 | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+- 1. **宿泊禁止での日本縦断企画** [youtube] ★★★☆☆ (19:52) | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+-    - 飛行機や宿泊を禁止し、様々な乗り物を駆使して日本を縦断するYouTube企画。 | source:`.company/inputs/organized/lifelogs/2026-06-07-lifelog-insights.md`
+
+## 2026-06-06
+
+- - **既存のマンガ本制作スキルがベストセラー電子書籍制作に活用できるかの調査** (04:55) | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
+-   - 理由: ベストセラーとなる一冊目の制作にあたり、既に登録済みのマンガ本制作スキルをどのように応用できるかを確認するため。 | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
+- - **世界に一つだけのオリジナル作品の制作費用** (04:45) | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
+-   - 理由: 「世界に一つだけの」といったコンセプトのオリジナル作品を作成する場合にかかる費用概算を把握するため。 | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
+- - **日本の母親の家事における社会的な期待と「愛情」の認識** (08:05) | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
+-   - 理由: 料理における手間と「愛情」の関連性、冷凍食品に対する認識、専業主婦時代の背景など、現代社会における家事・育児観を深掘りし、コンテンツ制作のヒントを得るため。 | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
+- 1. **汎用的な絵本LPの作成と複数絵本展開** [ebook] ★★★★☆ (16:39) | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
+-    - 今後の複数絵本制作を見据え、特定の絵本に限定せず、汎用的に利用できるランディングページを構築する。 | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
+- 2. **ベストセラーとなる一冊目の電子書籍/マンガ本の制作** [ebook|manga] ★★★★★ (04:54) | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
+-    - ベストセラーを目指す一冊目の電子書籍またはマンガ本の制作に着手する。制作手順の検討、既存スキルの活用、費用調査が含まれる。 | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
+- 3. **日本の家事・育児における社会的期待と「愛情」の認識に関するコンテンツ制作** [youtube|ebook] ★★★☆☆ (08:05) | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
+-    - 日本の母親が家事、特に料理において抱く「愛情」や「犠牲」の認識、家事の効率化（冷凍食品、洗濯機、掃除機など）と結びつけられる社会的期待について、歴史的背景を交えて考察するコンテンツ（YouTube動画や電子書籍など）を制作する。 | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
 
 ## 2026-06-05
 

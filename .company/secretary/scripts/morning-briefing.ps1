@@ -16,6 +16,9 @@ $LogDir   = 'G:\マイドライブ\YNFactory-cc\.company\secretary\scripts\logs'
 $TG_BOT_TOKEN = [Environment]::GetEnvironmentVariable('TG_BOT_TOKEN','User')
 $TG_CHAT_ID   = [Environment]::GetEnvironmentVariable('TG_CHAT_ID','User')
 if ([string]::IsNullOrEmpty($TG_BOT_TOKEN)) { $TG_CHAT_ID = '8571447808' }
+# 2026-06-11 オーナー指示: 6:30のTelegram配信を停止（6:45のMac daily-priority配信に一本化）。
+# TODOファイル自動生成とトーストは継続。再開するには $true に戻す。
+$SendTelegram = $false
 New-Item -ItemType Directory -Force -Path $LogDir | Out-Null
 $LogFile  = Join-Path $LogDir ('briefing-' + (Get-Date -Format 'yyyy-MM-dd') + '.log')
 
@@ -168,7 +171,9 @@ try {
     $sentMarkerDir = Join-Path $env:LOCALAPPDATA 'YNFactory-Briefing'
     New-Item -ItemType Directory -Force -Path $sentMarkerDir | Out-Null
     $sentMarker = Join-Path $sentMarkerDir ('tg-sent-' + $todayStr)
-    if (Test-Path -LiteralPath $sentMarker) {
+    if (-not $SendTelegram) {
+        Write-Log 'Telegram send disabled by config (owner request 2026-06-11).'
+    } elseif (Test-Path -LiteralPath $sentMarker) {
         Write-Log 'Telegram already sent today, skipping.'
     } else {
         try {

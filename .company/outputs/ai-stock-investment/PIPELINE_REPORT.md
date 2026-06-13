@@ -119,3 +119,5 @@ OpenAI API、OPENAI_API_KEY、openai-image-gen、client.images.generate/edit は
 - 画像連番: page_001 - page_100
 - 最終spine: `page_100`
 - 最終ページ内容: 書籍紹介
+- 旧56ページ版画像との一致: 0件
+- 本文マンガ画像 `page_002` - `page_097` は100ページ版画像へ統一

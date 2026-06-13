@@ -1,0 +1,44 @@
+{
+  "schema_version": "2026-06-09",
+  "service": "jibunshi-ebook-manga",
+  "required_fields": [
+    "order_id",
+    "buyer_name",
+    "subject_name",
+    "buyer_relationship",
+    "package",
+    "publication_scope",
+    "final_approver"
+  ],
+  "packages": [
+    "text",
+    "manga",
+    "bundle",
+    "bundle_paperback"
+  ],
+  "publication_scopes": [
+    "family_private",
+    "limited_share",
+    "kdp_public_candidate"
+  ],
+  "consent_required": {
+    "before_production": [
+      "subject_awareness_or_representative_authority",
+      "material_usage_permission",
+      "photo_usage_policy",
+      "real_name_policy"
+    ],
+    "before_publication": [
+      "final_text_approval",
+      "final_manga_approval",
+      "external_publication_approval",
+      "kdp_submission_approval"
+    ]
+  },
+  "output_contract": {
+    "order_root": ".company/outputs/jibunshi-orders/{order_id}/",
+    "text_edition": ".company/outputs/ebooks/{order_id}-text/",
+    "manga_edition": ".company/outputs/ebooks-manga/{order_id}-manga/",
+    "delivery": ".company/outputs/jibunshi-orders/{order_id}/delivery/"
+  }
+}

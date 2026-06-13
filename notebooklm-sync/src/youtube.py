@@ -155,7 +155,17 @@ def list_recent_videos(
     last_exc: Exception | None = None
     for attempt in range(1, retry_count + 1):
         try:
-            feed = feedparser.parse(rss_url)
+            # feedparser 既定の User-Agent は YouTube に bot 判定され、
+            # RSS エンドポイントが 404/500 の HTML エラーページを返すことがある。
+            # ブラウザ相当の UA / Accept を明示して成功率を上げる。
+            feed = feedparser.parse(
+                rss_url,
+                agent=_HTML_HEADERS["User-Agent"],
+                request_headers={
+                    "Accept": "application/atom+xml,application/xml,text/xml;q=0.9,*/*;q=0.8",
+                    "Accept-Language": _HTML_HEADERS["Accept-Language"],
+                },
+            )
             # feedparserはネットワークエラーでも例外を投げないため bozo フラグを確認する
             if feed.bozo and not feed.entries:
                 raise RuntimeError(f"feedparser bozo error: {feed.bozo_exception}")
@@ -190,6 +200,26 @@ def list_recent_videos(
             if attempt < retry_count:
                 time.sleep(retry_backoff_sec)
 
-    raise RuntimeError(
-        f"list_recent_videos failed for channel {channel_id} after {retry_count} attempts"
-    ) from last_exc
+    # RSS が全リトライ失敗（YouTube 側の断続的な 404/500 が主因）。
+    # yt-dlp は内部 API を使うため RSS のように弾かれにくい。最後の砦として委譲する。
+    logger.warning(
+        "channel_id=%s RSS failed after %d attempts; falling back to yt-dlp",
+        channel_id, retry_count,
+    )
+    try:
+        videos = list_all_videos(
+            channel_id=channel_id,
+            retry_count=retry_count,
+            retry_backoff_sec=retry_backoff_sec,
+            max_videos=max_entries,
+        )
+        logger.info(
+            "channel_id=%s yt-dlp fallback: %d videos fetched",
+            channel_id, len(videos),
+        )
+        return videos
+    except Exception as exc:
+        raise RuntimeError(
+            f"list_recent_videos failed for channel {channel_id}: "
+            f"RSS after {retry_count} attempts and yt-dlp fallback both failed"
+        ) from exc

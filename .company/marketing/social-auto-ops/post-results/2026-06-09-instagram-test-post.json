@@ -1,0 +1,16 @@
+{
+  "posted_at_jst": "2026-06-09T21:54:00+09:00",
+  "platform": "instagram",
+  "account": "nakada_yuichi",
+  "ig_business_account_id": "17841477801881765",
+  "media_id": "17865315447690414",
+  "permalink": "https://www.instagram.com/p/DZXaimDE-nk/",
+  "caption": "Meta API テスト投稿です。SNS自動投稿基盤のInstagram接続確認中です。",
+  "image_url": "https://ai.yn-factory.com/assets/first-task-workshop.png",
+  "mode": "actual",
+  "owner_approved": true,
+  "tokens_stored_in": ".company/engineering/sns-credentials/.env",
+  "tokens_included_in_this_file": false,
+  "facebook_posted_in_this_step": false,
+  "threads_posted": false
+}

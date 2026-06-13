@@ -1,0 +1,15 @@
+{
+  "posted_at_jst": "2026-06-09T21:50:52+09:00",
+  "platform": "facebook",
+  "page_name": "YN Factory 出版プロデュース",
+  "page_id": "1015019845037766",
+  "post_id": "1015019845037766_122103484112596516",
+  "permalink_url": "https://www.facebook.com/122103484142596516/posts/122103484112596516",
+  "message": "Meta API テスト投稿です。SNS自動投稿基盤の接続確認中です。",
+  "mode": "actual",
+  "owner_approved": true,
+  "tokens_stored_in": ".company/engineering/sns-credentials/.env",
+  "tokens_included_in_this_file": false,
+  "instagram_posted": false,
+  "threads_posted": false
+}

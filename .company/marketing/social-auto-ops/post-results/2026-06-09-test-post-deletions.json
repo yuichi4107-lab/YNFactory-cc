@@ -1,0 +1,41 @@
+{
+  "deleted_at_jst": "2026-06-09T22:00:31.983750+09:00",
+  "final_verified_at_jst": "2026-06-09T22:15:26+09:00",
+  "owner_requested_delete": true,
+  "tokens_included_in_this_file": false,
+  "final_status": {
+    "facebook_deleted": true,
+    "instagram_deleted": true,
+    "instagram_deleted_via": "Chrome UI after owner logged in",
+    "instagram_verification": "Permalink shows unavailable/deleted-page message and the test caption is no longer present."
+  },
+  "results": [
+    {
+      "platform": "facebook",
+      "object_id": "1015019845037766_122103484112596516",
+      "url": "https://www.facebook.com/122103484142596516/posts/122103484112596516",
+      "http_status": 200,
+      "response": {
+        "success": true
+      },
+      "deleted": true
+    },
+    {
+      "platform": "instagram",
+      "object_id": "17865315447690414",
+      "url": "https://www.instagram.com/p/DZXaimDE-nk/",
+      "http_status": 400,
+      "response": {
+        "error": {
+          "message": "(#10) Insufficient permissions to access this data",
+          "code": 10,
+          "type": "OAuthException",
+          "fbtrace_id": "A3otbu-Bqa8OuqgPljcCdDI"
+        }
+      },
+      "api_deleted": false,
+      "browser_ui_deleted": true,
+      "deleted": true
+    }
+  ]
+}

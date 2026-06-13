@@ -32,11 +32,20 @@ status: in_progress
    - 成果物: `scripts/social_auto_ops.py`
    - `create` で投稿キューJSONを生成
    - `preview` で媒体別投稿文を確認
+   - 2026-06-09追記: `dry-run` で X / Threads / Instagram の文字数・画像要件・承認状態を検証
+   - 2026-06-09追記: dry-run結果を `.company/marketing/social-auto-ops/dry-runs/` にJSON保存
    - `python3 -m py_compile` 合格
 
 6. サンプルキュー生成
    - 成果物: `.company/marketing/social-auto-ops/queue/2026-05-26-ai導入はツール選びより社内説明の1枚から始める.json`
    - X / Threads / Instagram / note CTA への展開を確認済み
+   - 2026-06-09追記: LP URLとInstagram画像パスを設定し、X / Threads / Instagram すべて `ready_for_review` でdry-run通過
+
+7. 個別投稿スクリプトのdry-run
+   - `scripts/post_to_x.py --dry-run` でX投稿文を検証
+   - `scripts/post_to_meta.py instagram ... --dry-run` でInstagramキャプション・画像必須条件を検証
+   - `scripts/post_to_meta.py threads ... --dry-run` でThreads投稿文を検証
+   - 2026-06-09追記: `scripts/post_to_meta.py` にFacebook Page / Instagramの本番投稿処理を実装。誤投稿防止のため本番投稿時は `--publish-approved` 必須。Instagram本番投稿はMeta仕様により公開HTTPS画像URL必須。Threads本番投稿は別フロー確定後に対応。
 
 ## 現時点の運用設計
 
@@ -128,7 +137,18 @@ CTA:
 
 3. Meta Step6
    - Instagram / Threads投稿にはMeta権限とトークンが必要。
-   - 現在は権限追加とGraph API Explorerでのトークン取得が未完了。
+   - Page / Instagram向けの権限追加とGraph API Explorerでの短期トークン取得は完了。Threadsは別フローが必要。
+   - 2026-06-09追記: dry-runはトークン不要で実行可能。実投稿は長期トークン化・`.env`反映・本番投稿処理実装後に、直前承認を取って実施する。
+   - 2026-06-09追記: Developer ConsoleでPage系権限（`pages_show_list`, `pages_manage_posts`, `pages_read_engagement`, `pages_manage_metadata`, `business_management`）を追加済み。
+   - 2026-06-09追記: Instagramユースケース「Instagramでメッセージとコンテンツを管理」を追加し、コンテンツ管理権限を追加済み。Graph API Explorerで`instagram_basic` / `instagram_content_publish` が選択可能になったことを確認済み。
+   - 2026-06-09追記: Graph API ExplorerでPage + Instagram必須権限を選択し、オーナー承認後に`Generate Access Token`を実行済み。Threads権限はGraph API Explorer候補に出ないため別フロー扱い。
+   - 2026-06-09追記: オーナー承認後にGraph API Explorerで短期User Access Tokenを生成し、`me/accounts`でPage Access Tokenを取得。保存先は `.company/engineering/sns-credentials/step6-tokens-2026-06-09.txt`（権限 `600`）。付与権限は `business_management`, `instagram_basic`, `instagram_content_publish`, `pages_manage_metadata`, `pages_manage_posts`, `pages_read_engagement`, `pages_show_list` を確認済み。
+   - 2026-06-09追記: 確認済みIDは FB Page `1015019845037766` / IG Business Account `17841477801881765`。Threads Tokenは未取得（別フロー必要）。
+   - 2026-06-09追記: Step7用スクリプト `scripts/meta_step7_long_lived_token.py` を追加。短期User Tokenを長期化し、Page Access Tokenを再取得して保存ファイルを更新する。`APP_SECRET` は保存済み。初回実行時、短期User TokenがMeta側で `2026-06-08 17:00 PDT` に期限切れ済みだったため、オーナー承認後に短期User Tokenを再発行した。
+   - 2026-06-09追記: Step7長期化完了。長期User Token期限は `2026-08-07T22:20:23Z`。長期User Tokenで `me/accounts`、Page Access Tokenで `1015019845037766?fields=instagram_business_account` の読み取り疎通OK。期待権限7件の欠落なし。保存先は `.company/engineering/sns-credentials/step6-tokens-2026-06-09.txt`（権限 `600`）。
+   - 2026-06-09追記: `.company/engineering/sns-credentials/.env` にMeta系キーを反映済み（`META_APP_ID`, `META_APP_SECRET`, `META_ACCESS_TOKEN`, `META_PAGE_ID`, `META_PAGE_ACCESS_TOKEN`, `META_IG_USER_ID` など）。同ディレクトリは `.gitignore` 除外済み。
+   - 2026-06-09追記: オーナー承認後、Facebook Page `YN Factory 出版プロデュース` へテキストのみの実投稿テスト成功。投稿ID `1015019845037766_122103484112596516` / URL `https://www.facebook.com/122103484142596516/posts/122103484112596516`。結果ログは `.company/marketing/social-auto-ops/post-results/2026-06-09-facebook-test-post.json`。
+   - 2026-06-09追記: オーナー承認後、Instagram `@nakada_yuichi` へ画像URL付きの実投稿テスト成功。Media ID `17865315447690414` / URL `https://www.instagram.com/p/DZXaimDE-nk/`。画像URLは `https://ai.yn-factory.com/assets/first-task-workshop.png`。結果ログは `.company/marketing/social-auto-ops/post-results/2026-06-09-instagram-test-post.json`。
 
 4. Instagram画像運用
    - 初期は1枚図解投稿を優先。
@@ -138,12 +158,10 @@ CTA:
 
 1. `ai.yn-factory.com` のDNS / Google SitesカスタムURL接続を完了する。
 2. X / Threads / Instagram / note のプロフィール導線へLP URLを反映する。
-3. Meta Developer Consoleで権限追加を行う。
-4. Graph API ExplorerでUser Token / Page Token / Threads Tokenを取得する。
-5. `.env` にMeta系キーを追加する。
-6. `scripts/post_to_meta.py` を実装する。
-7. 共通キューからX / Threads / Instagramをdry-run実行できるようにする。
-8. note下書き生成とキューを接続する。
+3. Threads Tokenの別フローを整理する。
+4. 共通キューから承認済み投稿だけを本番投稿へ流す承認UI/承認フラグを実装する。
+5. テスト投稿を残すか削除するかを決める（削除も直前承認必須）。
+6. note下書き生成とキューを接続する。
 
 ## 総合品質チェック
 

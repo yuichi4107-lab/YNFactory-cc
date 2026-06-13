@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-06T07:01:09
+generated_at: 2026-06-13T07:00:54
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,76 @@ generated_at: 2026-06-06T07:01:09
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-12
+
+- - **Yuichi** — 新しい仕事の準備と進捗確認 (15:30) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- - **社長** — 美研（ビルメンテナンス業）の経営、成長戦略、保守的な姿勢について (11:45) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- - **坂野部長** — 美研の新規採用、現場管理、賃金体系に関する議論 (16:02) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- - **岩佐さん** — 美研の新規物件の話、過去の経緯 (16:02) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- - **佐々木** — 美研の現場作業員、欠員時の対応について (16:10) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- - **近藤さん** — 美研の現場における「スーパーサブ」的な存在 (16:10) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- - **加藤君** — 農業界への参加可能性、賃金計算の話題 (16:17) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- - **川口** — 農業界への参加可能性、賃金計算の話題 (16:17) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- - **税理士さん** — 労務問題における法律・税務に関する助言 (10:07) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- - **弁護士さん** — 役職手当・固定残業代に関する法解釈、判例、訴訟対応に関する助言 (10:07) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- - **労働基準監督官** — 労務問題における行政指導や法解釈の判断基準 (10:37) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- - **先生** — 午前の打ち合わせ相手、自身のタスク管理の共有相手 (08:29) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+- - **中里さん** — 小規模企業のデジタル化推進、システム導入に関する知見を持つ人物 (11:30) | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+
+## 2026-06-11
+
+- - **アイエンヌファクトリー 中田** — 電子書籍出版プロジェクトサービスを提案。漫画コンテンツの活用を推奨している。 (10:02) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **Yuumi-san** — 管理表作成の対象となる人物。 (17:42) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **長谷川の支店長** — 情報共有が不足していると指摘された人物。 (17:07) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **Yuichi** — 6月に人事異動予定。請求書・セコム書類の再発送が必要。給料チェックの対象人物。楽な仕事、ごまかせるタイプ。 (11:59) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **バンド部⻑** — 正社員採用を担当していたが、営業での価格設定問題や負担軽減の必要性が指摘されている。心配性で業務をきちんとやるタイプ。 (15:38) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **佐々木** — 現場にいれば未経験者でも管理を任せられる可能性が言及された人物。 (16:02) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **伊藤部⻑** — 経験を積んだ人が営業に行くべき例として挙げられ、昔は細かいところを自分で調べて何とかしようとしたタイプと評価された。 (16:02) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **小林さん** — 業務引き継ぎが必要だが、引き継ぐべきノウハウがない状態と指摘された。 (16:15) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **早さん** — 個人商店のように動き、高い目標設定に対して指示を出す人物。 (16:17) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **常務** — 過去に顧客とのトラブルを隠蔽した経験があり、現在数字を追っておらず、組織的な問題の一因と指摘された。 (16:29) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **勝機** — 眉間の事業で数字を上げてくれることを期待されている人物。 (14:42) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **秀さん** — 質問の形で口出しするようになった。イベント参加に対しては当日直前で辞退する可能性がある。 (12:54) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **青木** — 来年からの人材投入が検討されているが、子持ちのため参加が難しい可能性があり、社長からの評価が冷めたと指摘された。 (16:54) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **佐藤さん** — 現場管理がうまくいっており、バタついていないと評価された人物。 (16:16) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **19歳の子** — シングルファーザーで9ヶ月の子どもがいる新規採用者。初日から5時間残業しており、会社側の配慮不足が問題視されている。 (17:04) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **社長** — 経験者採用を重視し、新規営業を封印して管理体制の立て直しを指示している。人材への評価の振れ幅が大きい。 (15:46) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **会長** — イベント参加は不可能と評価された人物。 (12:54) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - **コン⻑** — 過去に引き継ぎで失敗した経験がある人物。 (14:33) | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+
+## 2026-06-10
+
+- - **川口** — 営業職の人数構成について言及 (16:52) | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - **小林** — 求人写真撮影の協力者、採用プラットフォームのリクルーターとして設定 (17:20) | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - **林さん** — 仕事の進め方や業務処理について言及 (12:27) | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - **Kobaさん** — 営業業務、現場管理、メール連絡の対象として言及 (12:35) | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - **寺岡さん** — 営業案件の進捗について言及 (12:35) | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - **佐々木** — 理想的な人材像（進捗管理能力）の例として言及 (12:53) | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - **馬野部長** — 社内教育体制や管理について言及 (12:56) | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - **常務** — 社内教育体制や管理について言及 (12:56) | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - **杉浦さん** — 退職に伴う請求書作成について言及 (08:55) | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - **吉崎さん** — スケジュール調整の相手 (15:14) | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - **中田さん** — 自己紹介の相手 (15:15) | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - **高橋** — デューダ政策担当として自己紹介 (16:15) | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+
+## 2026-06-09
+
+- - **Yuichi** — ボイカ（Voika）や株（stock）に関わっており、何かを「面倒見ている」可能性がある。また、共同で動画制作を計画中であり、オーナーの動画に声のみで出演する友人である。 (20:19) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- - **大学関係者（案件紹介者を含む）** — 新規の大学案件の入札に成功し、今後詳細な打ち合わせが必要となる。案件を紹介してくれた人物も含む。 (14:38) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- - **先方（発券契約関連）** — 65歳定年を迎える社員に関する発券契約の変更について協議が必要。 (11:58) | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+
+## 2026-06-08
+
+- - **Yuichi** — オーナーの事業に関連する重要人物。打ち合わせ、業務進捗、支払い、有給、結婚式など多岐にわたる話題で言及されている。顧客、協力者、または共同事業者である可能性が高い。 (17:42) | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- - **佐々木** — チームメンバーの一人。「無茶は聞くが優秀ではない」と評価されている。 (15:53) | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- - **加藤君** — チームメンバーの一人。「作業系の能力は高い」と評価されている。 (15:53) | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- - **辻田さん** — プロモーションモデル。「自身の体で見せたい」という思いから活動している。 (18:54) | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- - **中田さん** — Yuichi氏に関する打ち合わせの日程調整を行った相手。 (10:18) | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+
+## 2026-06-06
+
+- - **Yuichi** — タスク（FAQ修正、個人情報文書作成、汎用絵本LP作成など）を依頼している相手。 (16:36) | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
 
 ## 2026-06-05
 

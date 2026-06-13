@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-06T07:01:09
+generated_at: 2026-06-13T07:00:54
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,50 @@ generated_at: 2026-06-06T07:01:09
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-12
+
+- - 費用対効果を鑑み、人件費削減のため、組織的または個人的な業務においてAI活用を積極的に推進する方針。 | time:12:16 | source:`.company/inputs/organized/lifelogs/2026-06-12-lifelog-insights.md`
+
+## 2026-06-11
+
+- - 新規営業を一時的に封印し、組織の管理体制の立て直しを優先する。 | time:16:55 | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - 新規事業よりも既存事業の立て直しを最優先課題とする。 | time:16:21 | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - 事業拡大には慎重な姿勢を保ちつつも、面接は継続して実施する。 | time:13:31 | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+- - 入社処理関連書類の作成・回送は、押印のタイミングを考慮して先行して進める方針とする。 | time:11:22 | source:`.company/inputs/organized/lifelogs/2026-06-11-lifelog-insights.md`
+
+## 2026-06-10
+
+- - 求人票に「スタッフ管理・指導、現場作業も発生する」旨の記載を米印程度で追加する。 | time:16:56 | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - 給与体系を経験者・未経験者で二段階に設定する。 | time:16:57 | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - 職種名を「現場管理」「管理マネージャー」のように求職者に伝わりやすく柔らかな表現に変更する。 | time:17:36 | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - 求人掲載日を一旦6月18日に設定し、準備が間に合わない場合は6月22日に延期する。 | time:17:43 | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - 新しいプロジェクトの開始時期は8月か9月とする。 | time:13:25 | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - 新規営業よりも現場管理ができる人材を優先的に採用する方針とする。 | time:12:35 | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - 名古屋支店は中日ビル案件を流すことで仕事量を維持する。 | time:15:08 | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - 採用において人事紹介サービスは活用しない。 | time:10:31 | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - デューダダイレクトの採用管理ツールをすぐに使えるように準備を進める。 | time:13:09 | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - 募集要項の表現を「経験者歓迎」ではなく「経験者優遇」に変更する。 | time:16:21 | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - 必須条件として「社会人経験」と「運転免許証」を設定する。 | time:16:21 | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+- - 歓迎条件として「営業経験」「タスク管理経験」「接客販売経験」を記載する。 | time:16:21 | source:`.company/inputs/organized/lifelogs/2026-06-10-lifelog-insights.md`
+
+## 2026-06-09
+
+- - 新しいカメラ、マイク、編集ソフトを購入し、動画制作の品質向上を図る | time:17:07 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- - サービス価格は、社会保険費込みで20%程度の利益を乗せることを妥当と判断 | time:16:33 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- - 大学案件の入札が採用されたことを確認、今後の詳細打ち合わせを進める | time:14:38 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+- - フォークリフト免許は入社後に取得することを前提に採用を進める方向性も検討する | time:13:28 | source:`.company/inputs/organized/lifelogs/2026-06-09-lifelog-insights.md`
+
+## 2026-06-08
+
+- - 電子書籍の収益化目標を「ポーカーレベルで食べさせていける5000円」に設定する。 | time:07:17 | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- - Yuichi氏との打ち合わせを今週土曜日10時半頃に実施する。 | time:10:19 | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- - 自動バックアップを毎日夜中の3時に行うよう設定する。 | time:03:06 | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+- - バックアップボタンは、同期モードであっても全員に見れないように権限を設定する。 | time:02:47 | source:`.company/inputs/organized/lifelogs/2026-06-08-lifelog-insights.md`
+
+## 2026-06-06
+
+- - 絵本のランディングページは、今回作成する絵本だけでなく、今後制作する複数の絵本にも対応できる汎用的なものとして作成する方針を決定。 | time:16:39 | source:`.company/inputs/organized/lifelogs/2026-06-06-lifelog-insights.md`
 
 ## 2026-06-05
 

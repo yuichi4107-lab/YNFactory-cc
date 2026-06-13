@@ -1,0 +1,21 @@
+# shorts-factory 設定（~/shorts-factory/config.yaml に置く。無ければ全てデフォルト）
+# ここにあるのは変更しそうな項目のみ。全項目は src/config.py の DEFAULTS を参照。
+
+speaker_id: 3                # VOICEVOX話者ID（3=ずんだもんノーマル。一覧: python -c "from src import tts_voicevox as t; print(t.speaker_names())"）
+speaker_credit: "VOICEVOX:ずんだもん"
+speed_scale: 1.0             # 話速（尺超過時は自動で一時的に上がる）
+
+llm:
+  provider: claude_cli       # claude_cli | openai（openaiはsecrets.yamlにキー必須）
+
+images:
+  provider: card             # card（無料・デザインカード） | openai | gemini（要APIキー）
+  count: 4                   # 背景画像の枚数（3〜5推奨）
+
+queue:
+  auto_post: false           # ★ true にすると承認スキップで全自動投稿
+  platforms: [x]             # 投稿先: x / youtube / instagram / tiktok
+
+verify:
+  cer_line_max: 0.20         # 行ごとの音韻CER上限
+  cer_avg_max: 0.10          # 平均CER上限

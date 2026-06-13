@@ -24,7 +24,8 @@ Use this skill for the recurring queue-based image generation handoff.
    - completion checklist
    - quality checks
 4. Generate images without using API keys.
-   - Use Codex/ChatGPT image generation, not `gen_manga_bundle.py` API execution, unless the user explicitly requests API use.
+   - Use ChatGPT Images 2.0 / `gpt-image-2` through the Codex/ChatGPT-side image generation path, not `gen_manga_bundle.py` API execution, unless the user explicitly requests API use.
+   - Do not substitute local procedural/Pillow/placeholder art for requested final images. If `gpt-image-2` generation cannot be completed, mark the job `partial` or `failed` and keep prompts/manifests for retry.
    - Extract prompts from `manifest.json` or CSV.
    - When reference images are present, view them and summarize their visual traits into the generation prompt.
    - Preserve page IDs and output filenames from the manifest.

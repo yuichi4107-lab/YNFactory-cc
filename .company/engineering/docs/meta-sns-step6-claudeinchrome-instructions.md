@@ -1,23 +1,31 @@
 ---
 title: Meta SNS自動投稿セットアップ Step6 — ClaudeInChrome向け作業指示書（Graph API Explorer でトークン取得）
 created: 2026-04-21
+updated: 2026-06-09
 assignee: ClaudeInChrome (Chrome拡張で動作するClaude)
 status: ready
-estimated_time: 10-15分
-prerequisite: Step5 完了済（ユースケース「Threads API」+「ページのすべてを管理」追加済）
+estimated_time: 20-30分
+prerequisite: Step5 初回完了済。ただし Developer Console の use case 権限 Customize/Add が未完了のため、Graph API Explorer の前に必ず Step 6-0 を実施する
 ---
 
 # Meta SNS自動投稿セットアップ Step6 作業指示書（ClaudeInChrome 用）
 
-あなたは Chrome 上で動作する Claude（ClaudeInChrome）です。Meta Graph API Explorer でアクセストークンを取得し、結果を報告してください。
+あなたは Chrome 上で動作する Claude（ClaudeInChrome）です。Meta Developer Console と Graph API Explorer でアクセストークン取得準備を行い、結果を報告してください。
 
 ## 背景（1分で把握）
 
 - Step5 完了: アプリ `YN Factory SNS Poster`（App ID: **1747727225992867**）に投稿系ユースケース追加済
   - ① Threads API にアクセス
   - ② ページのすべてを管理（FB Page + Instagram Graph API 公開を内包）
-- 今回 Step6: Graph API Explorer で **短期 User Access Token** と **Page Access Token** を取得する
+- 2026-05-06時点のブロッカー: Graph API Explorer の権限追加ドロップダウンに `business_management` `pages_show_list` しか表示されなかった
+- 原因: use case を追加しただけで、Developer Console 側の個別権限が Customize/Add されていない
+- 今回 Step6: まず Developer Console で必要権限を Add し、その後 Graph API Explorer で **短期 User Access Token** と **Page Access Token** を取得する
 - 次の Step7 で長期トークン化、Step8 で `.env` 保存 という流れ
+
+参考URL（確認用）:
+- Instagram Graph API: https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media
+- Facebook Pages API: https://developers.facebook.com/docs/pages-api/posts/
+- Threads API: https://developers.facebook.com/docs/threads/get-started/get-access-tokens-and-permissions
 
 ## 既知のアセット情報
 
@@ -47,6 +55,37 @@ prerequisite: Step5 完了済（ユースケース「Threads API」+「ページ
 
 ## メインタスク
 
+### Step 6-0: Developer Console で use case 権限を Customize/Add する（最優先）
+
+Graph API Explorer に行く前に、必ず Meta Developer Console 側で個別権限が追加済みか確認してください。
+ここを飛ばすと、Graph API Explorer の「Add a Permission」に必要権限が出ません。
+
+1. 以下を開く:
+   **https://developers.facebook.com/apps/1747727225992867/use_cases/**
+2. 表示中のアプリが **`YN Factory SNS Poster` / App ID `1747727225992867`** であることを確認
+3. use case 一覧で **「ページのすべてを管理」** または Facebook Page / Instagram 投稿に関係する use case を開く
+4. **Customize** / **カスタマイズ** / **設定** に入り、以下の権限を **Add / 追加 / Request access** する
+   - `pages_show_list`
+   - `pages_manage_posts`
+   - `pages_read_engagement`
+   - `pages_manage_metadata`
+   - `business_management`
+   - `instagram_basic`
+   - `instagram_content_publish`
+   - 2026-06-09実測メモ: Page系use case内にInstagram権限が出ない場合は、use case一覧の「ユースケースを追加」→「コンテンツ管理」→「Instagramでメッセージとコンテンツを管理」を追加する。その後、Instagram use caseのFacebookログイン設定で「Add required content permissions」を実行し、Graph API Explorerを再読み込みすると `instagram_basic` / `instagram_content_publish` が候補に出る。
+5. use case 一覧に戻り、**「Threads APIにアクセス」** を開く
+6. **Customize** / **カスタマイズ** / **設定** に入り、以下の権限を **Add / 追加 / Request access** する
+   - `threads_basic`
+   - `threads_content_publish`
+   - `threads_manage_insights`（表示される場合）
+7. 各権限の状態が **Added / 追加済 / Requested / 申請中** のいずれかになったことを確認
+
+注意:
+- 権限が見つからない場合は、権限名・表示中の use case 名・画面上のエラーメッセージを記録して報告する
+- 別アプリへ切り替えない
+- App Secret 再生成、本番モード切替、アプリ削除、ビジネス認証フォーム入力は行わない
+- Facebook Login / Instagram Basic Display（旧API）を新規追加する判断はしない
+
 ### Step 6-1: Graph API Explorer を開く
 
 1. 以下にアクセス: **https://developers.facebook.com/tools/explorer/**
@@ -56,7 +95,8 @@ prerequisite: Step5 完了済（ユースケース「Threads API」+「ページ
 
 ### Step 6-2: 必要な権限（Permissions）を全て追加
 
-「Add a Permission」検索ボックスで以下を **1 つずつ** 検索 → チェック ON にする。**全 10 件**必須。
+「Add a Permission」検索ボックスで以下を **1 つずつ** 検索 → チェック ON にする。
+Facebook Page / Instagram の7件は必須、Threads の3件は取得できれば追加する。
 
 **Facebook Page 系（5個）:**
 - `pages_show_list`
@@ -68,13 +108,18 @@ prerequisite: Step5 完了済（ユースケース「Threads API」+「ページ
 **Instagram 系（2個）:**
 - `instagram_basic`
 - `instagram_content_publish`
+  - 2026-06-09実測メモ: Developer Console側の説明では `instagram_content_publishing` と表示される場合があるが、Graph API Explorerで選択できた権限名は `instagram_content_publish`。
 
 **Threads 系（3個、threads_* は別カテゴリに出る可能性あり）:**
 - `threads_basic`
 - `threads_content_publish`
 - `threads_manage_insights`（あれば ON）
 
-検索結果に出ない権限がある場合 → そのまま進めて報告時に記録。後で申請し直せる。
+検索結果に出ない権限がある場合:
+- まず Step 6-0 に戻り、その権限が Developer Console 側で Add 済みか確認
+- Step 6-0 済みでも出ない場合は、出ない権限名・選択中のアプリ名・Graph API Explorer のカテゴリ表示を記録して報告
+- Facebook Page と Instagram の必須権限が欠けている場合は、トークン生成まで進めず停止して報告
+- Threads 権限だけが出ない場合は、Facebook Page / Instagram のトークン取得を優先し、Threads は別フロー候補として報告
 
 ### Step 6-3: Generate Access Token
 
@@ -114,7 +159,9 @@ User Access Token ではなく Facebook Page 投稿に使う専用トークン�
 
 ### Step 6-7: Threads 用トークンの取得（可能なら）
 
-Threads API は別フローの場合があります。Graph API Explorer で `threads_basic` `threads_content_publish` 権限を付けた User Token でとりあえず OK。もし追加設定が必要と判明したら報告のみでOK（後続ステップで対応）。
+Threads API は Facebook Page / Instagram Graph API と別フローになる場合があります。
+Graph API Explorer で `threads_basic` `threads_content_publish` 権限を付けた User Token が取得できるか確認し、取得できなければ無理に突破しないでください。
+公式フローでは `graph.threads.net` の OAuth / long-lived token を使う場面があるため、取得不可なら「Threads は別フロー必要」と報告して Step7 以降で扱います。
 
 動作確認: Graph API Explorer で `me?fields=id,name` （graph.threads.net エンドポイント用に切替が必要かも）を試みる。エラーなら「Threads は別フロー」とメモ。
 
@@ -122,9 +169,13 @@ Threads API は別フローの場合があります。Graph API Explorer で `th
 
 | 状況 | 対処 |
 |---|---|
+| Graph API Explorer に `business_management` `pages_show_list` しか出ない | Step 6-0 未完了。Developer Console の use case Customize/Add に戻る |
+| `pages_manage_posts` `pages_read_engagement` `pages_manage_metadata` が出ない | Facebook Page 系 use case の権限追加不足。Step 6-0 に戻る |
+| `instagram_basic` `instagram_content_publish` が出ない | Instagram / Page 投稿系 use case の権限追加不足。Step 6-0 に戻る |
+| `threads_basic` `threads_content_publish` が出ない | Threads use case の権限追加不足、または Threads 別フロー。Step 6-0 確認後、未解決なら報告 |
 | `instagram_content_publish` で「ビジネス認証が必要」と出る | IG アカウントがビジネスになっていない可能性。事前チェック A に戻る |
 | Page Access Token が `me/accounts` で取れない | ユーザーがページ管理者権限を持っていない可能性。報告 |
-| Threads 権限が検索に出ない | そのまま進め、報告事項に記録 |
+| Threads 権限が検索に出ない | Step 6-0 を確認後、未解決なら「Threads は別フロー必要」として報告 |
 | ポップアップがブロックされる | ブラウザのポップアップ許可設定を確認、再試行 |
 | トークンが短すぎる/空 | 一度ログアウト → 再ログイン → やり直し |
 
@@ -143,12 +194,12 @@ Threads API は別フローの場合があります。Graph API Explorer で `th
 
 以下のパスに保存してください（ClaudeInChrome が書込可能なら）:
 ```
-G:/マイドライブ/YNFactory-cc/.company/engineering/sns-credentials/step6-tokens-2026-04-21.txt
+G:/マイドライブ/YNFactory-cc/.company/engineering/sns-credentials/step6-tokens-2026-06-09.txt
 ```
 
 ファイル内容（テンプレート）:
 ```
-# Meta SNS Step6 取得トークン — 2026-04-21
+# Meta SNS Step6 取得トークン — 2026-06-09
 # 短期トークン（1時間有効）— 後日 Step7 で長期化する
 
 APP_ID=1747727225992867
@@ -170,7 +221,7 @@ THREADS_ACCESS_TOKEN=<取得できれば>
 PERMISSIONS=pages_show_list,pages_manage_posts,...
 ```
 
-ファイル保存が不可能な場合 → オーナーに直接貼り付けて返す（機密扱いなので慎重に）。
+ファイル保存が不可能な場合 → 生トークンをチャットへ貼らず、作業を止めて「安全な保存先が必要」と報告する。
 
 ### ② 報告メッセージ（オーナー向け）
 
@@ -197,8 +248,8 @@ PERMISSIONS=pages_show_list,pages_manage_posts,...
 - User Token: [YYYY-MM-DD HH:MM]（約1時間後が普通）
 
 ### 保存ファイル
-- G:/マイドライブ/YNFactory-cc/.company/engineering/sns-credentials/step6-tokens-2026-04-21.txt
-  （保存できなかった場合はここに直接記載）
+- G:/マイドライブ/YNFactory-cc/.company/engineering/sns-credentials/step6-tokens-2026-06-09.txt
+  （保存できなかった場合は「保存不可。安全な保存先が必要」と記載）
 
 ### 困ったこと・不明点
 - [あれば記載]
@@ -210,7 +261,36 @@ PERMISSIONS=pages_show_list,pages_manage_posts,...
 ## 完了したら次は Step7
 
 オーナー側の Claude（ターミナル）が Step7（長期トークン化）のコマンド手順を提示します。
-長期化は短期 User Access Token を使って https://graph.facebook.com/v19.0/oauth/access_token?grant_type=fb_exchange_token... を叩くだけの API コールなので ClaudeInChrome 不要です（ターミナル側で完結）。
+長期化は短期 User Access Token を使って `https://graph.facebook.com/{API_VERSION}/oauth/access_token?grant_type=fb_exchange_token...` を叩く API コールなので ClaudeInChrome 不要です（ターミナル側で完結）。API_VERSION は Step7 実施時に確認します。
+
+---
+
+## 2026-06-09 実行結果メモ
+
+- Graph API ExplorerでPage + Instagram必須権限を選択し、オーナー承認後に短期User Access Tokenを生成済み。
+- User Tokenから `me/accounts` を確認し、`YN Factory 出版プロデュース` のPage Access Tokenを取得済み。
+- 保存先: `.company/engineering/sns-credentials/step6-tokens-2026-06-09.txt`（権限 `600`）
+- 付与確認済み権限: `business_management`, `instagram_basic`, `instagram_content_publish`, `pages_manage_metadata`, `pages_manage_posts`, `pages_read_engagement`, `pages_show_list`
+- 確認済みID: FB Page `1015019845037766` / IG Business Account `17841477801881765`
+- Threads権限はGraph API Explorer候補に出なかったため、Threads Tokenは別フローで扱う。
+- Step7（長期トークン化）と `.env` 反映は、外部API呼び出し・本番反映に当たるため直前承認後に実施する。
+- Step7用スクリプト: `scripts/meta_step7_long_lived_token.py`
+  - `APP_SECRET` が `.company/engineering/sns-credentials/step6-tokens-2026-06-09.txt` または環境変数に存在する場合のみ長期化APIを呼ぶ。
+  - `APP_SECRET` が無い場合は `missing_app_secret` で安全停止し、トークン全文は表示しない。
+  - 2026-06-09時点ではMeta Developer ConsoleのBasic Settingsページがブラウザ安全ポリシーでブロックされたため、App Secretはオーナーが手動コピーし、ローカル保存ファイルへ追加した。
+  - 初回Step7実行時は短期User Tokenが期限切れだったため、Graph API Explorerで短期User Tokenを再発行し、直後に長期化した。
+- Step7完了結果:
+  - 長期User Token期限: `2026-08-07T22:20:23Z`
+  - `me/accounts` 読み取りOK: `YN Factory 出版プロデュース` / `1015019845037766`
+  - Page Token読み取りOK: `instagram_business_account.id = 17841477801881765`
+  - 期待権限7件の欠落なし。
+- `.env` 反映:
+  - `.company/engineering/sns-credentials/.env` にMeta系キーを反映済み。
+  - 認証情報ディレクトリは `.gitignore` で除外済み。
+- 投稿スクリプト:
+  - `scripts/post_to_meta.py` はFacebook Page / Instagram本番投稿処理を実装済み。
+  - 本番投稿は `--publish-approved` 必須。Instagramは公開HTTPS画像URL必須。
+  - Threads本番投稿はToken別フロー確定後に対応。
 
 ---
 

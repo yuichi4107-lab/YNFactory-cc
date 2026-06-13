@@ -151,7 +151,7 @@ nav a { color: #172033; text-decoration: none; }
 
     for entry in final_entries:
         manifest_items.append(f'    <item id="{entry["id"]}" href="text/{entry["id"]}.xhtml" media-type="application/xhtml+xml"/>')
-        spine_items.append(f'    <itemref idref="{entry["id"]}"/>')
+        spine_items.append(f'    <itemref idref="{entry["id"]}" properties="page-spread-center"/>')
         if entry["img"]:
             manifest_items.append(
                 f'    <item id="{entry["id"]}-img" href="images/{entry["img"]}" media-type="{media_type(Path(entry["img"]))}"/>'
@@ -190,6 +190,12 @@ nav a { color: #172033; text-decoration: none; }
     <meta property="rendition:layout">pre-paginated</meta>
     <meta property="rendition:orientation">portrait</meta>
     <meta property="rendition:spread">none</meta>
+    <meta name="fixed-layout" content="true"/>
+    <meta name="original-resolution" content="1024x1536"/>
+    <meta name="orientation-lock" content="portrait"/>
+    <meta name="primary-writing-mode" content="horizontal-rl"/>
+    <meta name="zero-gutter" content="true"/>
+    <meta name="zero-margin" content="true"/>
   </metadata>
   <manifest>
 {chr(10).join(manifest_items)}

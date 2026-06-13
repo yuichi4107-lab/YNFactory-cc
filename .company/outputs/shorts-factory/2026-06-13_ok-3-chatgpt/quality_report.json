@@ -1,0 +1,153 @@
+{
+  "pass": true,
+  "checks": [
+    {
+      "name": "resolution",
+      "pass": true,
+      "detail": "1080x1920"
+    },
+    {
+      "name": "codecs",
+      "pass": true,
+      "detail": "v=h264 a=aac"
+    },
+    {
+      "name": "duration",
+      "pass": true,
+      "detail": "51.0s (許容25〜65)"
+    },
+    {
+      "name": "filesize",
+      "pass": true,
+      "detail": "5.2MB"
+    },
+    {
+      "name": "no_black_frames",
+      "pass": true,
+      "detail": "黒フレームなし"
+    },
+    {
+      "name": "loudness",
+      "pass": true,
+      "detail": "-14.8 LUFS (目標-14.0±2.0)"
+    },
+    {
+      "name": "subtitle_within_audio",
+      "pass": true,
+      "detail": "最終字幕end=50.21s / 音声51.01s"
+    },
+    {
+      "name": "subtitle_accuracy_lines",
+      "pass": true,
+      "detail": "不合格行 []（行CER上限0.2）"
+    },
+    {
+      "name": "subtitle_accuracy_avg",
+      "pass": true,
+      "detail": "平均CER=0.0365 (上限0.1) / 全文CER=0.0372"
+    }
+  ],
+  "accuracy": {
+    "global_cer": 0.0372,
+    "avg_cer": 0.0365,
+    "lines": [
+      {
+        "index": 0,
+        "cer": 0.0,
+        "pass": true,
+        "heard": "議事録に30分かけてる人損してます",
+        "display": "議事録に30分 / かけてる人、損してます"
+      },
+      {
+        "index": 1,
+        "cer": 0.15,
+        "pass": true,
+        "heard": "チャットGPキーならたった3分で終わります",
+        "display": "ChatGPTなら / たった3分で終わります"
+      },
+      {
+        "index": 2,
+        "cer": 0.0,
+        "pass": true,
+        "heard": "やり方は簡単3ステップです",
+        "display": "やり方は / かんたん3ステップ"
+      },
+      {
+        "index": 3,
+        "cer": 0.0,
+        "pass": true,
+        "heard": "まず会議のメモや文字お越しを用意します",
+        "display": "まず会議のメモや / 文字起こしを用意"
+      },
+      {
+        "index": 4,
+        "cer": 0.1579,
+        "pass": true,
+        "heard": "次にそれをチャットGPキーに貼り付けます",
+        "display": "次にChatGPTに / 貼り付けます"
+      },
+      {
+        "index": 5,
+        "cer": 0.0,
+        "pass": true,
+        "heard": "プロンプトはこれです",
+        "display": "プロンプトは / これです"
+      },
+      {
+        "index": 6,
+        "cer": 0.1667,
+        "pass": true,
+        "heard": "決定事項、トゥードゥ、期限の3つに分けて要約して",
+        "display": "決定事項・TODO・期限 / 3つに分けて要約して"
+      },
+      {
+        "index": 7,
+        "cer": 0.0,
+        "pass": true,
+        "heard": "これだけで読みやすい議事録が完成します",
+        "display": "これだけで読みやすい / 議事録が完成"
+      },
+      {
+        "index": 8,
+        "cer": 0.0,
+        "pass": true,
+        "heard": "コツは出力の形式まで指定することです",
+        "display": "コツは出力の形式まで / 指定すること"
+      },
+      {
+        "index": 9,
+        "cer": 0.0,
+        "pass": true,
+        "heard": "過剰書きでトタスとさらに見やすくなります",
+        "display": "「箇条書きで」と足すと / さらに見やすく"
+      },
+      {
+        "index": 10,
+        "cer": 0.0,
+        "pass": true,
+        "heard": "ただし社外費の情報は入れないよう注意してください",
+        "display": "社外秘の情報は / 入れないよう注意"
+      },
+      {
+        "index": 11,
+        "cer": 0.0,
+        "pass": true,
+        "heard": "30分かかってた作業がたった3分になります",
+        "display": "30分の作業が / たった3分に"
+      },
+      {
+        "index": 12,
+        "cer": 0.0,
+        "pass": true,
+        "heard": "保存して次の会議で試してみてください",
+        "display": "保存して次の会議で / 試してみてください"
+      }
+    ],
+    "failed_indices": [],
+    "whisper_text": "議事録に30分かけてる人損してますチャットGPキーならたった3分で終わりますやり方は簡単3ステップですまず会議のメモや文字お越しを用意します次にそれをチャットGPキーに貼り付けますプロンプトはこれです決定事項、トゥードゥ、期限の3つに分けて要約してこれだけで読みやすい議事録が完成しますコツは出力の形式まで指定することです過剰書きでトタスとさらに見やすくなりますただし社外費の情報は入れないよう注意してください30分かかってた作業がたった3分になります保存して次の会議で試してみてください"
+  },
+  "duration": 51.033333,
+  "size_mb": 5.18,
+  "lufs": -14.8,
+  "fix_loops": 0
+}

@@ -18,6 +18,7 @@ $RECYCLE.BIN/
 *.key
 secrets/
 credentials.json
+.company/engineering/sns-credentials/
 
 # ─── Python ───
 __pycache__/
@@ -67,6 +68,7 @@ temp/
 *.iml
 *.sublime-project
 *.sublime-workspace
+.vscode/
 .vscode/settings.json
 .vscode/launch.json
 
@@ -113,6 +115,7 @@ AYC/
 # ─── git本体のローカルバックアップ（作業ツリー上の復旧用コピー）───
 # .git_drivebackup は 4.7GB の .git 復元コピー。git履歴に取り込むと再肥大化するためコミット厳禁
 .git_drivebackup/
+.git_pointer_backup_*
 
 # ─── 大容量バイナリは Git 管理外（Drive が配布）2026-05-30 GitHub軸移行 ───
 # 画像
@@ -122,6 +125,7 @@ AYC/
 *.webp
 *.gif
 # 動画・音声の大物
+*.zip
 *.mp4
 *.mov
 # keiba 大容量データ（本番はVPS、ローカルは非稼働の古いコピー）
@@ -146,3 +150,6 @@ settings.local.json
 # 画像本体は上の *.png/*.jpg 等で除外済みだが、付随する svg/xhtml/pdf 等を取り込まないようディレクトリ単位で除外しDrive専用にする
 .company/outputs/picture-books/
 .company/outputs/ai-stock-investment/_archives/
+
+# Independent nested repository
+.company/outputs/lp/yn-ehon-lp-source/

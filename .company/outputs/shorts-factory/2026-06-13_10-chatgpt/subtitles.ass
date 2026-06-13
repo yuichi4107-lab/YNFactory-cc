@@ -1,0 +1,27 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Noto Sans JP,76,&H00FFFFFF,&H00FFFFFF,&H00141414,&H96000000,1,0,0,0,100,100,1,0,1,4.5,1.8,2,40,40,600,1
+Style: Emphasis,Noto Sans JP,82,&H0000E6FF,&H00FFFFFF,&H00141414,&H96000000,1,0,0,0,100,100,1,0,1,4.5,1.8,2,40,40,600,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.40,0:00:05.08,Emphasis,,0,0,0,,メール返信に毎日30分\N溶けていませんか？
+Dialogue: 0,0:00:05.08,0:00:08.80,Default,,0,0,0,,ChatGPTなら\N10秒で終わります
+Dialogue: 0,0:00:08.80,0:00:11.93,Default,,0,0,0,,やり方は\Nたった3ステップ
+Dialogue: 0,0:00:11.93,0:00:15.48,Default,,0,0,0,,①届いたメールを\N全文コピー
+Dialogue: 0,0:00:15.48,0:00:19.09,Default,,0,0,0,,②ChatGPTに\N貼り付ける
+Dialogue: 0,0:00:19.09,0:00:24.39,Emphasis,,0,0,0,,③「丁寧に承諾の返信\Nを書いて」と頼むだけ
+Dialogue: 0,0:00:24.39,0:00:28.36,Default,,0,0,0,,10秒で返信文が完成
+Dialogue: 0,0:00:28.36,0:00:31.44,Default,,0,0,0,,コツは条件を\N足すこと
+Dialogue: 0,0:00:31.44,0:00:37.26,Default,,0,0,0,,「3行で」「やわらかく\N断って」など指定OK
+Dialogue: 0,0:00:37.26,0:00:41.80,Default,,0,0,0,,送る前に名前と日付\Nだけは確認
+Dialogue: 0,0:00:41.80,0:00:46.12,Emphasis,,0,0,0,,1通3分が\Nたった10秒に
+Dialogue: 0,0:00:46.12,0:00:50.12,Default,,0,0,0,,1日10通なら\N約30分の時短
+Dialogue: 0,0:00:50.12,0:00:54.47,Default,,0,0,0,,保存して次のメールで\N試してみてください
