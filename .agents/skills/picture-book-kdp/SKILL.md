@@ -86,6 +86,15 @@ QUALITY_REPORT.md
 progress.json
 ```
 
+Because final picture-book artifacts are large and are not committed to
+GitHub, mirror the completed project folder to the Google Drive copy of
+`YNFactory-cc` using the same relative path. For example, after creating
+`.company/outputs/picture-books/<YYYY-MM-DD>-<slug>/` in the local working
+copy, also copy it to the Drive-side
+`YNFactory-cc/.company/outputs/picture-books/<YYYY-MM-DD>-<slug>/`. Treat this
+as artifact storage only; do not use the Drive folder as the Git worktree or
+execution cwd.
+
 Story-writing guidance:
 
 - Keep child-facing pages short and read-aloud friendly.
@@ -268,6 +277,7 @@ Before completion, verify and report:
 - PDF page counts and dimensions via `pdfinfo`
 - EPUB zip test and fixed-layout metadata
 - QR URL and public LP status when applicable
+- Drive mirror exists at the same relative path for generated artifacts that are ignored by GitHub
 - no missing local or public image assets
 - `PIPELINE_REPORT.md`, `QUALITY_REPORT.md`, and `progress.json` updated
 

@@ -14,6 +14,9 @@
 - 現在の物理パスは Mac が `/Users/yuichi/YNFactory-cc`、Windows が `C:\YNFactory-cc`
 - PC固有の実パスは `YNFACTORY_ROOT` などの環境変数、LaunchAgent / Task Scheduler の起動ラッパー、各PCセットアップ手順のみに閉じ込める
 - GitHub をコード・テキスト成果物の正本とし、Google Drive は大容量データ・入力/出力保管先として扱う。Drive 配下を `.git` を持つ作業ディレクトリにしない
+- GitHubにプッシュしない大容量成果物（例: `.company/outputs/` 配下の画像・EPUB・PDF・動画など）は、ローカル作業ディレクトリで作成後、Google Drive側の `YNFactory-cc` に同じ相対パスでミラー保存する
+  - 例: `/Users/yuichi/YNFactory-cc/.company/outputs/picture-books/<slug>/` を `/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc/.company/outputs/picture-books/<slug>/` にコピーする
+  - 成果物ミラーはDrive上の保管用コピーであり、Drive配下を実行cwdやGit正本にはしない
 
 ### 会社運営・引き継ぎ構造
 
