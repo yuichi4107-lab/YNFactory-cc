@@ -10,7 +10,7 @@
 
 ## ゴール
 
-各PCが独立クローン `C:\dev\YNFactory-cc` で安全に作業・自動化できるマルチPC構成を完成させ、大容量バイナリはDrive専用フォルダ＋ジャンクションで各クローンに合成、自動化スクリプトはクローンパスで稼働している状態を実現する。
+各PCが独立クローン `C:\YNFactory-cc` で安全に作業・自動化できるマルチPC構成を完成させ、大容量バイナリはDrive専用フォルダ＋ジャンクションで各クローンに合成、自動化スクリプトはクローンパスで稼働している状態を実現する。
 
 ---
 
@@ -95,7 +95,7 @@
 
 ### 概要
 
-Drive作業ツリー（`G:\マイドライブ\YNFactory-cc`）の未コミットchurnを安全に退避し、今日分の新しいファイルをoriginへ取り込んだうえで、クローン（`C:\dev\YNFactory-cc`）を `origin/main`（cac2631）にFF追従して正典に一本化する。Drive側repo（`C:\dev\YNFactory-git`）の重複コミットは当面触らず、参照先を工程3でクローンへ切り替える。
+Drive作業ツリー（`G:\マイドライブ\YNFactory-cc`）の未コミットchurnを安全に退避し、今日分の新しいファイルをoriginへ取り込んだうえで、クローン（`C:\YNFactory-cc`）を `origin/main`（cac2631）にFF追従して正典に一本化する。Drive側repo（`C:\dev\YNFactory-git`）の重複コミットは当面触らず、参照先を工程3でクローンへ切り替える。
 
 ### やること（細分化ステップ）
 
@@ -128,9 +128,9 @@ git --git-dir="C:\dev\YNFactory-git\.git" --work-tree="G:\マイドライブ\YNF
 実施手順:
 ```
 # クローンで実行
-cd C:\dev\YNFactory-cc
+cd C:\YNFactory-cc
 git pull origin main   # cac2631 -> 最新（FFのはず）
-# 上記ファイルをクローンにコピー（Drive → C:\dev\YNFactory-cc）
+# 上記ファイルをクローンにコピー（Drive → C:\YNFactory-cc）
 # git add <対象ファイルのみ>
 # git commit -m "chore: Drive作業ツリーの今日分ファイルを保全取り込み"
 # git push origin main
@@ -145,7 +145,7 @@ git pull origin main   # cac2631 -> 最新（FFのはず）
 #### A-3: クローンをorigin/mainへFF
 
 ```
-cd C:\dev\YNFactory-cc
+cd C:\YNFactory-cc
 git fetch origin
 git merge --ff-only origin/main  # A-2のpush後ならすでに一致のはず
 ```
@@ -159,7 +159,7 @@ git merge --ff-only origin/main  # A-2のpush後ならすでに一致のはず
 #### A-5: 検証
 
 ```
-cd C:\dev\YNFactory-cc
+cd C:\YNFactory-cc
 git log --oneline -5
 git status         # 「nothing to commit, working tree clean」であること
 git rev-parse HEAD # origin/main と一致すること
@@ -167,7 +167,7 @@ git rev-parse HEAD # origin/main と一致すること
 
 ### 完了条件
 
-- [ ] `C:\dev\YNFactory-cc` の HEAD が origin/main と同一ハッシュであること
+- [ ] `C:\YNFactory-cc` の HEAD が origin/main と同一ハッシュであること
 - [ ] `git status` が「nothing to commit, working tree clean」であること
 - [ ] 今日分のファイル（lifelog/inbox/todos/HANDOFF）がoriginに存在すること
 - [ ] Drive作業ツリーのchurnパッチ・bundleが `.git_drivebackup/` に保存されていること
@@ -252,7 +252,7 @@ git rev-parse HEAD # origin/main と一致すること
 #### 2-1: git rm --cached でgit追跡からA群を除外（クローンで実施）
 
 ```
-cd C:\dev\YNFactory-cc
+cd C:\YNFactory-cc
 git rm -r --cached .company/outputs/ebooks-manga/
 git rm -r --cached .company/outputs/ai-stock-investment/
 git rm -r --cached .company/outputs/picture-books/   # 追跡ファイルがあれば
@@ -352,15 +352,15 @@ Move-Item -Path $src -Destination $dst
 
 ### 3-1: ジャンクション作成
 
-クローン `C:\dev\YNFactory-cc` に対して以下のジャンクションを作成する（`mklink /J`）:
+クローン `C:\YNFactory-cc` に対して以下のジャンクションを作成する（`mklink /J`）:
 
 ```cmd
-mklink /J "C:\dev\YNFactory-cc\.company\outputs\ebooks-manga" "G:\マイドライブ\YNFactory-cc-data\.company\outputs\ebooks-manga"
-mklink /J "C:\dev\YNFactory-cc\.company\outputs\ai-stock-investment" "G:\マイドライブ\YNFactory-cc-data\.company\outputs\ai-stock-investment"
-mklink /J "C:\dev\YNFactory-cc\.company\outputs\picture-books" "G:\マイドライブ\YNFactory-cc-data\.company\outputs\picture-books"
-mklink /J "C:\dev\YNFactory-cc\AYC" "G:\マイドライブ\YNFactory-cc-data\AYC"
-mklink /J "C:\dev\YNFactory-cc\.company\codex" "G:\マイドライブ\YNFactory-cc-data\.company\codex"
-mklink /J "C:\dev\YNFactory-cc\keiba-unified\jra\data" "G:\マイドライブ\YNFactory-cc-data\keiba-unified\jra\data"
+mklink /J "C:\YNFactory-cc\.company\outputs\ebooks-manga" "G:\マイドライブ\YNFactory-cc-data\.company\outputs\ebooks-manga"
+mklink /J "C:\YNFactory-cc\.company\outputs\ai-stock-investment" "G:\マイドライブ\YNFactory-cc-data\.company\outputs\ai-stock-investment"
+mklink /J "C:\YNFactory-cc\.company\outputs\picture-books" "G:\マイドライブ\YNFactory-cc-data\.company\outputs\picture-books"
+mklink /J "C:\YNFactory-cc\AYC" "G:\マイドライブ\YNFactory-cc-data\AYC"
+mklink /J "C:\YNFactory-cc\.company\codex" "G:\マイドライブ\YNFactory-cc-data\.company\codex"
+mklink /J "C:\YNFactory-cc\keiba-unified\jra\data" "G:\マイドライブ\YNFactory-cc-data\keiba-unified\jra\data"
 ```
 
 **注意**: `mklink /J` は管理者権限が必要。実行前に管理者PowerShellを起動すること。
@@ -380,13 +380,13 @@ $TodosDir = 'G:\マイドライブ\YNFactory-cc\.company\secretary\todos'
 $LogDir   = 'G:\マイドライブ\YNFactory-cc\.company\secretary\scripts\logs'
 
 # 修正後
-$TodosDir = 'C:\dev\YNFactory-cc\.company\secretary\todos'
-$LogDir   = 'C:\dev\YNFactory-cc\.company\secretary\scripts\logs'
+$TodosDir = 'C:\YNFactory-cc\.company\secretary\todos'
+$LogDir   = 'C:\YNFactory-cc\.company\secretary\scripts\logs'
 ```
 
 （Telegram設定は環境変数から取得済みのため修正不要）
 
-**修正ファイル**: `C:\dev\YNFactory-cc\.company\secretary\scripts\morning-briefing.ps1`
+**修正ファイル**: `C:\YNFactory-cc\.company\secretary\scripts\morning-briefing.ps1`
 
 #### register-task.ps1 の修正箇所
 
@@ -397,10 +397,10 @@ $LogDir   = 'C:\dev\YNFactory-cc\.company\secretary\scripts\logs'
 $scriptPath = 'G:\マイドライブ\YNFactory-cc\.company\secretary\scripts\morning-briefing.ps1'
 
 # 修正後
-$scriptPath = 'C:\dev\YNFactory-cc\.company\secretary\scripts\morning-briefing.ps1'
+$scriptPath = 'C:\YNFactory-cc\.company\secretary\scripts\morning-briefing.ps1'
 ```
 
-**修正ファイル**: `C:\dev\YNFactory-cc\.company\secretary\scripts\register-task.ps1`
+**修正ファイル**: `C:\YNFactory-cc\.company\secretary\scripts\register-task.ps1`
 
 #### sync_all.bat の修正箇所
 
@@ -413,13 +413,13 @@ cd /d "G:\マイドライブ\YNFactory-cc"
 # (全行がG:\マイドライブ\YNFactory-ccを作業ディレクトリとして使用)
 
 # 修正後
-cd /d "C:\dev\YNFactory-cc"
+cd /d "C:\YNFactory-cc"
 "C:\Users\fcmdt\AppData\Local\Programs\Python\Python312\python.exe" -X utf8 ".company\inputs\sync_limitless.py" ...
 ```
 
 **Pythonパス** `C:\Users\fcmdt\AppData\Local\Programs\Python\Python312\python.exe` はユーザー固有パス。他PCへの展開時は変更が必要だが、このPCではそのまま使用可能。
 
-**修正ファイル**: `C:\dev\YNFactory-cc\.company\inputs\sync_all.bat`
+**修正ファイル**: `C:\YNFactory-cc\.company\inputs\sync_all.bat`
 
 #### sync_limitless.bat の修正箇所
 
@@ -431,11 +431,11 @@ cd /d "G:\マイドライブ\YNFactory-cc"
 "C:\Users\fcmdt\AppData\Local\Programs\Python\Python312\python.exe" ...
 
 # 修正後
-cd /d "C:\dev\YNFactory-cc"
+cd /d "C:\YNFactory-cc"
 "C:\Users\fcmdt\AppData\Local\Programs\Python\Python312\python.exe" ...
 ```
 
-**修正ファイル**: `C:\dev\YNFactory-cc\.company\inputs\sync_limitless.bat`
+**修正ファイル**: `C:\YNFactory-cc\.company\inputs\sync_limitless.bat`
 
 #### .bat ファイルの文字コード注意事項
 
@@ -451,13 +451,13 @@ Windows .bat はCP932（Shift-JIS）で動作する。`.bat` ファイルにはA
 
 **修正後の引数:**
 ```
--NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "C:\dev\YNFactory-cc\.company\secretary\scripts\morning-briefing.ps1"
+-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "C:\YNFactory-cc\.company\secretary\scripts\morning-briefing.ps1"
 ```
 
 **再登録方法（register-task.ps1 を修正後に実行）:**
 ```powershell
 # 修正済みregister-task.ps1を実行
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\dev\YNFactory-cc\.company\secretary\scripts\register-task.ps1"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\YNFactory-cc\.company\secretary\scripts\register-task.ps1"
 ```
 
 `register-task.ps1` は冒頭で `Unregister-ScheduledTask` を実行してから再登録する設計のため、そのまま実行すれば既存タスクを上書き再登録できる。
@@ -465,7 +465,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\dev\YNFactory-cc\.co
 ### 3-4: 修正後コミット
 
 ```
-cd C:\dev\YNFactory-cc
+cd C:\YNFactory-cc
 git add .company\secretary\scripts\morning-briefing.ps1
 git add .company\secretary\scripts\register-task.ps1
 git add .company\inputs\sync_all.bat
@@ -476,7 +476,7 @@ git push origin main
 
 ### 完了条件
 
-- [ ] 6本のジャンクションがクローン内に作成されており、`dir /AL C:\dev\YNFactory-cc\.company\outputs\` でJUNCTIONと表示されること
+- [ ] 6本のジャンクションがクローン内に作成されており、`dir /AL C:\YNFactory-cc\.company\outputs\` でJUNCTIONと表示されること
 - [ ] ジャンクション経由でYNFactory-cc-data内のファイルが参照できること（テストread）
 - [ ] morning-briefing.ps1 の `$TodosDir` と `$LogDir` がクローンパスに修正されていること
 - [ ] register-task.ps1 の `$scriptPath` がクローンパスに修正されていること
@@ -498,7 +498,7 @@ git push origin main
 
 ### ロールバック手順
 
-- ジャンクション削除: `rmdir "C:\dev\YNFactory-cc\.company\outputs\ebooks-manga"` （ジャンクション自体のみ削除、実体は消えない）
+- ジャンクション削除: `rmdir "C:\YNFactory-cc\.company\outputs\ebooks-manga"` （ジャンクション自体のみ削除、実体は消えない）
 - スクリプト修正の取り消し: `git revert HEAD` でrevertコミット
 - Task Scheduler戻し: パスを `G:\マイドライブ\YNFactory-cc\...` に戻して `register-task.ps1` を実行
 
@@ -516,7 +516,7 @@ git push origin main
 
 ### 概要
 
-新規PCでこの構成を再現するための手順書 `C:\dev\YNFactory-cc\docs\setup-multi-pc.md` を作成する。
+新規PCでこの構成を再現するための手順書 `C:\YNFactory-cc\docs\setup-multi-pc.md` を作成する。
 
 ### 必須記載項目
 
@@ -533,7 +533,7 @@ git push origin main
 #### 4-2. 手順: クローン作成
 
 ```
-git clone https://github.com/yuichi4107-lab/YNFactory-cc.git C:\dev\YNFactory-cc
+git clone https://github.com/yuichi4107-lab/YNFactory-cc.git C:\YNFactory-cc
 ```
 
 #### 4-3. 手順: ジャンクション作成
@@ -550,7 +550,7 @@ YNFactory-cc-data がDriveに既に存在する前提で、6本のジャンク�
 #### 4-5. 手順: Task Scheduler 登録
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\dev\YNFactory-cc\.company\secretary\scripts\register-task.ps1"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\YNFactory-cc\.company\secretary\scripts\register-task.ps1"
 ```
 
 #### 4-6. 手順: Pythonパスの確認と必要に応じたスクリプト修正
@@ -568,7 +568,7 @@ sync_all.bat / sync_limitless.bat 内のPythonパスがこのPCと一致する�
 
 ### 完了条件
 
-- [ ] `C:\dev\YNFactory-cc\docs\setup-multi-pc.md` が存在すること
+- [ ] `C:\YNFactory-cc\docs\setup-multi-pc.md` が存在すること
 - [ ] 4-1〜4-7 の全セクションが記載されていること
 - [ ] 手順がMacやWindowsで再現可能な具体的コマンドを含むこと
 - [ ] originにpushされていること
@@ -593,7 +593,7 @@ sync_all.bat / sync_limitless.bat 内のPythonパスがこのPCと一致する�
 
 ### 概要
 
-複数PCが同じリポジトリを同時に使用するための書き込みルール `C:\dev\YNFactory-cc\docs\multi-pc-rules.md` を作成する。ファイル競合・gitコンフリクト・Drive競合コピーを防ぐ運用指針。
+複数PCが同じリポジトリを同時に使用するための書き込みルール `C:\YNFactory-cc\docs\multi-pc-rules.md` を作成する。ファイル競合・gitコンフリクト・Drive競合コピーを防ぐ運用指針。
 
 ### 必須記載項目
 
@@ -638,7 +638,7 @@ sync_all.bat / sync_limitless.bat 内のPythonパスがこのPCと一致する�
 
 ### 完了条件
 
-- [ ] `C:\dev\YNFactory-cc\docs\multi-pc-rules.md` が存在すること
+- [ ] `C:\YNFactory-cc\docs\multi-pc-rules.md` が存在すること
 - [ ] 5-1〜5-6 の全セクションが記載されていること
 - [ ] 禁止事項一覧が明確に記載されていること
 - [ ] originにpushされていること

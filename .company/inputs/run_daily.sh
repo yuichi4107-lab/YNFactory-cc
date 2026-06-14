@@ -1,8 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
-INPUTS_DIR="/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc/.company/inputs"
-PYTHON="/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc/biz_idea_generator/.venv/bin/python3.12"
+ROOT_DIR="${YNFACTORY_ROOT:-/Users/yuichi/YNFactory-cc}"
+INPUTS_DIR="${YNFACTORY_INPUTS_DIR:-$ROOT_DIR/.company/inputs}"
+PYTHON="${YNFACTORY_PYTHON:-$ROOT_DIR/biz_idea_generator/.venv/bin/python3.12}"
 LOG_DIR="$INPUTS_DIR/logs"
 LOCAL_LOG_DIR="/Users/yuichi/Library/Logs/yn-limitless-sync"
 SYNC_TIMEOUT_SECONDS="${SYNC_TIMEOUT_SECONDS:-300}"
@@ -15,6 +16,19 @@ GOOGLE_MEET_SYNC_TIMEOUT_SECONDS="${GOOGLE_MEET_SYNC_TIMEOUT_SECONDS:-120}"
 ORGANIZE_GOOGLE_MEET_TIMEOUT_SECONDS="${ORGANIZE_GOOGLE_MEET_TIMEOUT_SECONDS:-120}"
 mkdir -p "$LOCAL_LOG_DIR"
 mkdir -p "$LOG_DIR" 2>/dev/null || true
+
+if [ ! -x "$PYTHON" ]; then
+  PYTHON="$ROOT_DIR/biz_idea_generator/.venv/bin/python"
+fi
+
+if [ ! -x "$PYTHON" ]; then
+  PYTHON="/opt/homebrew/bin/python3.12"
+fi
+
+if [ ! -x "$PYTHON" ]; then
+  PYTHON="/usr/bin/python3"
+fi
+
 TODAY=$(date +%Y-%m-%d)
 YESTERDAY=$(date -v-1d +%Y-%m-%d)
 LOG="$LOCAL_LOG_DIR/run_${TODAY}.log"

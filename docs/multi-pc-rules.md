@@ -26,9 +26,10 @@ applies_to: "YNFactory-cc を複数端末（Windows×2 / Mac）で同時運用�
         │                   │                   │
   ┌───────────┐       ┌───────────┐       ┌───────────┐
   │ Win PC-A  │       │ Win PC-B  │       │   Mac     │
-  │ C:\dev\   │       │ C:\dev\   │       │ ~/dev/    │
-  │ YNFactory-│       │ YNFactory-│       │ YNFactory-│
-  │ cc (clone)│       │ cc (clone)│       │ cc (clone)│
+  │ C:\       │       │ C:\       │       │ /Users/   │
+  │ YNFactory-│       │ YNFactory-│       │ yuichi/   │
+  │ cc (clone)│       │ cc (clone)│       │ YNFactory-│
+  │           │       │           │       │ cc (clone)│
   │ .git=local│       │ .git=local│       │ .git=local│
   └─────┬─────┘       └─────┬─────┘       └─────┬─────┘
         │ junction          │ junction          │ symlink
@@ -74,7 +75,7 @@ applies_to: "YNFactory-cc を複数端末（Windows×2 / Mac）で同時運用�
 
 ### 作業開始前（必須）
 ```bash
-cd C:\dev\YNFactory-cc      # 自分のクローン（各PCのローカルパス）
+cd C:\YNFactory-cc      # 自分のクローン（各PCのローカルパス）
 git pull --rebase origin main
 ```
 - **必ず最新を取り込んでから書き始める**。これを飛ばすのが事故の最大原因。
@@ -147,7 +148,7 @@ git push origin main
 | # | 禁止 | 理由・代替 |
 |---|---|---|
 | 1 | `git push --force` / `--force-with-lease` | 他PCのコミットを消す。代替＝`pull --rebase` してから通常 push |
-| 2 | `.git` を Drive 上に置く（クローンを `G:\マイドライブ\…` に作る） | Drive同期で `.git` が破損・HEAD消失。クローンは必ずローカルディスク（`C:\dev\…` / `~/dev/…`） |
+| 2 | `.git` を Drive 上に置く（クローンを `G:\マイドライブ\…` に作る） | Drive同期で `.git` が破損・HEAD消失。クローンは必ずローカルディスク（Windows: `C:\YNFactory-cc` / Mac: `/Users/yuichi/YNFactory-cc`） |
 | 3 | 大容量バイナリを `git add` する | リポジトリが再肥大化。画像/動画/EPUB/データは `YNFactory-cc-data`（Drive）へ |
 | 4 | pull せずに commit→push を続ける | 分岐の温床。開始前 `git pull --rebase` を必須に |
 | 5 | 同一ファイルを2台から同時編集（特に HANDOFF / 日次 todos） | 競合コピー・上書き消失。§5-1 の主担当固定を守る |
@@ -162,7 +163,7 @@ git push origin main
 | レイヤー | 実体 | 役割 | バージョン管理 |
 |---|---|---|---|
 | **git（GitHub main）** | `yuichi4107-lab/YNFactory-cc` | コード・テキスト成果物の**唯一の正典** | あり（履歴・分岐・マージ） |
-| **クローン** | 各PC `C:\dev\YNFactory-cc`（`.git`内蔵・ローカル） | 作業・自動化を行う場所 | git経由 |
+| **クローン** | 各PC `C:\YNFactory-cc`（`.git`内蔵・ローカル） | 作業・自動化を行う場所 | git経由 |
 | **YNFactory-cc-data** | Drive `G:\マイドライブ\YNFactory-cc-data` | 大容量バイナリの**配布基盤** | **なし**（git役割外。Driveが各PCへ配る） |
 | **ジャンクション/シンボリックリンク** | クローン内の各大物ディレクトリ | クローンに data を「合成」して見せる | — |
 
