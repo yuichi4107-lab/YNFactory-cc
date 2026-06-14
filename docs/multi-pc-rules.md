@@ -90,6 +90,14 @@ git push origin main
 - **当日分の作業は当日中に push する**。翌日以降に溜めると、その間に他端末が進んで必ず分岐する。
 - push が `rejected (non-fast-forward)` になったら、他端末が先に進んでいる合図 → 下記コンフリクト手順へ。
 
+### 毎日3時の自動Git同期
+
+- Codex automation「YNFactory daily git sync」が、MacのローカルGit作業ディレクトリ `/Users/yuichi/YNFactory-cc` で毎日 03:00 JST に `.company/scripts/daily_git_sync.py` を実行する。
+- 処理順は **コミット → push → pull**。push が non-fast-forward で失敗した場合のみ、`pull --rebase` して通常pushを再試行する。
+- pull でGitHub由来の更新が入った場合だけ、`.company/scripts/sync_drive_git.py local-to-drive <変更パス...>` でDrive側へ反映する。
+- 巨大ファイル・秘密情報らしき文字列・危険なパス・空白エラーを検出した場合は、コミットせず停止する。ログは `~/Library/Logs/ynfactory-daily-git-sync/` を確認する。
+- 同じ目的のLaunchAgent / Task Scheduler / cronを別途追加しない。自動化の当番PCを移す場合は、まずCodex automationを停止してから新PC側に作る。
+
 ### コンフリクト発生時の手順
 ```bash
 git pull --rebase origin main     # リモートを取り込み、自分の変更を上に積み直す

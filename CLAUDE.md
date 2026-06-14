@@ -22,6 +22,7 @@
 - Drive側とローカルGit側の反映には `.company/scripts/sync_drive_git.py` を使う。スクリプトはローカルGit作業ディレクトリから実行する
   - コミット前: `python3 .company/scripts/sync_drive_git.py drive-to-local <相対パス...>` でDrive側の変更をローカルGit側へ反映してから、ローカルGit側で `git commit` する
   - pull後: `python3 .company/scripts/sync_drive_git.py local-to-drive --from-last-pull` でローカルGit側へ取り込んだ更新をDrive側へ反映する
+- 毎日午前3時（Asia/Tokyo）のGit同期ルーティンは、ローカルGit作業ディレクトリで `.company/scripts/daily_git_sync.py` を実行し、コミット→push→pull の順で処理する。Drive側でGit操作しない。重複するcron / LaunchAgent / Task Schedulerを追加しない
 
 ### 会社運営・引き継ぎ構造
 
