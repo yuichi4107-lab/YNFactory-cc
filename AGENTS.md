@@ -19,6 +19,9 @@
   - MacのローカルGit作業ディレクトリは `/Users/yuichi/YNFactory-cc`、Windowsは `C:\YNFactory-cc`
   - `git pull` はローカルGit作業ディレクトリで行い、pull後にGitHub由来の更新をDrive側の同じ相対パスへ反映する
   - 成果物・入力データ・生活ログなどGitHubに送らないものはDrive側に残し、ローカルGitへ無理にコピーしない
+- Drive側とローカルGit側の反映には `.company/scripts/sync_drive_git.py` を使う。スクリプトはローカルGit作業ディレクトリから実行する
+  - コミット前: `python3 .company/scripts/sync_drive_git.py drive-to-local <相対パス...>` でDrive側の変更をローカルGit側へ反映してから、ローカルGit側で `git commit` する
+  - pull後: `python3 .company/scripts/sync_drive_git.py local-to-drive --from-last-pull` でローカルGit側へ取り込んだ更新をDrive側へ反映する
 
 ### 会社運営・引き継ぎ構造
 
