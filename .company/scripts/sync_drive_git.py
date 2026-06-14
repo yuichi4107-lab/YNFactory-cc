@@ -23,15 +23,17 @@ DEFAULT_DRIVE_ROOT_CANDIDATES = [
 ]
 
 
-def run_git(local_root: Path, args: list[str]) -> list[str]:
+def run_git(local_root: Path, args: list[str], capture: bool = True) -> list[str]:
     result = subprocess.run(
         ["git", *args],
         cwd=local_root,
         check=True,
         text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stdout=subprocess.PIPE if capture else None,
+        stderr=subprocess.PIPE if capture else None,
     )
+    if not capture:
+        return []
     return [line for line in result.stdout.splitlines() if line.strip()]
 
 
@@ -69,18 +71,11 @@ def detect_drive_root(value: str | None) -> Path:
     )
 
 
-def normalized_paths(args: argparse.Namespace, local_root: Path) -> list[Path]:
-    paths = [Path(path) for path in args.paths]
-
-    if args.from_last_commit:
-        paths.extend(Path(path) for path in run_git(local_root, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]))
-
-    if args.from_last_pull:
-        paths.extend(Path(path) for path in run_git(local_root, ["diff", "--name-only", "ORIG_HEAD..HEAD"]))
-
+def normalize_path_list(paths: list[str | Path]) -> list[Path]:
+    raw_paths = [Path(path) for path in paths]
     seen: set[str] = set()
     result: list[Path] = []
-    for path in paths:
+    for path in raw_paths:
         if path.is_absolute():
             raise SystemExit(f"Use repo-relative paths only: {path}")
         clean = Path(os.path.normpath(str(path)))
@@ -92,11 +87,39 @@ def normalized_paths(args: argparse.Namespace, local_root: Path) -> list[Path]:
         if key not in seen:
             seen.add(key)
             result.append(clean)
+    return result
+
+
+def normalized_paths(args: argparse.Namespace, local_root: Path) -> list[Path]:
+    paths = [Path(path) for path in args.paths]
+
+    if args.from_last_commit:
+        paths.extend(Path(path) for path in run_git(local_root, ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"]))
+
+    if args.from_last_pull:
+        paths.extend(Path(path) for path in run_git(local_root, ["diff", "--name-only", "ORIG_HEAD..HEAD"]))
+
+    result = normalize_path_list(paths)
 
     if not result:
         raise SystemExit("No paths selected. Pass paths or use --from-last-commit/--from-last-pull.")
 
     return result
+
+
+def changed_paths_between(local_root: Path, before: str, after: str) -> list[Path]:
+    if before == after:
+        return []
+    paths = run_git(local_root, ["diff", "--name-only", f"{before}..{after}"])
+    return normalize_path_list(paths)
+
+
+def ensure_no_uncommitted_target_changes(local_root: Path, paths: list[Path]) -> None:
+    changed = set(run_git(local_root, ["status", "--porcelain", "--", *[path.as_posix() for path in paths]]))
+    if changed:
+        print("warning: target paths already have local Git changes before sync:")
+        for line in sorted(changed):
+            print(f"  {line}")
 
 
 def remove_destination(dst: Path, dry_run: bool) -> None:
@@ -138,23 +161,119 @@ def copy_path(src: Path, dst: Path, dry_run: bool, delete_missing: bool) -> None
         shutil.copy2(src, dst, follow_symlinks=False)
 
 
+def sync_paths(
+    direction: str,
+    paths: list[Path],
+    local_root: Path,
+    drive_root: Path,
+    dry_run: bool,
+    delete_missing: bool,
+) -> None:
+    if direction == "drive-to-local":
+        source_root, destination_root = drive_root, local_root
+    else:
+        source_root, destination_root = local_root, drive_root
+
+    print(f"direction: {direction}")
+    print(f"local:    {local_root}")
+    print(f"drive:    {drive_root}")
+    print(f"dry-run:  {dry_run}")
+
+    for rel_path in paths:
+        copy_path(
+            source_root / rel_path,
+            destination_root / rel_path,
+            dry_run=dry_run,
+            delete_missing=delete_missing,
+        )
+
+
+def commit_and_push(
+    args: argparse.Namespace,
+    paths: list[Path],
+    local_root: Path,
+    drive_root: Path,
+) -> None:
+    if not args.message:
+        raise SystemExit("commit-push requires --message.")
+    ensure_no_uncommitted_target_changes(local_root, paths)
+    sync_paths(
+        "drive-to-local",
+        paths,
+        local_root,
+        drive_root,
+        dry_run=args.dry_run,
+        delete_missing=args.delete_missing,
+    )
+    if args.dry_run:
+        print("dry-run: skipped git add/commit/push")
+        return
+
+    path_args = [path.as_posix() for path in paths]
+    run_git(local_root, ["add", "--", *path_args])
+    staged = run_git(local_root, ["diff", "--cached", "--name-only", "--", *path_args])
+    if not staged:
+        print("No staged changes after Drive sync. Skipped commit and push.")
+        return
+
+    print("staged:")
+    for path in staged:
+        print(f"  {path}")
+    run_git(local_root, ["commit", "-m", args.message], capture=False)
+    run_git(local_root, ["push", args.remote, args.branch], capture=False)
+
+
+def pull_and_sync(args: argparse.Namespace, local_root: Path, drive_root: Path) -> None:
+    before = run_git(local_root, ["rev-parse", "HEAD"])[0]
+    print(f"pull: {args.remote} {args.branch}")
+    if args.dry_run:
+        print("dry-run: skipped git pull and Drive sync")
+        return
+
+    run_git(local_root, ["pull", "--ff-only", args.remote, args.branch], capture=False)
+    after = run_git(local_root, ["rev-parse", "HEAD"])[0]
+    paths = changed_paths_between(local_root, before, after)
+    if not paths:
+        print("No GitHub updates to sync to Drive.")
+        return
+
+    sync_paths(
+        "local-to-drive",
+        paths,
+        local_root,
+        drive_root,
+        dry_run=False,
+        delete_missing=True,
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Sync selected repo-relative paths between Drive and local Git."
     )
     parser.add_argument(
         "direction",
-        choices=["drive-to-local", "local-to-drive"],
-        help="drive-to-local is used before commit; local-to-drive is used after pull or after local changes.",
+        choices=["drive-to-local", "local-to-drive", "commit-push", "pull-sync"],
+        help=(
+            "drive-to-local/local-to-drive only sync paths. "
+            "commit-push syncs Drive paths to local Git, commits, and pushes. "
+            "pull-sync pulls from GitHub and syncs pulled paths to Drive."
+        ),
     )
     parser.add_argument("paths", nargs="*", help="Repo-relative file or directory paths.")
     parser.add_argument("--drive-root", help="Google Drive YNFactory-cc root.")
     parser.add_argument("--local-root", help="Local Git YNFactory-cc root. Defaults to current Git root.")
+    parser.add_argument("-m", "--message", help="Commit message for commit-push.")
+    parser.add_argument("--remote", default="origin", help="Git remote for commit-push/pull-sync.")
+    parser.add_argument("--branch", default="main", help="Git branch for commit-push/pull-sync.")
     parser.add_argument("--dry-run", action="store_true", help="Show actions without copying.")
     parser.add_argument("--delete-missing", action="store_true", help="Delete destination paths when source paths are missing.")
     parser.add_argument("--from-last-commit", action="store_true", help="Use paths changed in HEAD.")
     parser.add_argument("--from-last-pull", action="store_true", help="Use paths changed by the last pull, based on ORIG_HEAD..HEAD.")
-    args = parser.parse_args()
+    if hasattr(parser, "parse_intermixed_args"):
+        args = parser.parse_intermixed_args()
+    else:
+        args = parser.parse_args()
 
     local_root = Path(args.local_root).expanduser().resolve() if args.local_root else detect_local_root()
     drive_root = detect_drive_root(args.drive_root)
@@ -169,25 +288,23 @@ def main() -> int:
     if local_root == drive_root:
         raise SystemExit("Local root and Drive root must be different directories.")
 
+    if args.direction == "pull-sync":
+        pull_and_sync(args, local_root, drive_root)
+        return 0
+
     paths = normalized_paths(args, local_root)
+    if args.direction == "commit-push":
+        commit_and_push(args, paths, local_root, drive_root)
+        return 0
 
-    if args.direction == "drive-to-local":
-        source_root, destination_root = drive_root, local_root
-    else:
-        source_root, destination_root = local_root, drive_root
-
-    print(f"direction: {args.direction}")
-    print(f"local:    {local_root}")
-    print(f"drive:    {drive_root}")
-    print(f"dry-run:  {args.dry_run}")
-
-    for rel_path in paths:
-        copy_path(
-            source_root / rel_path,
-            destination_root / rel_path,
-            dry_run=args.dry_run,
-            delete_missing=args.delete_missing,
-        )
+    sync_paths(
+        args.direction,
+        paths,
+        local_root,
+        drive_root,
+        dry_run=args.dry_run,
+        delete_missing=args.delete_missing,
+    )
 
     return 0
 
