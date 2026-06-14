@@ -104,6 +104,16 @@ Story-writing guidance:
 
 Create page images and preview pages in a stable square format.
 
+Default execution is end-to-end. Do not split a normal daily/new-book run into
+separate manuscript, image-generation, layout, and upload-prep phases when the
+available tools can continue. In the same run, proceed through final
+ChatGPT/Codex-side image generation, image integration, text-overlay pages,
+layout previews, fixed-layout Kindle EPUB, paperback interior PDF, paperback
+cover PDF, KDP metadata, the four official `UPLOAD_` files, and verification.
+Only stop at `pending` or `blocked` when the image-generation/build tools are
+actually unavailable or repeatedly failing; preserve prompts/manifests and state
+the blocker clearly.
+
 Recommended project paths:
 
 ```text
@@ -215,6 +225,9 @@ When the book includes a personalized upsell:
 1. Store the QR destination in `KDP出版用/QR_LP_URL.txt`.
 2. Generate `KDP出版用/qr_lp.png`.
 3. Put the QR on P32, not in the KDP product description.
+   - Place the CTA QR code inside the same visible `書籍紹介` / book-introduction frame as the P32 CTA text, not floating outside that frame.
+   - Place the QR immediately below the book-introduction / CTA text by default, so the reader sees the CTA sentence and QR as one connected block.
+   - Size the P32 `書籍紹介` frame to wrap the CTA text and QR with comfortable margins; avoid a page-sized frame with large unused blank space.
 4. If creating an LP, put it under `lp/ehon/` unless the user specifies another path.
 5. Make the LP generic:
    - no single-book-only dependence
