@@ -52,6 +52,28 @@ python3 .company/scripts/backup_zslim_restic.py check
 python3 .company/scripts/backup_zslim_restic.py run
 ```
 
+## 自動実行
+
+このMacでは、毎日午前3時にLaunchAgentで定期バックアップを実行する。
+
+```bash
+cd /Users/yuichi/YNFactory-cc
+zsh .company/scripts/install_zslim_backup_launchd.sh
+```
+
+登録される実体:
+
+| 項目 | パス |
+|---|---|
+| LaunchAgent | `~/Library/LaunchAgents/com.ynfactory.zslim-backup.plist` |
+| 起動ラッパー | `~/.local/bin/ynfactory-zslim-backup.sh` |
+| 実行ログ | `~/Library/Logs/ynfactory-zslim-backup.log` |
+| launchdログ | `~/Library/Logs/ynfactory-zslim-backup-launchd.log` / `.err` |
+
+`ZSlim` が未接続の場合、バックアップは失敗扱いにせずログへ記録してスキップする。
+
+2026-06-16 にこのMacへ登録済み。`launchctl list` で `com.ynfactory.zslim-backup` が登録され、`StartCalendarInterval` は `Hour=3` / `Minute=0`。
+
 ## 確認
 
 ```bash
@@ -80,6 +102,16 @@ AGENTS.md
 .company/secretary/HANDOFF.md
 .company/outputs/
 ```
+
+### 復元テスト実績
+
+2026-06-16 に、初回スナップショット `9322a1e5` から `/tmp/ynfactory-zslim-restore-test-20260616-0122` へ一部復元テストを実施し、以下を確認した。
+
+| 確認対象 | 結果 |
+|---|---|
+| `AGENTS.md` | 復元成功 |
+| `.company/secretary/HANDOFF.md` | 復元成功 |
+| `.company/outputs/ai-business-content-100/README.md` | 復元成功 |
 
 ## バックアップから除外するもの
 
