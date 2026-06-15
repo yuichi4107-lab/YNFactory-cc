@@ -41,6 +41,8 @@ EXCLUDES = [
     "**/logs",
     "**/tmp",
     "**/temp",
+    "**/ai-trade-system/results/**/charts/*.png",
+    "**/keiba-unified/win5/data/cache/*.html",
     "**/*.tmp.drivedownload",
     "**/*.tmp.driveupload",
 ]

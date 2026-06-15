@@ -90,6 +90,9 @@ AGENTS.md
 - `node_modules`
 - Playwrightなどの一時スナップショット
 - 一時ファイル、ログ、OSメタデータ
+- 再生成可能な重い結果・キャッシュ
+  - `ai-trade-system/results/**/charts/*.png`
+  - `keiba-unified/win5/data/cache/*.html`
 
 ## 注意
 
@@ -109,4 +112,4 @@ AGENTS.md
 | 実行時間 | 25分15秒 |
 | 整合性チェック | no errors |
 
-時間がかかった主因は、`ai-trade-system/results/**/charts/*.png` と `keiba-unified/win5/data/cache/*.html` の大量小ファイル。どちらも再生成可能な結果・キャッシュのため、定期バックアップからは除外を検討する。
+時間がかかった主因は、`ai-trade-system/results/**/charts/*.png` と `keiba-unified/win5/data/cache/*.html` の大量小ファイル。どちらも再生成可能な結果・キャッシュのため、初回スナップショット `9322a1e5` には保存したうえで、2026-06-16 以降の定期バックアップからは除外する。
