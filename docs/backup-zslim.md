@@ -96,3 +96,17 @@ AGENTS.md
 - `.git_drivebackup` の削除は、GitHubとローカルGitの復旧性を確認してから直前承認を取って実行する。
 - バックアップパスワードを失うと復元できない。`~/.ynfactory/restic-zslim-password` はこのPC外にも安全に控える。
 - 初回バックアップは時間がかかる。2回目以降は差分と重複排除により軽くなる。
+
+## 初回実績
+
+2026-06-15 に初回フルバックアップを実行した。
+
+| 項目 | 結果 |
+|---|---|
+| snapshot | `9322a1e5` |
+| 処理量 | 28,544 files / 17.765 GiB |
+| ZSlim保存量 | 12.542 GiB |
+| 実行時間 | 25分15秒 |
+| 整合性チェック | no errors |
+
+時間がかかった主因は、`ai-trade-system/results/**/charts/*.png` と `keiba-unified/win5/data/cache/*.html` の大量小ファイル。どちらも再生成可能な結果・キャッシュのため、定期バックアップからは除外を検討する。
