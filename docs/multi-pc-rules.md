@@ -1,200 +1,163 @@
 ---
-title: マルチPC同時運用ルール
-status: 確定
-last_updated: "2026-06-06"
-applies_to: "YNFactory-cc を複数端末（Windows×2 / Mac）で同時運用する全作業者・全自動化"
+title: マルチPC共有ルール
+status: active
+last_updated: "2026-06-15"
+applies_to: "YNFactory-cc を複数PCと ClaudeCode / Codex で共有する全作業"
 ---
 
-# マルチPC同時運用ルール（YNFactory-cc）
+# マルチPC共有ルール
 
-複数のPC（自宅Windows・24h稼働Windows・Mac）で **同じリポジトリを同時に**使うための運用規律。
-ファイル競合・git コンフリクト・Google Drive 競合コピーを防ぎ、「どの端末で作業しても履歴が1本にまとまる」状態を保つ。
+## 0. 結論
 
-> このルールは飾りではない。**2026-06-06 に実際の事故が起きたために作られた**（末尾「なぜこのルールがあるか」参照）。
+`YNFactory-cc` は、Google Drive、GitHub、ZSlimバックアップの3層で運用する。
 
----
-
-## 0. 前提アーキテクチャ（これを破ると全部壊れる）
-
-```
-            ┌─────────────────────────────────────────┐
-            │  GitHub private（唯一の真実のソース）     │
-            │  yuichi4107-lab/YNFactory-cc  branch main │
-            └───────────────┬─────────────────────────┘
-                 pull/push   │   pull/push
-        ┌───────────────────┼───────────────────┐
-        │                   │                   │
-  ┌───────────┐       ┌───────────┐       ┌───────────┐
-  │ Win PC-A  │       │ Win PC-B  │       │   Mac     │
-  │ C:\       │       │ C:\       │       │ /Users/   │
-  │ YNFactory-│       │ YNFactory-│       │ yuichi/   │
-  │ cc (clone)│       │ cc (clone)│       │ YNFactory-│
-  │           │       │           │       │ cc (clone)│
-  │ .git=local│       │ .git=local│       │ .git=local│
-  └─────┬─────┘       └─────┬─────┘       └─────┬─────┘
-        │ junction          │ junction          │ symlink
-        └───────────────────┴───────────────────┘
-                            │
-            ┌───────────────▼─────────────────────────┐
-            │  Google Drive: YNFactory-cc-data         │
-            │  （大容量バイナリ＝画像/動画/EPUB/データ）│
-            │  各端末へ Drive が配布・git管理外          │
-            └──────────────────────────────────────────┘
-```
-
-- **コード・テキスト成果物の正典 = git（GitHub main）**。バージョン管理されるのはこれだけ。
-- **各PCは GitHub から自分のローカルディスクへ独立クローン**（`.git` はクローン内＝各PCローカル。Drive上には絶対に置かない）。
-- **大容量バイナリ = `YNFactory-cc-data`（Drive）**。git管理外。各クローンへ **ジャンクション（Win）／シンボリックリンク（Mac）** で合成。
-- 作業・自動化は **クローンの中**で行う。Drive の作業ツリーを直接 git で触らない。
-
----
-
-## 5-1. 書き込み担当の固定（分業原則）
-
-同一ファイルを2台が同時に書き換えると、必ず git コンフリクトか Drive 競合コピーになる。これを構造的に避ける。
-
-### 大原則
-**「同じファイルを、同じ時間帯に、2台から書かない」**。これだけ守れば事故の8割は消える。
-
-### 主担当の固定
-| ファイル種別 | 主担当 | 補足 |
+| レイヤー | 役割 | 置き場 |
 |---|---|---|
-| `.company/secretary/HANDOFF.md` | **その日に最後に作業した1台** | 1日のうちで書くのは原則1台。複数台で触ったら必ず pull→マージ（§5-2） |
-| `.company/secretary/todos/YYYY-MM-DD.md` | **当日作業した1台** | 同上。`/handoff` を2台で別々に走らせない |
-| `.company/secretary/inbox/` `.company/inputs/`（lifelog・voice-journal） | **生成元の1台のみ** | 自動化（voice-journal等）が走る端末でのみ更新。他端末は読むだけ |
-| keiba / ai-trade 等の本番自動化 | **VPS or 指定の1台** | cron は1箇所のみ。複数台に同名 cron / Task を置かない |
-| 各プロジェクトのコード | 触る人が pull 先行で随時（§5-2） | 別ファイルなら並行編集OK。同一ファイルは避ける |
+| Google Drive | 日常作業場、制作物、入力、生活ログ、ClaudeCode / Codex 共有作業場 | Drive側 `YNFactory-cc` |
+| GitHub | コード、ルール、スキル、手順書の履歴 | `yuichi4107-lab/YNFactory-cc` |
+| ZSlim | Drive削除・上書き・破損から戻す世代バックアップ | `/Volumes/ZSlim/YNFactory-backups/restic` |
 
-### 自動化（cron / Task Scheduler）の重複起動禁止
-- **同じ自動化タスクを2台に同時登録しない**。例: `YNFactory-MorningBriefing` を Win PC-A と PC-B の両方に登録すると、同一 Telegram アカウントへ二重通知が飛び、todos も二重編集される。
-- 自動化を動かす「当番PC」を1台に決める。当番を移すときは旧PCのタスクを `Unregister-ScheduledTask` してから新PCで登録する。
+Drive側ではGit操作しない。Git操作は各PCのローカルGit作業ディレクトリで行う。
 
----
+## 1. 作業場所
 
-## 5-2. pull / push 規律（最重要）
+### Drive側
 
-### 作業開始前（必須）
+日常作業はDrive側で行う。
+
+Macの例:
+
+```text
+/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc
+```
+
+Windowsの例:
+
+```text
+G:\マイドライブ\YNFactory-cc
+```
+
+### ローカルGit側
+
+GitHubへ送る変更はローカルGit側で扱う。
+
+Mac:
+
+```text
+/Users/yuichi/YNFactory-cc
+```
+
+Windows:
+
+```text
+C:\YNFactory-cc
+```
+
+## 2. Gitに入れるもの
+
+原則として、履歴を残したいコード・ルール・手順だけをGitHubへ送る。
+
+- `AGENTS.md`
+- `CLAUDE.md`
+- `.agents/`
+- `.codex/`
+- `.company/scripts/`
+- `.company/requirements/`
+- `docs/`
+- 主要コード
+- 設定テンプレート
+
+## 3. Gitに入れないもの
+
+以下はDrive側に残し、GitHubへ送らない。
+
+- `.company/outputs/`
+- `.company/codex/`
+- `.company/inputs/` の生成・取込状態
+- 画像、動画、音声、EPUB、PDF、ZIP
+- `.company/.venvs/`
+- `node_modules`
+- `.env`、APIキー、トークン、認証情報
+- ブラウザプロファイル、Playwrightスナップショット、キャッシュ
+
+必要な小さなテキスト成果物だけをGitへ送る場合は、対象パスを明示して個別に扱う。
+
+## 4. Drive側からGitHubへ送る
+
+ローカルGit側で実行する。
+
 ```bash
-cd C:\YNFactory-cc      # 自分のクローン（各PCのローカルパス）
-git pull --rebase origin main
+cd /Users/yuichi/YNFactory-cc
+python3 .company/scripts/sync_drive_git.py commit-push -m "変更内容" <相対パス...>
 ```
-- **必ず最新を取り込んでから書き始める**。これを飛ばすのが事故の最大原因。
-- `--rebase` を使う（履歴を1本に保つ。`--no-rebase` のマージコミット乱発を避ける）。
 
-### 作業終了時（当日中に push）
+Windowsでは `cd C:\YNFactory-cc` に読み替える。
+
+重要:
+
+- パスはリポジトリルートからの相対パスで指定する。
+- `git add -A` のような広いステージングは避ける。
+- 秘密情報・大容量ファイル・生成物が混ざっていないか確認する。
+
+## 5. GitHubからDrive側へ反映する
+
+ローカルGit側で実行する。
+
 ```bash
-git add <変更ファイル>
-git commit -m "..."
-git push origin main
+cd /Users/yuichi/YNFactory-cc
+python3 .company/scripts/sync_drive_git.py pull-sync
 ```
-- **当日分の作業は当日中に push する**。翌日以降に溜めると、その間に他端末が進んで必ず分岐する。
-- push が `rejected (non-fast-forward)` になったら、他端末が先に進んでいる合図 → 下記コンフリクト手順へ。
 
-### 毎日3時の自動Git同期
+これにより、GitHubから取得したコード・ルール・手順書がDrive側へ戻る。
 
-- Codex automation「YNFactory daily git sync」が、MacのローカルGit作業ディレクトリ `/Users/yuichi/YNFactory-cc` で毎日 03:00 JST に `.company/scripts/daily_git_sync.py` を実行する。
-- 処理順は **コミット → push → pull**。push が non-fast-forward で失敗した場合のみ、`pull --rebase` して通常pushを再試行する。
-- pull でGitHub由来の更新が入った場合だけ、`.company/scripts/sync_drive_git.py local-to-drive <変更パス...>` でDrive側へ反映する。
-- 巨大ファイル・秘密情報らしき文字列・危険なパス・空白エラーを検出した場合は、コミットせず停止する。ログは `~/Library/Logs/ynfactory-daily-git-sync/` を確認する。
-- 同じ目的のLaunchAgent / Task Scheduler / cronを別途追加しない。自動化の当番PCを移す場合は、まずCodex automationを停止してから新PC側に作る。
+## 6. 同時編集ルール
 
-### コンフリクト発生時の手順
+- 同じファイルを複数PCから同時に編集しない。
+- `.company/secretary/HANDOFF.md` と当日TODOは、その日の主担当PCだけが書く。
+- 自動化は1つのPCまたはVPSだけで動かす。同じタスクを複数PCに登録しない。
+- Drive競合コピーを見つけたら、片方を即削除せず、本体へ内容を統合してから削除する。
+
+## 7. バックアップ
+
+Google Drive同期はバックアップではない。削除や破損も同期される。
+
+このPCでは、ZSlimへ世代バックアップする。
+
 ```bash
-git pull --rebase origin main     # リモートを取り込み、自分の変更を上に積み直す
-# コンフリクトが出たら：該当ファイルを開き、両方の内容を「残す」方向で手で統合
-#   → 片方で上書きしない。相手の作業を消さない（§末尾の事故がこれ）
-git add <解決したファイル>
-git rebase --continue
-git push origin main
-```
-- **コンフリクト解決＝マージであって上書きではない**。HANDOFF / todos で衝突したら、両端末の記述を **両方残す**。
-- 手に負えない衝突は、解決前に `git rebase --abort` で安全に元へ戻せる。慌てて force しない。
-
-### 絶対にやらないこと
-- ❌ `git push --force` / `git push --force-with-lease` — 他PCの未取得コミットを消し飛ばす。**禁止**（§5-5）。
-- ❌ pull せずにいきなり commit→push を繰り返す。
-- ❌ コンフリクトを「自分の版で上書き」で握りつぶす。
-
----
-
-## 5-3. Google Drive 競合コピーの回避
-
-大容量成果物（`YNFactory-cc-data` 配下＝画像・EPUB・データ）は git ではなく Drive で配布される。Drive は「2台が同じファイルを同時に書く」と **競合コピー**（`ファイル名 (1).md` 等）を勝手に作る。
-
-### ルール
-- `YNFactory-cc-data` 配下の成果物を**書き込む（生成・上書きする）のは1台ずつ**。生成バッチを2台で同時に走らせない。
-- 大容量を書き込む端末は **Drive同期がオンライン＆「最新の状態」になってから**着手する（同期中・一時停止中に書くと取りこぼし／競合の元）。
-- **他端末で大量ファイル移動・大量生成をする間は、自分のDrive同期を一時停止する**（例: `YNFactory-cc-data` への切り出しや一括再生成。10GB級の移動は必ず他端末同期停止下で行う）。
-
-### 競合コピーを見つけたら
-1. 競合コピー（`… (1).md` 等）と本体ファイルの **両方の中身を比較**する（`Compare-Object` 等）。
-2. **新しい／情報量の多い方を正**とし、片方にしか無い記述は本体へ統合する（消さない）。
-3. 統合し終えてから競合コピーを削除する。
-4. その内容が git 管理対象（`.company/secretary/` 等）なら、統合後に commit→push して git にも反映する。
-
----
-
-## 5-4. 日次同期ルーティン（これをルーチン化する）
-
-```
-[作業開始] cd <自分のクローン> && git pull --rebase origin main   ← 最新を取り込む
-   ↓
-[作業]     別ファイル同士なら並行OK。同一ファイルは時間をずらす
-   ↓
-[作業終了] git add → git commit → git push origin main           ← 当日中にpush
-   ↓
-[当番PCのみ] /handoff（HANDOFF.md・todos 更新 → commit → push）
+cd /Users/yuichi/YNFactory-cc
+python3 .company/scripts/backup_zslim_restic.py run
 ```
 
-- セッション終了時は `/handoff` スキルで HANDOFF・TODO・commit・push を一括。**ただし当番1台のみ**。
-- 別端末で続きをやるときは、その端末で必ず `git pull --rebase` してから。
+保持期間:
 
----
+- 日次7世代
+- 週次8世代
+- 月次12世代
 
-## 5-5. 禁止事項一覧（やったら事故る）
+詳細は `docs/backup-zslim.md` を読む。
 
-| # | 禁止 | 理由・代替 |
-|---|---|---|
-| 1 | `git push --force` / `--force-with-lease` | 他PCのコミットを消す。代替＝`pull --rebase` してから通常 push |
-| 2 | `.git` を Drive 上に置く（クローンを `G:\マイドライブ\…` に作る） | Drive同期で `.git` が破損・HEAD消失。クローンは必ずローカルディスク（Windows: `C:\YNFactory-cc` / Mac: `/Users/yuichi/YNFactory-cc`） |
-| 3 | 大容量バイナリを `git add` する | リポジトリが再肥大化。画像/動画/EPUB/データは `YNFactory-cc-data`（Drive）へ |
-| 4 | pull せずに commit→push を続ける | 分岐の温床。開始前 `git pull --rebase` を必須に |
-| 5 | 同一ファイルを2台から同時編集（特に HANDOFF / 日次 todos） | 競合コピー・上書き消失。§5-1 の主担当固定を守る |
-| 6 | 同じ自動化タスク（cron / Task Scheduler）を2台に登録 | 二重通知・二重編集。当番1台のみ |
-| 7 | 他端末が同期中のまま `YNFactory-cc-data` で10GB級の移動/一括生成 | Drive競合コピー大量発生。他端末同期を停止してから |
-| 8 | コンフリクトを自分の版で上書きして握りつぶす | 相手の作業消失。両方を残す方向でマージ |
+## 8. 実行直前に承認が必要な操作
 
----
+以下は、方針が決まっていても直前承認を取る。
 
-## 5-6. 各レイヤーの役割（迷ったらここに戻る）
+- `.git_drivebackup` の削除
+- Drive競合ファイルの削除
+- 大規模な `git rm --cached`
+- 外部サービスへの投稿、送信、公開
+- 本番環境への不可逆反映
 
-| レイヤー | 実体 | 役割 | バージョン管理 |
-|---|---|---|---|
-| **git（GitHub main）** | `yuichi4107-lab/YNFactory-cc` | コード・テキスト成果物の**唯一の正典** | あり（履歴・分岐・マージ） |
-| **クローン** | 各PC `C:\YNFactory-cc`（`.git`内蔵・ローカル） | 作業・自動化を行う場所 | git経由 |
-| **YNFactory-cc-data** | Drive `G:\マイドライブ\YNFactory-cc-data` | 大容量バイナリの**配布基盤** | **なし**（git役割外。Driveが各PCへ配る） |
-| **ジャンクション/シンボリックリンク** | クローン内の各大物ディレクトリ | クローンに data を「合成」して見せる | — |
+## 9. 禁止事項
 
-- **「これは履歴を残したい？」→ git（クローン内で編集・commit）**。
-- **「これは大容量の成果物？」→ YNFactory-cc-data（Drive）**。
-- 両者を混ぜない。混ぜるとリポジトリ肥大 or Drive競合のどちらかで詰む。
+- Drive側で `git commit` / `git pull` / `git push` しない。
+- Drive側に `.git` 本体を置かない。
+- `.env` や実トークンをGitに入れない。
+- 大容量成果物をGitに入れない。
+- `git push --force` を使わない。
+- 手作業でDrive側とローカルGit側を丸ごと上書き同期しない。
 
----
+## 10. 迷ったとき
 
-## なぜこのルールがあるか（2026-06-06 の実例）
-
-このルールは抽象論ではない。**実際に起きた分岐事故**から作られた:
-
-- 同じ「JRA競馬の本番化作業」が、**別々の端末・別々の .git から二重にコミット**され、origin と手元で履歴が分岐した（ahead 3 / behind 4）。
-- `HANDOFF.md` と日次 todos が **片方の端末で上書き**され、もう片方（Mac の telegram-bot 復旧・notebooklm-sync 完了）の記述が消えかけた。
-- Google Drive が **競合コピー `2026-06-06 (1).md`** を自動生成していた。
-
-→ 復旧には「churn退避 → 両端末の作業を手でマージ → クローンを origin に一本化」という余計な工程が必要になった（git正典化 Phase A）。
-**§5-2（pull先行・上書き禁止）と §5-1（主担当固定）を守っていれば、この事故は丸ごと起きなかった。**
-
----
-
-## 関連ドキュメント
-- 新規PCのセットアップ手順: [setup-multi-pc.md](setup-multi-pc.md)（工程4で作成予定）
-- 移行の要件定義: [.company/requirements/multi-pc-git-migration-2026-06-06.md](../.company/requirements/multi-pc-git-migration-2026-06-06.md)
-- 旧構成からの移行経緯: [.company/engineering/docs/gdrive-git-setup.md](../.company/engineering/docs/gdrive-git-setup.md)
+- 制作物か、履歴管理したいコードかを先に分ける。
+- 制作物ならDrive側に置く。
+- コード・ルール・手順ならGitHubへ送る。
+- 復元性が必要ならZSlimバックアップを見る。

@@ -6,6 +6,12 @@ applies_to: 全端末（自宅PC / 職場PC / Mac Mini / Surface）
 priority: 高（ハンドオフ失敗の根本対策）
 ---
 
+# 2026-06-15 現行方針への注意
+
+この文書は 2026-05-30 時点の復旧・移行経緯を含む参考資料。現在の実運用は、Drive側を日常作業場、ローカルGit側をGitHub反映用、ZSlimを復元用バックアップとする方針に更新済み。最新ルールは `docs/multi-pc-rules.md` と `docs/setup-multi-pc.md` を優先する。
+
+特に、Drive側 `.git` ポインタを作り直す旧手順は、現在の標準手順として新規適用しない。
+
 # Google Drive × Git 共存セットアップ手順書（GitHub軸・確定構成）
 
 > 本手順書は **確定構成（GitHub軸）** を記載する。旧版で比較していた「方法A/B/C」は

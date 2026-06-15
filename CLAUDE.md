@@ -25,6 +25,14 @@
   - 同期だけ必要な場合は `drive-to-local` / `local-to-drive` を使う
 - 毎日午前3時（Asia/Tokyo）のGit同期ルーティンは、ローカルGit作業ディレクトリで `.company/scripts/daily_git_sync.py` を実行し、コミット→push→pull の順で処理する。Drive側でGit操作しない。重複するcron / LaunchAgent / Task Schedulerを追加しない
 
+### ZSlimバックアップ方針
+
+- Google Drive同期はバックアップではない。削除・上書き・破損・競合コピーも同期されるため、復元用バックアップは別系統で持つ
+- 現在のバックアップ先はこのPCに接続している `ZSlim`（Macでは `/Volumes/ZSlim`）
+- ZSlimバックアップの標準手順は `docs/backup-zslim.md` を参照する
+- 保持期間は日次7世代、週次8世代、月次12世代
+- `.git_drivebackup` 削除、Drive競合ファイル削除、大規模な `git rm --cached` は実行直前に明示確認を取る
+
 ### 会社運営・引き継ぎ構造
 
 - CEO・秘書・部署振り分けなどの会社組織ルールは `company` スキルを参照する

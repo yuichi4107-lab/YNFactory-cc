@@ -5,6 +5,10 @@ status: active
 scope: GitHubを正本として、MacにYNFactory-cc作業環境を作る
 ---
 
+# 2026-06-15 現行方針への注意
+
+この文書は「ローカルGit作業ディレクトリを作る」ための参考資料。現在の日常作業はDrive側 `YNFactory-cc` を開き、GitHubへ送るものだけローカルGit側へ反映する。最新の全体手順は `docs/setup-multi-pc.md` を優先する。
+
 # Mac用 2台目PC GitHubセットアップ指示書
 
 この手順は、今GitHubにpushした内容をMacへ持っていき、Codex/Claude系の作業ディレクトリとして使える状態にするためのものです。
