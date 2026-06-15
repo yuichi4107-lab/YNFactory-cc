@@ -127,6 +127,7 @@ AYC/
 *.mov
 # keiba 大容量データ（本番はVPS、ローカルは非稼働の古いコピー）
 keiba-unified/jra/data/
+keiba-unified/win5/data/cache/
 # 各種データダンプ・モデル
 *.pkl
 *.parquet
