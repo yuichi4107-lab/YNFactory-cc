@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-15T07:00:34
+generated_at: 2026-06-14T07:00:52
 ---
 
 # Lifelog Topics
@@ -11,26 +11,22 @@ Limitless由来の調査トピックと事業アイデア。企画化する前�
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
 
-## 2026-06-14
+## 2026-06-13
 
-- - **Git, Google Drive, ローカルCドライブ間のファイル同期・バックアップの最適な運用方法** (23:06) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
--   - 理由: 現状のフローでは成果物の共有と継続的な作業に支障があるため。 | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- - **Gitのコミット、プッシュ、プルの最適な運用頻度とタイミング（特に複数PCでの作業時）** (21:07) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
--   - 理由: 作業効率と同期の正確性を高めるため。 | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- - **Anthropic公式PowerPointスライド作成スキルの詳細** (14:39) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
--   - 理由: 新しいスライド作成AIスキル開発の参考にするため。 | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- - **AIエージェントのスキル管理におけるトークン消費の最適化、開発環境の効率的なチーム編成（役割分担）の具体例** (13:55) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
--   - 理由: コスト削減と効率化のため。 | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- - **レジーナエージェントにおける開発環境の独立性とスキル共有の制約の詳細** (13:39) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
--   - 理由: 効率的なスキル開発と環境管理のため。 | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- - **Gitとクラウドストレージ（Googleドライブ）を組み合わせた効率的なファイル共有と変更管理の方法** (03:56) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
--   - 理由: スムーズな共同作業とバージョン管理のため。 | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- - **24時間稼働PCにおける作業終了を自動判断し、Gitに自動プッシュ・クラウドに自動バックアップする設定方法** (04:06) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
--   - 理由: 作業の効率化とデータ保全のため。 | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- 1. **PowerPointスライド作成AIスキル（デザイン性向上版）** [freelance] ★★★★☆ (14:39) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
--    - Anthropic公式のPowerPointスキルを参考に、デザイン性を高めた新しいスライド作成AIスキルを開発する。ゼロから作るよりも既存の良い部分を取り入れて効率的に開発することを目指す。 | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- 2. **LP特化型AI開発環境の構築** [freelance] ★★★★☆ (13:55) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
--    - LP作成に特化した開発環境（LP関連スキル、ステップメール、LP調査、X投稿スキルなど）を構築し、LP制作からプロモーションまで一貫して行えるようにする。 | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+- - **AI時代に強いAIプレイヤーになるためのマインドセットと発想術** (15:54) | source:`.company/inputs/organized/lifelogs/2026-06-13-lifelog-insights.md`
+-   - 理由: AIツールを使いこなすだけでなく、AIと融合した新しいビジネスアイデアを生み出す発想力を身につけるため。 | source:`.company/inputs/organized/lifelogs/2026-06-13-lifelog-insights.md`
+- - **AIによる国家権力乱用（Abuse of state power using AI）のリスクと対策** (15:12) | source:`.company/inputs/organized/lifelogs/2026-06-13-lifelog-insights.md`
+-   - 理由: AIの悪用に関する懸念が示されており、フリーランス（AI活用・業務自動化）事業において、倫理的な側面やリスクを考慮する必要があるため。 | source:`.company/inputs/organized/lifelogs/2026-06-13-lifelog-insights.md`
+- 1. **AIを活用したWebサービス開発と新規ビジネスモデル創出** [freelance] ★★★★★ (15:41) | source:`.company/inputs/organized/lifelogs/2026-06-13-lifelog-insights.md`
+-    - AIを使ってWebサービスを簡単に構築し、新しいビジネスモデルを模索する。AIと融合した発想力を持つことが重要で、AIを24時間稼働させて副業を行うなど、世界中のアイデアを参考に積極的に収益化に挑戦すべき。 | source:`.company/inputs/organized/lifelogs/2026-06-13-lifelog-insights.md`
+- 2. **AIによるSNS全自動運用システム** [instagram] ★★★★★ (15:18) | source:`.company/inputs/organized/lifelogs/2026-06-13-lifelog-insights.md`
+-    - AIを使ってネタ集めから投稿作成（動画、テキスト等）まで全自動で行うSNS運用。特にTikTokなどの動画コンテンツへの応用も検討。日々の会話ログをコンテキストとして活用し、投稿ネタの抽出や自己分析にも役立てる。 | source:`.company/inputs/organized/lifelogs/2026-06-13-lifelog-insights.md`
+- 3. **24時間稼働PCを活用した非時給型副業モデル構築** [freelance] ★★★★☆ (15:12) | source:`.company/inputs/organized/lifelogs/2026-06-13-lifelog-insights.md`
+-    - 24時間稼働可能なPC環境を活用し、時給に依存しない（グレーゾーンも含む）新しい副業モデルを構築する。 | source:`.company/inputs/organized/lifelogs/2026-06-13-lifelog-insights.md`
+- 4. **AIを活用したスマホアプリ高速開発** [freelance] ★★★★★ (07:20) | source:`.company/inputs/organized/lifelogs/2026-06-13-lifelog-insights.md`
+-    - 「マナス」のようなツールを使い、イメージを伝えるだけでAIが自動でスマホアプリを開発・デザインする。開発案件の効率化や新規アプリ事業への応用を検討。 | source:`.company/inputs/organized/lifelogs/2026-06-13-lifelog-insights.md`
+- 5. **AIを活用した電子書籍（絵本）「桃太郎」のページ構成検討** [ebook] ★★★☆☆ (06:16) | source:`.company/inputs/organized/lifelogs/2026-06-13-lifelog-insights.md`
+-    - AIのスキルを用いて、昔話「桃太郎」を絵本として構成する場合の適切なページ数を検討する。電子書籍事業における制作プロセスの効率化・自動化に繋がる可能性。 | source:`.company/inputs/organized/lifelogs/2026-06-13-lifelog-insights.md`
 
 ## 2026-06-12
 

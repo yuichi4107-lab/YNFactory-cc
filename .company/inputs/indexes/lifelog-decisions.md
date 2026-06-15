@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-15T07:00:34
+generated_at: 2026-06-14T07:00:52
 ---
 
 # Lifelog Decisions
@@ -11,9 +11,9 @@ Limitless由来の決定事項。継続的に重要なものは該当プロジ�
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
 
-## 2026-06-14
+## 2026-06-13
 
-- - レジーナエージェントのオリジナル環境はあまり触らず、別の開発環境を構築してスキル開発を行う。 | time:13:39 | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+- - 仕事の一つとして動画編集に取り組むことを決定。 | time:07:00 | source:`.company/inputs/organized/lifelogs/2026-06-13-lifelog-insights.md`
 
 ## 2026-06-12
 

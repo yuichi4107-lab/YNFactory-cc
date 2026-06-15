@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-15T07:00:34
+generated_at: 2026-06-14T07:00:52
 ---
 
 # Lifelog People and Contacts
@@ -10,11 +10,6 @@ generated_at: 2026-06-15T07:00:34
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
-
-## 2026-06-14
-
-- - **Yuichi** — 作業指示の対象者または確認者。荷物関連で「中田ゆいち」と同一人物の可能性。 (13:28) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- - **なかだ** — 予約変更のやり取りで名前が出ている。オーナー本人である可能性も。 (08:02) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
 
 ## 2026-06-12
 

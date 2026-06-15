@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-15T07:00:34
+generated_at: 2026-06-14T07:00:52
 ---
 
 # Lifelog TODO Candidates
@@ -11,21 +11,12 @@ Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
 
-## 2026-06-14
+## 2026-06-13
 
-- [ ] 成果物をGoogleドライブに同じフォルダー構造で保存する（GitHubと異なる運用）。 | time:23:29 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- [ ] GitとGoogleドライブ、Cドライブ間の成果物保存・同期フローを改善し、複数PCやクラウドでの確認を可能にする。 | time:23:06 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- [ ] GitHubへのプッシュ状況を確認する。 | time:22:18 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- [ ] 今日コミットした内容をプッシュする。 | time:21:58 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- [ ] ファイル・フォルダ作業におけるスキル検索の効率化（DocProの活用など）を検討する。 | time:14:03 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- [ ] （依頼している作業について）工程を分けず、ギソでのアップロードまで一貫して完了させる。 | time:13:26 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- [ ] GitHubから別Mac PCへのプッシュ内容のプルとセットアップに関する指示書を作成する。 | time:06:29 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- [ ] ファイルパスの置き換え状況（Cドライブ/Gドライブ）を確認する。 | time:05:46 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- [ ] GitHubアカウント（自動アカウント使用の有無）を確認する。 | time:05:37 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- [ ] Gitとクラウドストレージ（Googleドライブ）を組み合わせたファイル共有・変更管理の仕組みを検討する。 | time:03:56 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- [ ] 24時間稼働PCでの作業の切れ目での自動プッシュ設定を実装する。 | time:04:04 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- [ ] 作業終了タイミングを判断し、自動バックアップを行う仕組みを検討・実装する。 | time:04:06 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
-- [ ] コーデックの設定と実装手順に関する指示書を作成する。 | time:04:09 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+- [ ] フォルダー名の命名規則を変更し、作成日を含める | time:18:30 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-13-lifelog-insights.md`
+- [ ] LINE友だち追加、または概要欄からの追加を促し、AI勉強会へ案内する | time:15:54 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-13-lifelog-insights.md`
+- [ ] 日本語字幕付きショート動画の自動生成・自動投稿システムを開発する。正確性の確保も重視する。 | time:06:46 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-13-lifelog-insights.md`
+- [ ] GPT Image 2.0を用いて画像を生成する。 | time:06:32 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-13-lifelog-insights.md`
 
 ## 2026-06-12
 

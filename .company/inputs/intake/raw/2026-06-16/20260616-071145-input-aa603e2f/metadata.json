@@ -1,0 +1,46 @@
+{
+  "input_id": "20260616-071145-input-aa603e2f",
+  "imported_at": "2026-06-16T07:11:45+09:00",
+  "source_path": ".company/inputs/00_INPUT_BOX/20260615-135811-明日やること",
+  "source_is_directory": true,
+  "signature": "aa603e2fa3d5906607f0a9a030dc1234e252ed547a7007a903f9041c643e64e4",
+  "title": "明日やること",
+  "input_type": "folder",
+  "metadata": {
+    "title": "明日やること",
+    "timestamp": "2026-06-15T04:58:11.273Z",
+    "note": "オフィスステーションで育休申請作成",
+    "fileCount": 0,
+    "tags": []
+  },
+  "files": [
+    {
+      "original_path": ".company/inputs/00_INPUT_BOX/20260615-135811-明日やること/note.md",
+      "raw_copy": ".company/inputs/intake/raw/2026-06-16/20260616-071145-input-aa603e2f/files/note.md",
+      "size": 51,
+      "sha256": "c17c8592381ff33ea203d614e25e7e875f1b4c50b7566c7ddec93c9e1fa77fc9",
+      "mime_type": "text/markdown",
+      "kind": "text",
+      "extraction_status": "ok",
+      "extraction_method": "text",
+      "extraction_notes": "",
+      "urls": []
+    }
+  ],
+  "normalized_files": [
+    {
+      "original_path": ".company/inputs/00_INPUT_BOX/20260615-135811-明日やること/note.md",
+      "normalized_path": ".company/inputs/intake/raw/2026-06-16/20260616-071145-input-aa603e2f/normalized/note-c17c8592.md",
+      "extraction_status": "ok",
+      "extraction_method": "text",
+      "extraction_notes": ""
+    },
+    {
+      "original_path": ".company/inputs/00_INPUT_BOX/20260615-135811-明日やること",
+      "normalized_path": ".company/inputs/intake/raw/2026-06-16/20260616-071145-input-aa603e2f/normalized/all-normalized-content.md",
+      "extraction_status": "combined",
+      "extraction_method": "import_drive_inbox.py",
+      "extraction_notes": "全ファイルの正規化テキストを結合した入口です。"
+    }
+  ]
+}

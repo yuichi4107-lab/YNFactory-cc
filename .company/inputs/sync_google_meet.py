@@ -11,7 +11,6 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
-import os
 import re
 import shutil
 from dataclasses import dataclass
@@ -33,7 +32,7 @@ from import_drive_inbox import (
 
 BASE_DIR = Path(__file__).resolve().parent
 ROOT_DIR = BASE_DIR.parent.parent
-SOURCE_DIR = Path(os.getenv("YN_GOOGLE_MEET_BOX", BASE_DIR / "00_GOOGLE_MEET_BOX"))
+SOURCE_DIR = BASE_DIR / "00_GOOGLE_MEET_BOX"
 RAW_BASE_DIR = BASE_DIR / "intake" / "google_meet" / "raw"
 STATE_FILE = BASE_DIR / "intake" / "state" / "google_meet_imported.json"
 CONVERSATIONS_DIR = BASE_DIR / "conversations"
@@ -284,11 +283,8 @@ def main() -> None:
     STATE_FILE = args.state_file
     CONVERSATIONS_DIR = args.conversations_dir
 
-    if not SOURCE_DIR.exists():
-        print(f"WARNING: Google Meet source box not found: {SOURCE_DIR}")
-        targets = []
-    else:
-        targets = iter_source_items(SOURCE_DIR)
+    SOURCE_DIR.mkdir(parents=True, exist_ok=True)
+    targets = iter_source_items(SOURCE_DIR)
     print(f"=== Sync Google Meet source items: {len(targets)} ===")
     imported_count = 0
     for target in targets:

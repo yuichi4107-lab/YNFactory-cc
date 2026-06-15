@@ -6,7 +6,14 @@
       "imported_at": "2026-06-03T16:12:45+09:00",
       "source_path": ".company/inputs/00_INPUT_BOX/20260603-153552-テスト",
       "signature": "8fcecfaa577c2b2eb7b8685edf0a817aeff257c728e7640179009acbd55c3e7e"
+    },
+    ".company/inputs/00_INPUT_BOX/20260615-135811-明日やること:aa603e2fa3d5906607f0a9a030dc1234e252ed547a7007a903f9041c643e64e4": {
+      "input_id": "20260616-071145-input-aa603e2f",
+      "organized_path": ".company/inputs/organized/external/2026-06-16-20260616-071145-input-aa603e2f.md",
+      "imported_at": "2026-06-16T07:11:45+09:00",
+      "source_path": ".company/inputs/00_INPUT_BOX/20260615-135811-明日やること",
+      "signature": "aa603e2fa3d5906607f0a9a030dc1234e252ed547a7007a903f9041c643e64e4"
     }
   },
-  "updated_at": "2026-06-16T06:21:42+09:00"
+  "updated_at": "2026-06-16T07:11:45+09:00"
 }
