@@ -11,6 +11,7 @@ import shutil
 import socket
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 
@@ -24,6 +25,7 @@ DEFAULT_DRIVE_ROOT = (
 )
 DEFAULT_REPO = Path("/Volumes/ZSlim/YNFactory-backups/restic")
 DEFAULT_PASSWORD_FILE = Path.home() / ".ynfactory" / "restic-zslim-password"
+RESTIC_SOURCE_READ_WARNING_CODE = 3
 
 EXCLUDES = [
     ".git",
@@ -49,7 +51,10 @@ EXCLUDES = [
 
 
 class CommandError(RuntimeError):
-    pass
+    def __init__(self, returncode: int, command: list[str]) -> None:
+        self.returncode = returncode
+        self.command = command
+        super().__init__(f"command failed ({returncode}): {shlex.join(command)}")
 
 
 def require_restic() -> str:
@@ -61,11 +66,41 @@ def require_restic() -> str:
     )
 
 
-def run(args: list[str], env: dict[str, str], cwd: Path | None = None) -> None:
+def run_result(
+    args: list[str], env: dict[str, str], cwd: Path | None = None
+) -> subprocess.CompletedProcess[str]:
     print("$ " + shlex.join(args))
-    result = subprocess.run(args, cwd=cwd, env=env, text=True)
+    return subprocess.run(args, cwd=cwd, env=env, text=True)
+
+
+def run(args: list[str], env: dict[str, str], cwd: Path | None = None) -> None:
+    result = run_result(args, env=env, cwd=cwd)
     if result.returncode != 0:
-        raise CommandError(f"command failed ({result.returncode}): {shlex.join(args)}")
+        raise CommandError(result.returncode, args)
+
+
+def run_backup_with_retry(
+    command: list[str], env: dict[str, str], retries: int, retry_delay_seconds: int
+) -> None:
+    for attempt in range(retries + 1):
+        result = run_result(command, env=env)
+        if result.returncode == 0:
+            return
+
+        can_retry = (
+            result.returncode == RESTIC_SOURCE_READ_WARNING_CODE
+            and attempt < retries
+        )
+        if can_retry:
+            print(
+                "restic backup reported unreadable source files; "
+                f"retrying in {retry_delay_seconds} seconds "
+                f"({attempt + 1}/{retries})"
+            )
+            time.sleep(retry_delay_seconds)
+            continue
+
+        raise CommandError(result.returncode, command)
 
 
 def ensure_password_file(path: Path, create: bool) -> None:
@@ -140,7 +175,12 @@ def backup(args: argparse.Namespace) -> None:
         command.extend(["--exclude", pattern])
     if args.dry_run:
         command.append("--dry-run")
-    run(command, env=env)
+    run_backup_with_retry(
+        command,
+        env=env,
+        retries=args.backup_retries,
+        retry_delay_seconds=args.backup_retry_delay_seconds,
+    )
 
 
 def forget(args: argparse.Namespace) -> None:
@@ -269,8 +309,28 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--password-file", default=str(DEFAULT_PASSWORD_FILE))
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--no-prune", action="store_true")
+    parser.add_argument(
+        "--backup-retries",
+        type=int,
+        default=1,
+        help=(
+            "Retry restic backup this many times when it returns source-read "
+            "warnings. Defaults to 1."
+        ),
+    )
+    parser.add_argument(
+        "--backup-retry-delay-seconds",
+        type=int,
+        default=120,
+        help="Seconds to wait before retrying backup after source-read warnings.",
+    )
     parser.add_argument("--target", help="Restore target for restore-latest.")
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    if args.backup_retries < 0:
+        parser.error("--backup-retries must be 0 or greater")
+    if args.backup_retry_delay_seconds < 0:
+        parser.error("--backup-retry-delay-seconds must be 0 or greater")
+    return args
 
 
 def main(argv: list[str]) -> int:
