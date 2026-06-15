@@ -56,3 +56,19 @@
 - `external-todo-candidates.md` - TODO候補
 
 これらも自動生成ファイルなので、恒久的な修正は元の external organized input または importer 側に反映する。
+
+## 日次レビュー
+
+`process_daily_inputs.py` は索引を横断して `.company/inputs/reviews/YYYY-MM-DD-input-review.md` を生成する。
+
+レビューで使う主な索引:
+
+- `lifelog-todo-candidates.md`
+- `lifelog-decisions.md`
+- `lifelog-topics.md`
+- `zoom-next-steps.md`
+- `google-meet-next-steps.md`
+- `google-meet-topics.md`
+- `external-todo-candidates.md`
+
+Phase 1 のレビューは TODO 自動反映をしない。索引は入口、レビューは判定台帳、日別TODOは承認済みの実行キューとして分けて扱う。

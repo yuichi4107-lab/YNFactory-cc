@@ -53,3 +53,21 @@ Google Meet の会議メモ・文字起こし・議事録は、`.company/inputs/
 - 活用版は `.company/inputs/organized/google-meet/YYYY-MM-DD-google-meet-meetings.md` に生成する
 - 横断索引は `indexes/google-meet-meetings.md`, `indexes/google-meet-next-steps.md`, `indexes/google-meet-topics.md` に生成する
 - Google Docs ネイティブの `.gdoc` は本文を含まないショートカットなので、URLと `needs_export` 状態を保存し、本文が必要な場合は Google Docs から `.docx`, `.txt`, `.pdf` で保存する
+
+## 日次レビュー（Phase 1）
+
+`.company/inputs/process_daily_inputs.py` は、既存の raw / organized / indexes を読み、`.company/inputs/reviews/YYYY-MM-DD-input-review.md` を生成する。
+
+- Phase 1 では日別TODO、HANDOFF、プロジェクト状態ファイルを自動更新しない
+- TODO候補、決定事項候補、機密・個人情報候補、未整理バックログを1ファイルに集約する
+- `--skip-refresh` を付けると既存インデックスだけからレビューを作る
+- `--allow-external` を付けた時だけ、Limitless / Gemini / Zoom など外部API系の同期・抽出を追加実行する
+- 生成レビュー内の `route_decision` を確認してから、必要なものだけ日別TODOや各プロジェクトへ反映する
+
+基本コマンド:
+
+```bash
+python3 .company/inputs/process_daily_inputs.py --date YYYY-MM-DD --skip-refresh --force
+```
+
+日次パイプラインでは、既存の同期・整理処理が終わった後に `process_daily_inputs.py --skip-refresh --force` を実行し、レビュー生成だけを行う。

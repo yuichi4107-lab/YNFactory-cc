@@ -49,3 +49,9 @@
 - 外部インプット整理版には、出典、登録メタデータ、URL、テキスト抜粋、添付ファイル、TODO候補、活用メモを残す
 - AIが読みやすい正規化テキストは raw 側の `normalized/all-normalized-content.md` へ残す
 - `import_drive_inbox.py` で Google Drive 投入口を取り込める
+
+## 日次レビューとの関係
+
+`process_daily_inputs.py` は organized input と indexes を読み、`.company/inputs/reviews/YYYY-MM-DD-input-review.md` に判断用サマリを生成する。
+
+このレビューは Phase 1 では実行キューではなく、TODO反映前の確認台帳として扱う。`route_decision` が未判定の項目は、重複・完了済み・優先度を確認してから日別TODOやプロジェクトファイルへ反映する。

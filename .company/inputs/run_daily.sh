@@ -14,6 +14,7 @@ ORGANIZE_ZOOM_TIMEOUT_SECONDS="${ORGANIZE_ZOOM_TIMEOUT_SECONDS:-120}"
 DRIVE_INBOX_TIMEOUT_SECONDS="${DRIVE_INBOX_TIMEOUT_SECONDS:-120}"
 GOOGLE_MEET_SYNC_TIMEOUT_SECONDS="${GOOGLE_MEET_SYNC_TIMEOUT_SECONDS:-120}"
 ORGANIZE_GOOGLE_MEET_TIMEOUT_SECONDS="${ORGANIZE_GOOGLE_MEET_TIMEOUT_SECONDS:-120}"
+PROCESS_DAILY_INPUTS_TIMEOUT_SECONDS="${PROCESS_DAILY_INPUTS_TIMEOUT_SECONDS:-120}"
 mkdir -p "$LOCAL_LOG_DIR"
 mkdir -p "$LOG_DIR" 2>/dev/null || true
 
@@ -124,6 +125,13 @@ if [ -f "conversations/${YESTERDAY}-lifelogs.md" ]; then
   echo "conversation file present: conversations/${YESTERDAY}-lifelogs.md" >> "$LOG"
 else
   echo "WARNING: expected conversation file missing: conversations/${YESTERDAY}-lifelogs.md" >> "$LOG"
+fi
+
+echo "--- process_daily_inputs.py ---" >> "$LOG"
+if ! run_with_timeout "$PROCESS_DAILY_INPUTS_TIMEOUT_SECONDS" env PYTHONUNBUFFERED=1 "$PYTHON" -u process_daily_inputs.py --skip-refresh --force >> "$LOG" 2>&1; then
+  echo "process_daily_inputs.py WARNING: daily input review failed or timed out; indexes and raw files are preserved" >> "$LOG"
+else
+  echo "process_daily_inputs.py OK" >> "$LOG"
 fi
 
 echo "=== $(date) DONE ===" >> "$LOG"
