@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-13T07:00:54
+generated_at: 2026-06-15T07:00:34
 ---
 
 # Lifelog Topics
@@ -10,6 +10,27 @@ generated_at: 2026-06-13T07:00:54
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-14
+
+- - **Git, Google Drive, ローカルCドライブ間のファイル同期・バックアップの最適な運用方法** (23:06) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+-   - 理由: 現状のフローでは成果物の共有と継続的な作業に支障があるため。 | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+- - **Gitのコミット、プッシュ、プルの最適な運用頻度とタイミング（特に複数PCでの作業時）** (21:07) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+-   - 理由: 作業効率と同期の正確性を高めるため。 | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+- - **Anthropic公式PowerPointスライド作成スキルの詳細** (14:39) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+-   - 理由: 新しいスライド作成AIスキル開発の参考にするため。 | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+- - **AIエージェントのスキル管理におけるトークン消費の最適化、開発環境の効率的なチーム編成（役割分担）の具体例** (13:55) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+-   - 理由: コスト削減と効率化のため。 | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+- - **レジーナエージェントにおける開発環境の独立性とスキル共有の制約の詳細** (13:39) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+-   - 理由: 効率的なスキル開発と環境管理のため。 | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+- - **Gitとクラウドストレージ（Googleドライブ）を組み合わせた効率的なファイル共有と変更管理の方法** (03:56) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+-   - 理由: スムーズな共同作業とバージョン管理のため。 | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+- - **24時間稼働PCにおける作業終了を自動判断し、Gitに自動プッシュ・クラウドに自動バックアップする設定方法** (04:06) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+-   - 理由: 作業の効率化とデータ保全のため。 | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+- 1. **PowerPointスライド作成AIスキル（デザイン性向上版）** [freelance] ★★★★☆ (14:39) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+-    - Anthropic公式のPowerPointスキルを参考に、デザイン性を高めた新しいスライド作成AIスキルを開発する。ゼロから作るよりも既存の良い部分を取り入れて効率的に開発することを目指す。 | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+- 2. **LP特化型AI開発環境の構築** [freelance] ★★★★☆ (13:55) | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
+-    - LP作成に特化した開発環境（LP関連スキル、ステップメール、LP調査、X投稿スキルなど）を構築し、LP制作からプロモーションまで一貫して行えるようにする。 | source:`.company/inputs/organized/lifelogs/2026-06-14-lifelog-insights.md`
 
 ## 2026-06-12
 
