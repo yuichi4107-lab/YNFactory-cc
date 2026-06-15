@@ -212,9 +212,36 @@ def has_due(item: IndexItem) -> bool:
     return True
 
 
+def due_date(item: IndexItem) -> dt.date | None:
+    if not has_due(item):
+        return None
+    try:
+        return dt.date.fromisoformat(item.due[:10])
+    except ValueError:
+        return None
+
+
 def is_high_priority(item: IndexItem) -> bool:
     value = item.priority.lower()
     return "high" in value or "高" in item.priority
+
+
+def is_recent(item: IndexItem, review_date: dt.date, days: int) -> bool:
+    if item.item_date is None:
+        return True
+    return review_date - dt.timedelta(days=days) <= item.item_date <= review_date
+
+
+def is_due_soon(item: IndexItem, review_date: dt.date, days: int) -> bool:
+    due = due_date(item)
+    if due is None:
+        return False
+    return review_date <= due <= review_date + dt.timedelta(days=days)
+
+
+def is_overdue(item: IndexItem, review_date: dt.date) -> bool:
+    due = due_date(item)
+    return due is not None and due < review_date
 
 
 def item_score(item: IndexItem, review_date: dt.date) -> tuple[int, str]:
@@ -240,6 +267,40 @@ def item_score(item: IndexItem, review_date: dt.date) -> tuple[int, str]:
         score += 1
         reason.append("sensitive-check")
     return score, ",".join(reason) or "recent"
+
+
+def select_actionable_todos(
+    items: list[IndexItem],
+    review_date: dt.date,
+    recent_days: int,
+    due_soon_days: int,
+) -> list[IndexItem]:
+    selected: list[IndexItem] = []
+    for item in items:
+        if is_overdue(item, review_date):
+            continue
+        if is_due_soon(item, review_date, due_soon_days):
+            selected.append(item)
+            continue
+        if is_recent(item, review_date, recent_days) and (is_high_priority(item) or contains_sensitive(item.text)):
+            selected.append(item)
+    return selected
+
+
+def select_overdue_todos(items: list[IndexItem], review_date: dt.date) -> list[IndexItem]:
+    return [item for item in items if is_overdue(item, review_date)]
+
+
+def select_backlog_todos(
+    items: list[IndexItem],
+    selected: list[IndexItem],
+    overdue: list[IndexItem],
+    review_date: dt.date,
+) -> list[IndexItem]:
+    selected_ids = {id(item) for item in selected}
+    overdue_ids = {id(item) for item in overdue}
+    backlog = [item for item in items if id(item) not in selected_ids and id(item) not in overdue_ids]
+    return sorted(backlog, key=lambda item: item_score(item, review_date), reverse=True)
 
 
 def collect_items() -> tuple[list[IndexItem], list[IndexItem], list[IndexItem]]:
@@ -373,11 +434,9 @@ def render_review(args: argparse.Namespace, command_results: list[CommandResult]
         key=lambda item: item_score(item, review_date),
         reverse=True,
     )
-    action_todos = [
-        item
-        for item in scored_todos
-        if is_high_priority(item) or has_due(item) or contains_sensitive(item.text)
-    ]
+    action_todos = select_actionable_todos(scored_todos, review_date, args.recent_days, args.due_soon_days)
+    overdue_todos = select_overdue_todos(scored_todos, review_date)
+    backlog_todos = select_backlog_todos(scored_todos, action_todos, overdue_todos, review_date)
     if not action_todos:
         action_todos = scored_todos[: args.todo_limit]
 
@@ -404,6 +463,12 @@ def render_review(args: argparse.Namespace, command_results: list[CommandResult]
         "- TODO候補は未判定として扱い、重複・完了済み・優先度を確認してから別工程で反映する。",
         "- 機密・個人情報候補は本文を広げず、出典と検出語だけを確認対象にする。",
         "",
+        "## 選別ルール",
+        "",
+        f"- 今日見る: 期限が {args.due_soon_days} 日以内の未期限切れ候補、または直近 {args.recent_days} 日以内の high / 機密候補。",
+        "- 期限切れ: 今日より前が期限の候補。自動で今日のTODOには上げず、棚卸しとして扱う。",
+        "- 通常バックログ: high でも古いもの、期限なしで直近性が弱いもの。必要な時だけ確認する。",
+        "",
         "## 更新結果",
         "",
         *render_command_results(command_results),
@@ -415,6 +480,14 @@ def render_review(args: argparse.Namespace, command_results: list[CommandResult]
         "## 今日見るべきTODO候補",
         "",
         *render_items(action_todos, "_該当なし_", args.todo_limit),
+        "",
+        "## 期限切れ・棚卸し候補",
+        "",
+        *render_items(overdue_todos, "_該当なし_", args.backlog_limit),
+        "",
+        "## 通常バックログ候補",
+        "",
+        *render_items(backlog_todos, "_該当なし_", args.backlog_limit),
         "",
         "## 決定事項候補",
         "",
@@ -453,9 +526,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Generate daily input review")
     parser.add_argument("--date", type=parse_date, default=today_jst(), help="Review date YYYY-MM-DD")
     parser.add_argument("--lookback-days", type=int, default=14, help="Recent window for review candidates")
-    parser.add_argument("--todo-limit", type=int, default=30, help="Maximum TODO candidates in the review")
-    parser.add_argument("--decision-limit", type=int, default=20, help="Maximum decision candidates in the review")
+    parser.add_argument("--todo-limit", type=int, default=12, help="Maximum TODO candidates in the review")
+    parser.add_argument("--decision-limit", type=int, default=10, help="Maximum decision candidates in the review")
     parser.add_argument("--sensitive-limit", type=int, default=20, help="Maximum sensitive candidates in the review")
+    parser.add_argument("--backlog-limit", type=int, default=10, help="Maximum backlog candidates per backlog section")
+    parser.add_argument("--recent-days", type=int, default=3, help="Recent high/sensitive window for today candidates")
+    parser.add_argument("--due-soon-days", type=int, default=14, help="Future due window for today candidates")
     parser.add_argument("--command-timeout", type=int, default=120, help="Timeout per refresh command")
     parser.add_argument("--skip-refresh", action="store_true", help="Do not run local index refresh commands")
     parser.add_argument("--allow-external", action="store_true", help="Also run external/API sync and extraction commands")

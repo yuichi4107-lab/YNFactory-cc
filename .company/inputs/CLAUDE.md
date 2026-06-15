@@ -60,6 +60,7 @@ Google Meet の会議メモ・文字起こし・議事録は、`.company/inputs/
 
 - Phase 1 では日別TODO、HANDOFF、プロジェクト状態ファイルを自動更新しない
 - TODO候補、決定事項候補、機密・個人情報候補、未整理バックログを1ファイルに集約する
+- TODO候補は「今日見るべき候補」「期限切れ・棚卸し候補」「通常バックログ候補」に分けて表示する
 - `--skip-refresh` を付けると既存インデックスだけからレビューを作る
 - `--allow-external` を付けた時だけ、Limitless / Gemini / Zoom など外部API系の同期・抽出を追加実行する
 - 生成レビュー内の `route_decision` を確認してから、必要なものだけ日別TODOや各プロジェクトへ反映する

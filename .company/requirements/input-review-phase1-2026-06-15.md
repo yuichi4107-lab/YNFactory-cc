@@ -63,3 +63,14 @@ Daily review file generation only. This session implements this phase.
 ### Phase 2: Approved Routing
 
 Add an explicit `--apply-todo` or equivalent approval-gated route after the review format has proven useful.
+
+## Addendum: Selection Rules
+
+2026-06-15 feedback: the first generated review surfaced too many candidates, so Phase 1 must include stronger triage before Phase 2.
+
+Selection rule:
+
+- Put only near-future due items and recent high/sensitive items in "今日見るべきTODO候補"
+- Put overdue items in "期限切れ・棚卸し候補"
+- Put old high / no-due / lower-relevance items in "通常バックログ候補"
+- Keep TODO auto-apply disabled
