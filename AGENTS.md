@@ -23,7 +23,7 @@
   - コミット+プッシュ: `python3 .company/scripts/sync_drive_git.py commit-push -m "<コミットメッセージ>" <相対パス...>` でDrive側の変更をローカルGit側へ反映し、指定パスだけを `git commit` / `git push` する
   - pull+Drive反映: `python3 .company/scripts/sync_drive_git.py pull-sync` でローカルGit側へ `git pull --ff-only` し、取得したGitHub由来の更新をDrive側へ反映する
   - 同期だけ必要な場合は `drive-to-local` / `local-to-drive` を使う
-- 毎日午前3時（Asia/Tokyo）のGit同期ルーティンは、ローカルGit作業ディレクトリで `.company/scripts/daily_git_sync.py` を実行し、コミット→push→pull の順で処理する。Drive側でGit操作しない。重複するcron / LaunchAgent / Task Schedulerを追加しない
+- 毎日午前2時（Asia/Tokyo）のGit同期ルーティンは、ローカルGit作業ディレクトリで `.company/scripts/daily_git_sync.py` を実行し、コミット→push→pull の順で処理する。Drive側でGit操作しない。重複するcron / LaunchAgent / Task Schedulerを追加しない
 
 ### ZSlimバックアップ方針
 
