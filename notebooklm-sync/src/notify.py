@@ -5,6 +5,7 @@ secrets未設定時は警告ログのみ出して継続する（落ちない設�
 from __future__ import annotations
 
 import logging
+import re
 from typing import List, Optional
 
 import requests
@@ -13,6 +14,12 @@ logger = logging.getLogger(__name__)
 
 _TELEGRAM_API_BASE = "https://api.telegram.org/bot{token}/sendMessage"
 _REQUEST_TIMEOUT_SEC = 10
+_TELEGRAM_BOT_URL_RE = re.compile(r"((?:api\.telegram\.org/)?bot)\d+:[^/\s]+")
+
+
+def _redact_sensitive_text(value: object) -> str:
+    """ログや通知本文にTelegram Botトークンを残さない。"""
+    return _TELEGRAM_BOT_URL_RE.sub(r"\1<redacted>", str(value))
 
 
 def _send_message(bot_token: str, chat_id: str, text: str) -> None:
@@ -28,7 +35,7 @@ def _send_message(bot_token: str, chat_id: str, text: str) -> None:
         resp.raise_for_status()
         logger.debug("Telegram message sent. chat_id=%s", chat_id)
     except Exception as exc:
-        logger.warning("Telegram send failed: %s", exc)
+        logger.warning("Telegram send failed: %s", _redact_sensitive_text(exc))
 
 
 def _is_configured(bot_token: str, chat_id: str) -> bool:
@@ -49,24 +56,33 @@ def send_summary(
     各チャンネルの処理サマリをTelegramへ送信する。
     channel_results の期待形式:
       [{"name": str, "added": int, "skipped": int, "errors": list[str]}, ...]
+
+    通知は「新規追加（完了）またはエラーがあった時のみ」送信する。
+    変化なし（追加0・エラー0）の場合はログのみでTelegram送信しない。
     """
     if not _is_configured(bot_token, chat_id):
         return
 
-    if not channel_results:
-        _send_message(bot_token, chat_id, "[NotebookLM Sync] 処理対象チャンネルなし")
+    # 先に合計を集計し、変化があるかを判定する
+    total_added = 0
+    total_errors = 0
+    for result in channel_results:
+        total_added += result.get("added", 0)
+        total_errors += len(result.get("errors", []))
+
+    # 新規追加もエラーも無ければ通知しない（定期実行のノイズ抑制）
+    if total_added == 0 and total_errors == 0:
+        logger.info(
+            "No new sources and no errors (added=0, errors=0). Skipping Telegram summary."
+        )
         return
 
     lines = ["<b>[NotebookLM Sync] 処理完了サマリ</b>"]
-    total_added = 0
-    total_errors = 0
     for result in channel_results:
         name = result.get("name", "unknown")
         added = result.get("added", 0)
         skipped = result.get("skipped", 0)
         errors = result.get("errors", [])
-        total_added += added
-        total_errors += len(errors)
         lines.append(
             f"  {name}: 追加={added} / スキップ={skipped} / エラー={len(errors)}"
         )
@@ -91,5 +107,5 @@ def send_alert(
 
     text = f"<b>[NotebookLM Sync] ALERT</b>\n{message}"
     if error:
-        text += f"\n<code>{type(error).__name__}: {error}</code>"
+        text += f"\n<code>{type(error).__name__}: {_redact_sensitive_text(error)}</code>"
     _send_message(bot_token, chat_id, text)
