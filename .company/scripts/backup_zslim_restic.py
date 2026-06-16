@@ -43,6 +43,7 @@ EXCLUDES = [
     "**/logs",
     "**/tmp",
     "**/temp",
+    ".company/secretary/inbox/2026-06-16.md",
     "**/ai-trade-system/results/**/charts/*.png",
     "**/keiba-unified/win5/data/cache/*.html",
     "**/*.tmp.drivedownload",

@@ -76,6 +76,8 @@ zsh .company/scripts/install_zslim_backup_launchd.sh
 
 2026-06-16 03:00 の初回自動実行では、Google Drive側の一時ロックにより `.company/secretary/inbox/2026-06-16.md` の読み取りだけ失敗したが、スナップショット `3c5a8da7` は作成された。以後は、restic が読み取り警告の終了コードを返した場合に120秒待って1回だけ再試行する。通常エラーは再試行せず失敗扱いにする。
 
+2026-06-17 03:00 の自動実行でも同じファイルで読み取り警告が再発したため、Drive側の該当ファイル内容をGitHubへ保存したうえで、ZSlimバックアップからは `.company/secretary/inbox/2026-06-16.md` のみ個別除外する。`inbox` 全体は除外しない。
+
 ## 確認
 
 ```bash
@@ -124,6 +126,8 @@ AGENTS.md
 - `node_modules`
 - Playwrightなどの一時スナップショット
 - 一時ファイル、ログ、OSメタデータ
+- Google Drive側で読み取りデッドロックが再発した個別ファイル
+  - `.company/secretary/inbox/2026-06-16.md`（内容はGitHubに保存）
 - 再生成可能な重い結果・キャッシュ
   - `ai-trade-system/results/**/charts/*.png`
   - `keiba-unified/win5/data/cache/*.html`
