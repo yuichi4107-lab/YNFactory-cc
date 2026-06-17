@@ -3,22 +3,34 @@
 # Driveの正本を ~/shorts-factory/app へ同期してから実行する（コード更新の自動反映）。
 set -uo pipefail
 
-DRIVE_ROOT="/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+source "$SCRIPT_DIR/shorts_env.sh"
+
 APP_DIR="$HOME/shorts-factory/app"
 VENV_PY="$HOME/shorts-factory/.venv/bin/python"
+DRIVE_ROOT="$(shorts_resolve_repo_root || true)"
 
 # Driveがマウントされていれば最新コードを同期（失敗しても手元コードで続行）
-if [ -d "$DRIVE_ROOT/shorts-factory/src" ]; then
+if [ -n "$DRIVE_ROOT" ] && [ -d "$DRIVE_ROOT/shorts-factory/src" ]; then
   mkdir -p "$APP_DIR"
-  rsync -a --delete \
-    --exclude '.venv' --exclude 'work' --exclude 'logs' \
-    "$DRIVE_ROOT/shorts-factory/src" \
-    "$DRIVE_ROOT/shorts-factory/prompts" \
-    "$DRIVE_ROOT/shorts-factory/assets" \
-    "$DRIVE_ROOT/shorts-factory/scripts" \
-    "$APP_DIR/" 2>/dev/null || echo "[warn] rsync失敗。既存コードで続行"
+  RSYNC_ERR="$(mktemp)"
+  if ! rsync -a --delete \
+      --exclude '.venv' --exclude 'work' --exclude 'logs' \
+      "$DRIVE_ROOT/shorts-factory/src" \
+      "$DRIVE_ROOT/shorts-factory/prompts" \
+      "$DRIVE_ROOT/shorts-factory/assets" \
+      "$DRIVE_ROOT/shorts-factory/scripts" \
+      "$APP_DIR/" 2>"$RSYNC_ERR"; then
+    echo "[warn] rsync失敗。既存コードで続行: $(tail -5 "$RSYNC_ERR" | tr '\n' ' ')"
+  fi
+  rm -f "$RSYNC_ERR"
+else
+  echo "[warn] Driveルートを解決できません。既存コードで続行"
 fi
 
 cd "$APP_DIR"
+if [ -n "$DRIVE_ROOT" ]; then
+  export SHORTS_REPO_ROOT="$DRIVE_ROOT"
+fi
 export PYTHONDONTWRITEBYTECODE=1
-exec "$VENV_PY" -m src.pipeline
+exec "$VENV_PY" -m src.pipeline "$@"

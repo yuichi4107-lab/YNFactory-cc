@@ -2,8 +2,8 @@
 
 構造:
 {
-  "backlog": [{"topic": "...", "note": "..."}, ...],
-  "used":    [{"topic": "...", "date": "YYYY-MM-DD", "slug": "...", "title": "..."}, ...]
+  "backlog": [{"topic": "...", "difficulty": "beginner|intermediate", "note": "..."}, ...],
+  "used":    [{"topic": "...", "difficulty": "...", "date": "YYYY-MM-DD", "slug": "...", "title": "..."}, ...]
 }
 """
 from __future__ import annotations
@@ -17,6 +17,24 @@ from pathlib import Path
 from .config import CONFIG
 
 LOW_STOCK_THRESHOLD = 7
+VALID_DIFFICULTIES = {"beginner", "intermediate"}
+
+
+def normalize_difficulty(value: str | None) -> str | None:
+    if not value:
+        return None
+    value = value.strip().lower()
+    if value in VALID_DIFFICULTIES:
+        return value
+    if value in {"初級", "初心者", "beginner_jp"}:
+        return "beginner"
+    if value in {"中級", "中級者", "mid", "middle"}:
+        return "intermediate"
+    return None
+
+
+def _difficulty(entry: dict) -> str:
+    return normalize_difficulty(entry.get("difficulty")) or "beginner"
 
 
 def _load() -> dict:
@@ -35,21 +53,35 @@ def _save(data: dict) -> None:
     os.replace(tmp, CONFIG.topics_path)
 
 
-def next_topic() -> tuple[str | None, int]:
-    """backlog 先頭のトピックと残数を返す（取り出しはまだしない）。"""
+def next_topic(difficulty: str | None = None) -> tuple[str | None, int]:
+    """指定難易度のトピックと残数を返す（取り出しはまだしない）。"""
     data = _load()
     backlog = data.get("backlog", [])
     if not backlog:
         return None, 0
+    normalized = normalize_difficulty(difficulty)
+    if normalized:
+        for entry in backlog:
+            if _difficulty(entry) == normalized:
+                return entry["topic"], backlog_count(normalized)
+        return None, 0
     return backlog[0]["topic"], len(backlog)
 
 
-def consume_topic(topic: str, slug: str, title: str) -> int:
+def consume_topic(topic: str, slug: str, title: str, difficulty: str | None = None) -> int:
     """トピックを used へ移動し、残数を返す。"""
     data = _load()
+    matched = next((t for t in data.get("backlog", []) if t.get("topic") == topic), {})
+    topic_difficulty = normalize_difficulty(difficulty) or _difficulty(matched)
     data["backlog"] = [t for t in data.get("backlog", []) if t.get("topic") != topic]
     data.setdefault("used", []).append(
-        {"topic": topic, "date": date.today().isoformat(), "slug": slug, "title": title}
+        {
+            "topic": topic,
+            "difficulty": topic_difficulty,
+            "date": date.today().isoformat(),
+            "slug": slug,
+            "title": title,
+        }
     )
     _save(data)
     return len(data["backlog"])
@@ -61,19 +93,29 @@ def recent_titles(n: int = 30) -> list[str]:
     return [u.get("title") or u.get("topic", "") for u in used[-n:]]
 
 
-def add_topics(topics: list[str]) -> int:
+def add_topics(topics: list[str | dict]) -> int:
     data = _load()
     existing = {t.get("topic") for t in data.get("backlog", [])} | {
         u.get("topic") for u in data.get("used", [])
     }
-    for t in topics:
-        t = t.strip()
-        if t and t not in existing:
-            data.setdefault("backlog", []).append({"topic": t})
-            existing.add(t)
+    for item in topics:
+        if isinstance(item, dict):
+            topic = str(item.get("topic", "")).strip()
+            difficulty = normalize_difficulty(item.get("difficulty")) or "beginner"
+            entry = {**item, "topic": topic, "difficulty": difficulty}
+        else:
+            topic = str(item).strip()
+            entry = {"topic": topic, "difficulty": "beginner"}
+        if topic and topic not in existing:
+            data.setdefault("backlog", []).append(entry)
+            existing.add(topic)
     _save(data)
     return len(data["backlog"])
 
 
-def backlog_count() -> int:
-    return len(_load().get("backlog", []))
+def backlog_count(difficulty: str | None = None) -> int:
+    backlog = _load().get("backlog", [])
+    normalized = normalize_difficulty(difficulty)
+    if not normalized:
+        return len(backlog)
+    return sum(1 for entry in backlog if _difficulty(entry) == normalized)

@@ -32,4 +32,9 @@ if [ "$HEADLESS" = "1" ]; then
   ARGS+=(--headless=new)
 fi
 
-exec "$CHROME" "${ARGS[@]}" about:blank
+TARGETS=("$@")
+if [ "${#TARGETS[@]}" -eq 0 ]; then
+  TARGETS=(about:blank)
+fi
+
+exec "$CHROME" "${ARGS[@]}" "${TARGETS[@]}"

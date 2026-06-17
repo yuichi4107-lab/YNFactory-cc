@@ -122,12 +122,28 @@ def _extract_json(text: str) -> dict:
     return json.loads(text)
 
 
-def _build_prompt(topic: str, image_count: int) -> str:
+DIFFICULTY_GUIDANCE = {
+    "beginner": (
+        "初心者向け。専門用語を避け、今日すぐ1回試せる単純な使い方に絞る。"
+        "前提知識は置かず、手順は3ステップ以内にする。"
+    ),
+    "intermediate": (
+        "中級者向け。単なる便利ワザではなく、実務ワークフロー化・品質チェック・失敗例・"
+        "判断基準・テンプレ運用を中心にする。プロンプト文の紹介だけで終わらせず、"
+        "入力設計、検証、改善ループ、チーム運用のどれかを必ず入れる。"
+    ),
+}
+
+
+def _build_prompt(topic: str, image_count: int, difficulty: str = "beginner") -> str:
     tpl = (CONFIG.prompts_dir / "script_prompt.md").read_text(encoding="utf-8")
     recent = topic_store.recent_titles(30)
     recent_str = "\n".join(f"- {t}" for t in recent) if recent else "（まだ無し）"
+    difficulty = topic_store.normalize_difficulty(difficulty) or "beginner"
     return (
         tpl.replace("{topic}", topic)
+        .replace("{difficulty}", difficulty)
+        .replace("{difficulty_guidance}", DIFFICULTY_GUIDANCE[difficulty])
         .replace("{image_count}", str(image_count))
         .replace("{recent_titles}", recent_str)
     )
@@ -172,14 +188,15 @@ def _call_openai(prompt: str) -> str:
     return resp.choices[0].message.content or ""
 
 
-def generate_script(topic: str) -> dict:
+def generate_script(topic: str, difficulty: str = "beginner") -> dict:
     """テーマから検証済み台本JSONを生成する。"""
     image_count = int(CONFIG.get("images", "count", default=4))
     provider = CONFIG.get("llm", "provider", default="claude_cli")
     if provider == "openai" and not CONFIG.openai_api_key:
         provider = "claude_cli"
 
-    prompt = _build_prompt(topic, image_count)
+    difficulty = topic_store.normalize_difficulty(difficulty) or "beginner"
+    prompt = _build_prompt(topic, image_count, difficulty)
     retries = int(CONFIG.get("llm", "retries", default=3))
     last_errs: list[str] = []
     for attempt in range(1, retries + 1):
@@ -198,6 +215,7 @@ def generate_script(topic: str) -> dict:
         errs = validate_script(data, image_count)
         if not errs:
             data["topic"] = topic
+            data["difficulty"] = difficulty
             return data
         last_errs = errs
     raise RuntimeError(

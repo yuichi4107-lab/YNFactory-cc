@@ -220,7 +220,7 @@ PDF page size = 1211.41 x 612 pt
 Cover rules:
 
 - no spine text for short books; KDP requires enough pages for spine text, and 32 pages is too short
-- reserve a white barcode area on the lower-right of the back cover if not supplying a barcode
+- do not draw a visible barcode frame, white box, border, or placeholder text such as `Barcode space` on the paperback cover PDF; keep any needed barcode placement room as natural background space instead
 - keep important text at least `0.25 inch` away from trim/edge areas
 - keep cover PDF under KDP's practical recommended size where possible
 - write a `KDP出版用/paperback_size_spec.md` with the final settings and calculations

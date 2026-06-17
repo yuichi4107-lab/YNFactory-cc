@@ -15,11 +15,16 @@ APIキーを入れるとAI画像等にアップグレード可能。
 
 ## 日常運用
 
-- 毎朝 07:30 に1本自動生成 → Telegram にプレビュー動画＋ボタンが届く
+- 09:00 / 14:00 / 19:00 に1本ずつ自動生成 → Telegram にプレビュー動画＋ボタンが届く
+- 難易度バランスは 09:00=初級、14:00=中級、19:00=中級
 - **✅承認して投稿** を押すと有効媒体へ自動投稿（結果URLが返ってくる）
 - **❌却下** でスキップ、**⏸保留** で後回し
 - ネタ帳残り7本以下になると補充アラートが届く → `topics.json` の backlog に追記
 - **完全自動化**: `~/shorts-factory/config.yaml` に `queue: {auto_post: true}` と書くだけ（承認スキップ・事後通知）
+
+2026-06-16時点の実運用は、`~/shorts-factory/config.yaml` に
+`queue.platforms: [x, youtube, instagram, tiktok]` を設定済み、`auto_post: false` の承認制。
+YouTube / TikTok は専用Chromeプロファイルへのログイン確認後に実投稿可能になる。
 
 ## セットアップ（済んでいるもの）
 
@@ -42,18 +47,19 @@ cd "<Drive>/YNFactory-cc/shorts-factory/scripts" && ./deploy.sh install
 
 | ジョブ | 役割 |
 |---|---|
-| com.ynfactory.shorts-generate | 毎朝07:30 に1本生成（Driveから最新コードをrsyncしてから実行） |
+| com.ynfactory.shorts-generate | 09:00 / 14:00 / 19:00 に生成（Driveから最新コードをrsyncしてから実行） |
 | com.ynfactory.shorts-approval | 承認デーモン常駐（Telegramボタン処理・投稿実行） |
 | com.ynfactory.shorts-chrome | YouTube/TikTok用 常駐Chrome（CDP 9223） |
 
-## YouTube 初回ログイン（工程3の人間作業）
+## YouTube / TikTok 初回ログイン（人間作業）
 
 ```bash
 launchctl unload ~/Library/LaunchAgents/com.ynfactory.shorts-chrome.plist
 ~/shorts-factory/app/scripts/login_youtube.sh   # Chromeが開く→Googleログイン→Studioが見えればOK
+~/shorts-factory/app/scripts/login_tiktok.sh    # 必要なら同じ専用ChromeでTikTokログイン
 # Chromeを閉じて
 launchctl load ~/Library/LaunchAgents/com.ynfactory.shorts-chrome.plist
-~/shorts-factory/.venv/bin/python ~/shorts-factory/app/scripts/check_youtube_session.py
+~/shorts-factory/.venv/bin/python ~/shorts-factory/app/scripts/check_platforms.py
 ```
 
 セッション失効時は Telegram に手順つきアラートが届く（投稿は blocked で保全）。
@@ -64,14 +70,29 @@ launchctl load ~/Library/LaunchAgents/com.ynfactory.shorts-chrome.plist
 cd ~/shorts-factory/app   # または Drive の shorts-factory/
 PY=~/shorts-factory/.venv/bin/python
 $PY -m src.pipeline                          # ネタ帳から1本生成→キュー→Telegram
+$PY -m src.pipeline --difficulty intermediate # 中級ネタを明示生成
 $PY -m src.pipeline --topic "..." --no-queue # テーマ指定・キュー登録なし（テスト）
 $PY -m src.approval_bot                      # 承認デーモンを手動起動
 ```
+
+### 失敗媒体だけ再試行
+
+複数媒体投稿で一部だけ失敗した場合、キュー全体は `partial_failed` になる。
+成功済み媒体は `posted` のまま保持され、再試行時も二重投稿されない。
+
+```bash
+cd "<Drive>/YNFactory-cc"
+python3 shorts-factory/scripts/retry_failed_posts.py --all        # dry-run
+python3 shorts-factory/scripts/retry_failed_posts.py <queue_id> --execute
+```
+
+全媒体が失敗した場合は `failed` になり、同じ再試行コマンドで対象にできる。
 
 ## 設定変更
 
 - 話者変更: `config.yaml` の `speaker_id`（一覧: `$PY -c "from src import tts_voicevox as t; print(t.speaker_names())"`）
 - 投稿先の追加: `queue.platforms` に `youtube` / `instagram` / `tiktok` を追加
+- 投稿頻度・難易度: `content.scheduled_slots` を変更（標準は 9時=初級、14時/19時=中級）
 - AI画像化: `secrets.yaml` に `openai_api_key` か `gemini_api_key` → `images.provider: openai|gemini`
 - 台本をOpenAIに: `openai_api_key` 設定 + `llm.provider: openai`
 
@@ -84,6 +105,8 @@ $PY -m src.approval_bot                      # 承認デーモンを手動起動
 | YouTube失敗+スクショ | `~/shorts-factory/logs/yt_fail_*.png` を確認（UI変更ならセレクタ修正） |
 | X投稿403 | API無料枠の動画上限。queueは blocked になるので翌日に承認し直す |
 | VOICEVOX起動失敗 | `~/shorts-factory/logs/voicevox_engine.log` |
+| `rsync失敗` が続く | `SHORTS_REPO_ROOT` または `YNFACTORY_ROOT` を確認。`scripts/run_generate.sh` は候補パスを解決し、失敗理由をログに残す |
+| 一部媒体だけ投稿失敗 | `python3 shorts-factory/scripts/retry_failed_posts.py --all` で対象確認 → `--execute` で失敗媒体だけ再試行 |
 
 ## クレジット・コンプライアンス
 

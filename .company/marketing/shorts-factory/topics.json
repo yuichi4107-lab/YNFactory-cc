@@ -1,12 +1,6 @@
 {
   "backlog": [
     {
-      "topic": "ChatGPTへの指示は「役割を与える」だけで精度が劇的に上がる"
-    },
-    {
-      "topic": "ChatGPTでExcel関数を一瞬で作ってもらう方法"
-    },
-    {
       "topic": "ChatGPTに資料の誤字脱字チェックをさせる方法"
     },
     {
@@ -83,6 +77,102 @@
     },
     {
       "topic": "ChatGPTに旅行のしおりを作らせる意外な活用法"
+    },
+    {
+      "topic": "ChatGPTで営業メールのABテスト案を作り、反応率で改善する方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTに議事録から決定事項と未決事項を分けさせる運用術",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTで社内マニュアルをFAQ化し、問い合わせを減らす方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTに提案書の弱点をレビューさせ、反論対策まで作る方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTで顧客ヒアリングメモを課題仮説に変換する方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTにKPI未達の原因を分解させ、次の打ち手を絞る方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTでプロジェクトのリスク台帳を作り、事前に潰す方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTに既存資料を読み込ませ、抜け漏れチェックリストを作る方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTで会議前の論点整理シートを作り、議論を短くする方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTに業務フローを棚卸しさせ、自動化候補を優先順位付けする方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTで採用面接の評価基準を揃え、属人化を減らす方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTに競合比較表を作らせ、差別化ポイントを言語化する方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTでセミナー台本を作り、導入からCTAまで設計する方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTにクレーム履歴を分類させ、再発防止策を作る方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTでNotionやスプレッドシートの運用ルールを作る方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTにSNS投稿の勝ちパターンを分析させ、次の企画へ反映する方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTで業務委託先への依頼文を仕様書レベルまで具体化する方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTに月次レポートをレビューさせ、経営判断に使える形へ直す方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTで顧客ごとの提案パターンを作り、営業準備を標準化する方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTに問い合わせ文面を分類させ、返信テンプレを改善する方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTで社内ナレッジを検索しやすいタグ体系に整理する方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTに失注理由を分析させ、次回商談の改善策を作る方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTでチェックリスト運用を作り、作業品質を安定させる方法",
+      "difficulty": "intermediate"
+    },
+    {
+      "topic": "ChatGPTにプロンプトの評価基準を作らせ、出力品質を比較する方法",
+      "difficulty": "intermediate"
     }
   ],
   "used": [
@@ -97,6 +187,18 @@
       "date": "2026-06-13",
       "slug": "2026-06-13_ok-3-chatgpt",
       "title": "【コピペOK】議事録を3分で作るChatGPT術"
+    },
+    {
+      "topic": "ChatGPTへの指示は「役割を与える」だけで精度が劇的に上がる",
+      "date": "2026-06-15",
+      "slug": "2026-06-15_chatgpt",
+      "title": "ChatGPTに役割を与えるだけで精度が激変"
+    },
+    {
+      "topic": "ChatGPTでExcel関数を一瞬で作ってもらう方法",
+      "date": "2026-06-16",
+      "slug": "2026-06-16_excel-chatgpt-ok",
+      "title": "Excel関数はChatGPTに丸投げでOK"
     }
   ]
 }

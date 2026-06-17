@@ -13,8 +13,16 @@ images:
   count: 4                   # 背景画像の枚数（3〜5推奨）
 
 queue:
-  auto_post: false           # ★ true にすると承認スキップで全自動投稿
-  platforms: [x]             # 投稿先: x / youtube / instagram / tiktok
+  auto_post: false           # ★ true にすると承認スキップで全自動投稿。実公開前に必ず確認
+  platforms: [x, youtube, instagram, tiktok]
+                              # 投稿先: x / youtube / instagram / tiktok
+
+content:
+  default_difficulty: beginner
+  scheduled_slots:
+    - {hour: 9, minute: 0, difficulty: beginner}
+    - {hour: 14, minute: 0, difficulty: intermediate}
+    - {hour: 19, minute: 0, difficulty: intermediate}
 
 verify:
   cer_line_max: 0.20         # 行ごとの音韻CER上限

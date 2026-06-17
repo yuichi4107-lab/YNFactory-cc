@@ -16,7 +16,16 @@ from pathlib import Path
 
 from .config import CONFIG
 
-STATUSES = {"draft", "ready_for_review", "approved", "posted", "failed", "skipped", "blocked"}
+STATUSES = {
+    "draft",
+    "ready_for_review",
+    "approved",
+    "posted",
+    "partial_failed",
+    "failed",
+    "skipped",
+    "blocked",
+}
 
 
 def _now() -> str:
@@ -82,6 +91,7 @@ def new_item(
         "id": item_id,
         "created_at": _now(),
         "topic": topic,
+        "difficulty": script.get("difficulty", "beginner"),
         "title": script["title"],
         "caption": script["caption"],
         "hashtags": script["hashtags"],
@@ -120,7 +130,9 @@ def mark_platform(item: dict, platform: str, status: str, url: str | None = None
     p["status"] = status
     if url:
         p["url"] = url
-    if error:
+    if status == "posted":
+        p["error"] = None
+    elif error:
         p["error"] = error[:500]
     if status == "posted":
         p["posted_at"] = _now()

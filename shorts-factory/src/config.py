@@ -14,13 +14,37 @@ import yaml
 
 RUNTIME_DIR = Path(os.environ.get("SHORTS_RUNTIME_DIR", str(Path.home() / "shorts-factory")))
 
-# Drive上のリポジトリルート（デプロイ先から実行されても Drive を指す）
-DEFAULT_REPO_ROOT = Path(
-    os.environ.get(
-        "SHORTS_REPO_ROOT",
-        "/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc",
+
+def _candidate_repo_roots() -> list[Path]:
+    candidates: list[Path] = []
+    for key in ("SHORTS_REPO_ROOT", "YNFACTORY_ROOT"):
+        if os.environ.get(key):
+            candidates.append(Path(os.environ[key]))
+
+    here = Path(__file__).resolve()
+    candidates.extend(
+        [
+            here.parents[2] if len(here.parents) > 2 else here.parent,
+            Path.cwd(),
+            Path.home()
+            / "Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc",
+            Path.home()
+            / "Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc",
+            Path.home() / "YNFactory-cc",
+        ]
     )
-)
+    return candidates
+
+
+def _resolve_repo_root() -> Path:
+    for candidate in _candidate_repo_roots():
+        if (candidate / "shorts-factory" / "src").exists():
+            return candidate
+    return _candidate_repo_roots()[0]
+
+
+# Drive上のリポジトリルート（デプロイ先から実行されても Drive を指す）
+DEFAULT_REPO_ROOT = _resolve_repo_root()
 
 DEFAULTS: dict = {
     "speaker_id": 3,  # ずんだもん（ノーマル）
@@ -80,6 +104,14 @@ DEFAULTS: dict = {
     "queue": {
         "auto_post": False,  # True で承認スキップ → 即投稿
         "platforms": ["x"],  # x | youtube | instagram | tiktok（工程進行で追加）
+    },
+    "content": {
+        "default_difficulty": "beginner",
+        "scheduled_slots": [
+            {"hour": 9, "minute": 0, "difficulty": "beginner"},
+            {"hour": 14, "minute": 0, "difficulty": "intermediate"},
+            {"hour": 19, "minute": 0, "difficulty": "intermediate"},
+        ],
     },
     "telegram": {"enabled": True},
     "ffmpeg": "/Users/yuichi/bin/ffmpeg",

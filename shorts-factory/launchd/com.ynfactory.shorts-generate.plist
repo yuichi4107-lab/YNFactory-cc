@@ -9,12 +9,26 @@
         <string>/Users/yuichi/shorts-factory/app/scripts/run_generate.sh</string>
     </array>
     <key>StartCalendarInterval</key>
-    <dict>
-        <key>Hour</key>
-        <integer>7</integer>
-        <key>Minute</key>
-        <integer>30</integer>
-    </dict>
+    <array>
+        <dict>
+            <key>Hour</key>
+            <integer>9</integer>
+            <key>Minute</key>
+            <integer>0</integer>
+        </dict>
+        <dict>
+            <key>Hour</key>
+            <integer>14</integer>
+            <key>Minute</key>
+            <integer>0</integer>
+        </dict>
+        <dict>
+            <key>Hour</key>
+            <integer>19</integer>
+            <key>Minute</key>
+            <integer>0</integer>
+        </dict>
+    </array>
     <key>StandardOutPath</key>
     <string>/Users/yuichi/Library/Logs/shorts-generate.log</string>
     <key>StandardErrorPath</key>
@@ -25,6 +39,8 @@
         <string>/Users/yuichi/.local/bin:/Users/yuichi/bin:/opt/homebrew/bin:/usr/bin:/bin</string>
         <key>HOME</key>
         <string>/Users/yuichi</string>
+        <key>SHORTS_REPO_ROOT</key>
+        <string>/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc</string>
     </dict>
 </dict>
 </plist>

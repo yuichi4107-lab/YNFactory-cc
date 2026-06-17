@@ -4,7 +4,10 @@
 #   ./deploy.sh install  launchd 3ジョブの登録まで実行
 set -euo pipefail
 
-DRIVE_ROOT="/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+source "$SCRIPT_DIR/shorts_env.sh"
+
+DRIVE_ROOT="$(shorts_resolve_repo_root)"
 SRC="$DRIVE_ROOT/shorts-factory"
 APP_DIR="$HOME/shorts-factory/app"
 LA_DIR="$HOME/Library/LaunchAgents"
@@ -14,7 +17,7 @@ rsync -a --delete \
   --exclude '.venv' --exclude 'work' --exclude 'logs' --exclude 'voicevox*' \
   "$SRC/src" "$SRC/prompts" "$SRC/assets" "$SRC/scripts" "$APP_DIR/"
 chmod +x "$APP_DIR"/scripts/*.sh
-echo "✅ コード同期: $APP_DIR"
+echo "✅ コード同期: $APP_DIR (repo=$DRIVE_ROOT)"
 
 if [ "${1:-}" = "install" ]; then
   for p in shorts-generate shorts-approval shorts-chrome; do

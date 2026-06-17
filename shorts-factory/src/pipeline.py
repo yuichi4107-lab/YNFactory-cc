@@ -21,10 +21,11 @@ from pathlib import Path
 
 from .config import CONFIG
 from . import image_gen, notify, queue_lib, renderer, script_gen, topic_store, tts_voicevox, verifier
+from .logging_utils import redact_secrets
 
 
 def log(msg: str) -> None:
-    line = f"[{datetime.now().strftime('%H:%M:%S')}] {msg}"
+    line = f"[{datetime.now().strftime('%H:%M:%S')}] {redact_secrets(msg)}"
     print(line, flush=True)
     with open(CONFIG.logs_dir / "pipeline.log", "a", encoding="utf-8") as f:
         f.write(line + "\n")
@@ -38,20 +39,52 @@ def make_slug(title: str) -> str:
     return s[:40]
 
 
-def produce(topic: str | None = None, send_queue: bool = True) -> dict:
+def make_item_id(title: str, now: datetime | None = None) -> str:
+    """Create a queue/output id that will not collide across same-day posts."""
+    now = now or datetime.now()
+    return f"{now.date().isoformat()}_{now.strftime('%H%M%S')}_{make_slug(title)}"
+
+
+def scheduled_difficulty(now: datetime | None = None) -> str:
+    """現在時刻から投稿スロットの難易度を返す。"""
+    now = now or datetime.now()
+    slots = CONFIG.get("content", "scheduled_slots", default=[]) or []
+    for slot in slots:
+        if int(slot.get("hour", -1)) == now.hour:
+            return topic_store.normalize_difficulty(slot.get("difficulty")) or "beginner"
+    return topic_store.normalize_difficulty(
+        CONFIG.get("content", "default_difficulty", default="beginner")
+    ) or "beginner"
+
+
+def produce(
+    topic: str | None = None,
+    send_queue: bool = True,
+    difficulty: str | None = None,
+) -> dict:
     """1本の動画を生成して結果情報を返す。"""
+    selected_difficulty = topic_store.normalize_difficulty(difficulty) or scheduled_difficulty()
     # --- 0. トピック決定 ---
     if not topic:
-        topic, remaining = topic_store.next_topic()
+        topic, remaining = topic_store.next_topic(selected_difficulty)
         if not topic:
-            notify.send_message("⚠️ shorts-factory: ネタ帳が空です。topics.json に補充してください。")
-            raise SystemExit("ネタ帳が空")
-    log(f"テーマ: {topic}")
+            fallback_topic, fallback_remaining = topic_store.next_topic()
+            if fallback_topic:
+                notify.send_message(
+                    f"⚠️ shorts-factory: {selected_difficulty} のネタが空です。"
+                    "別難易度のネタで代替します。"
+                )
+                topic, remaining = fallback_topic, fallback_remaining
+                selected_difficulty = "beginner"
+            else:
+                notify.send_message("⚠️ shorts-factory: ネタ帳が空です。topics.json に補充してください。")
+                raise SystemExit("ネタ帳が空")
+    log(f"テーマ: {topic} (difficulty={selected_difficulty})")
 
     # --- 1. 台本生成（生成層バリデーション込み） ---
-    script = script_gen.generate_script(topic)
+    script = script_gen.generate_script(topic, selected_difficulty)
     title = script["title"]
-    item_id = f"{date.today().isoformat()}_{make_slug(title)}"
+    item_id = make_item_id(title)
     work = CONFIG.work_dir / item_id
     if work.exists():
         shutil.rmtree(work)
@@ -164,14 +197,14 @@ def produce(topic: str | None = None, send_queue: bool = True) -> dict:
     (out_dir / "captions.md").write_text(captions, encoding="utf-8")
     log(f"成果物保存: {out_dir}")
 
-    # --- 7. ネタ帳消費 + キュー登録 + Telegramプレビュー ---
-    remaining = topic_store.consume_topic(topic, item_id, title)
-    if remaining <= topic_store.LOW_STOCK_THRESHOLD:
-        notify.send_message(f"📋 shorts-factory: ネタ帳の残りが{remaining}本です。補充してください。")
-
     result = {"id": item_id, "output_dir": str(out_dir), "report": report, "title": title}
     if not send_queue:
         return result
+
+    # --- 7. ネタ帳消費 + キュー登録 + Telegramプレビュー ---
+    remaining = topic_store.consume_topic(topic, item_id, title, selected_difficulty)
+    if remaining <= topic_store.LOW_STOCK_THRESHOLD:
+        notify.send_message(f"📋 shorts-factory: ネタ帳の残りが{remaining}本です。補充してください。")
 
     item = queue_lib.new_item(
         item_id, topic, script, out_dir / "final.mp4",
@@ -191,14 +224,8 @@ def produce(topic: str | None = None, send_queue: bool = True) -> dict:
         mid = notify.send_video(out_dir / "final.mp4", "🤖 自動投稿モード: まもなく投稿します\n" + notify.preview_caption(item))
     else:
         queue_lib.transition(item, "ready_for_review", "Telegram承認待ち")
-        mid = notify.send_video(
-            out_dir / "final.mp4",
-            notify.preview_caption(item),
-            reply_markup=notify.approval_keyboard(item_id),
-        )
-    if mid:
-        item["telegram"]["message_id"] = mid
-        queue_lib.save_item(item)
+        # The approval daemon is the single sender for approval previews.
+        # Sending here as well races with the daemon and can duplicate buttons.
     return result
 
 
@@ -206,9 +233,14 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="ショート動画全自動生成")
     ap.add_argument("--topic", help="テーマ（省略時はネタ帳から）")
     ap.add_argument("--no-queue", action="store_true", help="キュー登録・Telegram送信をしない")
+    ap.add_argument(
+        "--difficulty",
+        choices=["beginner", "intermediate"],
+        help="ネタ選択と台本の難易度。省略時は実行時刻のスロットから自動判定",
+    )
     args = ap.parse_args()
     try:
-        result = produce(topic=args.topic, send_queue=not args.no_queue)
+        result = produce(topic=args.topic, send_queue=not args.no_queue, difficulty=args.difficulty)
         print(json.dumps(
             {"id": result["id"], "pass": result["report"]["pass"],
              "avg_cer": result["report"]["accuracy"]["avg_cer"],

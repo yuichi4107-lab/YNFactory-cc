@@ -12,6 +12,7 @@ import unicodedata
 from pathlib import Path
 
 from ..config import CONFIG
+from ..logging_utils import redact_secrets
 
 SCRIPTS_DIR = CONFIG.repo_root / "scripts"
 PYTHON = str(CONFIG.runtime_dir / ".venv" / "bin" / "python")
@@ -115,12 +116,17 @@ POSTERS = {
     "youtube": post_youtube,
     "tiktok": post_tiktok,
 }
+POST_ORDER = ("x", "instagram", "tiktok", "youtube")
 
 
 def post_item(item: dict, queue_lib, notify) -> dict:
     """有効な全プラットフォームへ投稿し、結果を item に記録して返す。"""
     results = []
-    for platform, info in item["platforms"].items():
+    platforms = item.get("platforms", {})
+    ordered_platforms = [p for p in POST_ORDER if p in platforms]
+    ordered_platforms.extend(p for p in platforms if p not in ordered_platforms)
+    for platform in ordered_platforms:
+        info = platforms[platform]
         if not info.get("enabled") or info.get("status") == "posted":
             continue
         try:
@@ -128,18 +134,25 @@ def post_item(item: dict, queue_lib, notify) -> dict:
             item = queue_lib.mark_platform(item, platform, "posted", url=url)
             results.append(f"✅ {platform}: {url}")
         except Exception as e:  # 1媒体の失敗で他媒体を止めない
-            item = queue_lib.mark_platform(item, platform, "failed", error=str(e))
-            results.append(f"❌ {platform}: {str(e)[:120]}")
+            err = redact_secrets(e)
+            item = queue_lib.mark_platform(item, platform, "failed", error=err)
+            results.append(f"❌ {platform}: {err[:120]}")
 
     statuses = [v["status"] for v in item["platforms"].values() if v.get("enabled")]
     if statuses and all(s == "posted" for s in statuses):
         item = queue_lib.transition(item, "posted", "全媒体投稿完了")
     elif any(s == "posted" for s in statuses):
-        item = queue_lib.transition(item, "posted", "一部媒体のみ投稿成功")
+        item = queue_lib.transition(item, "partial_failed", "一部媒体のみ投稿成功。失敗媒体は再試行待ち")
     else:
         item = queue_lib.transition(item, "failed", "全媒体投稿失敗")
 
+    extra = ""
+    if item["status"] in {"failed", "partial_failed"}:
+        extra = (
+            "\n\n再試行: "
+            f"<code>python3 shorts-factory/scripts/retry_failed_posts.py {item['id']} --execute</code>"
+        )
     notify.send_message(
-        f"📤 <b>{item['title']}</b> 投稿結果\n" + "\n".join(results)
+        f"📤 <b>{item['title']}</b> 投稿結果\n" + "\n".join(results) + extra
     )
     return item
