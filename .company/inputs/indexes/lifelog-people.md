@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-17T07:01:14
+generated_at: 2026-06-18T07:00:42
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,18 @@ generated_at: 2026-06-17T07:01:14
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-17
+
+- - **深野さん** — 依頼事項の確認 (8:43 PM) | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- - **中田さん** — 応募書類の修正、資料共有に関する業務連絡 (3:13 PM, 2:26 PM, 8:06 AM, 9:13 AM) | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- - **先生** — 決算書作成、資料共有 (1:00 PM, 2:26 PM) | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- - **佐藤さん** — 納涼会の計画、採用活動、美見の仕事（管理業務経験不要論） (1:06 PM, 1:14 PM, 10:39 AM) | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- - **野村さん** — 7月1日から入社するB県の営業担当 (1:06 PM) | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- - **バーノ部長** — 採用基準（経験者・未経験者）、交通費支給の判断、新入社員の状況把握、AIツール契約、業務立ち上げに関する課題、連絡の不手際 (12:04 PM, 12:06 PM, 10:39 AM, 11:01 AM, 10:10 AM) | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- - **社長** — AIツール契約の意思決定、採用活動（急いでいる様子）、給与設定（30万〜32万の幅）、新入社員の家庭環境に関する情報共有 (1:14 PM, 1:19 PM, 12:23 PM, 12:12 PM, 11:04 AM, 9:13 AM) | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- - **まあさん** — 新入社員の入社書類不備、事故の状況、フォローに関する連絡 (11:01 AM, 11:03 AM) | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- - **伊礼さん** — 新入社員の状況に関する情報提供者 (10:54 AM) | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
 
 ## 2026-06-12
 

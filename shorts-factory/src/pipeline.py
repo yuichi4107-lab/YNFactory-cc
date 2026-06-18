@@ -213,9 +213,17 @@ def produce(
         report["accuracy"]["avg_cer"], out_dir,
     )
     if not report["pass"]:
-        queue_lib.transition(item, "blocked", "品質検証が上限到達でも不合格のため要人間確認")
-        notify.send_video(out_dir / "final.mp4",
-                          "⚠️ 品質検証不合格のため投稿保留\n" + notify.preview_caption(item))
+        item = queue_lib.transition(item, "blocked", "品質検証が上限到達でも不合格のため要人間確認")
+        mid = notify.send_video(
+            out_dir / "final.mp4",
+            "⚠️ 品質検証不合格のため投稿保留\n"
+            "次の対応をボタンで選んでください。\n\n"
+            + notify.preview_caption(item),
+            reply_markup=notify.quality_blocked_keyboard(item["id"]),
+        )
+        if mid:
+            item.setdefault("telegram", {})["message_id"] = mid
+            queue_lib.save_item(item)
         return result
 
     if CONFIG.get("queue", "auto_post", default=False):

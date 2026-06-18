@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-17T07:01:14
+generated_at: 2026-06-18T07:00:42
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,15 @@ generated_at: 2026-06-17T07:01:14
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-17
+
+- - 面接回数を2回、対面のみで実施することに決定 (4:41 PM) | time:- | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- - 通勤手当は、まず最初は全額支給していくことに決定 (12:06 PM) | time:- | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- - YouTubeチャンネル名、プロフィール欄を全て変更する (6:17 AM) | time:- | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- - Gitのコミット、プッシュ、プルを毎日午前10時に実施すること (6:21 AM) | time:- | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- - 新しい採用において、経験者だけでなく、若手や経験が浅い層もターゲットに含める可能性を検討 (8:39 AM) | time:- | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- - 給与明細は現住所、源泉徴収票は住民票住所に送る方針で対応（住民票住所を優先） (8:39 AM) | time:- | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
 
 ## 2026-06-13
 

@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-17T07:01:14
+generated_at: 2026-06-18T07:00:42
 ---
 
 # Lifelog Topics
@@ -10,6 +10,27 @@ generated_at: 2026-06-17T07:01:14
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-17
+
+- - **AIでのスマホアプリ開発手法** (8:47 PM) | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+-   - 理由: イメージを書き起こすだけでアプリを自動構築できるAIの可能性について言及があったため。 | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- - **ChatGPTを活用したヒアリングメモからの課題仮説抽出** (7:56 PM) | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+-   - 理由: ヒアリングメモの効果的な活用法としてChatGPTによる変換が提案されたため。 | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- - **AnthropicのClaudeの機能とゲーム開発への応用** (12:23 PM) | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+-   - 理由: Claudeの驚異的な性能と、ゲームを自動生成できる能力が報告されたため。 | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- - **カジュアル面談の採用側メリットと効果的な運用** (4:15 PM) | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+-   - 理由: 応募者側のメリットは理解できるが、採用側（企業）のメリットが不明瞭であるとの疑問があったため。 | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- - **残業代、管理監督者の定義に関する法改正情報** (10:29 AM) | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+-   - 理由: 今後の給与体系や運用に影響する法改正の動向について言及があったため。 | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- 1. **AIを活用したスマートフォンアプリ開発** [freelance] ★★★★☆ (8:47 PM) | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+-    - AIを使ってスマホアプリを開発する。イメージを書き起こすだけで自動でコードが組み立てられる可能性について言及。 | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- 2. **ChatGPTを用いたヒアリングメモの課題仮説変換** [freelance] ★★★☆☆ (7:56 PM) | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+-    - ヒアリングメモを放置せず、ChatGPTを活用して課題や仮説に変換し、機会損失を防ぐ。 | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- 3. **AnthropicのClaudeを活用したゲーム開発** [freelance] ★★★★★ (12:23 PM) | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+-    - AnthropicのClaudeの高性能な自然言語処理能力を活かし、信長の野望のようなゲームを簡単に作成する可能性について言及。AIがゲーム性や設定を自律的に調査・構築する能力に驚きを示す。 | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- 4. **若手・女性・留学生の清掃員採用強化** [other] ★★★★☆ (10:45 AM) | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+-    - 清掃員の採用において、経験者だけでなく、若手、女性、海外からの留学生（日本語学校経由）を積極的に採用し、多様な人材プールの開拓と現場の活性化を図る提案。コミュニケーションの重要性も指摘。 | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
 
 ## 2026-06-13
 

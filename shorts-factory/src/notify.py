@@ -106,6 +106,18 @@ def approval_keyboard(item_id: str) -> dict:
     }
 
 
+def quality_blocked_keyboard(item_id: str) -> dict:
+    return {
+        "inline_keyboard": [
+            [
+                {"text": "✅ このまま投稿", "callback_data": f"approve:{item_id}"},
+                {"text": "🔁 作り直す", "callback_data": f"reject:{item_id}"},
+            ],
+            [{"text": "⏸ 保留（また後で）", "callback_data": f"hold:{item_id}"}],
+        ]
+    }
+
+
 def flush_pending_messages(limit: int = 10) -> int:
     sent = 0
     if not enabled():

@@ -20,6 +20,11 @@ from . import topic_store
 
 SCRIPT_SCHEMA_KEYS = {"title", "cues", "caption", "hashtags", "card_keywords"}
 _KANA_RE = re.compile(r"^[ァ-ヶー、。・\s０-９0-9？?！!]+$")
+_UNSTABLE_SPEECH_RE = re.compile(r"[A-Za-z%％]")
+
+
+def _speech_unstable_text(s: str) -> bool:
+    return bool(_UNSTABLE_SPEECH_RE.search(s.replace("ChatGPT", "")))
 
 
 def _char_width(s: str) -> int:
@@ -66,9 +71,18 @@ def validate_script(data: dict, image_count: int) -> list[str]:
                     errs.append(
                         f"cue[{i}].display[{j}]「{line}」が{_char_width(line)}文字で上限{max_line}文字超過。短く分割すること"
                     )
+                elif _speech_unstable_text(line):
+                    errs.append(
+                        f"cue[{i}].display[{j}]「{line}」に英字または%記号あり。"
+                        "ChatGPT以外はカタカナ・日本語表記にすること"
+                    )
         tts = cue.get("tts_text", "")
         if not isinstance(tts, str) or len(tts.strip()) < 3:
             errs.append(f"cue[{i}].tts_text が短すぎる")
+        elif _speech_unstable_text(tts):
+            errs.append(
+                f"cue[{i}].tts_text に英字または%記号あり。ChatGPT以外はカタカナ・日本語表記にすること"
+            )
         kana = cue.get("reading_kana", "")
         if not isinstance(kana, str) or len(kana.strip()) < 3:
             errs.append(f"cue[{i}].reading_kana が空または短すぎる")
@@ -188,6 +202,188 @@ def _call_openai(prompt: str) -> str:
     return resp.choices[0].message.content or ""
 
 
+def _fallback_cues_for_topic(topic: str) -> tuple[str, list[dict]]:
+    if "営業メール" in topic:
+        return "営業メール改善の型", [
+            {
+                "display": ["返信ゼロの原因", "そこじゃないかも"],
+                "tts_text": "返信ゼロの原因、そこじゃないかもしれません。",
+                "reading_kana": "ヘンシンゼロノゲンイン、ソコジャナイカモシレマセン。",
+                "emphasis": True,
+            },
+            {
+                "display": ["中級者はまず", "数字で見ます"],
+                "tts_text": "中級者は、まず反応を数字で見ます。",
+                "reading_kana": "チュウキュウシャハ、マズハンノウヲスウジデミマス。",
+                "emphasis": True,
+            },
+            {
+                "display": ["件名だけを", "一つ変えます"],
+                "tts_text": "最初は、件名だけを一つ変えます。",
+                "reading_kana": "サイショハ、ケンメイダケヲヒトツカエマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["本文冒頭は", "別で試します"],
+                "tts_text": "本文の冒頭は、別の回で試します。",
+                "reading_kana": "ホンブンノボウトウハ、ベツノカイデタメシマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["相手の役職を", "必ず入れる"],
+                "tts_text": "相手の役職や悩みを、必ず入れます。",
+                "reading_kana": "アイテノヤクショクヤナヤミヲ、カナラズイレマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["誰に何を頼むか", "明確にします"],
+                "tts_text": "誰に何を頼むメールなのか、明確にします。",
+                "reading_kana": "ダレニナニヲタノムメールナノカ、メイカクニシマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["送った数と返信を", "表に残します"],
+                "tts_text": "送った数と返信数を、表に残します。",
+                "reading_kana": "オクッタカズトヘンシンスウヲ、ヒョウニノコシマス。",
+                "emphasis": True,
+            },
+            {
+                "display": ["勝った文だけ", "残します"],
+                "tts_text": "反応がよかった文だけを残します。",
+                "reading_kana": "ハンノウガヨカッタブンダケヲノコシマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["次は違う要素を", "一つ試します"],
+                "tts_text": "次は違う要素を、一つだけ試します。",
+                "reading_kana": "ツギハチガウヨウソヲ、ヒトツダケタメシマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["全部変えると", "理由が消えます"],
+                "tts_text": "全部を一気に変えると、理由が分からなくなります。",
+                "reading_kana": "ゼンブヲイッキニカエルト、リユウガワカラナクナリマス。",
+                "emphasis": True,
+            },
+            {
+                "display": ["うまくいく型を", "共有します"],
+                "tts_text": "うまくいく型は、チームで共有します。",
+                "reading_kana": "ウマクイクカタハ、チームデキョウユウシマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["毎週見直して", "文面を育てます"],
+                "tts_text": "毎週見直して、文面を育てます。",
+                "reading_kana": "マイシュウミナオシテ、ブンメンヲソダテマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["保存して次の", "メールで試して"],
+                "tts_text": "保存して、次の営業メールで試してください。",
+                "reading_kana": "ホゾンシテ、ツギノエイギョウメールデタメシテクダサイ。",
+                "emphasis": False,
+            },
+        ]
+    return "仕事で使える改善の型", [
+        {
+            "display": ["その依頼", "時間をムダに"],
+            "tts_text": "その依頼、時間をムダにしているかもしれません。",
+            "reading_kana": "ソノイライ、ジカンヲムダニシテイルカモシレマセン。",
+            "emphasis": True,
+        },
+        {
+            "display": ["原因は", "型がないこと"],
+            "tts_text": "原因は、最初の型がないことです。",
+            "reading_kana": "ゲンインハ、サイショノカタガナイコトデス。",
+            "emphasis": True,
+        },
+        {
+            "display": ["目的と相手と", "制約を書きます"],
+            "tts_text": "目的と相手と制約を、先に書きます。",
+            "reading_kana": "モクテキトアイテトセイヤクヲ、サキニカキマス。",
+            "emphasis": False,
+        },
+        {
+            "display": ["出力形式も", "先に指定します"],
+            "tts_text": "出力形式も、先に指定します。",
+            "reading_kana": "シュツリョクケイシキモ、サキニシテイシマス。",
+            "emphasis": False,
+        },
+        {
+            "display": ["一回で決めず", "二案出させます"],
+            "tts_text": "一回で決めず、二案出させます。",
+            "reading_kana": "イッカイデキメズ、ニアンデサセマス。",
+            "emphasis": False,
+        },
+        {
+            "display": ["良い案だけを", "残して比べます"],
+            "tts_text": "良い案だけを残して、比べます。",
+            "reading_kana": "ヨイアンダケヲノコシテ、クラベマス。",
+            "emphasis": False,
+        },
+        {
+            "display": ["数字や事例で", "根拠を足します"],
+            "tts_text": "数字や事例で、根拠を足します。",
+            "reading_kana": "スウジヤジレイデ、コンキョヲタシマス。",
+            "emphasis": True,
+        },
+        {
+            "display": ["最後に弱点を", "自分で聞きます"],
+            "tts_text": "最後に弱点を、自分で聞きます。",
+            "reading_kana": "サイゴニジャクテンヲ、ジブンデキキマス。",
+            "emphasis": False,
+        },
+        {
+            "display": ["その反論まで", "直して完成"],
+            "tts_text": "その反論まで直して、完成です。",
+            "reading_kana": "ソノハンロンマデナオシテ、カンセイデス。",
+            "emphasis": False,
+        },
+        {
+            "display": ["毎回同じ型を", "保存します"],
+            "tts_text": "毎回同じ型を、保存します。",
+            "reading_kana": "マイカイオナジカタヲ、ホゾンシマス。",
+            "emphasis": False,
+        },
+        {
+            "display": ["チームなら", "共有します"],
+            "tts_text": "チームで使うなら、共有します。",
+            "reading_kana": "チームデツカウナラ、キョウユウシマス。",
+            "emphasis": False,
+        },
+        {
+            "display": ["迷ったら型に", "戻せば安定"],
+            "tts_text": "迷ったら型に戻せば、品質が安定します。",
+            "reading_kana": "マヨッタラカタニモドセバ、ヒンシツガアンテイシマス。",
+            "emphasis": True,
+        },
+        {
+            "display": ["保存して次の", "仕事で試して"],
+            "tts_text": "保存して、次の仕事で試してください。",
+            "reading_kana": "ホゾンシテ、ツギノシゴトデタメシテクダサイ。",
+            "emphasis": False,
+        },
+    ]
+
+
+def _fallback_script(topic: str, difficulty: str, last_errs: list[str]) -> dict:
+    title, cues = _fallback_cues_for_topic(topic)
+    return {
+        "title": title,
+        "cues": cues,
+        "caption": (
+            f"{topic}の実務向けショートです。"
+            "一回で当てにいくより、型を作って記録しながら改善する方が安定します。"
+            "保存して、次の仕事でそのまま試してみてください。"
+        ),
+        "hashtags": ["#ChatGPT", "#AI活用術", "#仕事術", "#業務効率化", "#営業"],
+        "card_keywords": ["型化", "記録", "改善", "共有"],
+        "topic": topic,
+        "difficulty": difficulty,
+        "fallback_reason": "; ".join(last_errs[:3]),
+    }
+
+
 def generate_script(topic: str, difficulty: str = "beginner") -> dict:
     """テーマから検証済み台本JSONを生成する。"""
     image_count = int(CONFIG.get("images", "count", default=4))
@@ -206,7 +402,17 @@ def generate_script(topic: str, difficulty: str = "beginner") -> dict:
                 "\n\n## 前回出力の問題点（必ず修正すること）\n"
                 + "\n".join(f"- {e}" for e in last_errs)
             )
-        raw = _call_openai(full_prompt) if provider == "openai" else _call_claude_cli(full_prompt)
+        try:
+            raw = _call_openai(full_prompt) if provider == "openai" else _call_claude_cli(full_prompt)
+        except subprocess.TimeoutExpired:
+            last_errs = [
+                f"{provider} が {CONFIG.get('llm', 'timeout_sec', default=300)} 秒でタイムアウト。"
+                "同じ条件で再試行すること"
+            ]
+            continue
+        except RuntimeError as e:
+            last_errs = [str(e)]
+            continue
         try:
             data = _extract_json(raw)
         except (json.JSONDecodeError, ValueError) as e:
@@ -218,6 +424,11 @@ def generate_script(topic: str, difficulty: str = "beginner") -> dict:
             data["difficulty"] = difficulty
             return data
         last_errs = errs
+    data = _fallback_script(topic, difficulty, last_errs)
+    errs = validate_script(data, image_count)
+    if not errs:
+        return data
     raise RuntimeError(
-        f"台本生成が{retries}回失敗。最終エラー: " + "; ".join(last_errs[:5])
+        f"台本生成が{retries}回失敗し、フォールバック台本も不合格。最終エラー: "
+        + "; ".join((last_errs + errs)[:5])
     )

@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-17T07:01:14
+generated_at: 2026-06-18T07:00:42
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,17 @@ generated_at: 2026-06-17T07:01:14
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-17
+
+- [ ] YouTubeチャンネル名、プロフィール欄等の変更(6:17 AM) | time:- | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- [ ] Gitのコミット、プッシュ、プルを毎日午前10時に実施(6:21 AM) | time:- | priority:high | due:2026-06-18 | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- [ ] 会社契約しているChatGPTのパスワード確認(12:23 PM) | time:- | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- [ ] 来週の決算書準備と金庫への保管(1:00 PM) | time:- | priority:high | due:2026-06-22 | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- [ ] 来週からのドダー応募対応を開始(1:01 PM) | time:- | priority:high | due:2026-06-22 | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- [ ] 応募書類の修正指示と必要な情報提供依頼をメールで送付(9:13 AM) | time:- | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- [ ] 給与明細を現住所へ、源泉徴収票を住民票の住所へ送る運用について検討・調整（住民票住所を優先）(8:39 AM) | time:- | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
+- [ ] 交通費支給に関する社内規定の明文化を検討（法律変更時に合わせて）(10:29 AM) | time:- | priority:low | due:- | source:`.company/inputs/organized/lifelogs/2026-06-17-lifelog-insights.md`
 
 ## 2026-06-13
 
