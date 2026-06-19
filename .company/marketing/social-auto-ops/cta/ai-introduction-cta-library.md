@@ -1,17 +1,18 @@
 ---
 title: AI活用・AI導入 CTAライブラリ
 created: 2026-05-26
-status: draft
+updated: 2026-06-19
+status: active
 primary_cta: 無料AI導入診断
 ---
 
 # AI活用・AI導入 CTAライブラリ
 
-現在のLP URL: https://sites.google.com/yn-factory.com/ai-lp
+現在のLP URL: https://ai.yn-factory.com/
 
-独自ドメイン候補: https://ai.yn-factory.com
+現在の独自ドメイン: https://ai.yn-factory.com/
 
-注記: `ai.yn-factory.com` は2026-05-28 18:53 JST時点では未接続のため、SNSプロフィールやnote本文では当面Google Sites公開URLを使う。
+注記: `ai.yn-factory.com` はCloudflare Pagesで公開済み。SNSプロフィールやショート動画の概要欄ではこのURLに統一する。
 
 ## 1. 主CTA
 
@@ -23,12 +24,16 @@ primary_cta: 無料AI導入診断
 - AI活用・AI導入は、業務内容を聞かないと提案しづらい。
 - 診断を入口にすると、チャットボット構築、業務自動化、導入伴走、社内研修へ自然につなげられる。
 
+2026-06-19以降のショート動画導線では、単なる初心者相談ではなく「中小企業のAI導入・社内定着・AI顧問相談」へつなげる受け皿として使う。
+
+運用詳細: [`short-video-cta-receiver.md`](short-video-cta-receiver.md)
+
 ## 2. LP用CTA
 
 ### メインCTA
 
 ```text
-無料AI導入診断を申し込む
+無料AI導入診断に申し込む
 ```
 
 ### サブCTA

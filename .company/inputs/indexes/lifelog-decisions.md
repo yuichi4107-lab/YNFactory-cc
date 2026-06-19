@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-18T07:00:42
+generated_at: 2026-06-19T07:01:51
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,14 @@ generated_at: 2026-06-18T07:00:42
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-18
+
+- - 出版案件の費用と利益配分イメージを決定（50万円で制作し、制作20万・営業20万・利益10万の配分）。 | time:23:56 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - 野村さんを8月より採用し人員増強する。 | time:12:34 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - 新卒採用を中止し、AI活用による業務効率化を推進する。 | time:11:15 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - 採用方針を「将来の経営者候補」に限定し、一般社員は増やさない。 | time:11:22 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - パートタイム人員の再募集を開始する。 | time:09:06 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
 
 ## 2026-06-17
 

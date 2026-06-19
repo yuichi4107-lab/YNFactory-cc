@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-18T07:00:42
+generated_at: 2026-06-19T07:01:51
 ---
 
 # Lifelog Topics
@@ -10,6 +10,53 @@ generated_at: 2026-06-18T07:00:42
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-18
+
+- - **営業戦略/スキル向上** (23:56) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-   - 理由: オーナー自身が営業経験が少ないと感じており、困難さを認識しているため。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - **Google Gemini Omniの動画生成機能と活用法** (20:09) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-   - 理由: AI活用・業務自動化の開発案件に関連する最新技術情報の収集、YouTubeチャンネルの動画制作効率化に繋がる可能性があるため。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - **従業員情報管理システムにおける退職者情報の確実な反映と他社との連携** (14:17) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-   - 理由: 住民税データの不整合発生を避けるため、退職者情報の確実な処理と、他社システムとの連携方法について調査が必要。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - **新規案件に対する人材確保戦略の検討** (13:29) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-   - 理由: 「新しい仕事は結構あるけど、やる人がいない」という現状から、事業拡大におけるボトルネック解消のため。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - **業務の難易度と担当者の負担軽減策** (12:25) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-   - 理由: ビケンの業務は単純な作業ではなく、担当者への負担が大きいため、効率化や負担軽減策の検討が必要。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - **提案活動における初期段階での価値提示方法** (12:01) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-   - 理由: 相手に時間を取ってもらうためには、初期段階で提案の価値を明確に伝える効果的な手法を確立するため。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - **人を雇わずに業務を遂行する方法** (11:37) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-   - 理由: 新卒採用のデメリットとAI活用推進の背景から、人員を増やさずに業務を回す方法を模索するため。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - **賃金以外の魅力をアピールする採用戦略** (10:45) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-   - 理由: 労働市場の均一化と差別化の困難さから、賃金以外の採用競争力を高めるため、会社として魅力となる武器を用意する必要がある。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - **AIによるPDF読み込みプログラム開発と自動化の可能性** (10:13) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-   - 理由: PDFの読み込みとプログラム作成にAIが活用されている現状があるため、AI活用・業務自動化の開発案件に直接関連し、効率化に繋がる可能性を探る。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- 1. **集客ツールとしての本とQRコード活用** [ebook|other] ★★★★☆ (23:56) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-    - 本の最後にQRコードを載せ、公式LINEへの誘導に活用する。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- 2. **営業ツールとしての自費出版提案** [ebook] ★★★★★ (23:50) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-    - 経営者向けに自叙伝や商品紹介などを営業ツールとして自費出版するサービスを提案する。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- 3. **商品・サービス紹介としての自費出版（漫画含む）** [ebook|manga] ★★★★☆ (23:51) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-    - 車などの商品コンセプトや誕生までのストーリーを漫画で分かりやすく伝えるコンテンツ制作。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- 4. **採用活動における自費出版（特に漫画）活用提案** [ebook|manga] ★★★★☆ (23:52) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-    - 会社の仕事内容や雰囲気を漫画にして、採用活動におけるイメージの共有やPRに活用する。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- 5. **低コスト化を訴求した自費出版提案** [ebook|manga] ★★★☆☆ (23:52) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-    - 自費出版のコストが昔の200-300万円から50万円程度に下がったことをメリットとして提案する。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- 6. **会社案内等パンフレットの漫画化提案** [manga] ★★★★☆ (23:53) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-    - 会社案内パンフレットを漫画形式で作成し、食いつきの良さや分かりやすさを利用して導入部分の興味を引く。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- 7. **営業事務業務の創出と人員配置による売上ボリューム増計画** [other] ★★★★☆ (12:54) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-    - 田中さん復帰後に営業事務の仕事を任せることを前提に、営業の売上ボリュームを増やす計画を立てる。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- 8. **正社員採用支援サービス提供の検討** [other] ★★★☆☆ (10:44) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-    - 派遣だけでなく、正社員が必要な企業に対して人材紹介サービスなどの提供を検討する。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- 9. **人材登録面談方法の多様化（対面・電話追加）によるアプローチ強化** [other] ★★★★☆ (09:12) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-    - ビデオ通話だけでなく、対面や電話での面談も導入し、応募者へのアプローチ方法を増やし登録対応数を増やす。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- 10. **広告文言作成など、人材募集における定型業務の自動化システム開発** [freelance|other] ★★★★★ (09:15) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-    - 人材募集における広告文言作成やデータ入力など、ルーチン化可能な作業の自動化システムを開発・導入する。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- 11. **面談内容の自動文字起こし・要約システム導入による業務効率化** [freelance|other] ★★★★★ (09:17) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-    - Google Meetなどの録音機能を活用し、面談内容を自動で文字起こし・要約するシステムを導入することで、面談後のコメント入力時間を削減する。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- 12. **田中さん復帰後の営業事務への配置転換による既存社員の負担軽減と営業力強化** [other] ★★★★☆ (09:28) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-    - 田中さんが産休から復帰した際に、営業の事務作業を任せることで、既存営業社員の負担を減らし、営業活動に集中させることで売上増加を図る。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- 13. **応募書類（履歴書・職務経歴書）のPDF/データ提出受付による応募ハードル引き下げと入力負荷軽減** [other] ★★★★☆ (09:33) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+-    - 応募者に履歴書や職務経歴書をPDFやExcelなどのデータで提出してもらい、入力の手間を減らすことで応募のハードルを下げ、同時に内部の入力作業も効率化する。 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
 
 ## 2026-06-17
 

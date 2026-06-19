@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-18T07:00:42
+generated_at: 2026-06-19T07:01:51
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,18 @@ generated_at: 2026-06-18T07:00:42
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-18
+
+- - **野村さん** — 未経験ポジションでの入社検討者。初期は熊さんが教育担当。8月からの人員増を期待。 (12:33) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - **熊さん** — 野村さんの初期教育担当。 (12:33) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - **コバさん** — 営業窓口として認識されているが、今後の担当は未定。最終的には担当から外れる可能性も示唆。喫煙休憩による業務影響が懸念されている。 (12:17) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - **西井さん** — 複数部門（美研と日日）を統括することになり、両部門の視点から事業に貢献することを期待されている。 (10:35) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - **末さん** — 業務過多に悩んでおり、パート募集の相談をしている。 (09:06) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - **田中さん** — 産休からの復帰を前提とした人員計画の検討対象。来年4月には復帰予定があり、その後の営業事務への配置転換も検討されている。 (09:07) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - **岩川さん** — 妊娠中で、新たな人員が必要になった背景にいる。松さんの業務過多とパート募集停止の理由の一つ。 (09:23) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - **(氏名不詳)** — 夫の転勤が終わり、元の会社（本社）に戻ってきた人物。復職の可能性があるため、今後の採用計画の検討対象となる。 (09:39) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- - **バンドの部長** — 指示を出すタイプではなく、受け身の姿勢。業務遂行における根本的な問題の一因と認識されている。過去オーナーとは役割分担でうまく機能していた。 (08:51) | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
 
 ## 2026-06-17
 

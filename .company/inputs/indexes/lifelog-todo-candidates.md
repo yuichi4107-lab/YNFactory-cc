@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-18T07:00:42
+generated_at: 2026-06-19T07:01:51
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,35 @@ generated_at: 2026-06-18T07:00:42
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-18
+
+- [ ] バグ修正後のシステムの確認 | time:22:50 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] 自費出版に興味ある人への紹介依頼 | time:23:53 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] 効果的な仕事の進め方を実践・定型化 | time:19:06 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] 離職票作成に必要な賃金台帳の確認 | time:16:31 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] 退職者の情報処理（システムからの削除・修正、通帳の送付指示） | time:16:20 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] エクセル修正 | time:15:08 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] Excelファイルに退職者情報を追記 | time:14:13 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] PDFから読み取った住民税数字と紙の原本との照合 | time:14:14 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] 退職者リストを紙に記載 | time:14:15 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] 住民票データの汎用処理と市町村ごとの並べ替え | time:13:47 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] ビッケンのリリース内容の確認 | time:13:49 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] データ「おり」の再読み込み | time:13:50 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] 住民税データにおける退職者の抽出漏れ確認と修正 | time:13:51 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] 住民税通知書と既存リストの照合、新規該当者の赤字追加確認 | time:13:52 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] Yuichiの領収書・給与明細の送付確認 | time:13:28 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] 書類作成・送付、PDF保存 | time:13:17 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] コバさんの喫煙休憩による業務影響の改善策検討 | time:12:44 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] 業務スケジュールの計画的な立案と実行 | time:12:27 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] 現場作業への積極的な関与と業務理解 | time:10:32 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] 計算書作成の完了（遅延中） | time:10:28 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] 入力確認作業 | time:10:01 | priority:normal | due:2026-06-18 | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] 応募者情報・オーダーシートの入力作業の効率化検討 | time:09:13 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] 面談方法の多様化（対面・電話・ビデオ）による登録者数増加とスピードアップ | time:09:36 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] データ変換（PDF化）とAIによる読み取り・チェック | time:08:37 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] YouTube動画のアップロード状況確認 | time:02:21 | priority:low | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
+- [ ] LANケーブル接続後のネットワーク接続確認 | time:02:16 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-18-lifelog-insights.md`
 
 ## 2026-06-17
 
