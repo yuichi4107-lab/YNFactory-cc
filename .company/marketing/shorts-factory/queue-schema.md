@@ -7,6 +7,7 @@
 
 ```
 draft → ready_for_review → approved → posted
+                         → partial_failed（一部媒体のみ投稿成功）
                          → skipped（却下）
         blocked（品質不合格・全媒体失敗等、人間の介入待ち）
         failed（投稿失敗）
@@ -26,7 +27,8 @@ draft → ready_for_review → approved → posted
 | `quality.pass` / `quality.avg_cer` / `quality.report_path` | 機械検証の結果 |
 | `review.owner_approved` / `decided_at` / `via` | 承認記録（telegram / auto_post） |
 | `telegram.message_id` | プレビュー送信済みメッセージ |
-| `platforms.{x,youtube,instagram,tiktok}` | `{enabled, status, url, error, posted_at}` |
+| `platforms.{x,youtube,instagram,tiktok}` | `{enabled, status, url, error, posted_at, attempts, last_attempt_at, last_retry_at}` |
+| `platform_copy.{x,youtube,instagram,tiktok}` | 媒体別の投稿文・説明文・CTA・UTM付きURL |
 | `history[]` | `{ts, event}` の監査ログ |
 
 ## 関連ファイル

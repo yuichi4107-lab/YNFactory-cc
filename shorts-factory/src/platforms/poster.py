@@ -8,37 +8,20 @@ from __future__ import annotations
 import re
 import subprocess
 import sys
-import unicodedata
+import time
+from datetime import datetime
 from pathlib import Path
 
 from ..config import CONFIG
 from ..logging_utils import redact_secrets
+from ..platform_copy import copy_for_platform
 
 SCRIPTS_DIR = CONFIG.repo_root / "scripts"
 PYTHON = str(CONFIG.runtime_dir / ".venv" / "bin" / "python")
 
-
-def _x_text(item: dict, limit: int = 270) -> str:
-    """X用の投稿文を280字制限内で組み立てる。"""
-
-    def width(s: str) -> int:  # Xは全角2/半角1の重み（280=全角140）
-        return sum(2 if unicodedata.east_asian_width(c) in ("F", "W", "A") else 1 for c in s)
-
-    tags = " ".join(item["hashtags"][:4])
-    title = item["title"]
-    body = item["caption"].strip()
-    text = f"{title}\n\n{body}\n\n{tags}"
-    while width(text) > limit and len(body) > 20:
-        body = body[: max(20, len(body) - 10)].rstrip() + "…"
-        text = f"{title}\n\n{body}\n\n{tags}"
-    if width(text) > limit:
-        text = f"{title}\n\n{tags}"
-    return text
-
-
 def post_x(item: dict) -> str:
     """Xへ動画投稿し、投稿URLを返す。"""
-    text = _x_text(item)
+    text = copy_for_platform(item, "x")["text"]
     proc = subprocess.run(
         [PYTHON, str(SCRIPTS_DIR / "post_to_x.py"), text, "--video", item["video"]["path"]],
         capture_output=True,
@@ -62,7 +45,7 @@ def post_instagram(item: dict) -> str:
     """
     import json
 
-    caption = item["caption"].strip() + "\n\n" + " ".join(item["hashtags"][:8])
+    caption = copy_for_platform(item, "instagram")["caption"]
     proc = subprocess.run(
         [
             PYTHON, str(SCRIPTS_DIR / "post_to_meta.py"),
@@ -90,23 +73,18 @@ def post_youtube(item: dict) -> str:
     """YouTube Shorts へCDP経由でアップロードし、動画URLを返す。"""
     from . import youtube_cdp
 
-    description = (
-        item["caption"].strip()
-        + "\n\n"
-        + " ".join(item["hashtags"][:6])
-        + f"\n\n{CONFIG.get('speaker_credit')}\n音声・映像はAIで自動生成しています"
-    )
+    copy = copy_for_platform(item, "youtube")
     return youtube_cdp.upload(
         video_path=Path(item["video"]["path"]),
-        title=item["title"][:95],
-        description=description,
+        title=copy["title"],
+        description=copy["description"],
     )
 
 
 def post_tiktok(item: dict) -> str:
     from . import tiktok_cdp
 
-    caption = item["title"] + " " + " ".join(item["hashtags"][:5])
+    caption = copy_for_platform(item, "tiktok")["caption"]
     return tiktok_cdp.upload(Path(item["video"]["path"]), caption)
 
 
@@ -119,24 +97,85 @@ POSTERS = {
 POST_ORDER = ("x", "instagram", "tiktok", "youtube")
 
 
+def _now() -> str:
+    return datetime.now().astimezone().isoformat(timespec="seconds")
+
+
+def _as_bool(value) -> bool:
+    if isinstance(value, str):
+        return value.strip().lower() not in {"0", "false", "no", "off"}
+    return bool(value)
+
+
+def _as_int(value, default: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _as_float(value, default: float) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _retry_settings() -> tuple[int, float]:
+    enabled = _as_bool(CONFIG.get("queue", "retry_failed_posts", default=True))
+    if not enabled:
+        return 0, 0.0
+    attempts = _as_int(CONFIG.get("queue", "retry_max_attempts", default=2), 2)
+    delay_sec = _as_float(CONFIG.get("queue", "retry_delay_sec", default=60), 60.0)
+    return max(0, attempts), max(0.0, delay_sec)
+
+
+def _pending_platforms(platforms: dict, ordered_platforms: list[str]) -> list[str]:
+    return [
+        platform
+        for platform in ordered_platforms
+        if platforms[platform].get("enabled") and platforms[platform].get("status") != "posted"
+    ]
+
+
+def _record_attempt(item: dict, queue_lib, platform: str, retry_round: int) -> None:
+    info = item["platforms"][platform]
+    now = _now()
+    info["attempts"] = int(info.get("attempts") or 0) + 1
+    info["last_attempt_at"] = now
+    if retry_round:
+        info["last_retry_at"] = now
+        info["last_retry_round"] = retry_round
+    if hasattr(queue_lib, "save_item"):
+        queue_lib.save_item(item)
+
+
 def post_item(item: dict, queue_lib, notify) -> dict:
     """有効な全プラットフォームへ投稿し、結果を item に記録して返す。"""
     results = []
     platforms = item.get("platforms", {})
     ordered_platforms = [p for p in POST_ORDER if p in platforms]
     ordered_platforms.extend(p for p in platforms if p not in ordered_platforms)
-    for platform in ordered_platforms:
-        info = platforms[platform]
-        if not info.get("enabled") or info.get("status") == "posted":
-            continue
-        try:
-            url = POSTERS[platform](item)
-            item = queue_lib.mark_platform(item, platform, "posted", url=url)
-            results.append(f"✅ {platform}: {url}")
-        except Exception as e:  # 1媒体の失敗で他媒体を止めない
-            err = redact_secrets(e)
-            item = queue_lib.mark_platform(item, platform, "failed", error=err)
-            results.append(f"❌ {platform}: {err[:120]}")
+
+    retry_attempts, retry_delay_sec = _retry_settings()
+    for retry_round in range(retry_attempts + 1):
+        pending = _pending_platforms(platforms, ordered_platforms)
+        if not pending:
+            break
+        if retry_round:
+            results.append(f"🔁 自動再投稿 {retry_round}/{retry_attempts}: {', '.join(pending)}")
+            if retry_delay_sec:
+                time.sleep(retry_delay_sec)
+        for platform in pending:
+            try:
+                _record_attempt(item, queue_lib, platform, retry_round)
+                url = POSTERS[platform](item)
+                item = queue_lib.mark_platform(item, platform, "posted", url=url)
+                results.append(f"✅ {platform}: {url}")
+            except Exception as e:  # 1媒体の失敗で他媒体を止めない
+                err = redact_secrets(e)
+                item = queue_lib.mark_platform(item, platform, "failed", error=err)
+                results.append(f"❌ {platform}: {err[:120]}")
 
     statuses = [v["status"] for v in item["platforms"].values() if v.get("enabled")]
     if statuses and all(s == "posted" for s in statuses):
@@ -148,9 +187,13 @@ def post_item(item: dict, queue_lib, notify) -> dict:
 
     extra = ""
     if item["status"] in {"failed", "partial_failed"}:
+        retry_note = ""
+        if retry_attempts:
+            retry_note = f"\n\n自動再投稿: 最大{retry_attempts}回まで実行済み"
         extra = (
-            "\n\n再試行: "
-            f"<code>python3 shorts-factory/scripts/retry_failed_posts.py {item['id']} --execute</code>"
+            retry_note
+            + "\n\n手動再試行: "
+            + f"<code>python3 shorts-factory/scripts/retry_failed_posts.py {item['id']} --execute</code>"
         )
     notify.send_message(
         f"📤 <b>{item['title']}</b> 投稿結果\n" + "\n".join(results) + extra

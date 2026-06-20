@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-19T07:01:51
+generated_at: 2026-06-20T07:00:43
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,13 @@ generated_at: 2026-06-19T07:01:51
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-19
+
+- - 電子書籍の出版は、一見高額に思える費用（50万円）も、広告費として考えれば意外と安く活用できる可能性があるという認識。 | time:00:44 | source:`.company/inputs/organized/lifelogs/2026-06-19-lifelog-insights.md`
+- - B2B事業（Yuichi関連）において、内容を理解できる人と全く理解できない人に二極化する状況があるという認識。 | time:12:20 | source:`.company/inputs/organized/lifelogs/2026-06-19-lifelog-insights.md`
+- - 以前はコストが高すぎると感じていた事業（Yuichi関連）が、実際に調査・検討すると意外と普通に実施できるという認識の変化。 | time:12:29 | source:`.company/inputs/organized/lifelogs/2026-06-19-lifelog-insights.md`
+- - 運用しているアカウントに関して、更新しないことへの危機感と同時に、過度な更新が必ずしも良いとは限らないという意見の存在を認識。 | time:09:04 | source:`.company/inputs/organized/lifelogs/2026-06-19-lifelog-insights.md`
 
 ## 2026-06-18
 

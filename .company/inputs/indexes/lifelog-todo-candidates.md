@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-19T07:01:51
+generated_at: 2026-06-20T07:00:43
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,15 @@ generated_at: 2026-06-19T07:01:51
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-19
+
+- [ ] Kindleから届いたメッセージの内容を確認する。 | time:19:59 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-19-lifelog-insights.md`
+- [ ] 従業員の給与体系（固定給/日給月給、欠勤控除ルール、基本時間、時給換算など）について詳細に検討し、明確な基準を策定する。 | time:17:41 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-19-lifelog-insights.md`
+- [ ] 人材募集に関する具体的な検討を開始する。 | time:16:57 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-19-lifelog-insights.md`
+- [ ] 会議（またはイベント）の参加者（佐藤さん、愛子、川口、加藤君、伊藤社長など）の最終確認と、必要に応じて日程調整を行う。 | time:09:25 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-19-lifelog-insights.md`
+- [ ] 運用しているアカウント（Instagram/YouTubeなど）の更新状況を確認し、更新頻度やコンテンツ内容の改善策を検討する。 | time:09:04 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-19-lifelog-insights.md`
+- [ ] 電子書籍出版の可能性について、費用（50万円）を広告費として考えた場合の費用対効果を含めた詳細な検討を行う。 | time:00:44 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-19-lifelog-insights.md`
 
 ## 2026-06-18
 

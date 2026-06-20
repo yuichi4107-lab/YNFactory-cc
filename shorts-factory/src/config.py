@@ -104,6 +104,13 @@ DEFAULTS: dict = {
     "queue": {
         "auto_post": False,  # True で承認スキップ → 即投稿
         "platforms": ["x"],  # x | youtube | instagram | tiktok（工程進行で追加）
+        "retry_failed_posts": True,  # 投稿失敗時、失敗媒体だけ自動再投稿
+        "retry_max_attempts": 2,  # 初回失敗後の自動再投稿回数
+        "retry_delay_sec": 60,  # 再投稿前の待機秒数
+    },
+    "cta": {
+        "lp_url": "https://ai.yn-factory.com/",
+        "campaign": "shorts_ai_consult",
     },
     "content": {
         "default_difficulty": "beginner",

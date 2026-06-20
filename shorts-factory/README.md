@@ -75,10 +75,12 @@ $PY -m src.pipeline --topic "..." --no-queue # テーマ指定・キュー登録
 $PY -m src.approval_bot                      # 承認デーモンを手動起動
 ```
 
-### 失敗媒体だけ再試行
+### 失敗媒体だけ自動再投稿・手動再試行
 
-複数媒体投稿で一部だけ失敗した場合、キュー全体は `partial_failed` になる。
-成功済み媒体は `posted` のまま保持され、再試行時も二重投稿されない。
+複数媒体投稿で一部だけ失敗した場合、標準では失敗媒体だけ最大2回まで自動再投稿する。
+成功済み媒体は `posted` のまま保持され、自動再投稿・手動再試行のどちらでも二重投稿されない。
+
+自動再投稿後も残った場合、キュー全体は `partial_failed` または `failed` になり、Telegramの投稿結果に手動再試行コマンドが出る。
 
 ```bash
 cd "<Drive>/YNFactory-cc"
@@ -86,12 +88,25 @@ python3 shorts-factory/scripts/retry_failed_posts.py --all        # dry-run
 python3 shorts-factory/scripts/retry_failed_posts.py <queue_id> --execute
 ```
 
-全媒体が失敗した場合は `failed` になり、同じ再試行コマンドで対象にできる。
+自動再投稿の回数や待機秒数は `queue.retry_max_attempts` / `queue.retry_delay_sec` で変更できる。
+
+### SNS別CTA・説明文
+
+投稿時は `src/platform_copy.py` が媒体別の本文を作る。
+
+- X: 短文内に「最初の1業務」軸のCTAを入れ、プロフィール導線へ誘導
+- Instagram: 保存訴求とプロフィールの無料AI導入診断へ誘導
+- TikTok: 短い説明とプロフィールの無料診断へ誘導
+- YouTube Shorts: 説明欄に `utm_source=youtube` 付きLP URLを直接記載
+
+新規キューには `platform_copy` として媒体別本文を保存する。旧キューに `platform_copy` が無い場合も、投稿時に同じルールで自動生成される。
 
 ## 設定変更
 
 - 話者変更: `config.yaml` の `speaker_id`（一覧: `$PY -c "from src import tts_voicevox as t; print(t.speaker_names())"`）
 - 投稿先の追加: `queue.platforms` に `youtube` / `instagram` / `tiktok` を追加
+- 失敗時の自動再投稿: `queue.retry_failed_posts` / `queue.retry_max_attempts` / `queue.retry_delay_sec`
+- CTA先LP: `cta.lp_url` / `cta.campaign`
 - 投稿頻度・難易度: `content.scheduled_slots` を変更（標準は 9時=初級、14時/19時=中級）
 - AI画像化: `secrets.yaml` に `openai_api_key` か `gemini_api_key` → `images.provider: openai|gemini`
 - 台本をOpenAIに: `openai_api_key` 設定 + `llm.provider: openai`
@@ -106,7 +121,7 @@ python3 shorts-factory/scripts/retry_failed_posts.py <queue_id> --execute
 | X投稿403 | API無料枠の動画上限。queueは blocked になるので翌日に承認し直す |
 | VOICEVOX起動失敗 | `~/shorts-factory/logs/voicevox_engine.log` |
 | `rsync失敗` が続く | `SHORTS_REPO_ROOT` または `YNFACTORY_ROOT` を確認。`scripts/run_generate.sh` は候補パスを解決し、失敗理由をログに残す |
-| 一部媒体だけ投稿失敗 | `python3 shorts-factory/scripts/retry_failed_posts.py --all` で対象確認 → `--execute` で失敗媒体だけ再試行 |
+| 一部媒体だけ投稿失敗 | 標準で失敗媒体だけ最大2回自動再投稿。それでも残る場合は `python3 shorts-factory/scripts/retry_failed_posts.py --all` で対象確認 → `--execute` |
 
 ## クレジット・コンプライアンス
 

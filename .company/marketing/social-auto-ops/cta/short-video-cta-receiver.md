@@ -36,6 +36,8 @@ UTMは後でアクセス解析を入れた時に流入元を判別しやすく�
 
 ## 動画末尾CTA
 
+実装: shorts-factory は投稿時に `shorts-factory/src/platform_copy.py` で媒体別の投稿文・説明文・CTAを生成する。新規キューには `platform_copy` として保存され、旧キューは投稿時に同じルールで補完される。
+
 ### 共通の基本形
 
 ```text

@@ -144,6 +144,7 @@ def preview_caption(item: dict) -> str:
         f"尺: {item['video']['duration']}s / {item['video']['size_mb']}MB\n"
         f"字幕検証: {'✅PASS' if q.get('pass') else '⚠️FAIL'} (平均CER {q.get('avg_cer')})\n"
         f"投稿先: {', '.join(plats) or 'なし'}\n\n"
+        f"投稿文: SNS別CTA/説明文を適用\n\n"
         f"{item['caption'][:300]}\n"
         f"{' '.join(item['hashtags'][:6])}"
     )

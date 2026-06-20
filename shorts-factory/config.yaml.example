@@ -16,6 +16,13 @@ queue:
   auto_post: false           # ★ true にすると承認スキップで全自動投稿。実公開前に必ず確認
   platforms: [x, youtube, instagram, tiktok]
                               # 投稿先: x / youtube / instagram / tiktok
+  retry_failed_posts: true    # 投稿失敗時、失敗媒体だけ自動再投稿する
+  retry_max_attempts: 2       # 初回失敗後の自動再投稿回数
+  retry_delay_sec: 60         # 再投稿前の待機秒数
+
+cta:
+  lp_url: "https://ai.yn-factory.com/"
+  campaign: "shorts_ai_consult"
 
 content:
   default_difficulty: beginner

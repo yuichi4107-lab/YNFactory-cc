@@ -15,6 +15,7 @@ from datetime import datetime
 from pathlib import Path
 
 from .config import CONFIG
+from .platform_copy import build_platform_copy_set
 
 STATUSES = {
     "draft",
@@ -86,6 +87,9 @@ def new_item(
             "url": None,
             "error": None,
             "posted_at": None,
+            "attempts": 0,
+            "last_attempt_at": None,
+            "last_retry_at": None,
         }
     item = {
         "id": item_id,
@@ -112,6 +116,7 @@ def new_item(
         "platforms": platforms,
         "history": [{"ts": _now(), "event": "created"}],
     }
+    item["platform_copy"] = build_platform_copy_set(item)
     save_item(item)
     return item
 

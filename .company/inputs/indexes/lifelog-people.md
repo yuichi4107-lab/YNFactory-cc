@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-19T07:01:51
+generated_at: 2026-06-20T07:00:43
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,14 @@ generated_at: 2026-06-19T07:01:51
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-19
+
+- - **佐藤さん** — 会議参加者（欠席予定） (09:25) | source:`.company/inputs/organized/lifelogs/2026-06-19-lifelog-insights.md`
+- - **愛子** — 会議参加者 (09:25) | source:`.company/inputs/organized/lifelogs/2026-06-19-lifelog-insights.md`
+- - **川口** — 会議参加者 (09:25) | source:`.company/inputs/organized/lifelogs/2026-06-19-lifelog-insights.md`
+- - **加藤君** — 会議参加者 (09:25) | source:`.company/inputs/organized/lifelogs/2026-06-19-lifelog-insights.md`
+- - **伊藤社長** — 会議参加者（有給で欠席予定） (09:25) | source:`.company/inputs/organized/lifelogs/2026-06-19-lifelog-insights.md`
 
 ## 2026-06-18
 
