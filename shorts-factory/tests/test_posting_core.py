@@ -171,6 +171,22 @@ class PostingCoreTest(unittest.TestCase):
         self.assertIn("最初の1業務", posted_text)
         self.assertNotIn("保存して", posted_text)
 
+    def test_instagram_empty_helper_output_is_actionable(self):
+        item = make_item()
+
+        class FakeProc:
+            returncode = 0
+            stdout = ""
+            stderr = "helper stopped before writing JSON"
+
+        with patch.object(poster.subprocess, "run", return_value=FakeProc()):
+            with self.assertRaises(RuntimeError) as cm:
+                poster.post_instagram(item)
+
+        message = str(cm.exception)
+        self.assertIn("JSONを返しませんでした", message)
+        self.assertIn("helper stopped", message)
+
     def test_scheduled_difficulty_slots(self):
         from datetime import datetime
 

@@ -19,6 +19,11 @@ from ..platform_copy import copy_for_platform
 SCRIPTS_DIR = CONFIG.repo_root / "scripts"
 PYTHON = str(CONFIG.runtime_dir / ".venv" / "bin" / "python")
 
+
+def _tail(text: str | None, limit: int = 500) -> str:
+    return (text or "")[-limit:]
+
+
 def post_x(item: dict) -> str:
     """Xへ動画投稿し、投稿URLを返す。"""
     text = copy_for_platform(item, "x")["text"]
@@ -60,10 +65,17 @@ def post_instagram(item: dict) -> str:
     out = proc.stdout + proc.stderr
     if proc.returncode != 0:
         raise RuntimeError(f"IG Reels投稿失敗: {out[-400:]}")
+    if not proc.stdout.strip():
+        detail = _tail(proc.stderr) or "(stderrなし)"
+        raise RuntimeError(
+            f"IG Reels投稿ヘルパーがJSONを返しませんでした: returncode={proc.returncode} stderr={detail}"
+        )
     try:
         result = json.loads(proc.stdout)
     except json.JSONDecodeError:
-        raise RuntimeError(f"IG Reels出力のパース失敗: {out[-300:]}")
+        raise RuntimeError(
+            f"IG Reels出力のパース失敗: stdout={_tail(proc.stdout)} stderr={_tail(proc.stderr)}"
+        )
     if result.get("status") != "posted":
         raise RuntimeError(f"IG Reels投稿失敗: {result.get('error', result)}")
     return result.get("permalink") or f"media_id:{result.get('id')}"

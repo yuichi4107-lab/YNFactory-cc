@@ -11,6 +11,7 @@ import argparse
 import json
 import re
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -18,6 +19,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_ENV_PATH = ROOT / ".company" / "engineering" / "sns-credentials" / ".env"
 DEFAULT_API_VERSION = "v25.0"
+DEFAULT_REELS_UPLOAD_ATTEMPTS = 3
 
 LIMITS = {
     "instagram": 2200,
@@ -149,12 +151,93 @@ def graph_get(path: str, token: str, params: dict[str, Any] | None = None) -> di
     payload = dict(params or {})
     payload["access_token"] = token
     response = requests.get(url, params=payload, timeout=30)
-    result = response.json()
+    try:
+        result = response.json()
+    except ValueError:
+        result = {"raw": response.text}
     if response.status_code >= 400 or "error" in result:
         error = result.get("error", result)
         message = error.get("message") if isinstance(error, dict) else str(error)
         raise RuntimeError(message)
     return result
+
+
+def _compact_error(value: Any, limit: int = 500) -> str:
+    if isinstance(value, str):
+        text = value
+    else:
+        text = json.dumps(value, ensure_ascii=False)
+    return text[:limit]
+
+
+def _has_processing_failed(value: Any) -> bool:
+    if isinstance(value, dict):
+        return any(_has_processing_failed(v) for v in value.values())
+    if isinstance(value, list):
+        return any(_has_processing_failed(v) for v in value)
+    return "ProcessingFailedError" in str(value)
+
+
+def _reels_upload_attempts(env: dict[str, str]) -> int:
+    try:
+        return max(1, int(env.get("META_REELS_UPLOAD_ATTEMPTS", DEFAULT_REELS_UPLOAD_ATTEMPTS)))
+    except ValueError:
+        return DEFAULT_REELS_UPLOAD_ATTEMPTS
+
+
+def _create_reels_container(ig_user_id: str, user_token: str, text: str) -> tuple[str, str]:
+    container = graph_post(
+        f"{ig_user_id}/media",
+        user_token,
+        {"media_type": "REELS", "upload_type": "resumable", "caption": text},
+    )
+    container_id = container.get("id")
+    if not container_id:
+        raise RuntimeError("Reels container id was not returned")
+    upload_uri = container.get("uri") or (
+        f"https://rupload.facebook.com/ig-api-upload/{DEFAULT_API_VERSION}/{container_id}"
+    )
+    return container_id, upload_uri
+
+
+def _upload_reels_binary(upload_uri: str, user_token: str, video: Path) -> dict:
+    import requests
+
+    size = video.stat().st_size
+    with video.open("rb") as f:
+        resp = requests.post(
+            upload_uri,
+            headers={
+                "Authorization": f"OAuth {user_token}",
+                "Content-Type": "video/mp4",
+                "offset": "0",
+                "file_size": str(size),
+            },
+            data=f,
+            timeout=900,
+        )
+    try:
+        result = resp.json()
+    except ValueError:
+        result = {"raw": resp.text}
+    if resp.status_code >= 400 or not result.get("success", True):
+        raise RuntimeError(f"Reels動画アップロード失敗: {_compact_error(result)}")
+    return result
+
+
+def _wait_reels_finished(container_id: str, user_token: str, timeout_sec: int = 600) -> None:
+    deadline = time.time() + timeout_sec
+    last_status: dict[str, Any] | None = None
+    while time.time() < deadline:
+        status = graph_get(container_id, user_token, {"fields": "status_code,status"})
+        last_status = status
+        status_code = status.get("status_code")
+        if status_code == "FINISHED":
+            return
+        if status_code in ("ERROR", "EXPIRED"):
+            raise RuntimeError(f"Reels処理失敗: {_compact_error(status)}")
+        time.sleep(5)
+    raise RuntimeError(f"Reels処理がタイムアウトしました: {_compact_error(last_status)}")
 
 
 def post_facebook(text: str, image_path: str | None, image_url: str | None, env: dict[str, str]) -> dict:
@@ -226,10 +309,6 @@ def post_instagram(text: str, image_path: str | None, image_url: str | None, env
 
 def post_instagram_reels(text: str, video_path: str, env: dict[str, str]) -> dict:
     """Resumable Upload Protocol でローカル動画を直接 Reels 投稿する（公開URL不要）。"""
-    import time
-
-    import requests
-
     creds = required(env, "META_IG_USER_ID", "META_ACCESS_TOKEN")
     ig_user_id = creds["META_IG_USER_ID"]
     user_token = creds["META_ACCESS_TOKEN"]
@@ -237,54 +316,22 @@ def post_instagram_reels(text: str, video_path: str, env: dict[str, str]) -> dic
     if not video.exists():
         raise RuntimeError(f"動画ファイルが見つかりません: {video}")
 
-    # 1. resumable コンテナ作成
-    container = graph_post(
-        f"{ig_user_id}/media",
-        user_token,
-        {"media_type": "REELS", "upload_type": "resumable", "caption": text},
-    )
-    container_id = container.get("id")
-    upload_uri = container.get("uri") or (
-        f"https://rupload.facebook.com/ig-api-upload/{DEFAULT_API_VERSION}/{container_id}"
-    )
-    if not container_id:
-        raise RuntimeError("Reels container id was not returned")
-
-    # 2. バイナリを直接アップロード
-    size = video.stat().st_size
-    with video.open("rb") as f:
-        resp = requests.post(
-            upload_uri,
-            headers={
-                "Authorization": f"OAuth {user_token}",
-                "offset": "0",
-                "file_size": str(size),
-            },
-            data=f,
-            timeout=900,
-        )
-    try:
-        up = resp.json()
-    except ValueError:
-        up = {"raw": resp.text}
-    if resp.status_code >= 400 or not up.get("success", True):
-        raise RuntimeError(f"Reels動画アップロード失敗: {up}")
-
-    # 3. 処理完了待ち
-    deadline = time.time() + 600
-    status_code = None
-    while time.time() < deadline:
-        status = graph_get(container_id, user_token, {"fields": "status_code,status"})
-        status_code = status.get("status_code")
-        if status_code == "FINISHED":
+    errors: list[str] = []
+    container_id = ""
+    for attempt in range(1, _reels_upload_attempts(env) + 1):
+        try:
+            container_id, upload_uri = _create_reels_container(ig_user_id, user_token, text)
+            _upload_reels_binary(upload_uri, user_token, video)
+            _wait_reels_finished(container_id, user_token)
             break
-        if status_code in ("ERROR", "EXPIRED"):
-            raise RuntimeError(f"Reels処理失敗: {status}")
-        time.sleep(5)
-    if status_code != "FINISHED":
-        raise RuntimeError("Reels処理がタイムアウトしました")
+        except RuntimeError as exc:
+            message = str(exc)
+            errors.append(f"attempt {attempt}: {message}")
+            if attempt >= _reels_upload_attempts(env):
+                raise RuntimeError(" / ".join(errors)) from exc
+            sleep_sec = 10 * attempt if _has_processing_failed(message) else 5 * attempt
+            time.sleep(sleep_sec)
 
-    # 4. 公開
     published = graph_post(
         f"{ig_user_id}/media_publish", user_token, {"creation_id": container_id}
     )
@@ -300,6 +347,7 @@ def post_instagram_reels(text: str, video_path: str, env: dict[str, str]) -> dic
         "status": "posted",
         "id": media_id,
         "permalink": permalink,
+        "upload_attempts": len(errors) + 1,
     }
 
 
@@ -345,7 +393,7 @@ def main() -> None:
 
     try:
         result = post_actual(args.platform, args.text, args.image, args.image_url, args.video)
-    except RuntimeError as exc:
+    except Exception as exc:
         print(
             json.dumps(
                 {
@@ -355,6 +403,7 @@ def main() -> None:
                     "api_called": False,
                     "tokens_read": True,
                     "error": str(exc),
+                    "error_type": type(exc).__name__,
                 },
                 ensure_ascii=False,
                 indent=2,
