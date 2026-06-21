@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-20T07:00:43
+generated_at: 2026-06-21T07:00:17
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,14 @@ generated_at: 2026-06-20T07:00:43
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-20
+
+- [ ] 投資を引き出す | time:09:29 | priority:high | due:2026-06-20 | source:`.company/inputs/organized/lifelogs/2026-06-20-lifelog-insights.md`
+- [ ] 競馬予想AIのモーニング予想で推奨レースが0件になっている原因を調べて修正する | time:09:03 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-20-lifelog-insights.md`
+- [ ] クラウドポートに登録する | time:08:57 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-20-lifelog-insights.md`
+- [ ] ドットM Bという名前のテキストファイルを作成する | time:08:59 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-20-lifelog-insights.md`
+- [ ] クラウドポート初期設定の1000ポイント作成方法をよく見て行う | time:09:00 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-20-lifelog-insights.md`
 
 ## 2026-06-19
 

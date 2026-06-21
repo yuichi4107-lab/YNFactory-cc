@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-20T07:00:43
+generated_at: 2026-06-21T07:00:17
 ---
 
 # Lifelog Topics
@@ -10,6 +10,11 @@ generated_at: 2026-06-20T07:00:43
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-20
+
+- - **競馬予想AIのモーニング予想で推奨レースが0件になっている原因** (09:03) | source:`.company/inputs/organized/lifelogs/2026-06-20-lifelog-insights.md`
+-   - 理由: システムが正常に機能していないため、不具合解消のために原因を特定する必要がある。 | source:`.company/inputs/organized/lifelogs/2026-06-20-lifelog-insights.md`
 
 ## 2026-06-19
 

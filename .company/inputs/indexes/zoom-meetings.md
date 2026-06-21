@@ -2,7 +2,7 @@
 source: organize_zoom_inputs.py
 type: input-index
 scope: zoom-meeting-summaries
-generated_at: 2026-06-20T07:00:44
+generated_at: 2026-06-21T07:00:18
 ---
 
 # Zoom Meetings
