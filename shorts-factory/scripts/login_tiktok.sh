@@ -6,6 +6,8 @@
 #   3. Chromeを閉じて launchctl load ~/Library/LaunchAgents/com.ynfactory.shorts-chrome.plist
 set -euo pipefail
 export SHORTS_HEADLESS=0
+export SHORTS_ENABLE_CDP=0
 DIR="$(cd "$(dirname "$0")" && pwd)"
-echo "Chromeが開きます。TikTokにログインし、アップロード画面が見えれば完了です。"
+echo "CDPなしの専用Chromeが開きます。TikTokにログインし、アップロード画面が見えれば完了です。"
+echo "ログイン後はChromeを閉じ、com.ynfactory.shorts-chrome を再起動してください。"
 exec "$DIR/start_chrome_shorts.sh" "https://www.tiktok.com/tiktokstudio/upload?from=upload"
