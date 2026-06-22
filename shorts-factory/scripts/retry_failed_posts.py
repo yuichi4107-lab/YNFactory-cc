@@ -21,7 +21,7 @@ def pending_platforms(item: dict) -> list[str]:
     return [
         name
         for name, info in item.get("platforms", {}).items()
-        if info.get("enabled") and info.get("status") != "posted"
+        if info.get("enabled") and info.get("status") != "posted" and not info.get("non_retryable")
     ]
 
 

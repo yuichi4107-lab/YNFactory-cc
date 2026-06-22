@@ -363,6 +363,15 @@ def post_actual(platform: str, text: str, image_path: str | None, image_url: str
     raise RuntimeError("Threads本番投稿は未実装です。Threads Tokenの別フロー確定後に対応します。")
 
 
+def emit_json(result: dict, result_json: str | None = None) -> None:
+    text = json.dumps(result, ensure_ascii=False, indent=2)
+    if result_json:
+        path = Path(result_json).expanduser()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text + "\n", encoding="utf-8")
+    print(text, flush=True)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Meta SNS posting helper.")
     parser.add_argument("platform", choices=sorted(LIMITS), help="Target platform")
@@ -370,6 +379,7 @@ def main() -> None:
     parser.add_argument("--image", help="Path to image file", default=None)
     parser.add_argument("--image-url", help="Public HTTPS image URL", default=None)
     parser.add_argument("--video", help="Path to mp4 video file (instagram-reels)", default=None)
+    parser.add_argument("--result-json", help="Also write the JSON result to this path", default=None)
     parser.add_argument("--dry-run", action="store_true", help="Validate without posting")
     parser.add_argument(
         "--publish-approved",
@@ -381,33 +391,30 @@ def main() -> None:
     dry_run_result = validate(args.platform, args.text, args.image, args.image_url, args.video)
 
     if args.dry_run:
-        print(json.dumps(dry_run_result, ensure_ascii=False, indent=2))
+        emit_json(dry_run_result, args.result_json)
         return
 
     if not args.publish_approved:
         parser.error("Actual Meta posting requires --publish-approved after explicit owner approval.")
 
     if dry_run_result["blockers"]:
-        print(json.dumps(dry_run_result, ensure_ascii=False, indent=2))
+        emit_json(dry_run_result, args.result_json)
         sys.exit(2)
 
     try:
         result = post_actual(args.platform, args.text, args.image, args.image_url, args.video)
     except Exception as exc:
-        print(
-            json.dumps(
-                {
-                    "platform": args.platform,
-                    "mode": "actual",
-                    "status": "blocked",
-                    "api_called": False,
-                    "tokens_read": True,
-                    "error": str(exc),
-                    "error_type": type(exc).__name__,
-                },
-                ensure_ascii=False,
-                indent=2,
-            )
+        emit_json(
+            {
+                "platform": args.platform,
+                "mode": "actual",
+                "status": "blocked",
+                "api_called": False,
+                "tokens_read": True,
+                "error": str(exc),
+                "error_type": type(exc).__name__,
+            },
+            args.result_json,
         )
         sys.exit(2)
     result.update(
@@ -418,7 +425,7 @@ def main() -> None:
             "text_length": len(args.text),
         }
     )
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    emit_json(result, args.result_json)
 
 
 if __name__ == "__main__":

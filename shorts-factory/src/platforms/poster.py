@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import re
+import os
 import subprocess
 import sys
 import time
@@ -22,6 +23,26 @@ PYTHON = str(CONFIG.runtime_dir / ".venv" / "bin" / "python")
 
 def _tail(text: str | None, limit: int = 500) -> str:
     return (text or "")[-limit:]
+
+
+def _read_json_result(stdout: str, stderr: str, result_path: Path | None = None) -> dict:
+    import json
+
+    raw = stdout.strip()
+    if not raw and result_path and result_path.exists():
+        raw = result_path.read_text(encoding="utf-8").strip()
+    if not raw:
+        detail = _tail(stderr) or "(stderrなし)"
+        raise RuntimeError(f"JSONを返しませんでした: stderr={detail}")
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        if result_path and result_path.exists():
+            try:
+                return json.loads(result_path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError:
+                pass
+        raise RuntimeError(f"JSON出力のパース失敗: stdout={_tail(stdout)} stderr={_tail(stderr)}")
 
 
 def post_x(item: dict) -> str:
@@ -48,34 +69,32 @@ def post_instagram(item: dict) -> str:
     --publish-approved は Telegram承認（または auto_post 設定）を経た
     キューからのみ呼ばれるため、オーナー承認済みとして付与する。
     """
-    import json
-
     caption = copy_for_platform(item, "instagram")["caption"]
+    result_path = CONFIG.logs_dir / f"ig_result_{item['id']}_{datetime.now().strftime('%m%d_%H%M%S')}.json"
     proc = subprocess.run(
         [
             PYTHON, str(SCRIPTS_DIR / "post_to_meta.py"),
             "instagram-reels", caption,
             "--video", item["video"]["path"],
             "--publish-approved",
+            "--result-json", str(result_path),
         ],
         capture_output=True,
         text=True,
         timeout=1800,
+        env={**os.environ, "PYTHONUNBUFFERED": "1"},
     )
     out = proc.stdout + proc.stderr
     if proc.returncode != 0:
-        raise RuntimeError(f"IG Reels投稿失敗: {out[-400:]}")
-    if not proc.stdout.strip():
-        detail = _tail(proc.stderr) or "(stderrなし)"
-        raise RuntimeError(
-            f"IG Reels投稿ヘルパーがJSONを返しませんでした: returncode={proc.returncode} stderr={detail}"
-        )
+        try:
+            result = _read_json_result(proc.stdout, proc.stderr, result_path)
+            raise RuntimeError(f"IG Reels投稿失敗: {result.get('error', result)}")
+        except RuntimeError as exc:
+            raise RuntimeError(f"IG Reels投稿失敗: {exc}; raw={out[-400:]}") from exc
     try:
-        result = json.loads(proc.stdout)
-    except json.JSONDecodeError:
-        raise RuntimeError(
-            f"IG Reels出力のパース失敗: stdout={_tail(proc.stdout)} stderr={_tail(proc.stderr)}"
-        )
+        result = _read_json_result(proc.stdout, proc.stderr, result_path)
+    except RuntimeError as exc:
+        raise RuntimeError(f"IG Reels投稿ヘルパーが{exc}") from exc
     if result.get("status") != "posted":
         raise RuntimeError(f"IG Reels投稿失敗: {result.get('error', result)}")
     return result.get("permalink") or f"media_id:{result.get('id')}"
@@ -146,8 +165,16 @@ def _pending_platforms(platforms: dict, ordered_platforms: list[str]) -> list[st
     return [
         platform
         for platform in ordered_platforms
-        if platforms[platform].get("enabled") and platforms[platform].get("status") != "posted"
+        if platforms[platform].get("enabled")
+        and platforms[platform].get("status") != "posted"
+        and not platforms[platform].get("non_retryable")
     ]
+
+
+def _non_retryable_error(platform: str, error: str) -> bool:
+    if platform == "tiktok":
+        return "セッション失効" in error or "ログイン" in error
+    return False
 
 
 def _record_attempt(item: dict, queue_lib, platform: str, retry_round: int) -> None:
@@ -187,6 +214,10 @@ def post_item(item: dict, queue_lib, notify) -> dict:
             except Exception as e:  # 1媒体の失敗で他媒体を止めない
                 err = redact_secrets(e)
                 item = queue_lib.mark_platform(item, platform, "failed", error=err)
+                if _non_retryable_error(platform, err):
+                    item["platforms"][platform]["non_retryable"] = True
+                    if hasattr(queue_lib, "save_item"):
+                        queue_lib.save_item(item)
                 results.append(f"❌ {platform}: {err[:120]}")
 
     statuses = [v["status"] for v in item["platforms"].values() if v.get("enabled")]

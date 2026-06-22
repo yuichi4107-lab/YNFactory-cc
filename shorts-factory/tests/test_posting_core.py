@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import errno
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -31,6 +32,7 @@ def make_item() -> dict:
             "x": {"enabled": True, "status": "pending", "url": None, "error": None},
             "youtube": {"enabled": True, "status": "pending", "url": None, "error": None},
             "instagram": {"enabled": False, "status": "pending", "url": None, "error": None},
+            "tiktok": {"enabled": False, "status": "pending", "url": None, "error": None},
         },
         "history": [],
     }
@@ -188,6 +190,45 @@ class PostingCoreTest(unittest.TestCase):
         message = str(cm.exception)
         self.assertIn("JSONを返しませんでした", message)
         self.assertIn("helper stopped", message)
+
+    def test_instagram_reads_sidecar_json_when_stdout_empty(self):
+        item = make_item()
+
+        class FakeProc:
+            returncode = 0
+            stdout = ""
+            stderr = ""
+
+        def fake_run(cmd, **_kwargs):
+            result_path = cmd[cmd.index("--result-json") + 1]
+            with open(result_path, "w", encoding="utf-8") as f:
+                json.dump({"status": "posted", "permalink": "https://instagram.example/reel/1"}, f)
+            return FakeProc()
+
+        with patch.object(poster.subprocess, "run", side_effect=fake_run):
+            self.assertEqual(poster.post_instagram(item), "https://instagram.example/reel/1")
+
+    def test_tiktok_session_expired_is_not_retried(self):
+        item = make_item()
+        for platform in item["platforms"].values():
+            platform["enabled"] = False
+        item["platforms"]["tiktok"]["enabled"] = True
+        calls = []
+
+        def tiktok_post(_item):
+            calls.append("tiktok")
+            raise RuntimeError("TikTokセッション失効。常駐Chromeで tiktok.com に再ログインしてください")
+
+        with (
+            patch.object(poster, "POSTERS", {"tiktok": tiktok_post}),
+            patch.object(poster, "_retry_settings", return_value=(2, 0.0)),
+        ):
+            updated = poster.post_item(item, FakeQueue, FakeNotify)
+
+        self.assertEqual(calls, ["tiktok"])
+        self.assertEqual(updated["platforms"]["tiktok"]["attempts"], 1)
+        self.assertTrue(updated["platforms"]["tiktok"]["non_retryable"])
+        self.assertEqual(updated["status"], "failed")
 
     def test_scheduled_difficulty_slots(self):
         from datetime import datetime

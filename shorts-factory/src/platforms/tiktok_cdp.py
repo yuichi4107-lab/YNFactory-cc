@@ -58,6 +58,25 @@ def _discard_resume_draft_prompt(page) -> None:
             continue
 
 
+def _is_login_page(page) -> bool:
+    if "login" in page.url.lower():
+        return True
+    for text in (
+        "TikTokにログイン",
+        "Log in to TikTok",
+        "電話番号/メール/ユーザー名を使う",
+        "Use phone / email / username",
+        "QRコードを使う",
+    ):
+        try:
+            loc = page.get_by_text(text).first
+            if loc.count() and loc.is_visible(timeout=1000):
+                return True
+        except Exception:
+            continue
+    return False
+
+
 def _choose_video_file(page, video_path: Path) -> None:
     """Attach the video file, preferring TikTok's stable hidden file input."""
     try:
@@ -125,7 +144,8 @@ def check_session() -> bool:
             page.goto(UPLOAD_URL, timeout=60000)
             page.wait_for_load_state("domcontentloaded")
             time.sleep(4)
-            if "login" in page.url:
+            if _is_login_page(page):
+                _shot(page, "login_required")
                 return False
             _discard_resume_draft_prompt(page)
             try:
@@ -153,9 +173,13 @@ def upload(video_path: Path, caption: str, timeout_sec: int = 900) -> str:
             page.goto(UPLOAD_URL, timeout=60000)
             page.wait_for_load_state("domcontentloaded")
             time.sleep(5)
-            if "login" in page.url:
-                raise RuntimeError("TikTokセッション失効。常駐Chromeで tiktok.com に再ログインしてください")
+            if _is_login_page(page):
+                shot = _shot(page, "login_required")
+                raise RuntimeError(f"TikTokセッション失効。常駐Chromeで tiktok.com に再ログインしてください（スクショ: {shot}）")
             _discard_resume_draft_prompt(page)
+            if _is_login_page(page):
+                shot = _shot(page, "login_required")
+                raise RuntimeError(f"TikTokセッション失効。常駐Chromeで tiktok.com に再ログインしてください（スクショ: {shot}）")
 
             _choose_video_file(page, video_path)
 
