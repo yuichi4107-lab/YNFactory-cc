@@ -8,5 +8,5 @@ set -euo pipefail
 export SHORTS_HEADLESS=0
 DIR="$(cd "$(dirname "$0")" && pwd)"
 echo "Chromeが開きます。Googleアカウントにログインし、https://studio.youtube.com が開ければ完了です。"
-echo "（TikTokも使う場合は同じウィンドウで tiktok.com にもログインしてください）"
+echo "TikTokは scripts/login_tiktok.sh の別プロファイルでログインしてください。"
 exec "$DIR/start_chrome_shorts.sh" "https://studio.youtube.com"

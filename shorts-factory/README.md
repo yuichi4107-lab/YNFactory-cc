@@ -49,16 +49,22 @@ cd "<Drive>/YNFactory-cc/shorts-factory/scripts" && ./deploy.sh install
 |---|---|
 | com.ynfactory.shorts-generate | 09:00 / 14:00 / 19:00 に生成（Driveから最新コードをrsyncしてから実行） |
 | com.ynfactory.shorts-approval | 承認デーモン常駐（Telegramボタン処理・投稿実行） |
-| com.ynfactory.shorts-chrome | YouTube/TikTok用 常駐Chrome（CDP 9223） |
+| com.ynfactory.shorts-chrome | YouTube用 常駐Chrome（CDP 9223） |
+| com.ynfactory.shorts-tiktok-chrome | TikTok用 常駐Chrome（CDP 9224） |
 
 ## YouTube / TikTok 初回ログイン（人間作業）
 
 ```bash
 launchctl unload ~/Library/LaunchAgents/com.ynfactory.shorts-chrome.plist
 ~/shorts-factory/app/scripts/login_youtube.sh   # Chromeが開く→Googleログイン→Studioが見えればOK
-~/shorts-factory/app/scripts/login_tiktok.sh    # 必要なら同じ専用ChromeでTikTokログイン
 # Chromeを閉じて
 launchctl load ~/Library/LaunchAgents/com.ynfactory.shorts-chrome.plist
+
+launchctl unload ~/Library/LaunchAgents/com.ynfactory.shorts-tiktok-chrome.plist
+~/shorts-factory/app/scripts/login_tiktok.sh    # Chromeが開く→TikTokログイン→Studio Uploadが見えればOK
+# Chromeを閉じて
+launchctl load ~/Library/LaunchAgents/com.ynfactory.shorts-tiktok-chrome.plist
+
 ~/shorts-factory/.venv/bin/python ~/shorts-factory/app/scripts/check_platforms.py
 ```
 

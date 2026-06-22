@@ -4,7 +4,7 @@
 ブラウザ操作する。TikTokはUI変更が頻繁なので、失敗時はスクリーンショットを
 保存して blocked にし、人間へ通知する運用とする。
 
-前提: shorts-chrome の常駐Chromeプロファイルに TikTok ログイン済み。
+前提: shorts-tiktok-chrome の常駐Chromeプロファイルに TikTok ログイン済み。
 config.yaml の queue.platforms に "tiktok" を加えると有効化される。
 """
 from __future__ import annotations
@@ -15,7 +15,7 @@ from pathlib import Path
 
 from ..config import CONFIG
 
-CDP_URL = f"http://127.0.0.1:{CONFIG.get('youtube', 'cdp_port', default=9223)}"
+CDP_URL = f"http://127.0.0.1:{CONFIG.get('tiktok', 'cdp_port', default=9224)}"
 UPLOAD_URL = "https://www.tiktok.com/tiktokstudio/upload?from=upload"
 
 
@@ -175,11 +175,11 @@ def upload(video_path: Path, caption: str, timeout_sec: int = 900) -> str:
             time.sleep(5)
             if _is_login_page(page):
                 shot = _shot(page, "login_required")
-                raise RuntimeError(f"TikTokセッション失効。常駐Chromeで tiktok.com に再ログインしてください（スクショ: {shot}）")
+                raise RuntimeError(f"TikTokセッション失効。scripts/login_tiktok.sh で専用Chromeに再ログインしてください（スクショ: {shot}）")
             _discard_resume_draft_prompt(page)
             if _is_login_page(page):
                 shot = _shot(page, "login_required")
-                raise RuntimeError(f"TikTokセッション失効。常駐Chromeで tiktok.com に再ログインしてください（スクショ: {shot}）")
+                raise RuntimeError(f"TikTokセッション失効。scripts/login_tiktok.sh で専用Chromeに再ログインしてください（スクショ: {shot}）")
 
             _choose_video_file(page, video_path)
 

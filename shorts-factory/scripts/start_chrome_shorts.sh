@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # shorts-factory用 常駐Chrome起動（専用プロファイル + remote-debugging port 9223）。
 # launchd(com.ynfactory.shorts-chrome) から KeepAlive で常時起動される。
-# youtube_cdp.py / tiktok_cdp.py はこのChromeへCDP接続して投稿する。
+# youtube_cdp.py はこのChromeへCDP接続して投稿する。
+# TikTokは start_chrome_tiktok.sh で別プロファイル・別ポートを使う。
 #
 # notebooklm-sync の start_chrome_mac.sh と同パターン（ポートとプロファイルのみ別）。
 #

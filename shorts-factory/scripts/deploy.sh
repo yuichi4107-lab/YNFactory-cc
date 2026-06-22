@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shorts-factory のセットアップ/デプロイ。
 #   ./deploy.sh          コードを ~/shorts-factory/app へ同期
-#   ./deploy.sh install  launchd 3ジョブの登録まで実行
+#   ./deploy.sh install  launchd 4ジョブの登録まで実行
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
@@ -17,7 +17,7 @@ shorts_sync_app_from_repo "$DRIVE_ROOT" "$APP_DIR"
 echo "✅ コード同期: $APP_DIR (repo=$DRIVE_ROOT)"
 
 if [ "${1:-}" = "install" ]; then
-  for p in shorts-generate shorts-approval shorts-chrome; do
+  for p in shorts-generate shorts-approval shorts-chrome shorts-tiktok-chrome; do
     cp "$SRC/launchd/com.ynfactory.$p.plist" "$LA_DIR/"
     launchctl unload "$LA_DIR/com.ynfactory.$p.plist" 2>/dev/null || true
     launchctl load "$LA_DIR/com.ynfactory.$p.plist"

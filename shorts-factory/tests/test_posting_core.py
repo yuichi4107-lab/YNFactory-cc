@@ -217,7 +217,7 @@ class PostingCoreTest(unittest.TestCase):
 
         def tiktok_post(_item):
             calls.append("tiktok")
-            raise RuntimeError("TikTokセッション失効。常駐Chromeで tiktok.com に再ログインしてください")
+            raise RuntimeError("TikTokセッション失効。scripts/login_tiktok.sh で専用Chromeに再ログインしてください")
 
         with (
             patch.object(poster, "POSTERS", {"tiktok": tiktok_post}),

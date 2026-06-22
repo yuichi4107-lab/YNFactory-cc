@@ -112,6 +112,13 @@ DEFAULTS: dict = {
         "lp_url": "https://ai.yn-factory.com/",
         "campaign": "shorts_ai_consult",
     },
+    "youtube": {
+        "cdp_port": 9223,
+    },
+    "tiktok": {
+        "cdp_port": 9224,
+        "profile_dir": str(RUNTIME_DIR / ".auth" / "tiktok-chrome"),
+    },
     "content": {
         "default_difficulty": "beginner",
         "scheduled_slots": [
