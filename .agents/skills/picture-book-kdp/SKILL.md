@@ -32,6 +32,7 @@ Build the KDP book as a satisfying generic product. Use the end matter to lead r
 - CTA: "世界で1つだけの絵本を作りませんか？"
 - LP: generic service LP that can serve multiple picture books, not a single-book-only LP.
 - Default brand:
+  - author display name: `Yuichi`
   - publisher: `YN出版`
   - operator: `YNファクトリー`
   - operator URL: `https://www.ynfactory.online/`
@@ -104,7 +105,7 @@ Story-writing guidance:
 - For P32, include CTA, QR prompt, and book introduction, for example:
   - title
   - subtitle
-  - author
+  - author as `著者: Yuichi` unless the user explicitly specifies a different author name
   - publisher
   - operator
   - contact email
@@ -222,6 +223,8 @@ Cover rules:
 - no spine text for short books; KDP requires enough pages for spine text, and 32 pages is too short
 - do not draw a visible barcode frame, white box, border, or placeholder text such as `Barcode space` on the paperback cover PDF; keep any needed barcode placement room as natural background space instead
 - keep important text at least `0.25 inch` away from trim/edge areas
+- front cover must visibly include the registered Japanese title, registered Japanese subtitle, and author name. The default author name is exactly `Yuichi`. Title should be the main heading, subtitle should be smaller and visually distinct, and author name should be readable inside the safe area.
+- back cover should include the generic personalized-picture-book CTA and QR code inside a back-cover information frame or equivalent readable area, while keeping the lower-right barcode area naturally quiet for KDP's automatic barcode. Do not place the CTA QR over the KDP barcode area.
 - keep cover PDF under KDP's practical recommended size where possible
 - write a `KDP出版用/paperback_size_spec.md` with the final settings and calculations
 
@@ -237,6 +240,7 @@ When the book includes a personalized upsell:
    - Place the CTA QR code inside the same visible `書籍紹介` / book-introduction frame as the P32 CTA text, not floating outside that frame.
    - Place the QR immediately below the book-introduction / CTA text by default, so the reader sees the CTA sentence and QR as one connected block.
    - Size the P32 `書籍紹介` frame to wrap the CTA text and QR with comfortable margins; avoid a page-sized frame with large unused blank space.
+   - Also place the same CTA and QR on the paperback back cover, inside the back-cover information frame, away from the lower-right KDP barcode area.
 4. If creating an LP, put it under `lp/ehon/` unless the user specifies another path.
 5. Make the LP generic:
    - no single-book-only dependence
@@ -266,6 +270,15 @@ Create/update in `KDP出版用/`:
 
 Metadata must avoid direct external URL/order-form promotion in the KDP description. Keep personalized-order promotion in the book's end matter and LP.
 
+`ジャンル・キーワード.md` must include keyword candidates in a `3×7` table: 3 rows or sets, 7 keyword candidates per row, 21 keyword candidates total.
+
+Default author metadata:
+
+- `KDP出版用/書籍情報.md`: `著者: Yuichi`
+- `project.md`: `著者: Yuichi`
+- P32 book-introduction page: `著者: Yuichi`
+- Kindle square cover and paperback front cover: visible author name `Yuichi`
+
 Remember to tell the user that AI-generated content must be declared in KDP if AI-generated images/text were used.
 
 ## Quality Loop
@@ -276,6 +289,9 @@ Before completion, verify and report:
 - P31/P32 visually inspected
 - PDF page counts and dimensions via `pdfinfo`
 - EPUB zip test and fixed-layout metadata
+- paperback front cover includes exact registered title, exact registered subtitle, and author name `Yuichi`
+- paperback back cover includes CTA text and QR code, without drawing a barcode box or occupying the lower-right automatic barcode area
+- `ジャンル・キーワード.md` has a `3×7` keyword table
 - QR URL and public LP status when applicable
 - Drive mirror exists at the same relative path for generated artifacts that are ignored by GitHub
 - no missing local or public image assets

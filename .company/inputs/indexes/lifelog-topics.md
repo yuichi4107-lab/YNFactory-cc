@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-21T07:00:17
+generated_at: 2026-06-22T07:00:43
 ---
 
 # Lifelog Topics
@@ -10,6 +10,19 @@ generated_at: 2026-06-21T07:00:17
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-21
+
+- - **Googleの新しい動画生成ツール（「おもね」のような名前）の利用可否と機能。** (17:30) | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+-   - 理由: MV作成を含む動画制作に活用できるか調査するため。 | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+- - **MV制作に使える良いツールの選定。** (08:34) | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+-   - 理由: AIで生成した音楽に対するMVを効率的に制作するため。 | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+- - **クラウドコードとコーデックス間でのコミット・プッシュ連携の可能性。** (08:25) | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+-   - 理由: 開発作業の効率化とバージョン管理のため。 | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+- - **日本国内での相撲関連アプリ、ウェブサイト、ポッドキャストなどの情報収集。** (07:30) | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+-   - 理由: 相撲コンテンツへの興味と情報収集のため。 | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+- 1. **AIを活用した音楽・MV制作とSNSでの多角的なコンテンツ展開** [other] ★★★★☆ (08:34) | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+-    - Suno AIで音楽を作成し、ミュージックビデオを制作してSNS（フルバージョン、MV付き、ショート動画）でアップロードする。ターゲットは30代仕事をしている独身女性向けの応援ソング。全て自動生成し、承認フローを設ける。 | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
 
 ## 2026-06-20
 

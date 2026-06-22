@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-21T07:00:17
+generated_at: 2026-06-22T07:00:43
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,23 @@ generated_at: 2026-06-21T07:00:17
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-21
+
+- [ ] SNSのプロフィール欄を修正する（投稿文のCTAと合わせ、「無料案内」や「無料相談」へ修正）。 | time:19:17 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+- [ ] 新しい仕事に関して、高品質なアプローチと徹底的な検査を実施する。 | time:18:58 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+- [ ] ここまでの設計を進める。 | time:10:01 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+- [ ] 動画を選手が繋ぐスタイルで制作する。 | time:09:53 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+- [ ] 動画の歌詞テロップのタイミングが早すぎるのを調整する。 | time:09:53 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+- [ ] 「左の方」で作業を進める。 | time:09:27 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+- [ ] ダウンロードフォルダーの管理（一つダウンロードOKしたものの確認）。 | time:09:37 | priority:low | due:- | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+- [ ] グラフ投稿で発生しているエラーの原因を確認し、修正する。 | time:09:26 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+- [ ] 音楽制作・MV制作・SNS展開のプランニングを行う。 | time:08:34 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+- [ ] Suno AIで音楽を作成する。 | time:08:34 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+- [ ] 曲のコンセプト・アイデア出しを行う（30代独身女性向け応援ソング）。 | time:08:39 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+- [ ] X (旧Twitter) へのモーニング予想投稿のエラーを確認し、修正する（投稿用フォーマットの崩れ確認）。 | time:08:06 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+- [ ] YouTubeコンテンツに関してステージを確認する。 | time:06:44 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
+- [ ] 「お母さんのリール」の遅延を確認する。 | time:06:44 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-21-lifelog-insights.md`
 
 ## 2026-06-20
 
