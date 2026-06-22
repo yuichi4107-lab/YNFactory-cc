@@ -15,6 +15,7 @@ import subprocess
 import unicodedata
 
 from .config import CONFIG
+from .fs_retry import retry_io
 from .jp_text import lcs_coverage, phonetic_hira
 from . import topic_store
 
@@ -150,7 +151,11 @@ DIFFICULTY_GUIDANCE = {
 
 
 def _build_prompt(topic: str, image_count: int, difficulty: str = "beginner") -> str:
-    tpl = (CONFIG.prompts_dir / "script_prompt.md").read_text(encoding="utf-8")
+    tpl = retry_io(
+        lambda: (CONFIG.prompts_dir / "script_prompt.md").read_text(encoding="utf-8"),
+        attempts=5,
+        delay_sec=3.0,
+    )
     recent = topic_store.recent_titles(30)
     recent_str = "\n".join(f"- {t}" for t in recent) if recent else "（まだ無し）"
     difficulty = topic_store.normalize_difficulty(difficulty) or "beginner"

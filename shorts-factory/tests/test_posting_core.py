@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import errno
 import sys
 import unittest
 from pathlib import Path
@@ -10,6 +11,7 @@ if str(APP_ROOT) not in sys.path:
     sys.path.insert(0, str(APP_ROOT))
 
 from src.logging_utils import redact_secrets
+from src.fs_retry import retry_io
 from src import platform_copy
 from src.pipeline import scheduled_difficulty
 from src.platforms import poster
@@ -193,6 +195,18 @@ class PostingCoreTest(unittest.TestCase):
         self.assertEqual(scheduled_difficulty(datetime(2026, 6, 16, 9, 0)), "beginner")
         self.assertEqual(scheduled_difficulty(datetime(2026, 6, 16, 14, 0)), "intermediate")
         self.assertEqual(scheduled_difficulty(datetime(2026, 6, 16, 19, 0)), "intermediate")
+
+    def test_retry_io_retries_resource_deadlock(self):
+        calls = []
+
+        def flaky():
+            calls.append(1)
+            if len(calls) == 1:
+                raise OSError(errno.EDEADLK, "Resource deadlock avoided")
+            return "ok"
+
+        self.assertEqual(retry_io(flaky, attempts=2, delay_sec=0), "ok")
+        self.assertEqual(len(calls), 2)
 
 
 if __name__ == "__main__":

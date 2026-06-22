@@ -21,6 +21,7 @@ from pathlib import Path
 
 from .config import CONFIG
 from . import image_gen, notify, queue_lib, renderer, script_gen, topic_store, tts_voicevox, verifier
+from .fs_retry import retry_io
 from .logging_utils import redact_secrets
 
 
@@ -43,6 +44,41 @@ def make_item_id(title: str, now: datetime | None = None) -> str:
     """Create a queue/output id that will not collide across same-day posts."""
     now = now or datetime.now()
     return f"{now.date().isoformat()}_{now.strftime('%H%M%S')}_{make_slug(title)}"
+
+
+def save_outputs(
+    item_id: str,
+    final: Path,
+    ass: Path,
+    work: Path,
+    images: list[Path],
+    previews: list[Path],
+    title: str,
+    script: dict,
+) -> Path:
+    """Copy generated artifacts to Drive, retrying transient Drive I/O errors."""
+
+    def _save_once() -> Path:
+        out_dir = CONFIG.outputs_dir / item_id
+        out_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(final, out_dir / "final.mp4")
+        shutil.copy2(work / "script.json", out_dir / "script.json")
+        shutil.copy2(ass, out_dir / "subtitles.ass")
+        shutil.copy2(work / "quality_report.json", out_dir / "quality_report.json")
+        (out_dir / "images").mkdir(exist_ok=True)
+        for p in images:
+            shutil.copy2(p, out_dir / "images" / p.name)
+        for p in previews:
+            shutil.copy2(p, out_dir / p.name)
+        captions = (
+            f"# {title}\n\n## キャプション\n{script['caption']}\n\n"
+            f"## ハッシュタグ\n{' '.join(script['hashtags'])}\n\n"
+            f"## クレジット（概要欄に含めること）\n{CONFIG.get('speaker_credit')}／音声・映像はAIで自動生成しています\n"
+        )
+        (out_dir / "captions.md").write_text(captions, encoding="utf-8")
+        return out_dir
+
+    return retry_io(_save_once, attempts=5, delay_sec=5.0)
 
 
 def scheduled_difficulty(now: datetime | None = None) -> str:
@@ -178,23 +214,7 @@ def produce(
         tts_voicevox.shutdown_engine()
 
     # --- 6. 成果物をDriveへ保存 ---
-    out_dir = CONFIG.outputs_dir / item_id
-    out_dir.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(final, out_dir / "final.mp4")
-    shutil.copy2(work / "script.json", out_dir / "script.json")
-    shutil.copy2(ass, out_dir / "subtitles.ass")
-    shutil.copy2(work / "quality_report.json", out_dir / "quality_report.json")
-    (out_dir / "images").mkdir(exist_ok=True)
-    for p in images:
-        shutil.copy2(p, out_dir / "images" / p.name)
-    for p in previews:
-        shutil.copy2(p, out_dir / p.name)
-    captions = (
-        f"# {title}\n\n## キャプション\n{script['caption']}\n\n"
-        f"## ハッシュタグ\n{' '.join(script['hashtags'])}\n\n"
-        f"## クレジット（概要欄に含めること）\n{CONFIG.get('speaker_credit')}／音声・映像はAIで自動生成しています\n"
-    )
-    (out_dir / "captions.md").write_text(captions, encoding="utf-8")
+    out_dir = save_outputs(item_id, final, ass, work, images, previews, title, script)
     log(f"成果物保存: {out_dir}")
 
     result = {"id": item_id, "output_dir": str(out_dir), "report": report, "title": title}

@@ -15,6 +15,7 @@ from datetime import datetime
 from pathlib import Path
 
 from .config import CONFIG
+from .fs_retry import retry_io
 from .platform_copy import build_platform_copy_set
 
 STATUSES = {
@@ -37,19 +38,33 @@ def queue_path(item_id: str) -> Path:
     return CONFIG.queue_dir / f"{item_id}.json"
 
 
-def save_item(item: dict) -> Path:
+def _save_item_once(item: dict) -> Path:
     CONFIG.queue_dir.mkdir(parents=True, exist_ok=True)
     path = queue_path(item["id"])
+    tmp_path: Path | None = None
     fd, tmp = tempfile.mkstemp(dir=str(CONFIG.queue_dir), suffix=".tmp")
-    with os.fdopen(fd, "w", encoding="utf-8") as f:
-        json.dump(item, f, ensure_ascii=False, indent=2)
-    os.replace(tmp, path)
+    tmp_path = Path(tmp)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(item, f, ensure_ascii=False, indent=2)
+        os.replace(tmp, path)
+    except Exception:
+        tmp_path.unlink(missing_ok=True)
+        raise
     return path
 
 
-def load_item(item_id: str) -> dict:
+def save_item(item: dict) -> Path:
+    return retry_io(lambda: _save_item_once(item), attempts=5, delay_sec=3.0)
+
+
+def _load_item_once(item_id: str) -> dict:
     with open(queue_path(item_id), "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def load_item(item_id: str) -> dict:
+    return retry_io(lambda: _load_item_once(item_id), attempts=5, delay_sec=3.0)
 
 
 def list_items(status: str | None = None) -> list[dict]:
@@ -58,8 +73,11 @@ def list_items(status: str | None = None) -> list[dict]:
     items = []
     for p in sorted(CONFIG.queue_dir.glob("*.json")):
         try:
-            with open(p, "r", encoding="utf-8") as f:
-                item = json.load(f)
+            item = retry_io(
+                lambda p=p: json.loads(p.read_text(encoding="utf-8")),
+                attempts=3,
+                delay_sec=1.0,
+            )
         except (json.JSONDecodeError, OSError):
             continue
         if status is None or item.get("status") == status:

@@ -12,18 +12,7 @@ DRIVE_ROOT="$(shorts_resolve_repo_root || true)"
 
 # Driveがマウントされていれば最新コードを同期（失敗しても手元コードで続行）
 if [ -n "$DRIVE_ROOT" ] && [ -d "$DRIVE_ROOT/shorts-factory/src" ]; then
-  mkdir -p "$APP_DIR"
-  RSYNC_ERR="$(mktemp)"
-  if ! rsync -a --delete \
-      --exclude '.venv' --exclude 'work' --exclude 'logs' \
-      "$DRIVE_ROOT/shorts-factory/src" \
-      "$DRIVE_ROOT/shorts-factory/prompts" \
-      "$DRIVE_ROOT/shorts-factory/assets" \
-      "$DRIVE_ROOT/shorts-factory/scripts" \
-      "$APP_DIR/" 2>"$RSYNC_ERR"; then
-    echo "[warn] rsync失敗。既存コードで続行: $(tail -5 "$RSYNC_ERR" | tr '\n' ' ')"
-  fi
-  rm -f "$RSYNC_ERR"
+  shorts_sync_app_from_repo "$DRIVE_ROOT" "$APP_DIR" || echo "[warn] コード同期に失敗。既存コードで続行"
 else
   echo "[warn] Driveルートを解決できません。既存コードで続行"
 fi

@@ -13,10 +13,7 @@ APP_DIR="$HOME/shorts-factory/app"
 LA_DIR="$HOME/Library/LaunchAgents"
 
 mkdir -p "$APP_DIR"
-rsync -a --delete \
-  --exclude '.venv' --exclude 'work' --exclude 'logs' --exclude 'voicevox*' \
-  "$SRC/src" "$SRC/prompts" "$SRC/assets" "$SRC/scripts" "$APP_DIR/"
-chmod +x "$APP_DIR"/scripts/*.sh
+shorts_sync_app_from_repo "$DRIVE_ROOT" "$APP_DIR"
 echo "✅ コード同期: $APP_DIR (repo=$DRIVE_ROOT)"
 
 if [ "${1:-}" = "install" ]; then

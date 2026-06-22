@@ -15,6 +15,7 @@ from datetime import date
 from pathlib import Path
 
 from .config import CONFIG
+from .fs_retry import retry_io
 
 LOW_STOCK_THRESHOLD = 7
 VALID_DIFFICULTIES = {"beginner", "intermediate"}
@@ -37,20 +38,34 @@ def _difficulty(entry: dict) -> str:
     return normalize_difficulty(entry.get("difficulty")) or "beginner"
 
 
-def _load() -> dict:
+def _load_once() -> dict:
     if CONFIG.topics_path.exists():
         with open(CONFIG.topics_path, "r", encoding="utf-8") as f:
             return json.load(f)
     return {"backlog": [], "used": []}
 
 
-def _save(data: dict) -> None:
+def _load() -> dict:
+    return retry_io(_load_once, attempts=5, delay_sec=3.0)
+
+
+def _save_once(data: dict) -> None:
     CONFIG.topics_path.parent.mkdir(parents=True, exist_ok=True)
     # Drive同期との競合を避けるため atomic rename で書き込む
+    tmp_path: Path | None = None
     fd, tmp = tempfile.mkstemp(dir=str(CONFIG.topics_path.parent), suffix=".tmp")
-    with os.fdopen(fd, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-    os.replace(tmp, CONFIG.topics_path)
+    tmp_path = Path(tmp)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        os.replace(tmp, CONFIG.topics_path)
+    except Exception:
+        tmp_path.unlink(missing_ok=True)
+        raise
+
+
+def _save(data: dict) -> None:
+    retry_io(lambda: _save_once(data), attempts=5, delay_sec=3.0)
 
 
 def next_topic(difficulty: str | None = None) -> tuple[str | None, int]:
