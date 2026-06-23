@@ -27,9 +27,10 @@
 {{contact_name}} 様
 
 はじめてご連絡いたします。
-AI活用アドバイザーの中田 Yuichi と申します。
+YNファクトリーの中田と申します。
 
-キャリアコンサルタントの国家資格を持ち、
+AI活用アドバイザーとして、
+キャリアコンサルタントの国家資格を活かしながら、
 「人材育成×AI活用」を専門に、中小企業を支援しています。
 
 ---
@@ -69,9 +70,10 @@ AI活用アドバイザーの中田 Yuichi と申します。
 
 **「人手不足に悩む地方中小企業のための、今すぐ使えるAI活用5選」**
 
-- 開催: 月1〜2回 / 60〜90分 / オンライン（Zoom）
+- 開催: 2026年7月15日（水）19:00〜20:30 / オンライン（Google Meet）
 - 参加費: 無料
 - 申込: {{webinar_url}}
+- 個別相談（30分）: {{consult_booking_url}}
 
 社員向けの導入事例や、
 経営者として知っておくべき「社内AI活用のはじめ方」も
@@ -88,15 +90,15 @@ AI時代も自信を持って働き続けられる会社づくりの
 
 中田 Yuichi
 AI活用アドバイザー / キャリアコンサルタント（国家資格）
-info@ynfactory.online
+y-nakada@yn-factory.com
 https://ynfactory.online
 
 ---
 ※ このメールは、{{company_name}}様の事業に関心があり、
 　 お役に立てると考えてお送りしております。
-※ 今後のご連絡が不要な場合は、その旨ご返信ください。
+※ 配信停止をご希望の場合は、本メールに「配信停止」とご返信ください。
 　 速やかに送信停止いたします。
-送信者: YN Factory / 中田 Yuichi（info@ynfactory.online）
+送信者: YN Factory / 中田 Yuichi（y-nakada@yn-factory.com）
 ```
 
 ---
@@ -108,16 +110,17 @@ https://ynfactory.online
 | `{{company_name}}` | 企業名 | 有限会社〇〇介護センター |
 | `{{contact_name}}` | 担当者名（不明の場合「ご担当者」） | 佐藤 様 |
 | `{{industry_japanese}}` | 業種日本語名 | 介護・福祉業 |
-| `{{size_employees}}` | 従業員規模 | 40名規模 |
+| `{{size_employees}}` | 従業員規模 | 40名 |
 | `{{location_prefecture}}` | 都道府県 | 岩手県 |
 | `{{personalization_hint}}` | HPから読み取った個別要素（最大100字） | 地域の高齢者支援に取り組む企業様として |
 | `{{webinar_url}}` | ウェビナー申込URL | https://ynfactory.online/webinar |
+| `{{consult_booking_url}}` | 個別相談予約URL | https://calendly.com/yn-factory/30min-consult |
 
 ---
 
 ## キャリアコンサルタント差別化の活用箇所
 
-- 冒頭自己紹介: 「キャリアコンサルタントの国家資格を持ち、人材育成×AI活用を専門に」
+- 冒頭自己紹介: 「YNファクトリーの中田」と名乗り、AI活用アドバイザーとして人材育成×AI活用を支援
 - メッセージ核心: 「人材育成のプロとして断言します。社員のキャリア成長とAI活用は切り離せない」
 - ウェビナー紹介: 「社員向け導入事例や経営者として知っておくべき社内AI活用のはじめ方」
 

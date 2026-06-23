@@ -85,7 +85,7 @@ class Personalizer:
             "owner_company": "YNファクトリー",
             "owner_title": "代表",
             "owner_name": "オーナー",
-            "owner_contact_email": "info@ynfactory.online",
+            "owner_contact_email": "y-nakada@yn-factory.com",
             "owner_website": "https://tools.ynfactory.online",
         }
         self.queue = ApprovalQueue(db)
