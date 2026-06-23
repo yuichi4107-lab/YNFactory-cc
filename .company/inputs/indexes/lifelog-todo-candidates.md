@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-22T07:00:43
+generated_at: 2026-06-23T07:01:05
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,38 @@ generated_at: 2026-06-22T07:00:43
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-22
+
+- [ ] テーマとEブックのスキルに関するオンボーディングフローの質問形式を「クリックして選択するような形」に変更する | time:20:17 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 所属事務所の新人戦の告知を行う（6/28 22時から） | time:19:02 | priority:low | due:2026-06-28 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] あたかた屋の購入品のチェックを行う | time:17:38 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 松坂屋のきしめん配送手配（会社宛て）と、みつみさん引き継ぎのExcelで詳細を確認する | time:17:39 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 会社証明書類の確認と提出を行い、印鑑（ゴム印）の要否を確認する | time:15:10 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 美研の請求書（42,200円分）の内容を確認し、5月分と合算して合計266,000円にする対応を行う | time:14:16 | priority:high | due:2026-06-25 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 美研の法人市民税の漏れに対応する | time:14:16 | priority:high | due:2026-06-25 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 移動届提出者の確認（青木浩二を含む10名分）と、金額（42,200円、15,500円の差額）の再計算と確認を行う | time:13:52 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 研究の書式を確認する | time:13:31 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 過去の研究データが保存されている場所を確認する | time:13:31 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 新規業務に関するオフラインまたはオンラインでの打ち合わせを設定する | time:12:02 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 銀行口座（楽天、UFJ）に関する確認を行う | time:12:03 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 商談相手（先方）のホームページを確認する | time:11:45 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 会社案内資料を準備する | time:11:45 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 保証契約減額（6000万円から4800万円）の対応を行う | time:11:52 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 手数料を現金で支払い（7月第1週まで） | time:11:52 | priority:high | due:2026-07-06 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] パブリックシステムとの商談会（7/13）の準備として、会社案内を3部用意する | time:11:42 | priority:high | due:2026-07-13 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] パブリックシステムとの商談会がオンラインかオフラインかを確認する | time:11:43 | priority:high | due:2026-07-13 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 給与体系（月給か時給か）の検討を行う | time:10:47 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 年間休日とシフトの調整方法を検討する | time:10:46 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 人員配置の公平性に関する対応策を検討・実施する | time:10:57 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 新規採用者向け業務の整理を行い、タスクリストを作成する | time:10:43 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 人がやらないといけない業務を具体的にピックアップし、リスト化する | time:10:43 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 請求書の印刷対応を行う | time:09:49 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 指定請求書の有無を確認する | time:09:51 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] Bの契約書の管理方法を検討する | time:09:25 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] 現場作業員版の封筒印刷リスト作成を検討する | time:09:28 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] MV（ミュージックビデオ）の冒頭・終盤の演出（ブラック画面からのフェードイン、タイトル表示、余韻のある終わり方）について検討・指示する | time:04:38 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- [ ] Yuichiに対し、スキルとオートメーションに関する指示を上書き修正して伝える | time:02:53 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
 
 ## 2026-06-21
 

@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-22T07:00:43
+generated_at: 2026-06-23T07:01:06
 ---
 
 # Lifelog Topics
@@ -10,6 +10,31 @@ generated_at: 2026-06-22T07:00:43
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-22
+
+- - **他のYouTuber/インフルエンサーの炎上事例と事務所対応** (18:59) | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+-   - 理由: 自身のInstagram/YouTube事業におけるリスク管理の参考とするため。 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- - **採用プラットフォームのコストと効果、AI導入による人員削減の可能性** (11:59) | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+-   - 理由: 経営戦略における人材採用とAI活用のバランスを検討するため。 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- - **地方銀行株の投資機会（PBR1倍割れ、金利上昇）と地方銀行の再編・ATM戦略** (11:36) | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+-   - 理由: 投資戦略の検討および金融業界の動向を把握するため。 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- - **有明キャピタルによる地銀投資動向、地銀再編と規模拡大の動き** (11:34) | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+-   - 理由: 投資戦略の検討および金融業界の動向を把握するため。 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- - **給与体系（月給/時給）のメリット・デメリット、シフト制における公平な人員配置方法** (10:47) | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+-   - 理由: 組織運営および人事制度設計の参考とするため。 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- - **業務自動化の可能性と、人間による判断が必要な業務の特定** (10:42) | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+-   - 理由: AI活用による業務効率化を検討するため。 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- - **システムの汎用性とデータ処理方法の効率化について** (09:23) | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+-   - 理由: フリーランス（AI活用・業務自動化の開発案件）における技術課題解決と業務効率化のため。 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- - **デバイス間のBluetooth接続を特定デバイスのみに限定する方法** (04:39) | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+-   - 理由: 業務効率化およびフリーランス（AI活用・業務自動化の開発案件）における技術課題解決のため。 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- 1. **ChatGPTを活用したプロジェクトのリスク管理効率化** [freelance] ★★★★☆ (19:24) | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+-    - ChatGPTを利用してリスク台帳を効率的に作成し、想定リスクの洗い出し、発生確率・影響度による点数化、対策・担当者の割り当て、定期的な見直しを行うことで、プロジェクト管理の精度と効率を向上させる。 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- 2. **AIを活用した業務自動化による人員削減・効率化** [freelance] ★★★★★ (11:59) | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+-    - AIの普及によるDX推進のハードル低下を背景に、コンピュータによる業務代替を進め、人員削減と効率化を図る。特に定型業務への適用を検討。 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- 3. **採用業務におけるデータ入力などの自動化** [freelance] ★★★★☆ (10:41) | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+-    - 採用プラットフォーム（年発見、エアワークなど）からの応募者情報のコピー＆ペースト作業など、判断を伴わないデータ入力業務を自動化する。これにより、採用関連業務の負担を軽減し、効率を高める。 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
 
 ## 2026-06-21
 

@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-22T07:00:43
+generated_at: 2026-06-23T07:01:06
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,12 @@ generated_at: 2026-06-22T07:00:43
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-22
+
+- - 保証契約の極度額を6000万円から4800万円に減額する方向で検討・承認済み。 | time:11:52 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- - 現在のところ、人材採用には慎重な姿勢を示す。 | time:11:59 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- - 新規採用（フルタイム）を検討する（社長の意向も影響）。 | time:10:14 | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
 
 ## 2026-06-21
 

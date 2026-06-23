@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-22T07:00:43
+generated_at: 2026-06-23T07:01:06
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,13 @@ generated_at: 2026-06-22T07:00:43
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-22
+
+- - **Yuichi** — 新しい仕事、ログイン問題、スキルとオートメーションに関する業務指示 (22:05) | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- - **美研の中田さん** — 請求内容の確認、移動届、法人市民税の対応 (14:15) | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- - **青木浩二** — 移動届の徴収対象者として名前が挙がった人物の確認 (13:47) | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
+- - **パブリックシステム** — 商談相手の企業 (11:41) | source:`.company/inputs/organized/lifelogs/2026-06-22-lifelog-insights.md`
 
 ## 2026-06-19
 
