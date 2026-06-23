@@ -15,6 +15,7 @@ import json
 import re
 import shutil
 import sys
+import traceback
 import unicodedata
 from datetime import date, datetime
 from pathlib import Path
@@ -276,6 +277,8 @@ def main() -> None:
             ensure_ascii=False))
     except Exception as e:
         log(f"❌ パイプライン失敗: {e}")
+        tb = "".join(traceback.format_exception(type(e), e, e.__traceback__))
+        log("失敗詳細:\n" + tb[-4000:])
         notify.send_message(f"❌ shorts-factory 生成失敗: {e}")
         sys.exit(1)
 

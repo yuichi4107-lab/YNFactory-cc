@@ -21,5 +21,6 @@ cd "$APP_DIR"
 if [ -n "$DRIVE_ROOT" ]; then
   export SHORTS_REPO_ROOT="$DRIVE_ROOT"
 fi
+export SHORTS_FACTORY_ROOT="$APP_DIR"
 export PYTHONDONTWRITEBYTECODE=1
 exec "$VENV_PY" -m src.pipeline "$@"

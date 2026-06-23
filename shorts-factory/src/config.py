@@ -46,6 +46,13 @@ def _resolve_repo_root() -> Path:
 # Drive上のリポジトリルート（デプロイ先から実行されても Drive を指す）
 DEFAULT_REPO_ROOT = _resolve_repo_root()
 
+
+def _resolve_factory_root(repo_root: Path) -> Path:
+    """Return the code/assets root, which can differ from the Drive data root."""
+    if os.environ.get("SHORTS_FACTORY_ROOT"):
+        return Path(os.environ["SHORTS_FACTORY_ROOT"])
+    return repo_root / "shorts-factory"
+
 DEFAULTS: dict = {
     "speaker_id": 3,  # ずんだもん（ノーマル）
     "speaker_credit": "VOICEVOX:ずんだもん",
@@ -158,7 +165,7 @@ class Config:
         self.secrets = _load_yaml(RUNTIME_DIR / "secrets.yaml")
 
         # ディレクトリ群
-        self.factory_dir = self.repo_root / "shorts-factory"
+        self.factory_dir = _resolve_factory_root(self.repo_root)
         self.assets_dir = self.factory_dir / "assets"
         self.fonts_dir = self.assets_dir / "fonts"
         self.prompts_dir = self.factory_dir / "prompts"

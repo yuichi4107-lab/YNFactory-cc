@@ -13,9 +13,10 @@ import json
 import re
 import subprocess
 import unicodedata
+from pathlib import Path
 
 from .config import CONFIG
-from .fs_retry import retry_io
+from .fs_retry import is_transient_io_error, retry_io
 from .jp_text import lcs_coverage, phonetic_hira
 from . import topic_store
 
@@ -151,11 +152,22 @@ DIFFICULTY_GUIDANCE = {
 
 
 def _build_prompt(topic: str, image_count: int, difficulty: str = "beginner") -> str:
-    tpl = retry_io(
-        lambda: (CONFIG.prompts_dir / "script_prompt.md").read_text(encoding="utf-8"),
-        attempts=5,
-        delay_sec=3.0,
-    )
+    prompt_path = CONFIG.prompts_dir / "script_prompt.md"
+    try:
+        tpl = retry_io(
+            lambda: prompt_path.read_text(encoding="utf-8"),
+            attempts=8,
+            delay_sec=3.0,
+        )
+    except OSError as exc:
+        if not is_transient_io_error(exc):
+            raise
+        local_prompt = Path(__file__).resolve().parents[1] / "prompts" / "script_prompt.md"
+        tpl = retry_io(
+            lambda: local_prompt.read_text(encoding="utf-8"),
+            attempts=3,
+            delay_sec=1.0,
+        )
     recent = topic_store.recent_titles(30)
     recent_str = "\n".join(f"- {t}" for t in recent) if recent else "（まだ無し）"
     difficulty = topic_store.normalize_difficulty(difficulty) or "beginner"

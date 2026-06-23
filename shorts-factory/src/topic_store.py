@@ -15,7 +15,7 @@ from datetime import date
 from pathlib import Path
 
 from .config import CONFIG
-from .fs_retry import retry_io
+from .fs_retry import is_transient_io_error, retry_io
 
 LOW_STOCK_THRESHOLD = 7
 VALID_DIFFICULTIES = {"beginner", "intermediate"}
@@ -46,7 +46,7 @@ def _load_once() -> dict:
 
 
 def _load() -> dict:
-    return retry_io(_load_once, attempts=5, delay_sec=3.0)
+    return retry_io(_load_once, attempts=8, delay_sec=3.0)
 
 
 def _save_once(data: dict) -> None:
@@ -65,7 +65,7 @@ def _save_once(data: dict) -> None:
 
 
 def _save(data: dict) -> None:
-    retry_io(lambda: _save_once(data), attempts=5, delay_sec=3.0)
+    retry_io(lambda: _save_once(data), attempts=8, delay_sec=3.0)
 
 
 def next_topic(difficulty: str | None = None) -> tuple[str | None, int]:
@@ -103,7 +103,12 @@ def consume_topic(topic: str, slug: str, title: str, difficulty: str | None = No
 
 
 def recent_titles(n: int = 30) -> list[str]:
-    data = _load()
+    try:
+        data = _load()
+    except OSError as exc:
+        if is_transient_io_error(exc):
+            return []
+        raise
     used = data.get("used", [])
     return [u.get("title") or u.get("topic", "") for u in used[-n:]]
 
