@@ -14,7 +14,7 @@ if str(APP_ROOT) not in sys.path:
 
 from src.logging_utils import redact_secrets
 from src.fs_retry import retry_io
-from src import platform_copy, queue_lib, script_gen
+from src import approval_bot, platform_copy, queue_lib, script_gen
 from src.pipeline import scheduled_difficulty
 from src.platforms import poster
 
@@ -148,6 +148,27 @@ class PostingCoreTest(unittest.TestCase):
         self.assertEqual(updated["platforms"]["x"]["attempts"], 1)
         self.assertEqual(updated["platforms"]["youtube"]["attempts"], 2)
         self.assertIn("自動再投稿 1/2", FakeNotify.messages[-1])
+
+    def test_retry_override_disables_inner_retries(self):
+        item = make_item()
+        item["platforms"]["x"]["enabled"] = False
+        calls: list[str] = []
+
+        def yt_post(_item):
+            calls.append("youtube")
+            raise RuntimeError("temporary upload error")
+
+        with patch.object(poster, "POSTERS", {"youtube": yt_post}):
+            updated = poster.post_item(
+                item,
+                FakeQueue,
+                FakeNotify,
+                retry_attempts=0,
+                retry_delay_sec=0,
+            )
+
+        self.assertEqual(calls, ["youtube"])
+        self.assertEqual(updated["status"], "failed")
 
     def test_platform_copy_is_platform_specific(self):
         item = make_item()
@@ -310,6 +331,50 @@ class PostingCoreTest(unittest.TestCase):
             self.assertIsNone(
                 queue_lib.find_due_scheduled_draft(now + timedelta(hours=3), "beginner")
             )
+
+    def test_deferred_retry_requires_approval_and_cooldown(self):
+        now = datetime(2026, 6, 24, 20, 0, tzinfo=timezone(timedelta(hours=9)))
+        item = make_item()
+        item["status"] = "partial_failed"
+        item["created_at"] = "2026-06-24T19:00:00+09:00"
+        item["review"] = {"owner_approved": True}
+        item["platforms"]["x"]["status"] = "posted"
+        item["platforms"]["instagram"]["enabled"] = True
+        item["platforms"]["instagram"]["status"] = "failed"
+        item["platforms"]["instagram"]["last_attempt_at"] = "2026-06-24T19:40:00+09:00"
+
+        with patch.object(
+            approval_bot,
+            "_deferred_retry_settings",
+            return_value=(True, 3, 900.0, timedelta(hours=6)),
+        ):
+            allowed, _reason, platforms = approval_bot._deferred_retry_allowed(item, now)
+            self.assertTrue(allowed)
+            self.assertEqual(platforms, ["instagram"])
+
+            item["review"]["owner_approved"] = False
+            allowed, reason, _platforms = approval_bot._deferred_retry_allowed(item, now)
+            self.assertFalse(allowed)
+            self.assertEqual(reason, "not_approved")
+
+            item["review"]["owner_approved"] = True
+            item["platforms"]["instagram"]["last_attempt_at"] = "2026-06-24T19:50:00+09:00"
+            allowed, reason, _platforms = approval_bot._deferred_retry_allowed(item, now)
+            self.assertFalse(allowed)
+            self.assertEqual(reason, "cooldown")
+
+            item["platforms"]["instagram"]["last_attempt_at"] = "2026-06-24T19:40:00+09:00"
+            item["created_at"] = "2026-06-17T09:00:00+09:00"
+            allowed, reason, _platforms = approval_bot._deferred_retry_allowed(item, now)
+            self.assertFalse(allowed)
+            self.assertEqual(reason, "expired")
+
+            item["created_at"] = "2026-06-24T19:00:00+09:00"
+            item["platforms"]["instagram"]["last_attempt_at"] = None
+            item.pop("deferred_retry", None)
+            allowed, reason, _platforms = approval_bot._deferred_retry_allowed(item, now)
+            self.assertFalse(allowed)
+            self.assertEqual(reason, "missing_attempt_at")
 
 
 if __name__ == "__main__":

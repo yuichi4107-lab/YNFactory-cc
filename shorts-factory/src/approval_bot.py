@@ -142,11 +142,121 @@ def _preview_retry_allowed(item: dict) -> bool:
     return datetime.now().astimezone() - started_at >= PREVIEW_RETRY_DELAY
 
 
+def _as_bool(value) -> bool:
+    if isinstance(value, str):
+        return value.strip().lower() not in {"0", "false", "no", "off"}
+    return bool(value)
+
+
+def _as_int(value, default: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _as_float(value, default: float) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _deferred_retry_settings() -> tuple[bool, int, float, timedelta]:
+    enabled = _as_bool(CONFIG.get("queue", "deferred_retry_failed_posts", default=True))
+    attempts = _as_int(CONFIG.get("queue", "deferred_retry_max_attempts", default=3), 3)
+    delay_sec = _as_float(CONFIG.get("queue", "deferred_retry_delay_sec", default=900), 900.0)
+    window_hours = _as_float(CONFIG.get("queue", "deferred_retry_window_hours", default=6), 6.0)
+    return enabled, max(0, attempts), max(0.0, delay_sec), timedelta(hours=max(0.0, window_hours))
+
+
+def _failed_retry_platforms(item: dict) -> list[str]:
+    return [
+        name
+        for name, info in (item.get("platforms") or {}).items()
+        if info.get("enabled")
+        and info.get("status") == "failed"
+        and not info.get("non_retryable")
+    ]
+
+
+def _latest_platform_attempt_at(item: dict, platforms: list[str]) -> datetime | None:
+    values = []
+    for platform in platforms:
+        value = (item.get("platforms") or {}).get(platform, {}).get("last_attempt_at")
+        parsed = _parse_iso(value)
+        if parsed:
+            values.append(parsed)
+    return max(values) if values else None
+
+
+def _deferred_retry_allowed(item: dict, now: datetime | None = None) -> tuple[bool, str, list[str]]:
+    now = now or datetime.now().astimezone()
+    enabled, max_attempts, delay_sec, window = _deferred_retry_settings()
+    if not enabled:
+        return False, "disabled", []
+    if item.get("status") not in {"partial_failed", "failed"}:
+        return False, "status", []
+    if not item.get("review", {}).get("owner_approved"):
+        return False, "not_approved", []
+    platforms = _failed_retry_platforms(item)
+    if not platforms:
+        return False, "no_failed_platforms", []
+
+    created_at = _parse_iso(item.get("created_at"))
+    if created_at:
+        if created_at.tzinfo is None and now.tzinfo is not None:
+            created_at = created_at.replace(tzinfo=now.tzinfo)
+        if now - created_at > window:
+            return False, "expired", platforms
+
+    retry_state = item.setdefault("deferred_retry", {})
+    attempts = _as_int(retry_state.get("attempts"), 0)
+    if attempts >= max_attempts:
+        return False, "max_attempts", platforms
+
+    last_attempt = _parse_iso(retry_state.get("last_attempt_at")) or _latest_platform_attempt_at(item, platforms)
+    if not last_attempt:
+        return False, "missing_attempt_at", platforms
+    if last_attempt.tzinfo is None and now.tzinfo is not None:
+        last_attempt = last_attempt.replace(tzinfo=now.tzinfo)
+    elapsed = now - last_attempt
+    if elapsed > window:
+        return False, "expired", platforms
+    if elapsed < timedelta(seconds=delay_sec):
+        return False, "cooldown", platforms
+    return True, "due", platforms
+
+
+def _scan_deferred_retries() -> None:
+    for status in ("partial_failed", "failed"):
+        for item in queue_lib.list_items(status):
+            allowed, reason, platforms = _deferred_retry_allowed(item)
+            if not allowed:
+                continue
+            retry_state = item.setdefault("deferred_retry", {})
+            retry_state["attempts"] = _as_int(retry_state.get("attempts"), 0) + 1
+            retry_state["last_attempt_at"] = _now_iso()
+            retry_state["platforms"] = platforms
+            item.setdefault("history", []).append(
+                {
+                    "ts": _now_iso(),
+                    "event": f"遅延自動再投稿 {retry_state['attempts']}: {', '.join(platforms)} ({reason})",
+                }
+            )
+            queue_lib.save_item(item)
+            log(f"遅延自動再投稿: {item['id']} platforms={','.join(platforms)}")
+            updated = poster.post_item(item, queue_lib, notify, retry_attempts=0, retry_delay_sec=0)
+            log(f"遅延自動再投稿完了: {item['id']} → {updated['status']}")
+
+
 def scan_queue() -> None:
     """未送信プレビューの送付と、approved の投稿実行。"""
     flushed = notify.flush_pending_messages()
     if flushed:
         log(f"保留通知を再送: {flushed}件")
+
+    _scan_deferred_retries()
 
     for item in queue_lib.list_items("ready_for_review"):
         telegram = item.setdefault("telegram", {})

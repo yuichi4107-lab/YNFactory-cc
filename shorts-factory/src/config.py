@@ -114,6 +114,10 @@ DEFAULTS: dict = {
         "retry_failed_posts": True,  # 投稿失敗時、失敗媒体だけ自動再投稿
         "retry_max_attempts": 2,  # 初回失敗後の自動再投稿回数
         "retry_delay_sec": 60,  # 再投稿前の待機秒数
+        "deferred_retry_failed_posts": True,  # 即時再試行後に失敗媒体だけ遅延再投稿
+        "deferred_retry_delay_sec": 900,
+        "deferred_retry_max_attempts": 3,
+        "deferred_retry_window_hours": 6,
     },
     "cta": {
         "lp_url": "https://ai.yn-factory.com/",

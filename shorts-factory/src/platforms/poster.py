@@ -208,14 +208,24 @@ def _record_attempt(item: dict, queue_lib, platform: str, retry_round: int) -> N
         queue_lib.save_item(item)
 
 
-def post_item(item: dict, queue_lib, notify) -> dict:
+def post_item(
+    item: dict,
+    queue_lib,
+    notify,
+    retry_attempts: int | None = None,
+    retry_delay_sec: float | None = None,
+) -> dict:
     """有効な全プラットフォームへ投稿し、結果を item に記録して返す。"""
     results = []
     platforms = item.get("platforms", {})
     ordered_platforms = [p for p in POST_ORDER if p in platforms]
     ordered_platforms.extend(p for p in platforms if p not in ordered_platforms)
 
-    retry_attempts, retry_delay_sec = _retry_settings()
+    configured_retry_attempts, configured_retry_delay_sec = _retry_settings()
+    if retry_attempts is None:
+        retry_attempts = configured_retry_attempts
+    if retry_delay_sec is None:
+        retry_delay_sec = configured_retry_delay_sec
     for retry_round in range(retry_attempts + 1):
         pending = _pending_platforms(platforms, ordered_platforms)
         if not pending:
