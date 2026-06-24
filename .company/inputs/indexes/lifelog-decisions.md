@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-23T07:01:06
+generated_at: 2026-06-24T07:00:19
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,12 @@ generated_at: 2026-06-23T07:01:06
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-23
+
+- - （特定のサービスについて）お勧め通りに進める | time:07:01 | source:`.company/inputs/organized/lifelogs/2026-06-23-lifelog-insights.md`
+- - 自己紹介テンプレートを現状のものでOKとする | time:06:39 | source:`.company/inputs/organized/lifelogs/2026-06-23-lifelog-insights.md`
+- - （New Job Discussionの内容について）確認後、進行する | time:02:42 | source:`.company/inputs/organized/lifelogs/2026-06-23-lifelog-insights.md`
 
 ## 2026-06-22
 

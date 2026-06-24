@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-23T07:01:05
+generated_at: 2026-06-24T07:00:19
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,14 @@ generated_at: 2026-06-23T07:01:05
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-23
+
+- [ ] 今日の作業をプッシュする（Yuichiへ指示） | time:10:23 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-23-lifelog-insights.md`
+- [ ] このPCで365Oを利用できるようにする | time:10:08 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-23-lifelog-insights.md`
+- [ ] セキュリティの労役レットのローテーションを進める | time:07:02 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-23-lifelog-insights.md`
+- [ ] Telegramのやる事ボットに「やった」「やらない」「後回しにする」などの操作機能を追加する | time:07:02 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-23-lifelog-insights.md`
+- [ ] 自己紹介の部分を変更する | time:06:32 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-23-lifelog-insights.md`
 
 ## 2026-06-22
 
