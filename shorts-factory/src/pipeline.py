@@ -101,6 +101,25 @@ def produce(
 ) -> dict:
     """1本の動画を生成して結果情報を返す。"""
     selected_difficulty = topic_store.normalize_difficulty(difficulty) or scheduled_difficulty()
+    if not topic and send_queue:
+        scheduled_item = queue_lib.find_due_scheduled_draft(
+            datetime.now().astimezone(), selected_difficulty
+        )
+        if scheduled_item:
+            queue_lib.transition(
+                scheduled_item,
+                "ready_for_review",
+                f"予約済み動画を{scheduled_item.get('scheduled_for')}枠へ投入",
+            )
+            log(f"予約済み動画を投入: {scheduled_item['id']}")
+            return {
+                "id": scheduled_item["id"],
+                "output_dir": scheduled_item.get("output_dir"),
+                "report": scheduled_item.get("quality", {}),
+                "title": scheduled_item.get("title"),
+                "scheduled": True,
+            }
+
     # --- 0. トピック決定 ---
     if not topic:
         topic, remaining = topic_store.next_topic(selected_difficulty)

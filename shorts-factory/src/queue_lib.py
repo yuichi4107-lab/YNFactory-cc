@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 import os
 import tempfile
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from .config import CONFIG
@@ -83,6 +83,39 @@ def list_items(status: str | None = None) -> list[dict]:
         if status is None or item.get("status") == status:
             items.append(item)
     return items
+
+
+def _parse_iso(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value)
+    except ValueError:
+        return None
+
+
+def find_due_scheduled_draft(
+    now: datetime | None = None,
+    difficulty: str | None = None,
+    grace: timedelta = timedelta(hours=2),
+) -> dict | None:
+    """Return a draft reserved for the current scheduled slot, if one is due."""
+    now = now or datetime.now().astimezone()
+    due: list[tuple[datetime, dict]] = []
+    for item in list_items("draft"):
+        scheduled_for = _parse_iso(item.get("scheduled_for"))
+        if not scheduled_for:
+            continue
+        if scheduled_for.tzinfo is None and now.tzinfo is not None:
+            scheduled_for = scheduled_for.replace(tzinfo=now.tzinfo)
+        if item.get("difficulty") and difficulty and item.get("difficulty") != difficulty:
+            continue
+        if scheduled_for <= now <= scheduled_for + grace:
+            due.append((scheduled_for, item))
+    if not due:
+        return None
+    due.sort(key=lambda pair: pair[0])
+    return due[0][1]
 
 
 def new_item(

@@ -5,6 +5,7 @@
 """
 from __future__ import annotations
 
+import json
 import re
 import os
 import subprocess
@@ -26,8 +27,6 @@ def _tail(text: str | None, limit: int = 500) -> str:
 
 
 def _read_json_result(stdout: str, stderr: str, result_path: Path | None = None) -> dict:
-    import json
-
     raw = stdout.strip()
     if not raw and result_path and result_path.exists():
         raw = result_path.read_text(encoding="utf-8").strip()
@@ -43,6 +42,23 @@ def _read_json_result(stdout: str, stderr: str, result_path: Path | None = None)
             except json.JSONDecodeError:
                 pass
         raise RuntimeError(f"JSON出力のパース失敗: stdout={_tail(stdout)} stderr={_tail(stderr)}")
+
+
+def _write_instagram_helper_diagnostic(item: dict, proc: subprocess.CompletedProcess, result_path: Path) -> Path:
+    path = CONFIG.logs_dir / f"ig_helper_{item['id']}_{datetime.now().strftime('%m%d_%H%M%S')}.json"
+    payload = {
+        "item_id": item["id"],
+        "returncode": proc.returncode,
+        "stdout_len": len(proc.stdout or ""),
+        "stderr_len": len(proc.stderr or ""),
+        "stdout_tail": _tail(proc.stdout, 1200),
+        "stderr_tail": _tail(proc.stderr, 1200),
+        "result_json": str(result_path),
+        "result_json_exists": result_path.exists(),
+        "result_json_size": result_path.stat().st_size if result_path.exists() else 0,
+    }
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    return path
 
 
 def post_x(item: dict) -> str:
@@ -70,7 +86,8 @@ def post_instagram(item: dict) -> str:
     キューからのみ呼ばれるため、オーナー承認済みとして付与する。
     """
     caption = copy_for_platform(item, "instagram")["caption"]
-    result_path = CONFIG.logs_dir / f"ig_result_{item['id']}_{datetime.now().strftime('%m%d_%H%M%S')}.json"
+    result_path = CONFIG.logs_dir / f"ig_result_{item['id']}_{datetime.now().strftime('%m%d_%H%M%S_%f')}.json"
+    result_path.unlink(missing_ok=True)
     proc = subprocess.run(
         [
             PYTHON, str(SCRIPTS_DIR / "post_to_meta.py"),
@@ -86,15 +103,17 @@ def post_instagram(item: dict) -> str:
     )
     out = proc.stdout + proc.stderr
     if proc.returncode != 0:
+        diag_path = _write_instagram_helper_diagnostic(item, proc, result_path)
         try:
             result = _read_json_result(proc.stdout, proc.stderr, result_path)
-            raise RuntimeError(f"IG Reels投稿失敗: {result.get('error', result)}")
+            raise RuntimeError(f"IG Reels投稿失敗: {result.get('error', result)}; diag={diag_path}")
         except RuntimeError as exc:
-            raise RuntimeError(f"IG Reels投稿失敗: {exc}; raw={out[-400:]}") from exc
+            raise RuntimeError(f"IG Reels投稿失敗: {exc}; raw={out[-400:]}; diag={diag_path}") from exc
     try:
         result = _read_json_result(proc.stdout, proc.stderr, result_path)
     except RuntimeError as exc:
-        raise RuntimeError(f"IG Reels投稿ヘルパーが{exc}") from exc
+        diag_path = _write_instagram_helper_diagnostic(item, proc, result_path)
+        raise RuntimeError(f"IG Reels投稿ヘルパーが{exc}; diag={diag_path}") from exc
     if result.get("status") != "posted":
         raise RuntimeError(f"IG Reels投稿失敗: {result.get('error', result)}")
     return result.get("permalink") or f"media_id:{result.get('id')}"

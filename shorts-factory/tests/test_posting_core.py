@@ -4,6 +4,7 @@ import errno
 import json
 import sys
 import unittest
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import patch
 
@@ -13,7 +14,7 @@ if str(APP_ROOT) not in sys.path:
 
 from src.logging_utils import redact_secrets
 from src.fs_retry import retry_io
-from src import platform_copy, script_gen
+from src import platform_copy, queue_lib, script_gen
 from src.pipeline import scheduled_difficulty
 from src.platforms import poster
 
@@ -276,6 +277,39 @@ class PostingCoreTest(unittest.TestCase):
 
         self.assertEqual(errs, [])
         self.assertIn("二案を並べます", data["cues"][4]["display"])
+
+    def test_find_due_scheduled_draft(self):
+        now = datetime(2026, 6, 25, 9, 0, tzinfo=timezone(timedelta(hours=9)))
+        items = [
+            {
+                "id": "future",
+                "status": "draft",
+                "difficulty": "beginner",
+                "scheduled_for": "2026-06-25T14:00:00+09:00",
+            },
+            {
+                "id": "due",
+                "status": "draft",
+                "difficulty": "beginner",
+                "scheduled_for": "2026-06-25T09:00:00+09:00",
+            },
+            {
+                "id": "intermediate-due",
+                "status": "draft",
+                "difficulty": "intermediate",
+                "scheduled_for": "2026-06-25T09:00:00+09:00",
+            },
+        ]
+
+        with patch.object(queue_lib, "list_items", return_value=items):
+            self.assertEqual(queue_lib.find_due_scheduled_draft(now, "beginner")["id"], "due")
+            self.assertEqual(
+                queue_lib.find_due_scheduled_draft(now, "intermediate")["id"],
+                "intermediate-due",
+            )
+            self.assertIsNone(
+                queue_lib.find_due_scheduled_draft(now + timedelta(hours=3), "beginner")
+            )
 
 
 if __name__ == "__main__":
