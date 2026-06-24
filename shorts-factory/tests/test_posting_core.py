@@ -13,7 +13,7 @@ if str(APP_ROOT) not in sys.path:
 
 from src.logging_utils import redact_secrets
 from src.fs_retry import retry_io
-from src import platform_copy
+from src import platform_copy, script_gen
 from src.pipeline import scheduled_difficulty
 from src.platforms import poster
 
@@ -248,6 +248,34 @@ class PostingCoreTest(unittest.TestCase):
 
         self.assertEqual(retry_io(flaky, attempts=2, delay_sec=0), "ok")
         self.assertEqual(len(calls), 2)
+
+    def test_script_generation_normalizes_unstable_terms(self):
+        data = {
+            "cues": [
+                {
+                    "display": ["PDFをAPIで", "AI確認する"],
+                    "tts_text": "PDFをAPIでAI確認します。",
+                    "reading_kana": "PDFヲAPIデAIカクニンシマス。",
+                }
+            ]
+        }
+
+        script_gen.normalize_generated_script(data)
+
+        joined = json.dumps(data, ensure_ascii=False)
+        self.assertNotIn("PDF", joined)
+        self.assertNotIn("API", joined)
+        self.assertNotIn("AI確認", joined)
+        self.assertIn("ピーディーエフ", joined)
+        self.assertIn("エーピーアイ", joined)
+        self.assertIn("エーアイ確認", joined)
+
+    def test_generic_fallback_script_is_valid(self):
+        data = script_gen._fallback_script("ChatGPTで資料を要約する方法", "beginner", ["err"])
+        errs = script_gen.validate_script(data, image_count=4)
+
+        self.assertEqual(errs, [])
+        self.assertIn("二案を並べます", data["cues"][4]["display"])
 
 
 if __name__ == "__main__":

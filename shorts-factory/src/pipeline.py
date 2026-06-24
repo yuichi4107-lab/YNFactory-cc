@@ -22,7 +22,7 @@ from pathlib import Path
 
 from .config import CONFIG
 from . import image_gen, notify, queue_lib, renderer, script_gen, topic_store, tts_voicevox, verifier
-from .fs_retry import retry_io
+from .fs_retry import is_transient_io_error, retry_io
 from .logging_utils import redact_secrets
 
 
@@ -222,17 +222,35 @@ def produce(
     if not send_queue:
         return result
 
-    # --- 7. ネタ帳消費 + キュー登録 + Telegramプレビュー ---
-    remaining = topic_store.consume_topic(topic, item_id, title, selected_difficulty)
-    if remaining <= topic_store.LOW_STOCK_THRESHOLD:
-        notify.send_message(f"📋 shorts-factory: ネタ帳の残りが{remaining}本です。補充してください。")
-
+    # --- 7. キュー登録 + ネタ帳消費 + Telegramプレビュー ---
     item = queue_lib.new_item(
         item_id, topic, script, out_dir / "final.mp4",
         report["duration"], report["size_mb"],
         out_dir / "quality_report.json", report["pass"],
         report["accuracy"]["avg_cer"], out_dir,
     )
+
+    try:
+        remaining = topic_store.consume_topic(topic, item_id, title, selected_difficulty)
+        if remaining <= topic_store.LOW_STOCK_THRESHOLD:
+            notify.send_message(f"📋 shorts-factory: ネタ帳の残りが{remaining}本です。補充してください。")
+    except OSError as exc:
+        if not is_transient_io_error(exc):
+            raise
+        log(f"ネタ帳消費を後回し: {exc}")
+        item.setdefault("topic_store", {})["consume_deferred_error"] = str(exc)
+        item.setdefault("history", []).append(
+            {
+                "ts": datetime.now().astimezone().isoformat(timespec="seconds"),
+                "event": "topic_consume_deferred",
+            }
+        )
+        queue_lib.save_item(item)
+        notify.send_message(
+            "⚠️ shorts-factory: Driveロックでネタ帳更新だけ後回しになりました。"
+            f"キュー登録は完了しています: <code>{item_id}</code>"
+        )
+
     if not report["pass"]:
         item = queue_lib.transition(item, "blocked", "品質検証が上限到達でも不合格のため要人間確認")
         mid = notify.send_video(

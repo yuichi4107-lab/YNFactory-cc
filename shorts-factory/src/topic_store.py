@@ -19,6 +19,7 @@ from .fs_retry import is_transient_io_error, retry_io
 
 LOW_STOCK_THRESHOLD = 7
 VALID_DIFFICULTIES = {"beginner", "intermediate"}
+TOPICS_CACHE_PATH = CONFIG.runtime_dir / "cache" / "topics.json"
 
 
 def normalize_difficulty(value: str | None) -> str | None:
@@ -41,12 +42,35 @@ def _difficulty(entry: dict) -> str:
 def _load_once() -> dict:
     if CONFIG.topics_path.exists():
         with open(CONFIG.topics_path, "r", encoding="utf-8") as f:
-            return json.load(f)
+            data = json.load(f)
+        _write_cache(data)
+        return data
     return {"backlog": [], "used": []}
 
 
-def _load() -> dict:
-    return retry_io(_load_once, attempts=8, delay_sec=3.0)
+def _write_cache(data: dict) -> None:
+    try:
+        TOPICS_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        with open(TOPICS_CACHE_PATH, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except OSError:
+        pass
+
+
+def _load_cache_once() -> dict:
+    with open(TOPICS_CACHE_PATH, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _load(allow_cache: bool = True) -> dict:
+    try:
+        return retry_io(_load_once, attempts=8, delay_sec=3.0)
+    except OSError as exc:
+        if not allow_cache or not is_transient_io_error(exc):
+            raise
+        if TOPICS_CACHE_PATH.exists():
+            return retry_io(_load_cache_once, attempts=3, delay_sec=1.0)
+        raise
 
 
 def _save_once(data: dict) -> None:
@@ -66,6 +90,7 @@ def _save_once(data: dict) -> None:
 
 def _save(data: dict) -> None:
     retry_io(lambda: _save_once(data), attempts=8, delay_sec=3.0)
+    _write_cache(data)
 
 
 def next_topic(difficulty: str | None = None) -> tuple[str | None, int]:
@@ -85,7 +110,7 @@ def next_topic(difficulty: str | None = None) -> tuple[str | None, int]:
 
 def consume_topic(topic: str, slug: str, title: str, difficulty: str | None = None) -> int:
     """トピックを used へ移動し、残数を返す。"""
-    data = _load()
+    data = _load(allow_cache=False)
     matched = next((t for t in data.get("backlog", []) if t.get("topic") == topic), {})
     topic_difficulty = normalize_difficulty(difficulty) or _difficulty(matched)
     data["backlog"] = [t for t in data.get("backlog", []) if t.get("topic") != topic]

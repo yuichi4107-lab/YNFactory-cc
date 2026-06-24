@@ -23,10 +23,71 @@ from . import topic_store
 SCRIPT_SCHEMA_KEYS = {"title", "cues", "caption", "hashtags", "card_keywords"}
 _KANA_RE = re.compile(r"^[ァ-ヶー、。・\s０-９0-9？?！!]+$")
 _UNSTABLE_SPEECH_RE = re.compile(r"[A-Za-z%％]")
+_SPEECH_TERM_REPLACEMENTS = {
+    "chatgpt": "チャットジーピーティー",
+    "openai": "オープンエーアイ",
+    "youtube": "ユーチューブ",
+    "instagram": "インスタグラム",
+    "tiktok": "ティックトック",
+    "excel": "エクセル",
+    "google": "グーグル",
+    "notion": "ノーション",
+    "slack": "スラック",
+    "zoom": "ズーム",
+    "teams": "チームズ",
+    "powerpoint": "パワーポイント",
+    "pdf": "ピーディーエフ",
+    "api": "エーピーアイ",
+    "sns": "エスエヌエス",
+    "kpi": "ケーピーアイ",
+    "crm": "シーアールエム",
+    "csv": "シーエスブイ",
+    "url": "ユーアールエル",
+    "llm": "エルエルエム",
+    "dx": "ディーエックス",
+    "it": "アイティー",
+    "ec": "イーシー",
+    "ai": "エーアイ",
+    "%": "パーセント",
+    "％": "パーセント",
+}
+_SPEECH_TERM_RE = re.compile(
+    "|".join(re.escape(k) for k in sorted(_SPEECH_TERM_REPLACEMENTS, key=len, reverse=True)),
+    re.IGNORECASE,
+)
 
 
 def _speech_unstable_text(s: str) -> bool:
     return bool(_UNSTABLE_SPEECH_RE.search(s.replace("ChatGPT", "")))
+
+
+def _replace_unstable_terms(text: str) -> str:
+    return _SPEECH_TERM_RE.sub(
+        lambda m: _SPEECH_TERM_REPLACEMENTS[m.group(0).lower()],
+        text,
+    )
+
+
+def normalize_generated_script(data: dict) -> dict:
+    """Normalize common English abbreviations before validation/TTS."""
+    if not isinstance(data, dict):
+        return data
+    cues = data.get("cues")
+    if not isinstance(cues, list):
+        return data
+    for cue in cues:
+        if not isinstance(cue, dict):
+            continue
+        display = cue.get("display")
+        if isinstance(display, list):
+            cue["display"] = [
+                _replace_unstable_terms(line) if isinstance(line, str) else line
+                for line in display
+            ]
+        for key in ("tts_text", "reading_kana"):
+            if isinstance(cue.get(key), str):
+                cue[key] = _replace_unstable_terms(cue[key])
+    return data
 
 
 def _char_width(s: str) -> int:
@@ -327,9 +388,9 @@ def _fallback_cues_for_topic(topic: str) -> tuple[str, list[dict]]:
             "emphasis": False,
         },
         {
-            "display": ["一回で決めず", "二案出させます"],
-            "tts_text": "一回で決めず、二案出させます。",
-            "reading_kana": "イッカイデキメズ、ニアンデサセマス。",
+            "display": ["一回で決めず", "二案を並べます"],
+            "tts_text": "一回で決めず、二案を並べます。",
+            "reading_kana": "イッカイデキメズ、ニアンヲナラベマス。",
             "emphasis": False,
         },
         {
@@ -431,7 +492,7 @@ def generate_script(topic: str, difficulty: str = "beginner") -> dict:
             last_errs = [str(e)]
             continue
         try:
-            data = _extract_json(raw)
+            data = normalize_generated_script(_extract_json(raw))
         except (json.JSONDecodeError, ValueError) as e:
             last_errs = [f"JSONとしてパース不能: {e}"]
             continue
