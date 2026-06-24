@@ -197,38 +197,60 @@ class PostingCoreTest(unittest.TestCase):
         self.assertIn("最初の1業務", posted_text)
         self.assertNotIn("保存して", posted_text)
 
-    def test_instagram_empty_helper_output_is_actionable(self):
+    def test_instagram_reuses_recent_matching_post(self):
         item = make_item()
+        calls = {"post": 0}
 
-        class FakeProc:
-            returncode = 0
-            stdout = ""
-            stderr = "helper stopped before writing JSON"
+        class FakeMeta:
+            @staticmethod
+            def load_env(_path):
+                return {"META_IG_USER_ID": "ig-1", "META_ACCESS_TOKEN": "token"}
 
-        with patch.object(poster.subprocess, "run", return_value=FakeProc()):
-            with self.assertRaises(RuntimeError) as cm:
-                poster.post_instagram(item)
+            @staticmethod
+            def graph_get(_path, _token, _params):
+                return {
+                    "data": [
+                        {
+                            "id": "media-1",
+                            "permalink": "https://instagram.example/reel/existing",
+                            "caption": platform_copy.copy_for_platform(item, "instagram")["caption"],
+                            "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
+                        }
+                    ]
+                }
 
-        message = str(cm.exception)
-        self.assertIn("JSONを返しませんでした", message)
-        self.assertIn("helper stopped", message)
+            @staticmethod
+            def post_instagram_reels(*_args):
+                calls["post"] += 1
+                return {"status": "posted", "permalink": "https://instagram.example/reel/new"}
 
-    def test_instagram_reads_sidecar_json_when_stdout_empty(self):
+        with patch.object(poster, "_meta_module", return_value=FakeMeta):
+            self.assertEqual(
+                poster.post_instagram(item),
+                "https://instagram.example/reel/existing",
+            )
+        self.assertEqual(calls["post"], 0)
+
+    def test_instagram_posts_through_direct_meta_api(self):
         item = make_item()
+        calls = {"post": 0}
 
-        class FakeProc:
-            returncode = 0
-            stdout = ""
-            stderr = ""
+        class FakeMeta:
+            @staticmethod
+            def load_env(_path):
+                return {"META_IG_USER_ID": "ig-1", "META_ACCESS_TOKEN": "token"}
 
-        def fake_run(cmd, **_kwargs):
-            result_path = cmd[cmd.index("--result-json") + 1]
-            with open(result_path, "w", encoding="utf-8") as f:
-                json.dump({"status": "posted", "permalink": "https://instagram.example/reel/1"}, f)
-            return FakeProc()
+            @staticmethod
+            def post_instagram_reels(_caption, _video_path, _env):
+                calls["post"] += 1
+                return {"status": "posted", "permalink": "https://instagram.example/reel/1"}
 
-        with patch.object(poster.subprocess, "run", side_effect=fake_run):
+        with (
+            patch.object(poster, "_find_recent_instagram_post", return_value=None),
+            patch.object(poster, "_meta_module", return_value=FakeMeta),
+        ):
             self.assertEqual(poster.post_instagram(item), "https://instagram.example/reel/1")
+        self.assertEqual(calls["post"], 1)
 
     def test_tiktok_session_expired_is_not_retried(self):
         item = make_item()

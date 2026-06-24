@@ -7,11 +7,10 @@ from __future__ import annotations
 
 import json
 import re
-import os
 import subprocess
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from ..config import CONFIG
@@ -20,6 +19,7 @@ from ..platform_copy import copy_for_platform
 
 SCRIPTS_DIR = CONFIG.repo_root / "scripts"
 PYTHON = str(CONFIG.runtime_dir / ".venv" / "bin" / "python")
+INSTAGRAM_EXISTING_LOOKBACK = timedelta(minutes=30)
 
 
 def _tail(text: str | None, limit: int = 500) -> str:
@@ -61,6 +61,55 @@ def _write_instagram_helper_diagnostic(item: dict, proc: subprocess.CompletedPro
     return path
 
 
+def _normalized_caption(text: str | None) -> str:
+    return re.sub(r"\s+", " ", text or "").strip()
+
+
+def _parse_meta_timestamp(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    try:
+        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S%z")
+    except ValueError:
+        return None
+
+
+def _meta_module():
+    repo_root = str(CONFIG.repo_root)
+    if repo_root not in sys.path:
+        sys.path.insert(0, repo_root)
+    from scripts import post_to_meta
+
+    return post_to_meta
+
+
+def _find_recent_instagram_post(caption: str, since: datetime) -> str | None:
+    """Return an existing permalink for the same caption to avoid duplicate retries."""
+    post_to_meta = _meta_module()
+    env = post_to_meta.load_env(CONFIG.sns_env_path)
+    ig_user_id = env.get("META_IG_USER_ID")
+    token = env.get("META_ACCESS_TOKEN")
+    if not ig_user_id or not token:
+        return None
+
+    target = _normalized_caption(caption)
+    if not target:
+        return None
+    response = post_to_meta.graph_get(
+        f"{ig_user_id}/media",
+        token,
+        {"fields": "id,permalink,caption,timestamp,media_type", "limit": 25},
+    )
+    for media in response.get("data", []):
+        timestamp = _parse_meta_timestamp(media.get("timestamp"))
+        if timestamp and timestamp < since:
+            continue
+        media_caption = _normalized_caption(media.get("caption"))
+        if media_caption == target:
+            return media.get("permalink") or f"media_id:{media.get('id')}"
+    return None
+
+
 def post_x(item: dict) -> str:
     """Xへ動画投稿し、投稿URLを返す。"""
     text = copy_for_platform(item, "x")["text"]
@@ -86,34 +135,17 @@ def post_instagram(item: dict) -> str:
     キューからのみ呼ばれるため、オーナー承認済みとして付与する。
     """
     caption = copy_for_platform(item, "instagram")["caption"]
-    result_path = CONFIG.logs_dir / f"ig_result_{item['id']}_{datetime.now().strftime('%m%d_%H%M%S_%f')}.json"
-    result_path.unlink(missing_ok=True)
-    proc = subprocess.run(
-        [
-            PYTHON, str(SCRIPTS_DIR / "post_to_meta.py"),
-            "instagram-reels", caption,
-            "--video", item["video"]["path"],
-            "--publish-approved",
-            "--result-json", str(result_path),
-        ],
-        capture_output=True,
-        text=True,
-        timeout=1800,
-        env={**os.environ, "PYTHONUNBUFFERED": "1"},
+    now = datetime.now().astimezone()
+    existing = _find_recent_instagram_post(caption, now - INSTAGRAM_EXISTING_LOOKBACK)
+    if existing:
+        return existing
+
+    post_to_meta = _meta_module()
+    result = post_to_meta.post_instagram_reels(
+        caption,
+        item["video"]["path"],
+        post_to_meta.load_env(CONFIG.sns_env_path),
     )
-    out = proc.stdout + proc.stderr
-    if proc.returncode != 0:
-        diag_path = _write_instagram_helper_diagnostic(item, proc, result_path)
-        try:
-            result = _read_json_result(proc.stdout, proc.stderr, result_path)
-            raise RuntimeError(f"IG Reels投稿失敗: {result.get('error', result)}; diag={diag_path}")
-        except RuntimeError as exc:
-            raise RuntimeError(f"IG Reels投稿失敗: {exc}; raw={out[-400:]}; diag={diag_path}") from exc
-    try:
-        result = _read_json_result(proc.stdout, proc.stderr, result_path)
-    except RuntimeError as exc:
-        diag_path = _write_instagram_helper_diagnostic(item, proc, result_path)
-        raise RuntimeError(f"IG Reels投稿ヘルパーが{exc}; diag={diag_path}") from exc
     if result.get("status") != "posted":
         raise RuntimeError(f"IG Reels投稿失敗: {result.get('error', result)}")
     return result.get("permalink") or f"media_id:{result.get('id')}"
