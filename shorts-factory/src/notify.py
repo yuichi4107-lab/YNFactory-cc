@@ -86,6 +86,8 @@ def send_video(
         # The request may have reached Telegram even when the response timed out.
         # Do not send a text fallback immediately; that creates duplicate buttons.
         return None
+    except OSError:
+        return send_message(caption + "\n（動画ファイルの読み取りに失敗。Driveで確認してください）", reply_markup)
     except requests.RequestException:
         r = None
     if r and r.ok:

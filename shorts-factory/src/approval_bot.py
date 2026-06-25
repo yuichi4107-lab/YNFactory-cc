@@ -121,6 +121,17 @@ def _spawn_replacement(item: dict) -> None:
             log(f"代替候補生成の起動失敗: {exc}")
 
 
+def _preview_video_path(item: dict) -> Path:
+    """Prefer the runtime copy for Telegram previews to avoid Drive read locks."""
+    video_path = Path(item["video"]["path"])
+    output_dir = item.get("output_dir")
+    if output_dir:
+        runtime_path = CONFIG.work_dir / Path(output_dir).name / video_path.name
+        if runtime_path.exists():
+            return runtime_path
+    return video_path
+
+
 def _now_iso() -> str:
     return datetime.now().astimezone().isoformat(timespec="seconds")
 
@@ -265,7 +276,7 @@ def scan_queue() -> None:
             telegram["preview_send_attempts"] = int(telegram.get("preview_send_attempts") or 0) + 1
             queue_lib.save_item(item)
             mid = notify.send_video(
-                Path(item["video"]["path"]),
+                _preview_video_path(item),
                 notify.preview_caption(item),
                 reply_markup=notify.approval_keyboard(item["id"]),
             )

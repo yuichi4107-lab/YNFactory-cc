@@ -3,6 +3,7 @@ from __future__ import annotations
 import errno
 import json
 import sys
+import tempfile
 import unittest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -15,7 +16,7 @@ if str(APP_ROOT) not in sys.path:
 from src.logging_utils import redact_secrets
 from src.fs_retry import retry_io
 from src import approval_bot, platform_copy, queue_lib, script_gen
-from src.pipeline import scheduled_difficulty
+from src.pipeline import result_summary, scheduled_difficulty
 from src.platforms import poster
 
 
@@ -280,6 +281,35 @@ class PostingCoreTest(unittest.TestCase):
         self.assertEqual(scheduled_difficulty(datetime(2026, 6, 16, 9, 0)), "beginner")
         self.assertEqual(scheduled_difficulty(datetime(2026, 6, 16, 14, 0)), "intermediate")
         self.assertEqual(scheduled_difficulty(datetime(2026, 6, 16, 19, 0)), "intermediate")
+
+    def test_result_summary_accepts_scheduled_quality_shape(self):
+        summary = result_summary(
+            {
+                "id": "scheduled-1",
+                "output_dir": "/tmp/out",
+                "report": {"pass": True, "avg_cer": 0.0123},
+                "scheduled": True,
+            }
+        )
+
+        self.assertEqual(summary["id"], "scheduled-1")
+        self.assertTrue(summary["pass"])
+        self.assertEqual(summary["avg_cer"], 0.0123)
+        self.assertTrue(summary["scheduled"])
+
+    def test_approval_preview_prefers_runtime_video_copy(self):
+        with tempfile.TemporaryDirectory() as td:
+            runtime = Path(td)
+            local_video = runtime / "item-1" / "final.mp4"
+            local_video.parent.mkdir()
+            local_video.write_bytes(b"video")
+            item = {
+                "video": {"path": "/Drive/out/item-1/final.mp4"},
+                "output_dir": "/Drive/out/item-1",
+            }
+
+            with patch.object(approval_bot.CONFIG, "work_dir", runtime):
+                self.assertEqual(approval_bot._preview_video_path(item), local_video)
 
     def test_retry_io_retries_resource_deadlock(self):
         calls = []

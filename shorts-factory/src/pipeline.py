@@ -295,6 +295,19 @@ def produce(
     return result
 
 
+def result_summary(result: dict) -> dict:
+    """Build stable CLI output for both newly generated and scheduled items."""
+    report = result.get("report") or {}
+    accuracy = report.get("accuracy") or {}
+    return {
+        "id": result.get("id"),
+        "pass": report.get("pass"),
+        "avg_cer": accuracy.get("avg_cer", report.get("avg_cer")),
+        "output": result.get("output_dir"),
+        "scheduled": bool(result.get("scheduled")),
+    }
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="ショート動画全自動生成")
     ap.add_argument("--topic", help="テーマ（省略時はネタ帳から）")
@@ -307,11 +320,7 @@ def main() -> None:
     args = ap.parse_args()
     try:
         result = produce(topic=args.topic, send_queue=not args.no_queue, difficulty=args.difficulty)
-        print(json.dumps(
-            {"id": result["id"], "pass": result["report"]["pass"],
-             "avg_cer": result["report"]["accuracy"]["avg_cer"],
-             "output": result["output_dir"]},
-            ensure_ascii=False))
+        print(json.dumps(result_summary(result), ensure_ascii=False))
     except Exception as e:
         log(f"❌ パイプライン失敗: {e}")
         tb = "".join(traceback.format_exception(type(e), e, e.__traceback__))
