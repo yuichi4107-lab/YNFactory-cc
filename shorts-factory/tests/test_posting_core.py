@@ -171,6 +171,107 @@ class PostingCoreTest(unittest.TestCase):
         self.assertEqual(calls, ["youtube"])
         self.assertEqual(updated["status"], "failed")
 
+    def test_auto_recovery_runs_after_two_retries_and_adds_retry(self):
+        item = make_item()
+        item["platforms"]["x"]["enabled"] = False
+        calls: list[str | None] = []
+        recovered: list[list[str]] = []
+
+        def yt_post(_item):
+            calls.append(_item.get("video", {}).get("upload_path"))
+            if len(calls) <= 3:
+                raise RuntimeError("Resource deadlock avoided")
+            return "https://youtube.example/short/recovered"
+
+        def fake_recover(_item, platforms, _queue_lib):
+            recovered.append(list(platforms))
+            _item.setdefault("video", {})["upload_path"] = "/tmp/cache/final.mp4"
+            return [
+                {
+                    "platform": platforms[0],
+                    "cause": "media_io",
+                    "actions": ["local_media:/tmp/cache/final.mp4"],
+                    "recovered": True,
+                }
+            ]
+
+        with (
+            patch.object(poster, "POSTERS", {"youtube": yt_post}),
+            patch.object(poster, "_retry_settings", return_value=(2, 0.0)),
+            patch.object(poster, "_recovery_settings", return_value=(True, 2, 1, 2)),
+            patch.object(poster, "recover_failed_platforms", side_effect=fake_recover),
+        ):
+            updated = poster.post_item(item, FakeQueue, FakeNotify)
+
+        self.assertEqual(len(calls), 4)
+        self.assertEqual(calls[-1], "/tmp/cache/final.mp4")
+        self.assertEqual(recovered, [["youtube"]])
+        self.assertEqual(updated["status"], "posted")
+        self.assertIn("自動原因確認", FakeNotify.messages[-1])
+        self.assertIn("自動再投稿 3/3", FakeNotify.messages[-1])
+
+    def test_deferred_retry_runs_recovery_when_attempts_already_high(self):
+        item = make_item()
+        item["platforms"]["x"]["enabled"] = False
+        item["platforms"]["youtube"]["status"] = "failed"
+        item["platforms"]["youtube"]["attempts"] = 3
+        item["platforms"]["youtube"]["error"] = "Resource deadlock avoided"
+        recovered = {"ran": False}
+        calls: list[str | None] = []
+
+        def yt_post(_item):
+            calls.append(_item.get("video", {}).get("upload_path"))
+            return "https://youtube.example/short/deferred"
+
+        def fake_recover(_item, platforms, _queue_lib):
+            recovered["ran"] = True
+            self.assertEqual(platforms, ["youtube"])
+            _item.setdefault("video", {})["upload_path"] = "/tmp/cache/deferred.mp4"
+            return [
+                {
+                    "platform": "youtube",
+                    "cause": "media_io",
+                    "actions": ["local_media:/tmp/cache/deferred.mp4"],
+                    "recovered": True,
+                }
+            ]
+
+        with (
+            patch.object(poster, "POSTERS", {"youtube": yt_post}),
+            patch.object(poster, "_recovery_settings", return_value=(True, 2, 1, 2)),
+            patch.object(poster, "recover_failed_platforms", side_effect=fake_recover),
+        ):
+            updated = poster.post_item(
+                item,
+                FakeQueue,
+                FakeNotify,
+                retry_attempts=0,
+                retry_delay_sec=0,
+            )
+
+        self.assertTrue(recovered["ran"])
+        self.assertEqual(calls, ["/tmp/cache/deferred.mp4"])
+        self.assertEqual(updated["status"], "posted")
+        self.assertNotIn("自動再投稿", FakeNotify.messages[-1])
+
+    def test_diagnose_posting_error_classifies_common_causes(self):
+        self.assertEqual(
+            poster.diagnose_posting_error("instagram", "OSError: Resource deadlock avoided"),
+            "media_io",
+        )
+        self.assertEqual(
+            poster.diagnose_posting_error("youtube", "accounts.google.com ログインが必要です"),
+            "session_expired",
+        )
+        self.assertEqual(
+            poster.diagnose_posting_error("tiktok", "Timeout while waiting for selector"),
+            "browser_ui_stuck",
+        )
+        self.assertEqual(
+            poster.diagnose_posting_error("instagram", "connection aborted by peer"),
+            "network_transient",
+        )
+
     def test_platform_copy_is_platform_specific(self):
         item = make_item()
         copies = platform_copy.build_platform_copy_set(item)
@@ -210,6 +311,15 @@ class PostingCoreTest(unittest.TestCase):
 
             with patch.object(poster.CONFIG, "work_dir", runtime):
                 self.assertEqual(poster.posting_video_path(item), local_video)
+
+    def test_posting_prefers_upload_cache_path(self):
+        item = make_item()
+        with tempfile.TemporaryDirectory() as td:
+            cache_video = Path(td) / "upload.mp4"
+            cache_video.write_bytes(b"video")
+            item["video"]["upload_path"] = str(cache_video)
+
+            self.assertEqual(poster.posting_video_path(item), cache_video)
 
     def test_instagram_reuses_recent_matching_post(self):
         item = make_item()

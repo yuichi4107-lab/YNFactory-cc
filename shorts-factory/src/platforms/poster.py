@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -14,6 +15,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from ..config import CONFIG
+from ..fs_retry import retry_io
 from ..logging_utils import redact_secrets
 from ..platform_copy import copy_for_platform
 
@@ -63,6 +65,11 @@ def _write_instagram_helper_diagnostic(item: dict, proc: subprocess.CompletedPro
 
 def posting_video_path(item: dict) -> Path:
     """Prefer the runtime copy for uploads so Drive locks cannot break posting."""
+    upload_path = (item.get("video") or {}).get("upload_path")
+    if upload_path:
+        path = Path(upload_path)
+        if path.exists():
+            return path
     video_path = Path(item["video"]["path"])
     output_dir = item.get("output_dir")
     if output_dir:
@@ -70,6 +77,30 @@ def posting_video_path(item: dict) -> Path:
         if runtime_path.exists():
             return runtime_path
     return video_path
+
+
+def _ensure_upload_cache(item: dict) -> Path:
+    """Materialize a stable local upload file and store it on the queue item."""
+    src = posting_video_path(item)
+    if not src.exists():
+        src = Path(item["video"]["path"])
+    if not src.exists():
+        raise FileNotFoundError(src)
+
+    cache_dir = CONFIG.runtime_dir / "upload_cache" / item["id"]
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    cache_path = cache_dir / src.name
+
+    def _copy_once() -> Path:
+        if src.resolve() != cache_path.resolve():
+            shutil.copy2(src, cache_path)
+        if cache_path.stat().st_size <= 0:
+            raise RuntimeError(f"upload cache is empty: {cache_path}")
+        return cache_path
+
+    path = retry_io(_copy_once, attempts=5, delay_sec=2.0)
+    item.setdefault("video", {})["upload_path"] = str(path)
+    return path
 
 
 def _normalized_caption(text: str | None) -> str:
@@ -223,6 +254,16 @@ def _retry_settings() -> tuple[int, float]:
     return max(0, attempts), max(0.0, delay_sec)
 
 
+def _recovery_settings() -> tuple[bool, int, int, int]:
+    enabled = _as_bool(CONFIG.get("queue", "auto_recover_failed_posts", default=True))
+    after_retries = _as_int(CONFIG.get("queue", "recovery_after_retries", default=2), 2)
+    retry_attempts = _as_int(CONFIG.get("queue", "recovery_retry_attempts", default=1), 1)
+    max_attempts = _as_int(
+        CONFIG.get("queue", "recovery_max_attempts_per_platform", default=2), 2
+    )
+    return enabled, max(0, after_retries), max(0, retry_attempts), max(1, max_attempts)
+
+
 def _pending_platforms(platforms: dict, ordered_platforms: list[str]) -> list[str]:
     return [
         platform
@@ -236,7 +277,162 @@ def _pending_platforms(platforms: dict, ordered_platforms: list[str]) -> list[st
 def _non_retryable_error(platform: str, error: str) -> bool:
     if platform == "tiktok":
         return "セッション失効" in error or "ログイン" in error
+    if platform == "youtube":
+        return "セッション失効" in error or "ログイン" in error
     return False
+
+
+def diagnose_posting_error(platform: str, error: str | None) -> str:
+    text = (error or "").lower()
+    if any(marker in text for marker in ("connection aborted", "timed out", "read timed out")):
+        return "network_transient"
+    if any(
+        marker in text
+        for marker in (
+            "resource deadlock",
+            "読み取れません",
+            "read",
+            "file not found",
+            "no such file",
+            "not found",
+        )
+    ):
+        return "media_io"
+    if any(marker in text for marker in ("セッション失効", "ログイン", "login", "accounts.google.com")):
+        return "session_expired"
+    if any(
+        marker in text
+        for marker in (
+            "timeout",
+            "waiting for selector",
+            "waiting for locator",
+            "locator.evaluate",
+            "投稿ボタンが有効",
+            "upload_stuck",
+        )
+    ):
+        return "browser_ui_stuck" if platform in {"youtube", "tiktok"} else "timeout"
+    return "unknown"
+
+
+def _check_browser_session(platform: str) -> tuple[bool, str]:
+    try:
+        if platform == "youtube":
+            from . import youtube_cdp
+
+            return bool(youtube_cdp.check_session()), "youtube_session_check"
+        if platform == "tiktok":
+            from . import tiktok_cdp
+
+            return bool(tiktok_cdp.check_session()), "tiktok_session_check"
+    except Exception as exc:
+        return False, f"browser_session_error:{redact_secrets(exc)[:160]}"
+    return True, "not_browser_platform"
+
+
+def _recovery_state(item: dict, platform: str) -> dict:
+    recovery = item.setdefault("recovery", {}).setdefault("platforms", {})
+    return recovery.setdefault(platform, {})
+
+
+def _recovery_attempts(item: dict, platform: str) -> int:
+    return _as_int(_recovery_state(item, platform).get("attempts"), 0)
+
+
+def _needs_auto_recovery(
+    item: dict,
+    platforms: list[str],
+    *,
+    after_retries: int,
+    max_attempts: int,
+) -> list[str]:
+    threshold = after_retries + 1  # initial attempt + retry count
+    out = []
+    for platform in platforms:
+        info = item.get("platforms", {}).get(platform, {})
+        if int(info.get("attempts") or 0) < threshold:
+            continue
+        if _recovery_attempts(item, platform) >= max_attempts:
+            continue
+        out.append(platform)
+    return out
+
+
+def recover_failed_platforms(item: dict, platforms: list[str], queue_lib) -> list[dict]:
+    """Diagnose failed platforms and apply safe local recovery actions."""
+    reports: list[dict] = []
+    upload_cache_path: Path | None = None
+
+    for platform in platforms:
+        info = item.get("platforms", {}).get(platform, {})
+        error = info.get("error")
+        cause = diagnose_posting_error(platform, error)
+        actions: list[str] = []
+        recovered = False
+
+        try:
+            if cause in {"media_io", "browser_ui_stuck", "timeout", "network_transient", "unknown"}:
+                if upload_cache_path is None:
+                    upload_cache_path = _ensure_upload_cache(item)
+                actions.append(f"local_media:{upload_cache_path}")
+                recovered = True
+        except Exception as exc:
+            actions.append(f"local_media_failed:{redact_secrets(exc)[:160]}")
+
+        if platform in {"youtube", "tiktok"} and cause in {
+            "browser_ui_stuck",
+            "session_expired",
+            "timeout",
+            "unknown",
+        }:
+            ready, detail = _check_browser_session(platform)
+            actions.append(f"{detail}:{'ready' if ready else 'not_ready'}")
+            if ready:
+                recovered = True
+            elif cause == "session_expired":
+                info["non_retryable"] = True
+
+        if cause == "network_transient":
+            time.sleep(5)
+            actions.append("network_cooldown:5s")
+            recovered = True
+
+        state = _recovery_state(item, platform)
+        state["attempts"] = _as_int(state.get("attempts"), 0) + 1
+        state["last_attempt_at"] = _now()
+        state["cause"] = cause
+        state["actions"] = actions
+        state["recovered"] = recovered
+        reports.append(
+            {
+                "platform": platform,
+                "cause": cause,
+                "actions": actions,
+                "recovered": recovered,
+            }
+        )
+
+    item.setdefault("history", []).append(
+        {
+            "ts": _now(),
+            "event": "自動原因確認・復旧: "
+            + "; ".join(
+                f"{r['platform']}={r['cause']}:{'ok' if r['recovered'] else 'ng'}"
+                for r in reports
+            ),
+        }
+    )
+    if hasattr(queue_lib, "save_item"):
+        queue_lib.save_item(item)
+    return reports
+
+
+def _format_recovery_reports(reports: list[dict]) -> str:
+    parts = []
+    for report in reports:
+        status = "復旧処理済み" if report["recovered"] else "要確認"
+        parts.append(f"{report['platform']}={report['cause']}({status})")
+    return "🛠 自動原因確認: " + " / ".join(parts)
 
 
 def _record_attempt(item: dict, queue_lib, platform: str, retry_round: int) -> None:
@@ -269,7 +465,42 @@ def post_item(
         retry_attempts = configured_retry_attempts
     if retry_delay_sec is None:
         retry_delay_sec = configured_retry_delay_sec
-    for retry_round in range(retry_attempts + 1):
+    (
+        recovery_enabled,
+        recovery_after_retries,
+        recovery_retry_attempts,
+        recovery_max_attempts,
+    ) = _recovery_settings()
+    recovered_this_run: set[str] = set()
+
+    def _maybe_recover_failed(pending: list[str], retry_round: int, *, allow_extra_retry: bool) -> None:
+        nonlocal retry_attempts
+        if not recovery_enabled or not pending:
+            return
+        targets = [
+            platform
+            for platform in _needs_auto_recovery(
+                item,
+                pending,
+                after_retries=recovery_after_retries,
+                max_attempts=recovery_max_attempts,
+            )
+            if platform not in recovered_this_run
+        ]
+        if not targets:
+            return
+        reports = recover_failed_platforms(item, targets, queue_lib)
+        recovered_this_run.update(targets)
+        results.append(_format_recovery_reports(reports))
+        if allow_extra_retry and recovery_retry_attempts:
+            retry_attempts = max(retry_attempts, retry_round + recovery_retry_attempts)
+
+    retry_round = 0
+    while retry_round <= retry_attempts:
+        pending = _pending_platforms(platforms, ordered_platforms)
+        if not pending:
+            break
+        _maybe_recover_failed(pending, retry_round, allow_extra_retry=False)
         pending = _pending_platforms(platforms, ordered_platforms)
         if not pending:
             break
@@ -291,6 +522,12 @@ def post_item(
                     if hasattr(queue_lib, "save_item"):
                         queue_lib.save_item(item)
                 results.append(f"❌ {platform}: {err[:120]}")
+        _maybe_recover_failed(
+            _pending_platforms(platforms, ordered_platforms),
+            retry_round,
+            allow_extra_retry=True,
+        )
+        retry_round += 1
 
     statuses = [v["status"] for v in item["platforms"].values() if v.get("enabled")]
     if statuses and all(s == "posted" for s in statuses):

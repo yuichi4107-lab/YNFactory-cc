@@ -19,6 +19,10 @@ queue:
   retry_failed_posts: true    # 投稿失敗時、失敗媒体だけ自動再投稿する
   retry_max_attempts: 2       # 初回失敗後の自動再投稿回数
   retry_delay_sec: 60         # 再投稿前の待機秒数
+  auto_recover_failed_posts: true       # 2回再投稿後も失敗した媒体は自動で原因確認・復旧
+  recovery_after_retries: 2             # 何回リトライ後に復旧処理へ進むか
+  recovery_retry_attempts: 1            # 復旧後に追加する再投稿回数
+  recovery_max_attempts_per_platform: 2 # 同一媒体への復旧処理上限
 
 cta:
   lp_url: "https://ai.yn-factory.com/"

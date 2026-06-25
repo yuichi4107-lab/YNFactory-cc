@@ -114,6 +114,10 @@ DEFAULTS: dict = {
         "retry_failed_posts": True,  # 投稿失敗時、失敗媒体だけ自動再投稿
         "retry_max_attempts": 2,  # 初回失敗後の自動再投稿回数
         "retry_delay_sec": 60,  # 再投稿前の待機秒数
+        "auto_recover_failed_posts": True,  # 2回再試行後に原因確認・復旧してから再投稿
+        "recovery_after_retries": 2,
+        "recovery_retry_attempts": 1,
+        "recovery_max_attempts_per_platform": 2,
         "deferred_retry_failed_posts": True,  # 即時再試行後に失敗媒体だけ遅延再投稿
         "deferred_retry_delay_sec": 900,
         "deferred_retry_max_attempts": 3,
