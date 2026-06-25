@@ -260,6 +260,10 @@ class PostingCoreTest(unittest.TestCase):
             "media_io",
         )
         self.assertEqual(
+            poster.diagnose_posting_error("x", "dotenv/parser.py: Resource deadlock avoided"),
+            "credential_io",
+        )
+        self.assertEqual(
             poster.diagnose_posting_error("youtube", "accounts.google.com ログインが必要です"),
             "session_expired",
         )
@@ -285,19 +289,20 @@ class PostingCoreTest(unittest.TestCase):
 
     def test_post_x_uses_platform_specific_copy(self):
         item = make_item()
+        seen = {"text": None, "video_path": None}
 
-        class FakeProc:
-            returncode = 0
-            stdout = "Posted: https://x.example/post/1"
-            stderr = ""
+        def fake_post(text, video_path):
+            seen["text"] = text
+            seen["video_path"] = video_path
+            return "https://x.example/post/1"
 
-        with patch.object(poster.subprocess, "run", return_value=FakeProc()) as run:
+        with patch.object(poster, "_post_x_direct", side_effect=fake_post):
             url = poster.post_x(item)
 
-        posted_text = run.call_args.args[0][2]
         self.assertEqual(url, "https://x.example/post/1")
-        self.assertIn("最初の1業務", posted_text)
-        self.assertNotIn("保存して", posted_text)
+        self.assertIn("最初の1業務", seen["text"])
+        self.assertNotIn("保存して", seen["text"])
+        self.assertEqual(seen["video_path"], Path("/tmp/final.mp4"))
 
     def test_posting_prefers_runtime_video_copy(self):
         item = make_item()
@@ -325,30 +330,31 @@ class PostingCoreTest(unittest.TestCase):
         item = make_item()
         calls = {"post": 0}
 
-        class FakeMeta:
-            @staticmethod
-            def load_env(_path):
-                return {"META_IG_USER_ID": "ig-1", "META_ACCESS_TOKEN": "token"}
+        def fake_graph_get(_path, _token, _params):
+            return {
+                "data": [
+                    {
+                        "id": "media-1",
+                        "permalink": "https://instagram.example/reel/existing",
+                        "caption": platform_copy.copy_for_platform(item, "instagram")["caption"],
+                        "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
+                    }
+                ]
+            }
 
-            @staticmethod
-            def graph_get(_path, _token, _params):
-                return {
-                    "data": [
-                        {
-                            "id": "media-1",
-                            "permalink": "https://instagram.example/reel/existing",
-                            "caption": platform_copy.copy_for_platform(item, "instagram")["caption"],
-                            "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
-                        }
-                    ]
-                }
+        def fake_post(*_args):
+            calls["post"] += 1
+            return {"status": "posted", "permalink": "https://instagram.example/reel/new"}
 
-            @staticmethod
-            def post_instagram_reels(*_args):
-                calls["post"] += 1
-                return {"status": "posted", "permalink": "https://instagram.example/reel/new"}
-
-        with patch.object(poster, "_meta_module", return_value=FakeMeta):
+        with (
+            patch.object(
+                poster,
+                "_load_sns_env",
+                return_value={"META_IG_USER_ID": "ig-1", "META_ACCESS_TOKEN": "token"},
+            ),
+            patch.object(poster, "_meta_graph_get", side_effect=fake_graph_get),
+            patch.object(poster, "_post_instagram_reels", side_effect=fake_post),
+        ):
             self.assertEqual(
                 poster.post_instagram(item),
                 "https://instagram.example/reel/existing",
@@ -360,25 +366,24 @@ class PostingCoreTest(unittest.TestCase):
         calls = {"post": 0}
         seen = {"video_path": None}
 
-        class FakeMeta:
-            @staticmethod
-            def load_env(_path):
-                return {"META_IG_USER_ID": "ig-1", "META_ACCESS_TOKEN": "token"}
-
-            @staticmethod
-            def post_instagram_reels(_caption, _video_path, _env):
-                calls["post"] += 1
-                seen["video_path"] = _video_path
-                return {"status": "posted", "permalink": "https://instagram.example/reel/1"}
+        def fake_post(_caption, _video_path, _env):
+            calls["post"] += 1
+            seen["video_path"] = _video_path
+            return {"status": "posted", "permalink": "https://instagram.example/reel/1"}
 
         with (
             patch.object(poster, "posting_video_path", return_value=Path("/tmp/runtime/final.mp4")),
             patch.object(poster, "_find_recent_instagram_post", return_value=None),
-            patch.object(poster, "_meta_module", return_value=FakeMeta),
+            patch.object(
+                poster,
+                "_load_sns_env",
+                return_value={"META_IG_USER_ID": "ig-1", "META_ACCESS_TOKEN": "token"},
+            ),
+            patch.object(poster, "_post_instagram_reels", side_effect=fake_post),
         ):
             self.assertEqual(poster.post_instagram(item), "https://instagram.example/reel/1")
         self.assertEqual(calls["post"], 1)
-        self.assertEqual(seen["video_path"], "/tmp/runtime/final.mp4")
+        self.assertEqual(seen["video_path"], Path("/tmp/runtime/final.mp4"))
 
     def test_tiktok_session_expired_is_not_retried(self):
         item = make_item()
@@ -445,6 +450,18 @@ class PostingCoreTest(unittest.TestCase):
             calls.append(1)
             if len(calls) == 1:
                 raise OSError(errno.EDEADLK, "Resource deadlock avoided")
+            return "ok"
+
+        self.assertEqual(retry_io(flaky, attempts=2, delay_sec=0), "ok")
+        self.assertEqual(len(calls), 2)
+
+    def test_retry_io_retries_operation_timed_out(self):
+        calls = []
+
+        def flaky():
+            calls.append(1)
+            if len(calls) == 1:
+                raise OSError(errno.ETIMEDOUT, "Operation timed out")
             return "ok"
 
         self.assertEqual(retry_io(flaky, attempts=2, delay_sec=0), "ok")

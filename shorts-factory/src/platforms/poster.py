@@ -1,15 +1,14 @@
 """各SNSへの投稿ディスパッチャ。
 
-既存の scripts/post_to_x.py 等を venv の python でサブプロセス実行する
-（既存スクリプトの .env 読み込み・認証ロジックをそのまま活かす）。
+Drive File Provider の一時ロックで投稿が落ちないよう、動画とSNS認証情報は
+runtime 側のローカルコピーを優先して使う。
 """
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
-import subprocess
-import sys
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -19,48 +18,7 @@ from ..fs_retry import retry_io
 from ..logging_utils import redact_secrets
 from ..platform_copy import copy_for_platform
 
-SCRIPTS_DIR = CONFIG.repo_root / "scripts"
-PYTHON = str(CONFIG.runtime_dir / ".venv" / "bin" / "python")
 INSTAGRAM_EXISTING_LOOKBACK = timedelta(minutes=30)
-
-
-def _tail(text: str | None, limit: int = 500) -> str:
-    return (text or "")[-limit:]
-
-
-def _read_json_result(stdout: str, stderr: str, result_path: Path | None = None) -> dict:
-    raw = stdout.strip()
-    if not raw and result_path and result_path.exists():
-        raw = result_path.read_text(encoding="utf-8").strip()
-    if not raw:
-        detail = _tail(stderr) or "(stderrなし)"
-        raise RuntimeError(f"JSONを返しませんでした: stderr={detail}")
-    try:
-        return json.loads(raw)
-    except json.JSONDecodeError:
-        if result_path and result_path.exists():
-            try:
-                return json.loads(result_path.read_text(encoding="utf-8"))
-            except json.JSONDecodeError:
-                pass
-        raise RuntimeError(f"JSON出力のパース失敗: stdout={_tail(stdout)} stderr={_tail(stderr)}")
-
-
-def _write_instagram_helper_diagnostic(item: dict, proc: subprocess.CompletedProcess, result_path: Path) -> Path:
-    path = CONFIG.logs_dir / f"ig_helper_{item['id']}_{datetime.now().strftime('%m%d_%H%M%S')}.json"
-    payload = {
-        "item_id": item["id"],
-        "returncode": proc.returncode,
-        "stdout_len": len(proc.stdout or ""),
-        "stderr_len": len(proc.stderr or ""),
-        "stdout_tail": _tail(proc.stdout, 1200),
-        "stderr_tail": _tail(proc.stderr, 1200),
-        "result_json": str(result_path),
-        "result_json_exists": result_path.exists(),
-        "result_json_size": result_path.stat().st_size if result_path.exists() else 0,
-    }
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    return path
 
 
 def posting_video_path(item: dict) -> Path:
@@ -103,6 +61,61 @@ def _ensure_upload_cache(item: dict) -> Path:
     return path
 
 
+def _sns_env_cache_path() -> Path:
+    return CONFIG.runtime_dir / "sns_credentials" / ".env"
+
+
+def _parse_env_text(text: str) -> dict[str, str]:
+    values: dict[str, str] = {}
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        values[key.strip()] = value.strip()
+    return values
+
+
+def _ensure_sns_env_cache() -> Path:
+    """Copy SNS credentials to runtime storage and fall back to the last good copy."""
+    source = CONFIG.sns_env_path
+    cache_path = _sns_env_cache_path()
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+
+    def _copy_once() -> Path:
+        text = source.read_text(encoding="utf-8")
+        if not text.strip():
+            raise RuntimeError(f"SNS credential file is empty: {source}")
+        tmp = cache_path.with_name(".env.tmp")
+        tmp.write_text(text, encoding="utf-8")
+        os.replace(tmp, cache_path)
+        try:
+            cache_path.chmod(0o600)
+        except OSError:
+            pass
+        return cache_path
+
+    try:
+        return retry_io(_copy_once, attempts=5, delay_sec=2.0)
+    except Exception:
+        if cache_path.exists() and cache_path.stat().st_size > 0:
+            return cache_path
+        raise
+
+
+def _load_sns_env() -> dict[str, str]:
+    path = _ensure_sns_env_cache()
+    text = retry_io(lambda: path.read_text(encoding="utf-8"), attempts=3, delay_sec=1.0)
+    return _parse_env_text(text)
+
+
+def _required_env(env: dict[str, str], *keys: str) -> dict[str, str]:
+    missing = [key for key in keys if not env.get(key)]
+    if missing:
+        raise RuntimeError(f"Missing required SNS credential(s): {', '.join(missing)}")
+    return {key: env[key] for key in keys}
+
+
 def _normalized_caption(text: str | None) -> str:
     return re.sub(r"\s+", " ", text or "").strip()
 
@@ -116,19 +129,217 @@ def _parse_meta_timestamp(value: str | None) -> datetime | None:
         return None
 
 
-def _meta_module():
-    repo_root = str(CONFIG.repo_root)
-    if repo_root not in sys.path:
-        sys.path.insert(0, repo_root)
-    from scripts import post_to_meta
+def _post_x_direct(text: str, video_path: Path | None = None) -> str:
+    import tweepy
 
-    return post_to_meta
+    env = _load_sns_env()
+    creds = _required_env(
+        env,
+        "X_API_KEY",
+        "X_API_KEY_SECRET",
+        "X_ACCESS_TOKEN",
+        "X_ACCESS_TOKEN_SECRET",
+    )
+    client = tweepy.Client(
+        consumer_key=creds["X_API_KEY"],
+        consumer_secret=creds["X_API_KEY_SECRET"],
+        access_token=creds["X_ACCESS_TOKEN"],
+        access_token_secret=creds["X_ACCESS_TOKEN_SECRET"],
+    )
+    media_ids = None
+    if video_path:
+        auth = tweepy.OAuth1UserHandler(
+            creds["X_API_KEY"],
+            creds["X_API_KEY_SECRET"],
+            creds["X_ACCESS_TOKEN"],
+            creds["X_ACCESS_TOKEN_SECRET"],
+        )
+        api_v1 = tweepy.API(auth)
+        media = api_v1.media_upload(
+            filename=str(video_path),
+            chunked=True,
+            media_category="tweet_video",
+        )
+        deadline = time.time() + 300
+        while time.time() < deadline:
+            info = getattr(media, "processing_info", None)
+            if not info or info.get("state") == "succeeded":
+                media_ids = [media.media_id]
+                break
+            if info.get("state") == "failed":
+                raise RuntimeError(f"X動画処理失敗: {info.get('error')}")
+            time.sleep(info.get("check_after_secs", 5))
+            media = api_v1.get_media_upload_status(media.media_id)
+        if media_ids is None:
+            raise TimeoutError("X動画処理がタイムアウトしました")
+
+    response = client.create_tweet(text=text, media_ids=media_ids)
+    tweet_id = response.data["id"]
+    return f"https://x.com/i/status/{tweet_id}"
+
+
+def _meta_graph_post(path: str, token: str, data: dict, files: dict | None = None) -> dict:
+    import requests
+
+    url = f"https://graph.facebook.com/v25.0/{path.lstrip('/')}"
+    payload = dict(data)
+    payload["access_token"] = token
+    response = requests.post(url, data=payload, files=files, timeout=60)
+    try:
+        result = response.json()
+    except ValueError:
+        result = {"raw": response.text}
+    if response.status_code >= 400 or "error" in result:
+        error = result.get("error", result)
+        message = error.get("message") if isinstance(error, dict) else str(error)
+        raise RuntimeError(message)
+    return result
+
+
+def _meta_graph_get(path: str, token: str, params: dict | None = None) -> dict:
+    import requests
+
+    url = f"https://graph.facebook.com/v25.0/{path.lstrip('/')}"
+    payload = dict(params or {})
+    payload["access_token"] = token
+    response = requests.get(url, params=payload, timeout=30)
+    try:
+        result = response.json()
+    except ValueError:
+        result = {"raw": response.text}
+    if response.status_code >= 400 or "error" in result:
+        error = result.get("error", result)
+        message = error.get("message") if isinstance(error, dict) else str(error)
+        raise RuntimeError(message)
+    return result
+
+
+def _compact_error(value, limit: int = 500) -> str:
+    if isinstance(value, str):
+        text = value
+    else:
+        text = json.dumps(value, ensure_ascii=False)
+    return text[:limit]
+
+
+def _has_processing_failed(value) -> bool:
+    if isinstance(value, dict):
+        return any(_has_processing_failed(v) for v in value.values())
+    if isinstance(value, list):
+        return any(_has_processing_failed(v) for v in value)
+    return "ProcessingFailedError" in str(value)
+
+
+def _reels_upload_attempts(env: dict[str, str]) -> int:
+    try:
+        return max(1, int(env.get("META_REELS_UPLOAD_ATTEMPTS", 3)))
+    except ValueError:
+        return 3
+
+
+def _create_reels_container(ig_user_id: str, user_token: str, text: str) -> tuple[str, str]:
+    container = _meta_graph_post(
+        f"{ig_user_id}/media",
+        user_token,
+        {"media_type": "REELS", "upload_type": "resumable", "caption": text},
+    )
+    container_id = container.get("id")
+    if not container_id:
+        raise RuntimeError("Reels container id was not returned")
+    upload_uri = container.get("uri") or (
+        f"https://rupload.facebook.com/ig-api-upload/v25.0/{container_id}"
+    )
+    return container_id, upload_uri
+
+
+def _upload_reels_binary(upload_uri: str, user_token: str, video: Path) -> dict:
+    import requests
+
+    size = video.stat().st_size
+    with video.open("rb") as f:
+        resp = requests.post(
+            upload_uri,
+            headers={
+                "Authorization": f"OAuth {user_token}",
+                "Content-Type": "video/mp4",
+                "offset": "0",
+                "file_size": str(size),
+            },
+            data=f,
+            timeout=900,
+        )
+    try:
+        result = resp.json()
+    except ValueError:
+        result = {"raw": resp.text}
+    if resp.status_code >= 400 or not result.get("success", True):
+        raise RuntimeError(f"Reels動画アップロード失敗: {_compact_error(result)}")
+    return result
+
+
+def _wait_reels_finished(container_id: str, user_token: str, timeout_sec: int = 600) -> None:
+    deadline = time.time() + timeout_sec
+    last_status: dict | None = None
+    while time.time() < deadline:
+        status = _meta_graph_get(container_id, user_token, {"fields": "status_code,status"})
+        last_status = status
+        status_code = status.get("status_code")
+        if status_code == "FINISHED":
+            return
+        if status_code in ("ERROR", "EXPIRED"):
+            raise RuntimeError(f"Reels処理失敗: {_compact_error(status)}")
+        time.sleep(5)
+    raise RuntimeError(f"Reels処理がタイムアウトしました: {_compact_error(last_status)}")
+
+
+def _post_instagram_reels(text: str, video_path: Path, env: dict[str, str]) -> dict:
+    creds = _required_env(env, "META_IG_USER_ID", "META_ACCESS_TOKEN")
+    ig_user_id = creds["META_IG_USER_ID"]
+    user_token = creds["META_ACCESS_TOKEN"]
+    video = Path(video_path).expanduser()
+    if not video.exists():
+        raise RuntimeError(f"動画ファイルが見つかりません: {video}")
+
+    errors: list[str] = []
+    container_id = ""
+    for attempt in range(1, _reels_upload_attempts(env) + 1):
+        try:
+            container_id, upload_uri = _create_reels_container(ig_user_id, user_token, text)
+            _upload_reels_binary(upload_uri, user_token, video)
+            _wait_reels_finished(container_id, user_token)
+            break
+        except RuntimeError as exc:
+            message = str(exc)
+            errors.append(f"attempt {attempt}: {message}")
+            if attempt >= _reels_upload_attempts(env):
+                raise RuntimeError(" / ".join(errors)) from exc
+            sleep_sec = 10 * attempt if _has_processing_failed(message) else 5 * attempt
+            time.sleep(sleep_sec)
+
+    published = _meta_graph_post(
+        f"{ig_user_id}/media_publish",
+        user_token,
+        {"creation_id": container_id},
+    )
+    media_id = published.get("id")
+    permalink = None
+    if media_id:
+        try:
+            permalink = _meta_graph_get(media_id, user_token, {"fields": "permalink"}).get("permalink")
+        except RuntimeError:
+            permalink = None
+    return {
+        "platform": "instagram-reels",
+        "status": "posted",
+        "id": media_id,
+        "permalink": permalink,
+        "upload_attempts": len(errors) + 1,
+    }
 
 
 def _find_recent_instagram_post(caption: str, since: datetime) -> str | None:
     """Return an existing permalink for the same caption to avoid duplicate retries."""
-    post_to_meta = _meta_module()
-    env = post_to_meta.load_env(CONFIG.sns_env_path)
+    env = _load_sns_env()
     ig_user_id = env.get("META_IG_USER_ID")
     token = env.get("META_ACCESS_TOKEN")
     if not ig_user_id or not token:
@@ -137,7 +348,7 @@ def _find_recent_instagram_post(caption: str, since: datetime) -> str | None:
     target = _normalized_caption(caption)
     if not target:
         return None
-    response = post_to_meta.graph_get(
+    response = _meta_graph_get(
         f"{ig_user_id}/media",
         token,
         {"fields": "id,permalink,caption,timestamp,media_type", "limit": 25},
@@ -155,19 +366,7 @@ def _find_recent_instagram_post(caption: str, since: datetime) -> str | None:
 def post_x(item: dict) -> str:
     """Xへ動画投稿し、投稿URLを返す。"""
     text = copy_for_platform(item, "x")["text"]
-    proc = subprocess.run(
-        [PYTHON, str(SCRIPTS_DIR / "post_to_x.py"), text, "--video", str(posting_video_path(item))],
-        capture_output=True,
-        text=True,
-        timeout=600,
-    )
-    out = proc.stdout + proc.stderr
-    if proc.returncode != 0:
-        raise RuntimeError(f"X投稿失敗: {out[-400:]}")
-    m = re.search(r"Posted:\s*(\S+)", out)
-    if not m:
-        raise RuntimeError(f"X投稿のURLが取得できません: {out[-300:]}")
-    return m.group(1)
+    return _post_x_direct(text, posting_video_path(item))
 
 
 def post_instagram(item: dict) -> str:
@@ -182,11 +381,10 @@ def post_instagram(item: dict) -> str:
     if existing:
         return existing
 
-    post_to_meta = _meta_module()
-    result = post_to_meta.post_instagram_reels(
+    result = _post_instagram_reels(
         caption,
-        str(posting_video_path(item)),
-        post_to_meta.load_env(CONFIG.sns_env_path),
+        posting_video_path(item),
+        _load_sns_env(),
     )
     if result.get("status") != "posted":
         raise RuntimeError(f"IG Reels投稿失敗: {result.get('error', result)}")
@@ -284,6 +482,18 @@ def _non_retryable_error(platform: str, error: str) -> bool:
 
 def diagnose_posting_error(platform: str, error: str | None) -> str:
     text = (error or "").lower()
+    if platform in {"x", "instagram"} and any(
+        marker in text
+        for marker in (
+            "dotenv",
+            "sns-credentials",
+            "credential",
+            "x_api_key",
+            "meta_access_token",
+            ".env",
+        )
+    ):
+        return "credential_io"
     if any(marker in text for marker in ("connection aborted", "timed out", "read timed out")):
         return "network_transient"
     if any(
@@ -378,6 +588,20 @@ def recover_failed_platforms(item: dict, platforms: list[str], queue_lib) -> lis
                 recovered = True
         except Exception as exc:
             actions.append(f"local_media_failed:{redact_secrets(exc)[:160]}")
+
+        if platform in {"x", "instagram"} and cause in {
+            "credential_io",
+            "media_io",
+            "timeout",
+            "network_transient",
+            "unknown",
+        }:
+            try:
+                env_cache_path = _ensure_sns_env_cache()
+                actions.append(f"local_credentials:{env_cache_path}")
+                recovered = True
+            except Exception as exc:
+                actions.append(f"local_credentials_failed:{redact_secrets(exc)[:160]}")
 
         if platform in {"youtube", "tiktok"} and cause in {
             "browser_ui_stuck",

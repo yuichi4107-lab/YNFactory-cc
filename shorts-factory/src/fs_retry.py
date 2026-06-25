@@ -17,6 +17,7 @@ TRANSIENT_ERRNOS = {
     getattr(errno, "EDEADLK", 11),
     getattr(errno, "EAGAIN", 35),
     getattr(errno, "EBUSY", 16),
+    getattr(errno, "ETIMEDOUT", 60),
 }
 
 
@@ -25,7 +26,8 @@ def is_transient_io_error(exc: BaseException) -> bool:
         return False
     if exc.errno in TRANSIENT_ERRNOS:
         return True
-    return "resource deadlock avoided" in str(exc).lower()
+    text = str(exc).lower()
+    return "resource deadlock avoided" in text or "operation timed out" in text
 
 
 def retry_io(
