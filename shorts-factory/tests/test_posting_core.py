@@ -15,7 +15,7 @@ if str(APP_ROOT) not in sys.path:
 
 from src.logging_utils import redact_secrets
 from src.fs_retry import retry_io
-from src import approval_bot, platform_copy, queue_lib, script_gen
+from src import approval_bot, pipeline, platform_copy, queue_lib, script_gen
 from src.pipeline import result_summary, scheduled_difficulty
 from src.platforms import poster
 
@@ -428,6 +428,90 @@ class PostingCoreTest(unittest.TestCase):
         self.assertTrue(summary["pass"])
         self.assertEqual(summary["avg_cer"], 0.0123)
         self.assertTrue(summary["scheduled"])
+
+    def test_produce_remakes_quality_failed_candidate_before_queue(self):
+        script = {
+            "title": "title",
+            "caption": "caption",
+            "hashtags": ["#AI活用"],
+            "cues": [],
+        }
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            bad_dir = root / "bad"
+            good_dir = root / "good"
+            bad_dir.mkdir()
+            good_dir.mkdir()
+            bad_report = {
+                "pass": False,
+                "duration": 42.0,
+                "size_mb": 4.2,
+                "accuracy": {"avg_cer": 0.24, "failed_indices": [1]},
+                "checks": [{"name": "subtitle_accuracy_lines", "pass": False}],
+            }
+            good_report = {
+                "pass": True,
+                "duration": 43.0,
+                "size_mb": 4.1,
+                "accuracy": {"avg_cer": 0.03, "failed_indices": []},
+                "checks": [{"name": "subtitle_accuracy_lines", "pass": True}],
+            }
+            candidates = [
+                {
+                    "item_id": "bad-candidate",
+                    "out_dir": bad_dir,
+                    "output_dir": str(bad_dir),
+                    "report": bad_report,
+                    "title": "bad",
+                    "topic": "topic",
+                    "script": script,
+                    "attempt": 1,
+                },
+                {
+                    "item_id": "good-candidate",
+                    "out_dir": good_dir,
+                    "output_dir": str(good_dir),
+                    "report": good_report,
+                    "title": "good",
+                    "topic": "topic",
+                    "script": script,
+                    "attempt": 2,
+                },
+            ]
+            queued: list[str] = []
+            transitions: list[tuple[str, str]] = []
+
+            def fake_new_item(item_id, *_args):
+                queued.append(item_id)
+                return {
+                    "id": item_id,
+                    "title": "good",
+                    "quality": {"pass": True, "avg_cer": 0.03},
+                    "review": {},
+                    "telegram": {},
+                    "platforms": {},
+                }
+
+            def fake_transition(item, status, event=None):
+                transitions.append((item["id"], status))
+                item["status"] = status
+                return item
+
+            with (
+                patch.object(pipeline, "_quality_remake_settings", return_value=(True, 2)),
+                patch.object(pipeline, "_build_candidate", side_effect=candidates),
+                patch.object(pipeline.topic_store, "next_topic", return_value=("topic", 99)),
+                patch.object(pipeline.topic_store, "consume_topic", return_value=99),
+                patch.object(pipeline.queue_lib, "new_item", side_effect=fake_new_item),
+                patch.object(pipeline.queue_lib, "transition", side_effect=fake_transition),
+            ):
+                result = pipeline.produce(send_queue=True, difficulty="beginner")
+
+            self.assertEqual(queued, ["good-candidate"])
+            self.assertEqual(transitions, [("good-candidate", "ready_for_review")])
+            self.assertEqual(result["id"], "good-candidate")
+            self.assertEqual(result["discarded_quality_failures"], 1)
+            self.assertTrue((bad_dir / "remake_status.json").exists())
 
     def test_approval_preview_prefers_runtime_video_copy(self):
         with tempfile.TemporaryDirectory() as td:

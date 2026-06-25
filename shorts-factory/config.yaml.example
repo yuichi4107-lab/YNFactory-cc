@@ -38,3 +38,5 @@ content:
 verify:
   cer_line_max: 0.20         # 行ごとの音韻CER上限
   cer_avg_max: 0.10          # 平均CER上限
+  auto_remake_on_fail: true  # 品質検証で不合格なら候補を作り直す
+  remake_max_attempts: 2     # 候補生成の最大回数（2=1回作り直し）

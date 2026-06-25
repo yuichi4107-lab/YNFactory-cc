@@ -107,6 +107,8 @@ DEFAULTS: dict = {
         "lufs_target": -14.0,
         "lufs_tol": 2.0,
         "max_fix_loops": 5,
+        "auto_remake_on_fail": True,
+        "remake_max_attempts": 2,
     },
     "queue": {
         "auto_post": False,  # True で承認スキップ → 即投稿

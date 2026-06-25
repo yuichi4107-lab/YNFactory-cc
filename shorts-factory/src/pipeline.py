@@ -41,10 +41,13 @@ def make_slug(title: str) -> str:
     return s[:40]
 
 
-def make_item_id(title: str, now: datetime | None = None) -> str:
+def make_item_id(title: str, now: datetime | None = None, suffix: str | None = None) -> str:
     """Create a queue/output id that will not collide across same-day posts."""
     now = now or datetime.now()
-    return f"{now.date().isoformat()}_{now.strftime('%H%M%S')}_{make_slug(title)}"
+    item_id = f"{now.date().isoformat()}_{now.strftime('%H%M%S')}_{make_slug(title)}"
+    if suffix:
+        item_id = f"{item_id}-{suffix}"
+    return item_id
 
 
 def save_outputs(
@@ -94,6 +97,192 @@ def scheduled_difficulty(now: datetime | None = None) -> str:
     ) or "beginner"
 
 
+def _as_bool(value) -> bool:
+    if isinstance(value, str):
+        return value.strip().lower() not in {"0", "false", "no", "off"}
+    return bool(value)
+
+
+def _as_int(value, default: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _quality_remake_settings() -> tuple[bool, int]:
+    enabled = _as_bool(CONFIG.get("verify", "auto_remake_on_fail", default=True))
+    attempts = _as_int(CONFIG.get("verify", "remake_max_attempts", default=2), 2)
+    return enabled, max(1, attempts)
+
+
+def _mark_discarded_candidate(candidate: dict, next_attempt: int) -> None:
+    """Record that a low-quality candidate was intentionally not queued."""
+    report = candidate["report"]
+    failed_checks = [c["name"] for c in report.get("checks", []) if not c.get("pass")]
+    marker = {
+        "status": "discarded_quality_fail",
+        "next_attempt": next_attempt,
+        "item_id": candidate["item_id"],
+        "failed_checks": failed_checks,
+        "avg_cer": (report.get("accuracy") or {}).get("avg_cer"),
+        "recorded_at": datetime.now().astimezone().isoformat(timespec="seconds"),
+    }
+    path = Path(candidate["out_dir"]) / "remake_status.json"
+    path.write_text(json.dumps(marker, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _build_candidate(topic: str, selected_difficulty: str, attempt: int = 1) -> dict:
+    """Generate one full video candidate and persist its artifacts."""
+    # --- 1. 台本生成（生成層バリデーション込み） ---
+    script = script_gen.generate_script(topic, selected_difficulty)
+    title = script["title"]
+    item_id = make_item_id(title, suffix=f"try{attempt}" if attempt > 1 else None)
+    work = CONFIG.work_dir / item_id
+    if work.exists():
+        shutil.rmtree(work)
+    work.mkdir(parents=True)
+    (work / "script.json").write_text(
+        json.dumps(script, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    log(f"台本OK: 「{title}」 cues={len(script['cues'])} candidate={attempt}")
+
+    # --- 2. TTS（合成層: 読み突合） ---
+    try:
+        tts = tts_voicevox.synthesize_cues(script["cues"], work)
+        max_sec = float(CONFIG.get("video", "max_sec", default=60))
+        if tts["total_dur"] > max_sec:
+            # 尺超過 → 話速を上げて全再合成（1回だけ）
+            new_speed = min(
+                round(
+                    float(CONFIG.get("speed_scale", default=1.0))
+                    * tts["total_dur"]
+                    / (max_sec * 0.96),
+                    2,
+                ),
+                1.35,
+            )
+            log(f"尺超過 {tts['total_dur']}s → speed_scale={new_speed} で再合成")
+            CONFIG.cfg["speed_scale"] = new_speed
+            tts = tts_voicevox.synthesize_cues(script["cues"], work)
+        fallbacks = [c["index"] for c in tts["cues"] if c["used_kana_fallback"]]
+        log(f"TTS OK: {tts['total_dur']}s, 読み仮名フォールバック行={fallbacks or 'なし'}")
+
+        # --- 3. 背景画像 ---
+        images, provider = image_gen.generate_images(script, work / "images")
+        log(f"画像OK: {len(images)}枚 (provider={provider})")
+
+        # --- 4. レンダリング ---
+        bg = renderer.render_background(images, tts["total_dur"], work)
+        credit = f"{CONFIG.get('speaker_credit')}／音声・映像はAIで自動生成"
+        overlay = work / "overlay.png"
+        renderer.make_overlay(title, credit, overlay)
+        ass = work / "subs.ass"
+        renderer.make_ass(tts["cues"], tts["total_dur"], ass)
+        measured = renderer.measure_loudnorm(Path(tts["master_wav"]), work)
+        final = renderer.compose_final(
+            bg,
+            overlay,
+            ass,
+            Path(tts["master_wav"]),
+            tts["total_dur"],
+            work,
+            measured=measured,
+        )
+        log("レンダリングOK")
+
+        # --- 5. 検証 → 自動修正ループ ---
+        report = verifier.verify_video(final, tts["cues"], tts["total_dur"], work)
+        loops = 0
+        max_loops = int(CONFIG.get("verify", "max_fix_loops", default=5))
+        crf = int(CONFIG.get("video", "crf", default=23))
+        while not report["pass"] and loops < max_loops:
+            loops += 1
+            log(
+                f"検証不合格 → 修正ループ {loops}/{max_loops}: "
+                + ", ".join(c["name"] for c in report["checks"] if not c["pass"])
+            )
+            failed_idx = report["accuracy"]["failed_indices"]
+            # かな直読み済みのキューは再合成しても変わらない → 打つ手が無ければ打ち切り
+            actionable = [i for i in failed_idx if not tts["cues"][i].get("used_kana_fallback")]
+            other_fails = [
+                c["name"]
+                for c in report["checks"]
+                if not c["pass"] and not c["name"].startswith("subtitle_accuracy")
+            ]
+            if failed_idx and not actionable and not other_fails:
+                log("修正手段なし（全不合格行がかな直読み済み）→ 候補作り直し判定へ")
+                break
+            rerender_needed = False
+            if actionable:
+                old_total = tts["total_dur"]
+                tts = tts_voicevox.resynth_cues(tts, actionable, work)
+                renderer.make_ass(tts["cues"], tts["total_dur"], ass)
+                if abs(tts["total_dur"] - old_total) > 0.2:
+                    bg = renderer.render_background(images, tts["total_dur"], work)
+                rerender_needed = True
+            for c in report["checks"]:
+                if c["pass"]:
+                    continue
+                if c["name"] == "filesize":
+                    crf += 3
+                    rerender_needed = True
+                if c["name"] in (
+                    "loudness",
+                    "no_black_frames",
+                    "duration",
+                    "subtitle_within_audio",
+                    "resolution",
+                    "codecs",
+                ):
+                    rerender_needed = True
+            if rerender_needed:
+                measured = renderer.measure_loudnorm(Path(tts["master_wav"]), work)
+                final = renderer.compose_final(
+                    bg,
+                    overlay,
+                    ass,
+                    Path(tts["master_wav"]),
+                    tts["total_dur"],
+                    work,
+                    crf=crf,
+                    measured=measured,
+                )
+            report = verifier.verify_video(final, tts["cues"], tts["total_dur"], work)
+
+        report["fix_loops"] = loops
+        (work / "quality_report.json").write_text(
+            json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+        log(
+            f"検証{'合格✅' if report['pass'] else '不合格⚠️（上限到達）'} "
+            f"avg_cer={report['accuracy']['avg_cer']} loops={loops}"
+        )
+
+        previews = renderer.extract_previews(final, tts["cues"], work)
+    finally:
+        tts_voicevox.shutdown_engine()
+
+    # --- 6. 成果物をDriveへ保存 ---
+    out_dir = save_outputs(item_id, final, ass, work, images, previews, title, script)
+    log(f"成果物保存: {out_dir}")
+    return {
+        "item_id": item_id,
+        "output_dir": str(out_dir),
+        "out_dir": out_dir,
+        "report": report,
+        "title": title,
+        "topic": topic,
+        "script": script,
+        "final": final,
+        "ass": ass,
+        "work": work,
+        "images": images,
+        "previews": previews,
+        "attempt": attempt,
+    }
+
+
 def produce(
     topic: str | None = None,
     send_queue: bool = True,
@@ -137,107 +326,39 @@ def produce(
                 raise SystemExit("ネタ帳が空")
     log(f"テーマ: {topic} (difficulty={selected_difficulty})")
 
-    # --- 1. 台本生成（生成層バリデーション込み） ---
-    script = script_gen.generate_script(topic, selected_difficulty)
-    title = script["title"]
-    item_id = make_item_id(title)
-    work = CONFIG.work_dir / item_id
-    if work.exists():
-        shutil.rmtree(work)
-    work.mkdir(parents=True)
-    (work / "script.json").write_text(
-        json.dumps(script, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
-    log(f"台本OK: 「{title}」 cues={len(script['cues'])}")
-
-    # --- 2. TTS（合成層: 読み突合） ---
-    try:
-        tts = tts_voicevox.synthesize_cues(script["cues"], work)
-        max_sec = float(CONFIG.get("video", "max_sec", default=60))
-        if tts["total_dur"] > max_sec:
-            # 尺超過 → 話速を上げて全再合成（1回だけ）
-            new_speed = min(round(float(CONFIG.get("speed_scale", default=1.0)) * tts["total_dur"] / (max_sec * 0.96), 2), 1.35)
-            log(f"尺超過 {tts['total_dur']}s → speed_scale={new_speed} で再合成")
-            CONFIG.cfg["speed_scale"] = new_speed
-            tts = tts_voicevox.synthesize_cues(script["cues"], work)
-        fallbacks = [c["index"] for c in tts["cues"] if c["used_kana_fallback"]]
-        log(f"TTS OK: {tts['total_dur']}s, 読み仮名フォールバック行={fallbacks or 'なし'}")
-
-        # --- 3. 背景画像 ---
-        images, provider = image_gen.generate_images(script, work / "images")
-        log(f"画像OK: {len(images)}枚 (provider={provider})")
-
-        # --- 4. レンダリング ---
-        bg = renderer.render_background(images, tts["total_dur"], work)
-        credit = f"{CONFIG.get('speaker_credit')}／音声・映像はAIで自動生成"
-        overlay = work / "overlay.png"
-        renderer.make_overlay(title, credit, overlay)
-        ass = work / "subs.ass"
-        renderer.make_ass(tts["cues"], tts["total_dur"], ass)
-        measured = renderer.measure_loudnorm(Path(tts["master_wav"]), work)
-        final = renderer.compose_final(
-            bg, overlay, ass, Path(tts["master_wav"]), tts["total_dur"], work, measured=measured
+    remake_enabled, remake_max_attempts = _quality_remake_settings()
+    candidate = None
+    discarded_count = 0
+    for attempt in range(1, remake_max_attempts + 1):
+        candidate = _build_candidate(topic, selected_difficulty, attempt)
+        report = candidate["report"]
+        if report["pass"]:
+            break
+        if not remake_enabled or attempt >= remake_max_attempts:
+            break
+        discarded_count += 1
+        _mark_discarded_candidate(candidate, attempt + 1)
+        failed_checks = ", ".join(c["name"] for c in report.get("checks", []) if not c.get("pass"))
+        log(
+            f"品質検証不合格のため候補を作り直し: "
+            f"{candidate['item_id']} → attempt {attempt + 1}/{remake_max_attempts}"
+            + (f" failed={failed_checks}" if failed_checks else "")
         )
-        log("レンダリングOK")
 
-        # --- 5. 検証 → 自動修正ループ ---
-        report = verifier.verify_video(final, tts["cues"], tts["total_dur"], work)
-        loops = 0
-        max_loops = int(CONFIG.get("verify", "max_fix_loops", default=5))
-        crf = int(CONFIG.get("video", "crf", default=23))
-        while not report["pass"] and loops < max_loops:
-            loops += 1
-            log(f"検証不合格 → 修正ループ {loops}/{max_loops}: "
-                + ", ".join(c["name"] for c in report["checks"] if not c["pass"]))
-            failed_idx = report["accuracy"]["failed_indices"]
-            # かな直読み済みのキューは再合成しても変わらない → 打つ手が無ければ打ち切り
-            actionable = [i for i in failed_idx if not tts["cues"][i].get("used_kana_fallback")]
-            other_fails = [c["name"] for c in report["checks"]
-                           if not c["pass"] and not c["name"].startswith("subtitle_accuracy")]
-            if failed_idx and not actionable and not other_fails:
-                log("修正手段なし（全不合格行がかな直読み済み）→ ループ打ち切り、人間確認へ")
-                break
-            rerender_needed = False
-            if actionable:
-                old_total = tts["total_dur"]
-                tts = tts_voicevox.resynth_cues(tts, actionable, work)
-                renderer.make_ass(tts["cues"], tts["total_dur"], ass)
-                if abs(tts["total_dur"] - old_total) > 0.2:
-                    bg = renderer.render_background(images, tts["total_dur"], work)
-                rerender_needed = True
-            for c in report["checks"]:
-                if c["pass"]:
-                    continue
-                if c["name"] == "filesize":
-                    crf += 3
-                    rerender_needed = True
-                if c["name"] in ("loudness", "no_black_frames", "duration",
-                                 "subtitle_within_audio", "resolution", "codecs"):
-                    rerender_needed = True
-            if rerender_needed:
-                measured = renderer.measure_loudnorm(Path(tts["master_wav"]), work)
-                final = renderer.compose_final(
-                    bg, overlay, ass, Path(tts["master_wav"]), tts["total_dur"], work,
-                    crf=crf, measured=measured,
-                )
-            report = verifier.verify_video(final, tts["cues"], tts["total_dur"], work)
-
-        report["fix_loops"] = loops
-        (work / "quality_report.json").write_text(
-            json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
-        )
-        log(f"検証{'合格✅' if report['pass'] else '不合格⚠️（上限到達）'} "
-            f"avg_cer={report['accuracy']['avg_cer']} loops={loops}")
-
-        previews = renderer.extract_previews(final, tts["cues"], work)
-    finally:
-        tts_voicevox.shutdown_engine()
-
-    # --- 6. 成果物をDriveへ保存 ---
-    out_dir = save_outputs(item_id, final, ass, work, images, previews, title, script)
-    log(f"成果物保存: {out_dir}")
-
-    result = {"id": item_id, "output_dir": str(out_dir), "report": report, "title": title}
+    assert candidate is not None
+    item_id = candidate["item_id"]
+    out_dir = candidate["out_dir"]
+    report = candidate["report"]
+    title = candidate["title"]
+    script = candidate["script"]
+    result = {
+        "id": item_id,
+        "output_dir": str(out_dir),
+        "report": report,
+        "title": title,
+        "quality_attempt": candidate.get("attempt", 1),
+        "discarded_quality_failures": discarded_count,
+    }
     if not send_queue:
         return result
 
@@ -305,6 +426,8 @@ def result_summary(result: dict) -> dict:
         "avg_cer": accuracy.get("avg_cer", report.get("avg_cer")),
         "output": result.get("output_dir"),
         "scheduled": bool(result.get("scheduled")),
+        "quality_attempt": result.get("quality_attempt"),
+        "discarded_quality_failures": result.get("discarded_quality_failures", 0),
     }
 
 
