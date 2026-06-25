@@ -198,6 +198,19 @@ class PostingCoreTest(unittest.TestCase):
         self.assertIn("最初の1業務", posted_text)
         self.assertNotIn("保存して", posted_text)
 
+    def test_posting_prefers_runtime_video_copy(self):
+        item = make_item()
+        with tempfile.TemporaryDirectory() as td:
+            runtime = Path(td)
+            local_video = runtime / "out-1" / "final.mp4"
+            local_video.parent.mkdir()
+            local_video.write_bytes(b"video")
+            item["video"]["path"] = "/Drive/out/out-1/final.mp4"
+            item["output_dir"] = "/Drive/out/out-1"
+
+            with patch.object(poster.CONFIG, "work_dir", runtime):
+                self.assertEqual(poster.posting_video_path(item), local_video)
+
     def test_instagram_reuses_recent_matching_post(self):
         item = make_item()
         calls = {"post": 0}
@@ -235,6 +248,7 @@ class PostingCoreTest(unittest.TestCase):
     def test_instagram_posts_through_direct_meta_api(self):
         item = make_item()
         calls = {"post": 0}
+        seen = {"video_path": None}
 
         class FakeMeta:
             @staticmethod
@@ -244,14 +258,17 @@ class PostingCoreTest(unittest.TestCase):
             @staticmethod
             def post_instagram_reels(_caption, _video_path, _env):
                 calls["post"] += 1
+                seen["video_path"] = _video_path
                 return {"status": "posted", "permalink": "https://instagram.example/reel/1"}
 
         with (
+            patch.object(poster, "posting_video_path", return_value=Path("/tmp/runtime/final.mp4")),
             patch.object(poster, "_find_recent_instagram_post", return_value=None),
             patch.object(poster, "_meta_module", return_value=FakeMeta),
         ):
             self.assertEqual(poster.post_instagram(item), "https://instagram.example/reel/1")
         self.assertEqual(calls["post"], 1)
+        self.assertEqual(seen["video_path"], "/tmp/runtime/final.mp4")
 
     def test_tiktok_session_expired_is_not_retried(self):
         item = make_item()
@@ -421,6 +438,12 @@ class PostingCoreTest(unittest.TestCase):
             self.assertFalse(allowed)
             self.assertEqual(reason, "expired")
 
+            item["review"]["decided_at"] = "2026-06-24T19:55:00+09:00"
+            allowed, _reason, platforms = approval_bot._deferred_retry_allowed(item, now)
+            self.assertTrue(allowed)
+            self.assertEqual(platforms, ["instagram"])
+
+            item["review"].pop("decided_at", None)
             item["created_at"] = "2026-06-24T19:00:00+09:00"
             item["platforms"]["instagram"]["last_attempt_at"] = None
             item.pop("deferred_retry", None)

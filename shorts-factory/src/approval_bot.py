@@ -201,6 +201,18 @@ def _latest_platform_attempt_at(item: dict, platforms: list[str]) -> datetime | 
     return max(values) if values else None
 
 
+def _retry_window_reference_at(item: dict) -> datetime | None:
+    for value in (
+        item.get("review", {}).get("decided_at"),
+        item.get("scheduled_for"),
+        item.get("created_at"),
+    ):
+        parsed = _parse_iso(value)
+        if parsed:
+            return parsed
+    return None
+
+
 def _deferred_retry_allowed(item: dict, now: datetime | None = None) -> tuple[bool, str, list[str]]:
     now = now or datetime.now().astimezone()
     enabled, max_attempts, delay_sec, window = _deferred_retry_settings()
@@ -214,11 +226,11 @@ def _deferred_retry_allowed(item: dict, now: datetime | None = None) -> tuple[bo
     if not platforms:
         return False, "no_failed_platforms", []
 
-    created_at = _parse_iso(item.get("created_at"))
-    if created_at:
-        if created_at.tzinfo is None and now.tzinfo is not None:
-            created_at = created_at.replace(tzinfo=now.tzinfo)
-        if now - created_at > window:
+    reference_at = _retry_window_reference_at(item)
+    if reference_at:
+        if reference_at.tzinfo is None and now.tzinfo is not None:
+            reference_at = reference_at.replace(tzinfo=now.tzinfo)
+        if now - reference_at > window:
             return False, "expired", platforms
 
     retry_state = item.setdefault("deferred_retry", {})

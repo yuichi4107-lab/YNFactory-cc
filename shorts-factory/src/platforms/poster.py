@@ -61,6 +61,17 @@ def _write_instagram_helper_diagnostic(item: dict, proc: subprocess.CompletedPro
     return path
 
 
+def posting_video_path(item: dict) -> Path:
+    """Prefer the runtime copy for uploads so Drive locks cannot break posting."""
+    video_path = Path(item["video"]["path"])
+    output_dir = item.get("output_dir")
+    if output_dir:
+        runtime_path = CONFIG.work_dir / Path(output_dir).name / video_path.name
+        if runtime_path.exists():
+            return runtime_path
+    return video_path
+
+
 def _normalized_caption(text: str | None) -> str:
     return re.sub(r"\s+", " ", text or "").strip()
 
@@ -114,7 +125,7 @@ def post_x(item: dict) -> str:
     """Xへ動画投稿し、投稿URLを返す。"""
     text = copy_for_platform(item, "x")["text"]
     proc = subprocess.run(
-        [PYTHON, str(SCRIPTS_DIR / "post_to_x.py"), text, "--video", item["video"]["path"]],
+        [PYTHON, str(SCRIPTS_DIR / "post_to_x.py"), text, "--video", str(posting_video_path(item))],
         capture_output=True,
         text=True,
         timeout=600,
@@ -143,7 +154,7 @@ def post_instagram(item: dict) -> str:
     post_to_meta = _meta_module()
     result = post_to_meta.post_instagram_reels(
         caption,
-        item["video"]["path"],
+        str(posting_video_path(item)),
         post_to_meta.load_env(CONFIG.sns_env_path),
     )
     if result.get("status") != "posted":
@@ -157,7 +168,7 @@ def post_youtube(item: dict) -> str:
 
     copy = copy_for_platform(item, "youtube")
     return youtube_cdp.upload(
-        video_path=Path(item["video"]["path"]),
+        video_path=posting_video_path(item),
         title=copy["title"],
         description=copy["description"],
     )
@@ -167,7 +178,7 @@ def post_tiktok(item: dict) -> str:
     from . import tiktok_cdp
 
     caption = copy_for_platform(item, "tiktok")["caption"]
-    return tiktok_cdp.upload(Path(item["video"]["path"]), caption)
+    return tiktok_cdp.upload(posting_video_path(item), caption)
 
 
 POSTERS = {
