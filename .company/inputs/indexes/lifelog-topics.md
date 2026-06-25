@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-24T07:00:19
+generated_at: 2026-06-25T07:00:56
 ---
 
 # Lifelog Topics
@@ -10,6 +10,31 @@ generated_at: 2026-06-24T07:00:19
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-24
+
+- - **ビルメンテナンス業界におけるAI/業務自動化の事例とニーズ** (07:00) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+-   - 理由: 面接内容から抽出された業務課題（報告書作成、スケジュール管理、欠勤対応、情報共有不足）を解決するソリューション開発のため。 | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- - **採用面接における評価ポイントと求職者の本音** (15:52) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+-   - 理由: Instagram転職系アカウント運用におけるコンテンツ強化のため。特に中高年層の転職事情や企業側の採用課題について。 | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- - **Instagram投稿システムのエラー原因と解決策** (19:48) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+-   - 理由: Instagram転職系アカウント運用における業務改善のため。 | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- - **業務効率化における従業員のモチベーション維持と評価方法** (15:39) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+-   - 理由: 社長の物忘れや業務評価に関する不満から、効率化推進の組織的課題を克服するための知見を得るため。 | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- - **会計・給与計算におけるデータ照合自動化技術** (09:41) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+-   - 理由: 住民税データ照合の複雑な手作業を自動化するための技術調査。 | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- - **ループエンジニアリングとは何か、具体的な手法と応用事例** (06:09) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+-   - 理由: フリーランス事業におけるAI活用・業務自動化の最新技術動向を取り込み、新しいソリューション開発やコンテンツ制作に活かすため。 | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- 1. **ビルメンテナンス業界向け業務自動化ソリューション開発** [freelance] ★★★★☆ (07:00) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+-    - ビルメンテナンス業界における報告書作成、スケジュール管理、欠勤対応・人員配置最適化といった業務課題に対し、AIを活用したソリューションを開発・提供する。 | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- 2. **転職支援コンテンツ/コンサルティング（ビルメンテナンス業界特化）** [instagram] ★★★☆☆ (15:52) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+-    - 採用側の視点（中高年層の採用課題、給与交渉、業務内容の現実、定年再雇用制度、資格取得支援など）を踏まえた、ビルメンテナンス業界特化の面接対策や業界情報提供コンテンツ、またはコンサルティングサービス。 | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- 3. **AIを活用したパーソナライズされたタスク管理・ToDoリスト自動生成ツールの開発** [freelance] ★★★★☆ (07:01) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+-    - 実行済み、除外、優先順位下げなどのステータスに基づいてリストを自動更新し、複数項目選択時の効率化を図るタスク管理ツール。 | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- 4. **ループエンジニアリングを活用したAIソリューション開発** [freelance] ★★★★★ (06:09) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+-    - AI活用の新たなパラダイムである「ループエンジニアリング」を自身のフリーランス開発案件に応用し、より高度なAIソリューションを提供。 | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- 5. **ループエンジニアリングに関する電子書籍執筆やYouTube解説動画制作** [ebook|youtube] ★★★★☆ (06:09) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+-    - AIの最先端技術「ループエンジニアリング」について解説する電子書籍の執筆やYouTube動画チャンネルでの情報発信。 | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
 
 ## 2026-06-22
 

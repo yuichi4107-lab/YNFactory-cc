@@ -2,7 +2,7 @@
 source: organize_zoom_inputs.py
 type: input-index
 scope: zoom-meeting-summaries
-generated_at: 2026-06-24T07:00:20
+generated_at: 2026-06-25T07:00:58
 ---
 
 # Zoom Next Steps
@@ -10,6 +10,16 @@ generated_at: 2026-06-24T07:00:20
 Zoom 議事録由来の Next Steps。日別TODOへ反映する前に案件状態と完了状況を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-24
+
+- [ ] 中田　雄一: 和泉たくじとの入社・業務引き継ぎスケジュールを調整し、営業チームから管理チームへの業務移管を進める。 | meeting:美建　面接 | source:`.company/inputs/organized/zoom/2026-06-24-zoom-meetings.md`
+- [ ] 和泉たくじ: 中田　雄一および現営業チームより管理物件の引き継ぎを受け、2～3ヶ月の期間で業務内容を習得する。 | meeting:美建　面接 | source:`.company/inputs/organized/zoom/2026-06-24-zoom-meetings.md`
+- [ ] 和泉たくじ: 管理業務開始後、必要に応じて管理メインチームのメンバーと共に現場回り・作業指導を行う。 | meeting:美建　面接 | source:`.company/inputs/organized/zoom/2026-06-24-zoom-meetings.md`
+- [ ] 和泉たくじ: 業務開始後、パートや現場担当者の欠勤対応や新メンバー導入時の現場指導を実施する。 | meeting:美建　面接 | source:`.company/inputs/organized/zoom/2026-06-24-zoom-meetings.md`
+- [ ] 和泉たくじ: 管理業務を通じて、既存顧客の拡大営業や建物管理上の提案・コミュニケーションを積極的に行う。 | meeting:美建　面接 | source:`.company/inputs/organized/zoom/2026-06-24-zoom-meetings.md`
+- [ ] 和泉たくじ: 必要に応じて防災管理者等の資格取得について検討・対応する。 | meeting:美建　面接 | source:`.company/inputs/organized/zoom/2026-06-24-zoom-meetings.md`
+- [ ] 中田　雄一: 和泉たくじの入社に合わせて必要な社内連絡・手続きを進める。 | meeting:美建　面接 | source:`.company/inputs/organized/zoom/2026-06-24-zoom-meetings.md`
 
 ## 2026-05-23
 

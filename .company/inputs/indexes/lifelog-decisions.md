@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-24T07:00:19
+generated_at: 2026-06-25T07:00:56
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,14 @@ generated_at: 2026-06-24T07:00:19
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-24
+
+- - 営業アシスタントのパート雇用は却下され、既存業務の効率化・圧縮で対応する方針が決定された。 | time:13:19 | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- - 既存顧客への拡大営業は管理部門が担当し、新規営業は新築営業専門とする方針が示された。 | time:04:17 | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- - 採用活動において、面接確約で多数の応募者（特に中高年層）を捌かなければならない状況にある。 | time:15:52 | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- - 住民税の支払いについてUJFが最も有利であるという判断が下された。 | time:15:31 | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- - 「こっちでお金稼いできたらちゃんと評価してくれる」という社長の言葉を受け、案件獲得と効率的な実行で評価を得ることを目指す意思を示した。 | time:13:22 | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
 
 ## 2026-06-23
 

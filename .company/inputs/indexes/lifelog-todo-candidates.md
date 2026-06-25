@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-24T07:00:19
+generated_at: 2026-06-25T07:00:56
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,20 @@ generated_at: 2026-06-24T07:00:19
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-24
+
+- [ ] Instagram投稿の失敗原因調査と改善策実施 | time:19:48 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- [ ] ビルメンテナンス会社（ビケン社）への面接準備と情報収集 | time:19:00 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- [ ] 営業アシスタント業務の資料圧縮とデータ入力自動化の検討 | time:13:17 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- [ ] ビケン社のコンサルアンケートの結論出し | time:13:02 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- [ ] 銀行への決算書提出準備 | time:12:57 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- [ ] 住民税データ照合プロセスの実行（PCA、Excel使用） | time:09:41 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- [ ] PCAシステム利用に関する問題の解決 | time:09:55 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- [ ] タスク管理ツールの機能改善要件の整理 | time:07:01 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- [ ] ID作成のタスクの再確認と進捗 | time:15:21 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- [ ] 銀行選定におけるコスト検討（UJFが有利な点を考慮） | time:15:29 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- [ ] 契約満了に関する手続きの確認と実行、マイナンバー情報変更の確認 | time:11:25 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
 
 ## 2026-06-23
 

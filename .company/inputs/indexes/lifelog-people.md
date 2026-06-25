@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-24T07:00:19
+generated_at: 2026-06-25T07:00:56
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,19 @@ generated_at: 2026-06-24T07:00:19
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-24
+
+- - **中田** — 株式会社美研の面接官 (19:00) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- - **田中** — 株式会社美研の面接官 (16:01) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- - **大須美佐子** — 面談候補者 (15:59) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- - **亀田さん** — 支払い関連でやり取り (12:57) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- - **野村さん** — 来週から業務に加わる人物 (01:01) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- - **小川さん** — 契約満了に関する議論の対象者 (11:28) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- - **金山さん** — 契約満了に関する議論の対象者 (11:28) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- - **岩川さん** — 社長が処理能力を比較している人物 (03:41) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- - **奈緒さん** — 社長が処理能力を比較している人物（古いタイプではない） (03:50) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
+- - **ホンダさん** — 給与計算関連の人物 (09:33) | source:`.company/inputs/organized/lifelogs/2026-06-24-lifelog-insights.md`
 
 ## 2026-06-23
 
