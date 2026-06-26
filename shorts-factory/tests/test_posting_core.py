@@ -692,6 +692,93 @@ class PostingCoreTest(unittest.TestCase):
         self.assertEqual(len(data["used"]), 1)
         self.assertEqual(data["used"][0]["slug"], "slug-1")
 
+    def test_next_topic_skips_topics_already_in_queue(self):
+        data = {
+            "backlog": [
+                {
+                    "topic": "ChatGPTに業務フローを棚卸しさせ、自動化候補を優先順位付けする方法",
+                    "difficulty": "intermediate",
+                },
+                {
+                    "topic": "ChatGPTにプロンプトの評価基準を作らせ、出力品質を比較する方法",
+                    "difficulty": "intermediate",
+                },
+            ],
+            "used": [],
+        }
+
+        with (
+            patch.object(topic_store, "_load", return_value=data),
+            patch.object(
+                topic_store,
+                "_queue_topic_entries",
+                return_value=[
+                    {
+                        "topic": "ChatGPTに業務フローを棚卸しさせ、自動化候補を優先順位付けする方法",
+                        "title": "仕事で使える改善の型",
+                    }
+                ],
+            ),
+        ):
+            topic, remaining = topic_store.next_topic("intermediate")
+
+        self.assertEqual(topic, "ChatGPTにプロンプトの評価基準を作らせ、出力品質を比較する方法")
+        self.assertEqual(remaining, 2)
+
+    def test_add_topics_rejects_near_duplicate_topics(self):
+        data = {
+            "backlog": [],
+            "used": [
+                {
+                    "topic": "ChatGPTに業務フローを棚卸しさせ、自動化候補を優先順位付けする方法",
+                    "title": "自動化候補を見抜く3軸",
+                }
+            ],
+        }
+        saved: list[dict] = []
+
+        def fake_save(updated):
+            saved.append(json.loads(json.dumps(updated, ensure_ascii=False)))
+            data.clear()
+            data.update(updated)
+
+        with (
+            patch.object(topic_store, "_load", side_effect=lambda *args, **kwargs: json.loads(json.dumps(data, ensure_ascii=False))),
+            patch.object(topic_store, "_save", side_effect=fake_save),
+            patch.object(topic_store, "_queue_topic_entries", return_value=[]),
+        ):
+            count = topic_store.add_topics(
+                [
+                    {
+                        "topic": "業務フローを棚卸しして自動化候補を優先順位付けする方法",
+                        "difficulty": "intermediate",
+                    },
+                    {
+                        "topic": "ChatGPTで月次レポートの異常値を見つける方法",
+                        "difficulty": "intermediate",
+                    },
+                ]
+            )
+
+        self.assertEqual(count, 1)
+        self.assertEqual(
+            [entry["topic"] for entry in data["backlog"]],
+            ["ChatGPTで月次レポートの異常値を見つける方法"],
+        )
+        self.assertEqual(len(saved), 1)
+
+    def test_fallback_scripts_do_not_return_typecasting_theme(self):
+        for topic in (
+            "ChatGPTに業務フローを棚卸しさせ、自動化候補を優先順位付けする方法",
+            "ChatGPTで採用面接の評価基準を揃え、属人化を減らす方法",
+            "ChatGPTに競合比較表を作らせ、差別化ポイントを言語化する方法",
+        ):
+            script = script_gen._fallback_script(topic, "intermediate", ["forced fallback"])
+            self.assertEqual(script_gen.validate_script(script, 4), [])
+            rendered = json.dumps(script, ensure_ascii=False)
+            self.assertNotIn("型化", rendered)
+            self.assertNotIn("仕事で使える改善の型", rendered)
+
     def test_approval_bot_recovers_deferred_topic_consume(self):
         item = {
             "id": "item-1",

@@ -282,7 +282,7 @@ def _call_openai(prompt: str) -> str:
 
 def _fallback_cues_for_topic(topic: str) -> tuple[str, list[dict]]:
     if "営業メール" in topic:
-        return "営業メール改善の型", [
+        return "営業メール改善の手順", [
             {
                 "display": ["返信ゼロの原因", "そこじゃないかも"],
                 "tts_text": "返信ゼロの原因、そこじゃないかもしれません。",
@@ -344,9 +344,9 @@ def _fallback_cues_for_topic(topic: str) -> tuple[str, list[dict]]:
                 "emphasis": True,
             },
             {
-                "display": ["うまくいく型を", "共有します"],
-                "tts_text": "うまくいく型は、チームで共有します。",
-                "reading_kana": "ウマクイクカタハ、チームデキョウユウシマス。",
+                "display": ["良い文面を", "共有します"],
+                "tts_text": "反応がよかった文面は、チームで共有します。",
+                "reading_kana": "ハンノウガヨカッタブンメンハ、チームデキョウユウシマス。",
                 "emphasis": False,
             },
             {
@@ -362,7 +362,190 @@ def _fallback_cues_for_topic(topic: str) -> tuple[str, list[dict]]:
                 "emphasis": False,
             },
         ]
-    return "仕事で使える改善の型", [
+    if "業務フロー" in topic or "自動化候補" in topic:
+        return "自動化候補を見抜く3軸", [
+            {
+                "display": ["自動化する仕事", "勘で選んでない？"],
+                "tts_text": "自動化する仕事、勘で選んでいませんか。",
+                "reading_kana": "ジドウカスルシゴト、カンデエランデイマセンカ。",
+                "emphasis": True,
+            },
+            {
+                "display": ["見るのは", "三つだけです"],
+                "tts_text": "見るのは、頻度、時間、ルール化の三つです。",
+                "reading_kana": "ミルノハ、ヒンド、ジカン、ルールカノミッツデス。",
+                "emphasis": True,
+            },
+            {
+                "display": ["毎日ある作業を", "先に出します"],
+                "tts_text": "まず毎日発生する作業を、先に書き出します。",
+                "reading_kana": "マズマイニチハッセイスルサギョウヲ、サキニカキダシマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["一回の時間を", "横に書きます"],
+                "tts_text": "次に、一回あたりの時間を横に書きます。",
+                "reading_kana": "ツギニ、イッカイアタリノジカンヲヨコニカキマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["判断が単純なら", "候補です"],
+                "tts_text": "判断が単純な作業ほど、最初の候補になります。",
+                "reading_kana": "ハンダンガタンジュンナサギョウホド、サイショノコウホニナリマス。",
+                "emphasis": True,
+            },
+            {
+                "display": ["人の確認が多い", "仕事は後回し"],
+                "tts_text": "人の確認が多い仕事は、後回しにします。",
+                "reading_kana": "ヒトノカクニンガオオイシゴトハ、アトマワシニシマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["一週間だけ", "試します"],
+                "tts_text": "候補を一つ選んだら、一週間だけ試します。",
+                "reading_kana": "コウホヲヒトツエランダラ、イッシュウカンダケタメシマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["減った時間を", "数字で見ます"],
+                "tts_text": "最後に、減った時間を数字で確認します。",
+                "reading_kana": "サイゴニ、ヘッタジカンヲスウジデカクニンシマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["保存して次の", "棚卸しに使って"],
+                "tts_text": "保存して、次の業務棚卸しで試してください。",
+                "reading_kana": "ホゾンシテ、ツギノギョウムタナオロシデタメシテクダサイ。",
+                "emphasis": False,
+            },
+        ]
+    if "採用面接" in topic or "評価基準" in topic:
+        return "面接評価をそろえる3基準", [
+            {
+                "display": ["面接評価", "人でズレてない？"],
+                "tts_text": "面接評価、人によってズレていませんか。",
+                "reading_kana": "メンセツヒョウカ、ヒトニヨッテズレテイマセンカ。",
+                "emphasis": True,
+            },
+            {
+                "display": ["質問を増やす前に", "基準をそろえる"],
+                "tts_text": "質問を増やす前に、評価基準をそろえます。",
+                "reading_kana": "シツモンヲフヤスマエニ、ヒョウカキジュンヲソロエマス。",
+                "emphasis": True,
+            },
+            {
+                "display": ["任せる仕事を", "三つ書きます"],
+                "tts_text": "まず任せたい仕事を、三つだけ書きます。",
+                "reading_kana": "マズマカセタイシゴトヲ、ミッツダケカキマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["必要な行動を", "言葉にします"],
+                "tts_text": "次に、その仕事で必要な行動を言葉にします。",
+                "reading_kana": "ツギニ、ソノシゴトデヒツヨウナコウドウヲコトバニシマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["五段階ではなく", "具体例で見る"],
+                "tts_text": "五段階だけでなく、具体例で評価します。",
+                "reading_kana": "ゴダンカイダケデナク、グタイレイデヒョウカシマス。",
+                "emphasis": True,
+            },
+            {
+                "display": ["発言の引用を", "一つ残します"],
+                "tts_text": "候補者の発言は、引用として一つ残します。",
+                "reading_kana": "コウホシャノハツゲンハ、インヨウトシテヒトツノコシマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["面接後すぐ", "根拠を書く"],
+                "tts_text": "面接後すぐ、判断の根拠を書き残します。",
+                "reading_kana": "メンセツゴスグ、ハンダンノコンキョヲカキノコシマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["評価者同士で", "ズレを見ます"],
+                "tts_text": "評価者同士で、点数がズレた理由を見ます。",
+                "reading_kana": "ヒョウカシャドウシデ、テンスウガズレタリユウヲミマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["迷った項目は", "保留にします"],
+                "tts_text": "迷った項目は、その場で決めず保留にします。",
+                "reading_kana": "マヨッタコウモクハ、ソノバデキメズホリュウニシマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["保存して次の", "面接で試して"],
+                "tts_text": "保存して、次の面接準備で試してください。",
+                "reading_kana": "ホゾンシテ、ツギノメンセツジュンビデタメシテクダサイ。",
+                "emphasis": False,
+            },
+        ]
+    if "競合比較" in topic or "差別化" in topic:
+        return "競合比較で差が出る3視点", [
+            {
+                "display": ["競合比較", "表で終わってない？"],
+                "tts_text": "競合比較、表で終わっていませんか。",
+                "reading_kana": "キョウゴウヒカク、ヒョウデオワッテイマセンカ。",
+                "emphasis": True,
+            },
+            {
+                "display": ["見るべきは", "差の理由です"],
+                "tts_text": "見るべきは、違いそのものではなく差の理由です。",
+                "reading_kana": "ミルベキハ、チガイソノモノデハナクサノリユウデス。",
+                "emphasis": True,
+            },
+            {
+                "display": ["価格と機能を", "まず並べます"],
+                "tts_text": "まず価格と機能を、横並びにします。",
+                "reading_kana": "マズカカクトキノウヲ、ヨコナラビニシマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["次に顧客の", "不満を足します"],
+                "tts_text": "次に、顧客が不満に思う点を足します。",
+                "reading_kana": "ツギニ、コキャクガフマンニオモウテンヲタシマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["勝ち負けより", "選ばれる条件"],
+                "tts_text": "勝ち負けより、選ばれる条件を見ます。",
+                "reading_kana": "カチマケヨリ、エラバレルジョウケンヲミマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["自社が勝てる", "場面を探す"],
+                "tts_text": "最後に、自社が勝てる場面を探します。",
+                "reading_kana": "サイゴニ、ジシャガカテルバメンヲサガシマス。",
+                "emphasis": True,
+            },
+            {
+                "display": ["弱い項目は", "補う策を考える"],
+                "tts_text": "弱い項目は、補う策を考えます。",
+                "reading_kana": "ヨワイコウモクハ、オギナウサクヲカンガエマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["選ばれにくい", "理由も書く"],
+                "tts_text": "選ばれにくい理由も、一行で書きます。",
+                "reading_kana": "エラバレニクイリユウモ、イチギョウデカキマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["顧客別に", "結論を分ける"],
+                "tts_text": "顧客の状況別に、結論を分けます。",
+                "reading_kana": "コキャクノジョウキョウベツニ、ケツロンヲワケマス。",
+                "emphasis": False,
+            },
+            {
+                "display": ["保存して次の", "提案に使って"],
+                "tts_text": "保存して、次の提案準備で試してください。",
+                "reading_kana": "ホゾンシテ、ツギノテイアンジュンビデタメシテクダサイ。",
+                "emphasis": False,
+            },
+        ]
+    return "仕事で使える改善手順", [
         {
             "display": ["その依頼", "時間をムダに"],
             "tts_text": "その依頼、時間をムダにしているかもしれません。",
@@ -370,9 +553,9 @@ def _fallback_cues_for_topic(topic: str) -> tuple[str, list[dict]]:
             "emphasis": True,
         },
         {
-            "display": ["原因は", "型がないこと"],
-            "tts_text": "原因は、最初の型がないことです。",
-            "reading_kana": "ゲンインハ、サイショノカタガナイコトデス。",
+            "display": ["原因は", "前提が足りない"],
+            "tts_text": "原因は、最初の前提が足りないことです。",
+            "reading_kana": "ゲンインハ、サイショノゼンテイガタリナイコトデス。",
             "emphasis": True,
         },
         {
@@ -418,9 +601,9 @@ def _fallback_cues_for_topic(topic: str) -> tuple[str, list[dict]]:
             "emphasis": False,
         },
         {
-            "display": ["毎回同じ型を", "保存します"],
-            "tts_text": "毎回同じ型を、保存します。",
-            "reading_kana": "マイカイオナジカタヲ、ホゾンシマス。",
+            "display": ["使えた指示を", "保存します"],
+            "tts_text": "使えた指示だけを、次回用に保存します。",
+            "reading_kana": "ツカエタシジダケヲ、ジカイヨウニホゾンシマス。",
             "emphasis": False,
         },
         {
@@ -430,9 +613,9 @@ def _fallback_cues_for_topic(topic: str) -> tuple[str, list[dict]]:
             "emphasis": False,
         },
         {
-            "display": ["迷ったら型に", "戻せば安定"],
-            "tts_text": "迷ったら型に戻せば、品質が安定します。",
-            "reading_kana": "マヨッタラカタニモドセバ、ヒンシツガアンテイシマス。",
+            "display": ["迷ったら", "前提を見直す"],
+            "tts_text": "迷ったら、目的と制約を見直すと安定します。",
+            "reading_kana": "マヨッタラ、モクテキトセイヤクヲミナオストアンテイシマス。",
             "emphasis": True,
         },
         {
@@ -451,11 +634,11 @@ def _fallback_script(topic: str, difficulty: str, last_errs: list[str]) -> dict:
         "cues": cues,
         "caption": (
             f"{topic}の実務向けショートです。"
-            "一回で当てにいくより、型を作って記録しながら改善する方が安定します。"
+            "一回で当てにいくより、前提をそろえて記録しながら改善する方が安定します。"
             "保存して、次の仕事でそのまま試してみてください。"
         ),
         "hashtags": ["#ChatGPT", "#AI活用術", "#仕事術", "#業務効率化", "#営業"],
-        "card_keywords": ["型化", "記録", "改善", "共有"],
+        "card_keywords": ["前提整理", "記録", "改善", "共有"],
         "topic": topic,
         "difficulty": difficulty,
         "fallback_reason": "; ".join(last_errs[:3]),

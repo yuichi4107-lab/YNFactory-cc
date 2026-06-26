@@ -10,8 +10,11 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import tempfile
+import unicodedata
 from datetime import date
+from difflib import SequenceMatcher
 from pathlib import Path
 
 from .config import CONFIG
@@ -20,6 +23,41 @@ from .fs_retry import is_transient_io_error, retry_io
 LOW_STOCK_THRESHOLD = 7
 VALID_DIFFICULTIES = {"beginner", "intermediate"}
 TOPICS_CACHE_PATH = CONFIG.runtime_dir / "cache" / "topics.json"
+TOPIC_SIMILARITY_THRESHOLD = 0.82
+TOPIC_JACCARD_THRESHOLD = 0.74
+_TOPIC_NOISE_WORDS = (
+    "chatgpt",
+    "チャットgpt",
+    "チャットジーピーティー",
+    "生成ai",
+    "ai",
+    "方法",
+    "術",
+    "使い方",
+    "活用",
+    "させる",
+    "させ",
+    "して",
+    "する",
+    "作らせ",
+    "作る",
+    "作り",
+    "変える",
+    "できる",
+    "ため",
+    "まで",
+    "から",
+)
+_TOPIC_SYNONYMS = {
+    "型化": "標準化",
+    "型を作る": "標準化",
+    "型をつくる": "標準化",
+    "テンプレ化": "標準化",
+    "テンプレート化": "標準化",
+    "パターン化": "標準化",
+    "仕組み化": "標準化",
+    "型": "標準化",
+}
 
 
 def normalize_difficulty(value: str | None) -> str | None:
@@ -37,6 +75,117 @@ def normalize_difficulty(value: str | None) -> str | None:
 
 def _difficulty(entry: dict) -> str:
     return normalize_difficulty(entry.get("difficulty")) or "beginner"
+
+
+def normalize_topic_key(topic: str | None) -> str:
+    """重複判定用に、言い回しの揺れを落としたキーへ正規化する。"""
+    text = unicodedata.normalize("NFKC", str(topic or "")).lower()
+    for src, dest in _TOPIC_SYNONYMS.items():
+        text = text.replace(src, dest)
+    for word in _TOPIC_NOISE_WORDS:
+        text = text.replace(word, "")
+    text = re.sub(r"[\s\u3000、。・／/｜|（）()［］\[\]「」『』:：,，.!！？?ー\-]+", "", text)
+    return text
+
+
+def _char_grams(text: str, n: int = 2) -> set[str]:
+    if len(text) <= n:
+        return {text} if text else set()
+    return {text[i : i + n] for i in range(len(text) - n + 1)}
+
+
+def _topic_similarity(a: str, b: str) -> float:
+    ka = normalize_topic_key(a)
+    kb = normalize_topic_key(b)
+    if not ka or not kb:
+        return 0.0
+    if ka == kb:
+        return 1.0
+    ratio = SequenceMatcher(None, ka, kb).ratio()
+    grams_a = _char_grams(ka)
+    grams_b = _char_grams(kb)
+    jaccard = 0.0
+    if grams_a and grams_b:
+        jaccard = len(grams_a & grams_b) / len(grams_a | grams_b)
+    return max(ratio, jaccard)
+
+
+def is_duplicate_topic(topic: str | None, existing_topics: list[str]) -> bool:
+    return duplicate_topic_match(topic, existing_topics) is not None
+
+
+def duplicate_topic_match(topic: str | None, existing_topics: list[str]) -> str | None:
+    key = normalize_topic_key(topic)
+    if not key:
+        return None
+    for existing in existing_topics:
+        existing_key = normalize_topic_key(existing)
+        if not existing_key:
+            continue
+        if key == existing_key:
+            return existing
+        similarity = _topic_similarity(topic or "", existing)
+        if similarity >= TOPIC_SIMILARITY_THRESHOLD:
+            return existing
+        grams_a = _char_grams(key)
+        grams_b = _char_grams(existing_key)
+        if grams_a and grams_b:
+            jaccard = len(grams_a & grams_b) / len(grams_a | grams_b)
+            if jaccard >= TOPIC_JACCARD_THRESHOLD:
+                return existing
+    return None
+
+
+def _queue_topic_entries() -> list[dict]:
+    if not CONFIG.queue_dir.exists():
+        return []
+    entries: list[dict] = []
+    for path in sorted(CONFIG.queue_dir.glob("*.json")):
+        try:
+            with open(path, "r", encoding="utf-8-sig") as f:
+                item = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            continue
+        topic = str(item.get("topic") or "").strip()
+        title = str(item.get("title") or "").strip()
+        if not topic and not title:
+            continue
+        entries.append(
+            {
+                "topic": topic,
+                "title": title,
+                "slug": item.get("id") or path.stem,
+                "status": item.get("status"),
+                "created_at": item.get("created_at"),
+            }
+        )
+    return entries
+
+
+def _reserved_topics(data: dict) -> list[str]:
+    topics: list[str] = []
+    for entry in data.get("used", []):
+        topic = str(entry.get("topic") or "").strip()
+        title = str(entry.get("title") or "").strip()
+        if topic:
+            topics.append(topic)
+        if title:
+            topics.append(title)
+    for entry in _queue_topic_entries():
+        topic = str(entry.get("topic") or "").strip()
+        title = str(entry.get("title") or "").strip()
+        if topic:
+            topics.append(topic)
+        if title:
+            topics.append(title)
+    deduped: list[str] = []
+    seen: set[str] = set()
+    for topic in topics:
+        key = normalize_topic_key(topic)
+        if key and key not in seen:
+            seen.add(key)
+            deduped.append(topic)
+    return deduped
 
 
 def _load_once() -> dict:
@@ -100,12 +249,16 @@ def next_topic(difficulty: str | None = None) -> tuple[str | None, int]:
     if not backlog:
         return None, 0
     normalized = normalize_difficulty(difficulty)
+    reserved = _reserved_topics(data)
     if normalized:
         for entry in backlog:
-            if _difficulty(entry) == normalized:
+            if _difficulty(entry) == normalized and not is_duplicate_topic(entry.get("topic"), reserved):
                 return entry["topic"], backlog_count(normalized)
         return None, 0
-    return backlog[0]["topic"], len(backlog)
+    for entry in backlog:
+        if not is_duplicate_topic(entry.get("topic"), reserved):
+            return entry["topic"], len(backlog)
+    return None, 0
 
 
 def consume_topic(topic: str, slug: str, title: str, difficulty: str | None = None) -> int:
@@ -145,9 +298,7 @@ def recent_titles(n: int = 30) -> list[str]:
 
 def add_topics(topics: list[str | dict]) -> int:
     data = _load()
-    existing = {t.get("topic") for t in data.get("backlog", [])} | {
-        u.get("topic") for u in data.get("used", [])
-    }
+    existing = [t.get("topic") for t in data.get("backlog", [])] + _reserved_topics(data)
     for item in topics:
         if isinstance(item, dict):
             topic = str(item.get("topic", "")).strip()
@@ -156,9 +307,9 @@ def add_topics(topics: list[str | dict]) -> int:
         else:
             topic = str(item).strip()
             entry = {"topic": topic, "difficulty": "beginner"}
-        if topic and topic not in existing:
+        if topic and not is_duplicate_topic(topic, existing):
             data.setdefault("backlog", []).append(entry)
-            existing.add(topic)
+            existing.append(topic)
     _save(data)
     return len(data["backlog"])
 
