@@ -111,10 +111,15 @@ def next_topic(difficulty: str | None = None) -> tuple[str | None, int]:
 def consume_topic(topic: str, slug: str, title: str, difficulty: str | None = None) -> int:
     """トピックを used へ移動し、残数を返す。"""
     data = _load(allow_cache=False)
+    used = data.setdefault("used", [])
+    if any(u.get("slug") == slug for u in used):
+        return len(data.get("backlog", []))
     matched = next((t for t in data.get("backlog", []) if t.get("topic") == topic), {})
+    if not matched and any(u.get("topic") == topic for u in used):
+        return len(data.get("backlog", []))
     topic_difficulty = normalize_difficulty(difficulty) or _difficulty(matched)
     data["backlog"] = [t for t in data.get("backlog", []) if t.get("topic") != topic]
-    data.setdefault("used", []).append(
+    used.append(
         {
             "topic": topic,
             "difficulty": topic_difficulty,

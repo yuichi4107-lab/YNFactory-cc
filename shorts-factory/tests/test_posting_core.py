@@ -15,7 +15,7 @@ if str(APP_ROOT) not in sys.path:
 
 from src.logging_utils import redact_secrets
 from src.fs_retry import retry_io
-from src import approval_bot, pipeline, platform_copy, queue_lib, script_gen
+from src import approval_bot, pipeline, platform_copy, queue_lib, script_gen, topic_store
 from src.pipeline import result_summary, scheduled_difficulty
 from src.platforms import poster
 
@@ -661,6 +661,68 @@ class PostingCoreTest(unittest.TestCase):
             allowed, reason, _platforms = approval_bot._deferred_retry_allowed(item, now)
             self.assertFalse(allowed)
             self.assertEqual(reason, "missing_attempt_at")
+
+    def test_consume_topic_is_idempotent_for_deferred_retry(self):
+        data = {
+            "backlog": [
+                {"topic": "topic-a", "difficulty": "beginner"},
+                {"topic": "topic-b", "difficulty": "beginner"},
+            ],
+            "used": [],
+        }
+        saved: list[dict] = []
+
+        def fake_load(allow_cache=True):
+            return json.loads(json.dumps(data, ensure_ascii=False))
+
+        def fake_save(updated):
+            saved.append(json.loads(json.dumps(updated, ensure_ascii=False)))
+            data.clear()
+            data.update(updated)
+
+        with (
+            patch.object(topic_store, "_load", side_effect=fake_load),
+            patch.object(topic_store, "_save", side_effect=fake_save),
+        ):
+            self.assertEqual(topic_store.consume_topic("topic-a", "slug-1", "Title A", "beginner"), 1)
+            self.assertEqual(topic_store.consume_topic("topic-a", "slug-1", "Title A", "beginner"), 1)
+            self.assertEqual(topic_store.consume_topic("topic-a", "slug-2", "Title A2", "beginner"), 1)
+
+        self.assertEqual([entry["topic"] for entry in data["backlog"]], ["topic-b"])
+        self.assertEqual(len(data["used"]), 1)
+        self.assertEqual(data["used"][0]["slug"], "slug-1")
+
+    def test_approval_bot_recovers_deferred_topic_consume(self):
+        item = {
+            "id": "item-1",
+            "status": "ready_for_review",
+            "topic": "topic-a",
+            "title": "Title A",
+            "difficulty": "beginner",
+            "topic_store": {"consume_deferred_error": "[Errno 11] Resource deadlock avoided"},
+            "history": [],
+        }
+        saved: list[dict] = []
+
+        def fake_list_items(status=None):
+            return [item] if status == "ready_for_review" else []
+
+        def fake_save_item(updated):
+            saved.append(json.loads(json.dumps(updated, ensure_ascii=False)))
+            return updated
+
+        with (
+            patch.object(approval_bot.queue_lib, "list_items", side_effect=fake_list_items),
+            patch.object(approval_bot.queue_lib, "save_item", side_effect=fake_save_item),
+            patch.object(approval_bot.topic_store, "consume_topic", return_value=12) as consume,
+        ):
+            approval_bot._retry_deferred_topic_consumes()
+
+        consume.assert_called_once_with("topic-a", "item-1", "Title A", "beginner")
+        self.assertNotIn("consume_deferred_error", item["topic_store"])
+        self.assertEqual(item["topic_store"]["remaining"], 12)
+        self.assertIn("topic_consume_recovered", item["history"][-1]["event"])
+        self.assertEqual(len(saved), 1)
 
 
 if __name__ == "__main__":

@@ -22,7 +22,7 @@ from pathlib import Path
 import requests
 
 from .config import CONFIG
-from . import notify, queue_lib
+from . import notify, queue_lib, topic_store
 from .logging_utils import redact_secrets
 from .platforms import poster
 
@@ -273,12 +273,55 @@ def _scan_deferred_retries() -> None:
             log(f"遅延自動再投稿完了: {item['id']} → {updated['status']}")
 
 
+def _retry_deferred_topic_consumes() -> None:
+    """Recover topic-store updates that were deferred by transient Drive locks."""
+    statuses = ("ready_for_review", "approved", "posted", "partial_failed", "failed", "blocked", "skipped")
+    for status in statuses:
+        for item in queue_lib.list_items(status):
+            topic_state = item.get("topic_store") or {}
+            if not topic_state.get("consume_deferred_error"):
+                continue
+            if not item.get("topic"):
+                continue
+            try:
+                remaining = topic_store.consume_topic(
+                    item["topic"],
+                    item["id"],
+                    item["title"],
+                    item.get("difficulty"),
+                )
+            except OSError as exc:
+                if not topic_store.is_transient_io_error(exc):
+                    raise
+                topic_state["consume_deferred_error"] = str(exc)
+                topic_state["last_retry_at"] = _now_iso()
+                item["topic_store"] = topic_state
+                queue_lib.save_item(item)
+                continue
+
+            topic_state.pop("consume_deferred_error", None)
+            topic_state["consume_deferred_resolved_at"] = _now_iso()
+            topic_state["remaining"] = remaining
+            item["topic_store"] = topic_state
+            item.setdefault("history", []).append(
+                {
+                    "ts": _now_iso(),
+                    "event": f"topic_consume_recovered remaining={remaining}",
+                }
+            )
+            queue_lib.save_item(item)
+            log(f"ネタ帳消費を復旧: {item['id']} remaining={remaining}")
+            if remaining <= topic_store.LOW_STOCK_THRESHOLD:
+                notify.send_message(f"📋 shorts-factory: ネタ帳の残りが{remaining}本です。補充してください。")
+
+
 def scan_queue() -> None:
     """未送信プレビューの送付と、approved の投稿実行。"""
     flushed = notify.flush_pending_messages()
     if flushed:
         log(f"保留通知を再送: {flushed}件")
 
+    _retry_deferred_topic_consumes()
     _scan_deferred_retries()
 
     for item in queue_lib.list_items("ready_for_review"):
