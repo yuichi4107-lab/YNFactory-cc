@@ -2,7 +2,7 @@
 source: organize_zoom_inputs.py
 type: input-index
 scope: zoom-meeting-summaries
-generated_at: 2026-06-25T07:00:58
+generated_at: 2026-06-26T07:01:11
 ---
 
 # Zoom Meetings
@@ -10,6 +10,10 @@ generated_at: 2026-06-25T07:00:58
 Zoom AI Companion 議事録の会議一覧。詳細確認は source の organized input と raw 議事録を参照する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-25
+
+- 美建　面接 | start:2026-06-25T09:55:24Z | end:2026-06-25T10:43:22Z | source:`.company/inputs/organized/zoom/2026-06-25-zoom-meetings.md`
 
 ## 2026-06-24
 

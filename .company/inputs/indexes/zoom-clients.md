@@ -2,7 +2,7 @@
 source: organize_zoom_inputs.py
 type: input-index
 scope: zoom-meeting-summaries
-generated_at: 2026-06-25T07:00:58
+generated_at: 2026-06-26T07:01:11
 ---
 
 # Zoom Clients and Counterparties
@@ -10,6 +10,10 @@ generated_at: 2026-06-25T07:00:58
 Zoom 議事録に出てくる商談相手・面接・顧客候補の入口。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-25
+
+- 美建　面接 | summary:中田雄一が森田さんとの一次面接を実施し、株式会社ビルメンテナンスの求人について説明した。中田雄一は同社が建物管理業務を主に行い、清掃業務が約6割を占め、名古屋近郊で150名のパート従業員を管理していることを説明した。現在営業部が5名体制で運営しており、管理業務の増加により新たな... | source:`.company/inputs/organized/zoom/2026-06-25-zoom-meetings.md`
 
 ## 2026-06-24
 

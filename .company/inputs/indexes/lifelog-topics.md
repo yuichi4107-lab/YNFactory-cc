@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-25T07:00:56
+generated_at: 2026-06-26T07:01:09
 ---
 
 # Lifelog Topics
@@ -10,6 +10,23 @@ generated_at: 2026-06-25T07:00:56
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-25
+
+- - **Claude 2.1の復帰動向と技術的詳細** (18:31) | source:`.company/inputs/organized/lifelogs/2026-06-25-lifelog-insights.md`
+-   - 理由: 世界最強と呼ばれたAIモデルの復帰可能性（コード分析、料金体系変更、AWSページ情報）は、AI活用・業務自動化事業に大きな影響を与えるため。政治的・技術的背景の理解。 | source:`.company/inputs/organized/lifelogs/2026-06-25-lifelog-insights.md`
+- 1. **LINE絵文字コンテンツ制作** [manga] ★★☆☆☆ (21:16) | source:`.company/inputs/organized/lifelogs/2026-06-25-lifelog-insights.md`
+-    - LINE絵文字を活用したコンテンツの企画検討。ターゲット設定の必要性を認識。 | source:`.company/inputs/organized/lifelogs/2026-06-25-lifelog-insights.md`
+- 2. **自動再作成システムの開発** [freelance] ★★★★☆ (20:46) | source:`.company/inputs/organized/lifelogs/2026-06-25-lifelog-insights.md`
+-    - 検証で不合格となった成果物を自動的に作り直すシステムの開発ニーズ。フリーランスのAI活用・業務自動化案件に繋がる可能性。 | source:`.company/inputs/organized/lifelogs/2026-06-25-lifelog-insights.md`
+- 3. **AI動画自動化ツールの開発** [freelance|youtube] ★★★★★ (18:31) | source:`.company/inputs/organized/lifelogs/2026-06-25-lifelog-insights.md`
+-    - 誰でもAI動画を自動化できるスキル（ツール）の開発。YouTubeチャンネル運用やフリーランス案件に活用可能。 | source:`.company/inputs/organized/lifelogs/2026-06-25-lifelog-insights.md`
+- 4. **YouTube動画自動化ツールのプロモーション** [youtube] ★★★☆☆ (18:31) | source:`.company/inputs/organized/lifelogs/2026-06-25-lifelog-insights.md`
+-    - 開発中のAI動画自動化ツールに関心のある層をYouTubeの概要欄からオプチャへ誘導する集客アイデア。 | source:`.company/inputs/organized/lifelogs/2026-06-25-lifelog-insights.md`
+- 5. **給与計算における年齢別自動控除システム** [freelance] ★★★★☆ (11:41) | source:`.company/inputs/organized/lifelogs/2026-06-25-lifelog-insights.md`
+-    - 介護保険や年金計算において、年齢に応じた控除項目の自動切り替え・チェック機能の開発。手動作業の削減と正確性向上を図る。フリーランスのAI活用・業務自動化案件に繋がる。 | source:`.company/inputs/organized/lifelogs/2026-06-25-lifelog-insights.md`
+- 6. **請求書・出勤簿承認フロー自動化/品質改善** [freelance] ★★★★☆ (10:37) | source:`.company/inputs/organized/lifelogs/2026-06-25-lifelog-insights.md`
+-    - 複数の担当者による請求書や出勤簿の確認プロセスにおいて、承認フローの明確化と自動化、内容チェックの精度向上を図るシステム開発。手動でのチェック漏れや非効率を解消。フリーランスのAI活用・業務自動化案件に繋がる。 | source:`.company/inputs/organized/lifelogs/2026-06-25-lifelog-insights.md`
 
 ## 2026-06-24
 

@@ -2,7 +2,7 @@
 source: organize_zoom_inputs.py
 type: input-index
 scope: zoom-meeting-summaries
-generated_at: 2026-06-25T07:00:58
+generated_at: 2026-06-26T07:01:11
 ---
 
 # Zoom Next Steps
@@ -10,6 +10,15 @@ generated_at: 2026-06-25T07:00:58
 Zoom 議事録由来の Next Steps。日別TODOへ反映する前に案件状態と完了状況を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-25
+
+- [ ] 中田　雄一: 二次面接以降で具体的な条件（給与、勤務地、通勤方法等）についてOwnerへ提示・説明を行う。 | meeting:美建　面接 | source:`.company/inputs/organized/zoom/2026-06-25-zoom-meetings.md`
+- [ ] 中田　雄一: 営業チームから管理チームへの管理物件の引き継ぎを2～3ヶ月の期間を想定し計画・実施する。 | meeting:美建　面接 | source:`.company/inputs/organized/zoom/2026-06-25-zoom-meetings.md`
+- [ ] 中田　雄一: Ownerに対し、現場作業やパート従業員マネジメント、業務内容について引き継ぎ期間中にトレーニング・指導を実施する。 | meeting:美建　面接 | source:`.company/inputs/organized/zoom/2026-06-25-zoom-meetings.md`
+- [ ] Owner: 必要に応じて、自家用車等による通勤・出動について準備・確認を行う。 | meeting:美建　面接 | source:`.company/inputs/organized/zoom/2026-06-25-zoom-meetings.md`
+- [ ] 中田　雄一: Ownerが入社後、現場作業やパート従業員マネジメント、業務スケジュール管理等について引き続きサポート・指導を行う。 | meeting:美建　面接 | source:`.company/inputs/organized/zoom/2026-06-25-zoom-meetings.md`
+- [ ] 中田　雄一: Ownerが入社後、営業活動と管理業務の分担・調整について引き続き管理チーム内で調整・サポートを行う。 | meeting:美建　面接 | source:`.company/inputs/organized/zoom/2026-06-25-zoom-meetings.md`
 
 ## 2026-06-24
 

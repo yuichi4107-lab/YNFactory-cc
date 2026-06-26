@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-25T07:00:56
+generated_at: 2026-06-26T07:01:09
 ---
 
 # Lifelog Decisions
