@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-26T07:01:09
+generated_at: 2026-06-27T07:00:54
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,17 @@ generated_at: 2026-06-26T07:01:09
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-26
+
+- [ ] 現職の仕事を徐々に減らし、事業活動のための時間を作る | time:00:02 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- [ ] AI活用に関する営業活動を開始する | time:00:02 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- [ ] 会社の副業規定に抵触しない範囲で、AI導入支援の事業化を検討する | time:00:17 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- [ ] 進行中のプロジェクト（詳細不明）の募集状況を確認する | time:18:30 | priority:low | due:- | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- [ ] オフ会の集合写真をどこかにアップロードする | time:18:01 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- [ ] 自身が始めた「うっちゃお」という書籍関連の活動（販売促進など）の進捗確認 | time:17:52 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- [ ] 新しい小説（AIと評価制度がテーマ）の壁打ちを行う | time:11:49 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- [ ] 7月18日16時に撮影を調整する | time:10:15 | priority:high | due:2026-07-18 | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
 
 ## 2026-06-24
 

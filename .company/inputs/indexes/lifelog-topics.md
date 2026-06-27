@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-26T07:01:09
+generated_at: 2026-06-27T07:00:54
 ---
 
 # Lifelog Topics
@@ -10,6 +10,37 @@ generated_at: 2026-06-26T07:01:09
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-26
+
+- - **日本企業のAI導入におけるセキュリティ・公平性に関する課題と導入遅延のリスク** (00:00) | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+-   - 理由: 日本企業がAI導入に時間を要する背景にある要因を理解するため。 | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- - **AI活用による生産性向上と、その成果を適切に評価する人事制度・経営者の認識に関する研究** (00:03) | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+-   - 理由: AIを導入しても成果を評価できなければ人材が流出するリスクがあるため、適切な評価制度と経営者の意識改革の必要性を探るため。 | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- - **無料版と有料版AIツールの性能・機能比較とそのビジネスインパクト** (00:05) | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+-   - 理由: 無料版の限界と有料版の優位性を理解し、顧客への導入提案に役立てるため。 | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- - **AIを活用したアプリケーションの実用化に必要なプロセスと知識（Web公開など）** (00:07) | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+-   - 理由: AIで作成したアプリケーションを実際に活用・公開するための手順や、それに関する一般常識を把握するため。 | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- - **AI導入支援で成功している先行事例の分析** (00:07) | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+-   - 理由: 競合となる可能性のある先行事例から、自身の事業戦略を練るヒントを得るため。 | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- - **ライブ配信の集客戦略と効果的なコンテンツ企画** (17:50) | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+-   - 理由: 現在行っているライブ配信の集客課題を解決するため。 | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- - **AI導入による事務職の業務効率化と評価制度の再構築** (11:50) | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+-   - 理由: 新しい小説のテーマであり、フリーランス事業領域での顧客課題解決に繋がるため。 | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- - **経営者の業務効率化・高効率人材評価に対する認識の実態と改善策** (11:53) | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+-   - 理由: 事務職の評価に関する経営者の誤解を解消し、適切な評価を促すための知見を得るため。 | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- - **PCスキルを要する現代事務職の市場価値と適切な評価方法** (12:04) | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+-   - 理由: 過去の事務職との違いを明確にし、現代の事務職に求められるスキルと、それに応じた評価のあり方を考察するため。 | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- 1. **AI導入支援（企業の個別ニーズに合わせたツール開発と導入サポート）** [freelance] ★★★★☆ (00:07) | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+-    - 日本企業がAI導入に際して直面するセキュリティや公平性、時間的コストなどの課題を解決するため、企業や個人に合わせたAIツールの開発や導入支援を行う。 | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- 2. **AI活用メリット啓蒙コンテンツ制作** [freelance] ★★★☆☆ (00:07) | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+-    - AIが提供する利便性や生産性向上を分かりやすく伝え、企業や個人がAI導入へのイメージを持ちやすくするためのコンテンツ（動画など）を制作し発信する。 | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- 3. **AIを活用した事務職向け業務効率化・自動化ツールの開発** [freelance] ★★★★★ (11:50) | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+-    - 事務職の定性的評価の難しさや高効率人材の評価不足という課題に対し、AIを活用して業務の効率化を測り、その成果を定量的に可視化するツールを開発する。 | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- 4. **現代事務職の役割と評価に関する電子書籍執筆** [ebook] ★★★★☆ (11:50) | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+-    - AI時代における事務職の業務内容の変化、求められるスキル、そして適切な評価制度のあり方をテーマに新しい小説（電子書籍）を執筆する。 | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+- 5. **オフ会企画・運営** [other] ★★☆☆☆ (17:59) | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
+-    - ファンとの交流を深めるためのオフ会を企画・運営し、集合写真撮影やサイン・写真対応、参加者識別などの工夫を取り入れる。 | source:`.company/inputs/organized/lifelogs/2026-06-26-lifelog-insights.md`
 
 ## 2026-06-25
 
