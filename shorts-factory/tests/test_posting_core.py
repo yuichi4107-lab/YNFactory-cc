@@ -767,6 +767,21 @@ class PostingCoreTest(unittest.TestCase):
         )
         self.assertEqual(len(saved), 1)
 
+    def test_list_items_can_scan_recent_files_only(self):
+        with tempfile.TemporaryDirectory() as td:
+            qdir = Path(td)
+            for i, status in enumerate(("posted", "ready_for_review", "approved"), start=1):
+                (qdir / f"2026-06-27_090{i}.json").write_text(
+                    json.dumps({"id": f"item-{i}", "status": status}, ensure_ascii=False),
+                    encoding="utf-8",
+                )
+            with patch.object(queue_lib.CONFIG, "queue_dir", qdir):
+                recent = queue_lib.list_items(recent_files=2)
+                approved = queue_lib.list_items("approved", recent_files=2, max_items=1)
+
+        self.assertEqual([item["id"] for item in recent], ["item-3", "item-2"])
+        self.assertEqual([item["id"] for item in approved], ["item-3"])
+
     def test_fallback_scripts_do_not_return_typecasting_theme(self):
         for topic in (
             "ChatGPTに業務フローを棚卸しさせ、自動化候補を優先順位付けする方法",
@@ -791,7 +806,7 @@ class PostingCoreTest(unittest.TestCase):
         }
         saved: list[dict] = []
 
-        def fake_list_items(status=None):
+        def fake_list_items(status=None, **_kwargs):
             return [item] if status == "ready_for_review" else []
 
         def fake_save_item(updated):

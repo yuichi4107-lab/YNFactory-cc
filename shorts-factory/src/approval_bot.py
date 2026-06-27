@@ -30,6 +30,8 @@ LOCK_FILE = CONFIG.runtime_dir / "approval_bot.pid"
 QUEUE_SCAN_INTERVAL = 30
 PENDING_REJECTIONS_DIR = CONFIG.marketing_dir / "pending_rejections"
 PREVIEW_RETRY_DELAY = timedelta(minutes=10)
+QUEUE_SCAN_RECENT_FILES = 80
+QUEUE_SCAN_MAX_ITEMS = 20
 
 
 def log(msg: str) -> None:
@@ -181,6 +183,14 @@ def _deferred_retry_settings() -> tuple[bool, int, float, timedelta]:
     return enabled, max(0, attempts), max(0.0, delay_sec), timedelta(hours=max(0.0, window_hours))
 
 
+def _scan_items(status: str) -> list[dict]:
+    return queue_lib.list_items(
+        status,
+        recent_files=QUEUE_SCAN_RECENT_FILES,
+        max_items=QUEUE_SCAN_MAX_ITEMS,
+    )
+
+
 def _failed_retry_platforms(item: dict) -> list[str]:
     return [
         name
@@ -253,7 +263,7 @@ def _deferred_retry_allowed(item: dict, now: datetime | None = None) -> tuple[bo
 
 def _scan_deferred_retries() -> None:
     for status in ("partial_failed", "failed"):
-        for item in queue_lib.list_items(status):
+        for item in _scan_items(status):
             allowed, reason, platforms = _deferred_retry_allowed(item)
             if not allowed:
                 continue
@@ -277,7 +287,7 @@ def _retry_deferred_topic_consumes() -> None:
     """Recover topic-store updates that were deferred by transient Drive locks."""
     statuses = ("ready_for_review", "approved", "posted", "partial_failed", "failed", "blocked", "skipped")
     for status in statuses:
-        for item in queue_lib.list_items(status):
+        for item in _scan_items(status):
             topic_state = item.get("topic_store") or {}
             if not topic_state.get("consume_deferred_error"):
                 continue
@@ -324,7 +334,7 @@ def scan_queue() -> None:
     _retry_deferred_topic_consumes()
     _scan_deferred_retries()
 
-    for item in queue_lib.list_items("ready_for_review"):
+    for item in _scan_items("ready_for_review"):
         telegram = item.setdefault("telegram", {})
         if not telegram.get("message_id") and _preview_retry_allowed(item):
             telegram["preview_send_started_at"] = _now_iso()
@@ -346,7 +356,7 @@ def scan_queue() -> None:
                 queue_lib.save_item(item)
                 log(f"プレビュー送信未確認（短時間の自動再送を抑止）: {item['id']}")
 
-    for item in queue_lib.list_items("approved"):
+    for item in _scan_items("approved"):
         log(f"投稿実行: {item['id']}")
         item = poster.post_item(item, queue_lib, notify)
         log(f"投稿完了: {item['id']} → {item['status']}")
@@ -476,9 +486,6 @@ def main() -> None:
     last_scan = 0.0
     while True:
         try:
-            if time.time() - last_scan > QUEUE_SCAN_INTERVAL:
-                scan_queue()
-                last_scan = time.time()
             r = requests.get(
                 _api("getUpdates"),
                 params={
@@ -499,6 +506,9 @@ def main() -> None:
                     handle_callback(upd["callback_query"])
                 elif "message" in upd:
                     handle_message(upd["message"])
+            if time.time() - last_scan > QUEUE_SCAN_INTERVAL:
+                scan_queue()
+                last_scan = time.time()
         except KeyboardInterrupt:
             log("停止")
             break

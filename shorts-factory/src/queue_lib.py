@@ -67,11 +67,20 @@ def load_item(item_id: str) -> dict:
     return retry_io(lambda: _load_item_once(item_id), attempts=5, delay_sec=3.0)
 
 
-def list_items(status: str | None = None) -> list[dict]:
+def list_items(
+    status: str | None = None,
+    *,
+    recent_files: int | None = None,
+    max_items: int | None = None,
+) -> list[dict]:
     if not CONFIG.queue_dir.exists():
         return []
     items = []
-    for p in sorted(CONFIG.queue_dir.glob("*.json")):
+    paths = sorted(CONFIG.queue_dir.glob("*.json"))
+    if recent_files is not None:
+        paths = paths[-max(0, int(recent_files)) :]
+        paths.reverse()
+    for p in paths:
         try:
             item = retry_io(
                 lambda p=p: json.loads(p.read_text(encoding="utf-8")),
@@ -82,6 +91,8 @@ def list_items(status: str | None = None) -> list[dict]:
             continue
         if status is None or item.get("status") == status:
             items.append(item)
+            if max_items is not None and len(items) >= max(0, int(max_items)):
+                break
     return items
 
 
