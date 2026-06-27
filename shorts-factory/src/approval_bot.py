@@ -5,6 +5,7 @@
     ✅承認 → approved へ遷移 → 有効媒体へ投稿 → posted/failed
     ❌却下 → skipped
     ⏸保留 → そのまま（ボタンは残る）
+- ボタンが届かない時は Telegram の文字コマンドでも同じ操作を受け付ける
 - approved（auto_post含む）を検知 → 投稿実行
 
 launchd（com.ynfactory.shorts-approval）で KeepAlive 常駐する。
@@ -32,6 +33,23 @@ PENDING_REJECTIONS_DIR = CONFIG.marketing_dir / "pending_rejections"
 PREVIEW_RETRY_DELAY = timedelta(minutes=10)
 QUEUE_SCAN_RECENT_FILES = 80
 QUEUE_SCAN_MAX_ITEMS = 20
+TEXT_COMMANDS = {
+    "/approve": "approve",
+    "approve": "approve",
+    "承認": "approve",
+    "投稿": "approve",
+    "ok": "approve",
+    "ｏｋ": "approve",
+    "/reject": "reject",
+    "reject": "reject",
+    "却下": "reject",
+    "作り直し": "reject",
+    "作り直す": "reject",
+    "/hold": "hold",
+    "hold": "hold",
+    "保留": "hold",
+    "待機": "hold",
+}
 
 
 def log(msg: str) -> None:
@@ -261,6 +279,94 @@ def _deferred_retry_allowed(item: dict, now: datetime | None = None) -> tuple[bo
     return True, "due", platforms
 
 
+def _approval_event(via: str, action: str) -> str:
+    route = "Telegram文字コマンド" if via == "telegram_text" else "Telegram"
+    return f"{route}で{action}"
+
+
+def _is_actionable_status(item: dict) -> bool:
+    return item.get("status") in ("ready_for_review", "blocked")
+
+
+def _approve_item(item: dict, *, via: str, message_id: int | None = None) -> dict:
+    item.setdefault("review", {}).update(
+        {"owner_approved": True, "decided_at": datetime.now().isoformat(), "via": via}
+    )
+    queue_lib.transition(item, "approved", _approval_event(via, "承認"))
+    if message_id:
+        _remove_buttons(message_id)
+    log(f"承認: {item['id']} via={via}")
+    item = poster.post_item(item, queue_lib, notify)
+    log(f"投稿完了: {item['id']} → {item['status']}")
+    return item
+
+
+def _reject_item(
+    item: dict,
+    *,
+    chat_id: str | int,
+    via: str,
+    message_id: int | None = None,
+) -> dict:
+    item.setdefault("review", {}).update(
+        {
+            "owner_approved": False,
+            "decided_at": datetime.now().isoformat(),
+            "via": via,
+            "rejection_reason_pending": True,
+            "replacement_requested_at": datetime.now().isoformat(),
+        }
+    )
+    queue_lib.transition(item, "skipped", _approval_event(via, "却下"))
+    _set_pending_rejection(chat_id, item["id"])
+    _spawn_replacement(item)
+    if message_id:
+        _remove_buttons(message_id)
+    notify.send_message(
+        "📝 却下理由をこのチャットに普通のメッセージで送ると、"
+        f"<code>{item['id']}</code> の理由として保存します。\n"
+        "代替候補は自動で作成中です。"
+    )
+    log(f"却下: {item['id']} via={via}")
+    return item
+
+
+def _hold_item(item: dict, *, via: str) -> None:
+    item.setdefault("history", []).append(
+        {
+            "ts": _now_iso(),
+            "event": _approval_event(via, "保留"),
+        }
+    )
+    queue_lib.save_item(item)
+    log(f"保留: {item['id']} via={via}")
+
+
+def _parse_text_command(text: str) -> tuple[str, str | None, str | None] | None:
+    parts = text.split(maxsplit=2)
+    if not parts:
+        return None
+    command = parts[0].strip().lower()
+    if command.startswith("/"):
+        command = command.split("@", 1)[0]
+    action = TEXT_COMMANDS.get(command)
+    if not action:
+        return None
+    item_id = parts[1] if len(parts) >= 2 else None
+    detail = parts[2] if len(parts) >= 3 else None
+    return action, item_id, detail
+
+
+def _infer_single_actionable_item_id() -> tuple[str | None, str | None]:
+    items = [item for status in ("ready_for_review", "blocked") for item in _scan_items(status)]
+    if len(items) == 1:
+        return items[0]["id"], None
+    if not items:
+        return None, "現在、操作待ちのショート動画はありません。"
+    choices = "\n".join(f"- <code>{item['id']}</code>" for item in items[:5])
+    return None, "対象が複数あります。次のようにIDを付けて送ってください。\n" + choices
+
+
 def _scan_deferred_retries() -> None:
     for status in ("partial_failed", "failed"):
         for item in _scan_items(status):
@@ -370,55 +476,64 @@ def handle_callback(cb: dict) -> None:
         _answer_callback(cb_id, "不明な操作")
         return
     action, item_id = data.split(":", 1)
+    log(f"callback受信: action={action} item={item_id}")
     try:
         item = queue_lib.load_item(item_id)
     except FileNotFoundError:
         _answer_callback(cb_id, "対象が見つかりません")
         return
 
-    if item["status"] not in ("ready_for_review", "blocked"):
+    if not _is_actionable_status(item):
         _answer_callback(cb_id, f"既に処理済み（{item['status']}）")
         return
 
     if action == "approve":
-        item["review"].update(
-            {"owner_approved": True, "decided_at": datetime.now().isoformat(), "via": "telegram"}
-        )
-        queue_lib.transition(item, "approved", "Telegramで承認")
         _answer_callback(cb_id, "承認しました。投稿します…")
-        if msg.get("message_id"):
-            _remove_buttons(msg["message_id"])
-        log(f"承認: {item_id}")
-        item = poster.post_item(item, queue_lib, notify)
-        log(f"投稿完了: {item_id} → {item['status']}")
+        _approve_item(item, via="telegram", message_id=msg.get("message_id"))
     elif action == "reject":
         chat_id = msg.get("chat", {}).get("id") or CONFIG.telegram_chat_id
-        item["review"].update(
-            {
-                "owner_approved": False,
-                "decided_at": datetime.now().isoformat(),
-                "via": "telegram",
-                "rejection_reason_pending": True,
-                "replacement_requested_at": datetime.now().isoformat(),
-            }
-        )
-        queue_lib.transition(item, "skipped", "Telegramで却下")
-        _set_pending_rejection(chat_id, item_id)
-        _spawn_replacement(item)
         _answer_callback(cb_id, "却下しました。代替候補を作成します…")
-        if msg.get("message_id"):
-            _remove_buttons(msg["message_id"])
-        notify.send_message(
-            "📝 却下理由をこのチャットに普通のメッセージで送ると、"
-            f"<code>{item_id}</code> の理由として保存します。\n"
-            "代替候補は自動で作成中です。"
-        )
-        log(f"却下: {item_id}")
+        _reject_item(item, chat_id=chat_id, via="telegram", message_id=msg.get("message_id"))
     elif action == "hold":
         _answer_callback(cb_id, "保留しました。ボタンはそのまま使えます")
-        log(f"保留: {item_id}")
+        _hold_item(item, via="telegram")
     else:
         _answer_callback(cb_id, "不明な操作")
+
+
+def _handle_text_command(chat_id: str | int, text: str) -> bool:
+    parsed = _parse_text_command(text)
+    if not parsed:
+        return False
+    action, item_id, detail = parsed
+    if not item_id:
+        item_id, message = _infer_single_actionable_item_id()
+        if not item_id:
+            notify.send_message(message or "対象IDを付けて送ってください。")
+            return True
+    try:
+        item = queue_lib.load_item(item_id)
+    except FileNotFoundError:
+        notify.send_message(f"対象が見つかりません: <code>{item_id}</code>")
+        return True
+    if not _is_actionable_status(item):
+        notify.send_message(f"既に処理済みです: <code>{item_id}</code>（{item.get('status')}）")
+        return True
+
+    log(f"文字コマンド受信: action={action} item={item_id}")
+    if action == "approve":
+        notify.send_message(f"✅ 承認しました。投稿します: <code>{item_id}</code>")
+        _approve_item(item, via="telegram_text")
+    elif action == "reject":
+        _reject_item(item, chat_id=chat_id, via="telegram_text")
+        if detail:
+            _record_rejection_reason(item_id, detail)
+            _pending_rejection_path(chat_id).unlink(missing_ok=True)
+            notify.send_message(f"📝 却下理由を保存しました: <code>{item_id}</code>")
+    elif action == "hold":
+        _hold_item(item, via="telegram_text")
+        notify.send_message(f"⏸ 保留しました: <code>{item_id}</code>")
+    return True
 
 
 def _record_rejection_reason(item_id: str, reason: str) -> bool:
@@ -450,6 +565,8 @@ def handle_message(msg: dict) -> None:
     if not chat_id or not text:
         return
     if str(chat_id) != str(CONFIG.telegram_chat_id):
+        return
+    if _handle_text_command(chat_id, text):
         return
 
     item_id = None

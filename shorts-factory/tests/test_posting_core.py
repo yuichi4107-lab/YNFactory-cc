@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import errno
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -825,6 +826,33 @@ class PostingCoreTest(unittest.TestCase):
         self.assertEqual(item["topic_store"]["remaining"], 12)
         self.assertIn("topic_consume_recovered", item["history"][-1]["event"])
         self.assertEqual(len(saved), 1)
+
+    def test_telegram_text_command_approves_item(self):
+        item = make_item()
+        item["status"] = "ready_for_review"
+        item["review"] = {"owner_approved": False, "decided_at": None, "via": None}
+        messages: list[str] = []
+        posted: list[dict] = []
+
+        def fake_post(updated, _queue_lib, _notify):
+            posted.append(json.loads(json.dumps(updated, ensure_ascii=False)))
+            updated["status"] = "posted"
+            return updated
+
+        with (
+            patch.dict(os.environ, {"SHORTS_TG_CHAT_ID": "123"}),
+            patch.object(approval_bot.queue_lib, "load_item", return_value=item),
+            patch.object(approval_bot.queue_lib, "transition", side_effect=FakeQueue.transition),
+            patch.object(approval_bot.poster, "post_item", side_effect=fake_post),
+            patch.object(approval_bot.notify, "send_message", side_effect=lambda text: messages.append(text)),
+        ):
+            approval_bot.handle_message({"chat": {"id": "123"}, "text": "承認 item-1"})
+
+        self.assertTrue(item["review"]["owner_approved"])
+        self.assertEqual(item["review"]["via"], "telegram_text")
+        self.assertEqual(posted[0]["status"], "approved")
+        self.assertEqual(item["status"], "posted")
+        self.assertIn("承認しました", messages[0])
 
 
 if __name__ == "__main__":
