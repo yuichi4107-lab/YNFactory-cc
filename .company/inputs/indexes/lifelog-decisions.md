@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-27T07:00:54
+generated_at: 2026-06-28T07:01:01
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,13 @@ generated_at: 2026-06-27T07:00:54
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-27
+
+- - イベント終了後も残れる参加者との交流を継続する方針を決定した。 | time:20:57 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- - 競走馬の母馬の年齢は15歳までとし、厩舎選びを重要視するという出資方針を決定した。 | time:19:33 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- - 競走馬出資における支払い・キャンセル規定を厳格化し、抽選対象外となることなどを周知徹底する。 | time:18:57 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- - 自身の出資馬（ガイアメンテ、ゲルスタールなど）に関して、G1での勝利を目指す出資馬の選定と支援を強化する方針を決定した。 | time:18:41 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
 
 ## 2026-06-26
 

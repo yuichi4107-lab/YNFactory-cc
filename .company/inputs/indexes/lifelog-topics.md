@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-27T07:00:54
+generated_at: 2026-06-28T07:01:01
 ---
 
 # Lifelog Topics
@@ -10,6 +10,39 @@ generated_at: 2026-06-27T07:00:54
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-27
+
+- - **日本とオーストラリアの競馬環境の違いの深掘り** (20:42) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+-   - 理由: 馬の選定（スピード・パワー）、馬場適性、騎手の戦術など、両国の競馬環境の違いを詳細に分析し、競走馬の出資戦略や育成方針に役立てるため。 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- - **競馬場におけるハロー設備導入による競走馬のパフォーマンス変化と施設投資の関連性** (19:55) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+-   - 理由: ハロー設備の導入が競走馬の成績に与える影響や、厩舎の成績変動との関連性を調査し、競走馬の育成環境への投資判断や情報収集に活かすため。 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- - **競走馬の厩舎選びにおけるクラブ馬主と個人馬主の構成比率とその影響** (19:57) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+-   - 理由: 厩舎の馬主構成（クラブ馬主 vs 個人馬主）が厩舎の運営方針や馬の優先順位に与える影響を分析し、競走馬出資戦略の最適化に役立てるため。 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- - **地方競馬における2着狙いなどの戦略と賞金体系の分析** (19:53) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+-   - 理由: 地方競馬特有の賞金体系や昇級・降級システムを理解し、2着狙いなどの戦略がなぜ発生するかを分析。地方競馬への出資や馬券戦略の検討に活かすため。 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- - **AIを用いた競馬予測モデルの精度向上と自動投稿システムの実現可能性** (19:47) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+-   - 理由: 開発中の競馬予測ソフトウェアの精度向上策を探るとともに、AIによる自動投稿システムの技術的・運用的な実現可能性を調査し、フリーランス事業でのAI活用案件の具体化に繋げるため。 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- - **AIによる金融市場（特にFX）の機械的判断に必要なデータ取得方法と無料ツールの調査** (00:17) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+-   - 理由: AIを活用したFX自動売買システム開発に向け、人間の主観を排除した機械的判断を行うためのデータ取得方法や、そのために利用できる無料または低コストなツールの調査を進めるため。 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- 1. **海外競馬場年間パス取得によるイベント参加者への特典提供** [other] ★★★☆☆ (20:36) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+-    - ムニバレー競馬場の年間パスのように、日本の競馬クラブ会員が通常入場できない海外競馬場への入場を可能にするパスを取得し、イベント参加者への特典やツアー商品として提供することで差別化を図る。 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- 2. **競馬出資者向けイベントでの共同出資馬情報提供と有名オーナー推薦馬への投資機会提供** [other] ★★★★☆ (20:00) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+-    - 競馬イベントにおいて、共同出資馬の情報を詳細に提供し、須田オーナーのような有名オーナーの推薦馬（実績あり）への投資機会を提示することで、新たな出資者の獲得やエンゲージメント強化を図る。 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- 3. **競走馬の屈腱炎治療技術開発会社との提携** [other] ★★★★★ (20:10) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+-    - 競走馬の屈腱炎治療技術を開発する会社（IGKB関連）との提携により、出資馬の治療・リハビリ支援を強化し、関連情報をオーナーコミュニティに提供することで、馬の寿命延長やパフォーマンス向上を目指す。 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- 4. **競馬予測ソフトウェアの開発・提供** [freelance] ★★★★☆ (19:46) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+-    - 実験的に開発中の競馬予測ソフトウェアをさらに洗練させ、フリーランス事業として開発・提供する。精度100%超えを目指し、検証と手直しを継続することで、新たな収益源を確立する。 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- 5. **名古屋でのイベント開催可能性の検討** [other] ★★★☆☆ (19:20) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+-    - オーナーの持つ名古屋市内の店舗（岡崎、愛知、東刈谷）を活用し、競馬関連または他の事業領域でのイベント開催を検討。既存顧客との連携や新規顧客獲得の機会とする。 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- 6. **オーストラリア競馬ツアー企画・販売** [other] ★★★★☆ (19:01) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+-    - 女性に人気の観光要素（メルボルンの街の観光など）を強化したオーストラリア競馬ツアーを企画・販売。既存顧客へのアプローチに加え、新規層の獲得を目指す。 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- 7. **Twitterを活用した情報発信によるブランディング強化と書籍販売への繋げ方** [ebook|instagram|youtube] ★★★☆☆ (19:10) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+-    - 自身のTwitterでの発信力を活かし、ブランディングを強化。書籍出版にも言及されており、情報発信を通じて電子書籍等の販売促進に繋げる戦略を練る。 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- 8. **ライジング社との共同プロモーションによる募集馬の広報活動** [other] ★★★☆☆ (18:43) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+-    - ライジング社の新馬募集（9頭）と品質への自信を、イベントやSNSを通じて共同でプロモーションし、新たな出資者を募る活動を行う。 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- 9. **AIを活用したFX自動売買システムの開発・提供** [freelance] ★★★★★ (00:17) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+-    - FX市場の特性（下がっている時でも儲かる仕組み）に着目し、AIを用いた自動売買システムを開発。人間の主観を排除した機械的判断を可能にし、フリーランス事業として提供を目指す。 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
 
 ## 2026-06-26
 

@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-27T07:00:54
+generated_at: 2026-06-28T07:01:01
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,16 @@ generated_at: 2026-06-27T07:00:54
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-27
+
+- - **須田さん** — 須田オーナー。選んだ馬が全て勝ち上がっており、今後募集される馬の選定にも関わる。イベントにも顔を出す予定があり、相談に乗ることが推奨されている。 (20:00) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- - **ヒロセさん** — IRTという輸送会社に勤務。海外への競走馬輸送において非常に重要な役割を担っており、安心して馬を海外に送れるキーパーソン。 (20:10) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- - **屈強を直す飛躍を製作している会社の方** — IGKB関連のプロジェクトで競走馬の屈腱炎治療技術を開発中。競走馬業界を揺るがす重要な技術を持つ可能性がある。 (20:10) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- - **山田雄太さん** — Twitterで繋がり、パーティーに招待され面識を持つ。リッチャンパン号の口取りの映像にも登場。 (19:09) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- - **森新夜** — イベントの共同開催者であり、乾杯の音頭を担当した。 (18:43) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- - **川上** — イベントの共同開催者であり、開会挨拶とイベントの進行案内を担当した。 (18:43) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- - **Yuichi** — 会話中に名前が認識され、何かの生産カウントに関連する可能性が示唆された。 (16:47) | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
 
 ## 2026-06-26
 

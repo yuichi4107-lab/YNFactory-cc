@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-27T07:00:54
+generated_at: 2026-06-28T07:01:01
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,16 @@ generated_at: 2026-06-27T07:00:54
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-27
+
+- [ ] イベント集合写真のSNS掲載前に顔出しNG者の確認を行う。 | time:20:58 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- [ ] プレゼント企画の景品リストを管理し、特に希少品（サウジカップレースブックなど）の価値を認識した上で取り扱う。 | time:20:06 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- [ ] 既存出資馬の管理を継続し、新たな出資は「勝ち逃げ」戦略に基づいて抑制する。 | time:19:29 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- [ ] 9月末のオーストラリア競馬ツアーの企画と参加者募集を開始する。 | time:19:01 | priority:high | due:2026-09-30 | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- [ ] オーストラリア競馬ツアーのスケジュール調整に関する早期相談の案内を参加希望者へ行う。 | time:19:01 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- [ ] 出資馬のデビュー状況と成長報告を定期的に確認し、関係者や共有オーナーへ共有する。 | time:18:35 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
+- [ ] 今後のイベント開催時、参加者の利便性を考慮し、札幌市場や横浜など電車移動を前提とした解散場所を選定する。 | time:10:31 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-27-lifelog-insights.md`
 
 ## 2026-06-26
 
