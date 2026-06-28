@@ -854,6 +854,10 @@ class PostingCoreTest(unittest.TestCase):
         self.assertEqual(item["status"], "posted")
         self.assertIn("承認しました", messages[0])
 
+    def test_approval_bot_watchdog_stall_boundary(self):
+        self.assertFalse(approval_bot._watchdog_stalled(109.9, 100.0, 10.0))
+        self.assertTrue(approval_bot._watchdog_stalled(110.0, 100.0, 10.0))
+
 
 if __name__ == "__main__":
     unittest.main()

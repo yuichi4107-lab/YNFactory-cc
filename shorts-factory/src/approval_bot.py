@@ -16,6 +16,7 @@ import atexit
 import json
 import os
 import subprocess
+import threading
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -33,6 +34,8 @@ PENDING_REJECTIONS_DIR = CONFIG.marketing_dir / "pending_rejections"
 PREVIEW_RETRY_DELAY = timedelta(minutes=10)
 QUEUE_SCAN_RECENT_FILES = 80
 QUEUE_SCAN_MAX_ITEMS = 20
+WATCHDOG_TIMEOUT_SEC = 600
+WATCHDOG_CHECK_INTERVAL_SEC = 60
 TEXT_COMMANDS = {
     "/approve": "approve",
     "approve": "approve",
@@ -50,6 +53,8 @@ TEXT_COMMANDS = {
     "保留": "hold",
     "待機": "hold",
 }
+_last_progress_at = time.monotonic()
+_watchdog_started = False
 
 
 def log(msg: str) -> None:
@@ -57,6 +62,32 @@ def log(msg: str) -> None:
     print(line, flush=True)
     with open(CONFIG.logs_dir / "approval_bot.log", "a", encoding="utf-8") as f:
         f.write(line + "\n")
+
+
+def _mark_progress() -> None:
+    global _last_progress_at
+    _last_progress_at = time.monotonic()
+
+
+def _watchdog_stalled(now: float, last_progress_at: float, timeout_sec: float) -> bool:
+    return now - last_progress_at >= timeout_sec
+
+
+def _watchdog_loop() -> None:
+    while True:
+        time.sleep(WATCHDOG_CHECK_INTERVAL_SEC)
+        stalled_for = time.monotonic() - _last_progress_at
+        if _watchdog_stalled(time.monotonic(), _last_progress_at, WATCHDOG_TIMEOUT_SEC):
+            log(f"approval_bot watchdog: {int(stalled_for)}秒応答なし。再起動します")
+            os._exit(70)
+
+
+def _start_watchdog() -> None:
+    global _watchdog_started
+    if _watchdog_started:
+        return
+    _watchdog_started = True
+    threading.Thread(target=_watchdog_loop, name="approval-bot-watchdog", daemon=True).start()
 
 
 def _acquire_lock() -> None:
@@ -598,11 +629,14 @@ def main() -> None:
     if not notify.enabled():
         raise SystemExit("Telegram設定がありません（secrets.yaml を確認）")
     _acquire_lock()
+    _start_watchdog()
+    _mark_progress()
     log("approval_bot 起動")
     offset = 0
     last_scan = 0.0
     while True:
         try:
+            _mark_progress()
             r = requests.get(
                 _api("getUpdates"),
                 params={
@@ -612,10 +646,12 @@ def main() -> None:
                 },
                 timeout=35,
             )
+            _mark_progress()
             if not r.ok:
                 if r.status_code == 409:
                     log("⚠️ getUpdates 409: 別プロセスがこのbotをポーリング中。60秒待機")
                     time.sleep(60)
+                    _mark_progress()
                 continue
             for upd in r.json().get("result", []):
                 offset = max(offset, upd["update_id"] + 1)
@@ -623,15 +659,18 @@ def main() -> None:
                     handle_callback(upd["callback_query"])
                 elif "message" in upd:
                     handle_message(upd["message"])
+                _mark_progress()
             if time.time() - last_scan > QUEUE_SCAN_INTERVAL:
                 scan_queue()
                 last_scan = time.time()
+                _mark_progress()
         except KeyboardInterrupt:
             log("停止")
             break
         except Exception as e:  # デーモンは死なない
             log(f"エラー: {e}")
             time.sleep(10)
+            _mark_progress()
 
 
 if __name__ == "__main__":
