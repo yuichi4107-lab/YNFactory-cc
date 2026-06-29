@@ -16,6 +16,7 @@ import atexit
 import json
 import os
 import subprocess
+import sys
 import threading
 import time
 from datetime import datetime, timedelta
@@ -36,6 +37,7 @@ QUEUE_SCAN_RECENT_FILES = 80
 QUEUE_SCAN_MAX_ITEMS = 20
 WATCHDOG_TIMEOUT_SEC = 600
 WATCHDOG_CHECK_INTERVAL_SEC = 60
+POST_WORKER_STALE_AFTER = timedelta(minutes=30)
 TEXT_COMMANDS = {
     "/approve": "approve",
     "approve": "approve",
@@ -106,15 +108,22 @@ def _api(method: str) -> str:
     return f"https://api.telegram.org/bot{CONFIG.telegram_token}/{method}"
 
 
-def _answer_callback(cb_id: str, text: str) -> None:
+def _answer_callback(cb_id: str, text: str) -> bool:
     try:
-        requests.post(
+        response = requests.post(
             _api("answerCallbackQuery"),
             data={"callback_query_id": cb_id, "text": text[:190]},
             timeout=15,
-        ).raise_for_status()
+        )
+        response.raise_for_status()
+        return True
     except requests.RequestException as exc:
-        log(f"Telegram callback応答失敗: {exc}")
+        response = getattr(exc, "response", None)
+        detail = ""
+        if response is not None and response.text:
+            detail = f" body={response.text[:300]}"
+        log(f"Telegram callback応答失敗: {exc}{detail}")
+        return False
 
 
 def _remove_buttons(message_id: int) -> None:
@@ -319,6 +328,77 @@ def _is_actionable_status(item: dict) -> bool:
     return item.get("status") in ("ready_for_review", "blocked")
 
 
+def _process_alive(pid: int | None) -> bool:
+    if not pid:
+        return False
+    try:
+        os.kill(pid, 0)
+        return True
+    except (OSError, TypeError, ValueError):
+        return False
+
+
+def _post_lock_path(item_id: str) -> Path:
+    return CONFIG.runtime_dir / "post_locks" / f"{item_id}.lock"
+
+
+def _posting_worker_active(item: dict, now: datetime | None = None) -> bool:
+    if _post_lock_path(item["id"]).exists():
+        return True
+    worker = item.get("posting_worker") or {}
+    if _process_alive(worker.get("pid")):
+        return True
+    started_at = _parse_iso(worker.get("started_at"))
+    if not started_at:
+        return False
+    now = now or datetime.now().astimezone()
+    if started_at.tzinfo is None and now.tzinfo is not None:
+        started_at = started_at.replace(tzinfo=now.tzinfo)
+    return now - started_at < POST_WORKER_STALE_AFTER
+
+
+def _spawn_post_worker(item: dict, reason: str) -> bool:
+    if _posting_worker_active(item):
+        return False
+
+    now = _now_iso()
+    worker = item.setdefault("posting_worker", {})
+    worker["attempts"] = _as_int(worker.get("attempts"), 0) + 1
+    worker["started_at"] = now
+    worker["reason"] = reason
+    worker.pop("completed_at", None)
+    worker.pop("exit_code", None)
+    worker.pop("error", None)
+    queue_lib.save_item(item)
+
+    script = CONFIG.runtime_dir / "app" / "scripts" / "post_approved_item.py"
+    log_path = CONFIG.logs_dir / "post_worker.log"
+    env = os.environ.copy()
+    env["SHORTS_REPO_ROOT"] = str(CONFIG.repo_root)
+    env["SHORTS_FACTORY_ROOT"] = str(CONFIG.runtime_dir / "app")
+    with open(log_path, "a", encoding="utf-8") as log_file:
+        log_file.write(f"\n[{datetime.now().isoformat()}] item={item['id']} reason={reason}\n")
+        try:
+            proc = subprocess.Popen(
+                [sys.executable, str(script), item["id"]],
+                cwd=str(CONFIG.runtime_dir / "app"),
+                env=env,
+                stdout=log_file,
+                stderr=subprocess.STDOUT,
+                start_new_session=True,
+            )
+        except OSError as exc:
+            worker["error"] = str(exc)
+            queue_lib.save_item(item)
+            log(f"投稿ワーカー起動失敗: {item['id']} {exc}")
+            return False
+
+    worker["pid"] = proc.pid
+    queue_lib.save_item(item)
+    log(f"投稿ワーカー起動: {item['id']} pid={proc.pid} reason={reason}")
+    return True
+
+
 def _approve_item(item: dict, *, via: str, message_id: int | None = None) -> dict:
     item.setdefault("review", {}).update(
         {"owner_approved": True, "decided_at": datetime.now().isoformat(), "via": via}
@@ -327,8 +407,7 @@ def _approve_item(item: dict, *, via: str, message_id: int | None = None) -> dic
     if message_id:
         _remove_buttons(message_id)
     log(f"承認: {item['id']} via={via}")
-    item = poster.post_item(item, queue_lib, notify)
-    log(f"投稿完了: {item['id']} → {item['status']}")
+    _spawn_post_worker(item, f"approved:{via}")
     return item
 
 
@@ -494,9 +573,7 @@ def scan_queue() -> None:
                 log(f"プレビュー送信未確認（短時間の自動再送を抑止）: {item['id']}")
 
     for item in _scan_items("approved"):
-        log(f"投稿実行: {item['id']}")
-        item = poster.post_item(item, queue_lib, notify)
-        log(f"投稿完了: {item['id']} → {item['status']}")
+        _spawn_post_worker(item, "scan_queue")
 
 
 def handle_callback(cb: dict) -> None:
@@ -504,32 +581,39 @@ def handle_callback(cb: dict) -> None:
     cb_id = cb["id"]
     msg = cb.get("message", {})
     if ":" not in data:
-        _answer_callback(cb_id, "不明な操作")
+        if not _answer_callback(cb_id, "不明な操作"):
+            notify.send_message("⚠️ 不明な操作を受信しました。")
         return
     action, item_id = data.split(":", 1)
     log(f"callback受信: action={action} item={item_id}")
     try:
         item = queue_lib.load_item(item_id)
     except FileNotFoundError:
-        _answer_callback(cb_id, "対象が見つかりません")
+        if not _answer_callback(cb_id, "対象が見つかりません"):
+            notify.send_message(f"⚠️ 対象が見つかりません: <code>{item_id}</code>")
         return
 
     if not _is_actionable_status(item):
-        _answer_callback(cb_id, f"既に処理済み（{item['status']}）")
+        if not _answer_callback(cb_id, f"既に処理済み（{item['status']}）"):
+            notify.send_message(f"ℹ️ 既に処理済みです: <code>{item_id}</code>（{item['status']}）")
         return
 
     if action == "approve":
-        _answer_callback(cb_id, "承認しました。投稿します…")
+        if not _answer_callback(cb_id, "承認しました。投稿します…"):
+            notify.send_message(f"✅ 承認を受け付けました。投稿します: <code>{item_id}</code>")
         _approve_item(item, via="telegram", message_id=msg.get("message_id"))
     elif action == "reject":
         chat_id = msg.get("chat", {}).get("id") or CONFIG.telegram_chat_id
-        _answer_callback(cb_id, "却下しました。代替候補を作成します…")
+        if not _answer_callback(cb_id, "却下しました。代替候補を作成します…"):
+            notify.send_message(f"🔁 却下を受け付けました。代替候補を作成します: <code>{item_id}</code>")
         _reject_item(item, chat_id=chat_id, via="telegram", message_id=msg.get("message_id"))
     elif action == "hold":
-        _answer_callback(cb_id, "保留しました。ボタンはそのまま使えます")
+        if not _answer_callback(cb_id, "保留しました。ボタンはそのまま使えます"):
+            notify.send_message(f"⏸ 保留を受け付けました: <code>{item_id}</code>")
         _hold_item(item, via="telegram")
     else:
-        _answer_callback(cb_id, "不明な操作")
+        if not _answer_callback(cb_id, "不明な操作"):
+            notify.send_message(f"⚠️ 不明な操作を受信しました: <code>{item_id}</code>")
 
 
 def _handle_text_command(chat_id: str | int, text: str) -> bool:

@@ -832,31 +832,64 @@ class PostingCoreTest(unittest.TestCase):
         item["status"] = "ready_for_review"
         item["review"] = {"owner_approved": False, "decided_at": None, "via": None}
         messages: list[str] = []
-        posted: list[dict] = []
-
-        def fake_post(updated, _queue_lib, _notify):
-            posted.append(json.loads(json.dumps(updated, ensure_ascii=False)))
-            updated["status"] = "posted"
-            return updated
+        spawned: list[tuple[str, str]] = []
 
         with (
             patch.dict(os.environ, {"SHORTS_TG_CHAT_ID": "123"}),
             patch.object(approval_bot.queue_lib, "load_item", return_value=item),
             patch.object(approval_bot.queue_lib, "transition", side_effect=FakeQueue.transition),
-            patch.object(approval_bot.poster, "post_item", side_effect=fake_post),
+            patch.object(
+                approval_bot,
+                "_spawn_post_worker",
+                side_effect=lambda updated, reason: spawned.append((updated["id"], reason)) or True,
+            ),
             patch.object(approval_bot.notify, "send_message", side_effect=lambda text: messages.append(text)),
         ):
             approval_bot.handle_message({"chat": {"id": "123"}, "text": "承認 item-1"})
 
         self.assertTrue(item["review"]["owner_approved"])
         self.assertEqual(item["review"]["via"], "telegram_text")
-        self.assertEqual(posted[0]["status"], "approved")
-        self.assertEqual(item["status"], "posted")
+        self.assertEqual(item["status"], "approved")
+        self.assertEqual(spawned, [("item-1", "approved:telegram_text")])
         self.assertIn("承認しました", messages[0])
 
     def test_approval_bot_watchdog_stall_boundary(self):
         self.assertFalse(approval_bot._watchdog_stalled(109.9, 100.0, 10.0))
         self.assertTrue(approval_bot._watchdog_stalled(110.0, 100.0, 10.0))
+
+    def test_posting_worker_active_when_lock_exists(self):
+        with tempfile.TemporaryDirectory() as td:
+            runtime = Path(td)
+            lock_dir = runtime / "post_locks"
+            lock_dir.mkdir()
+            (lock_dir / "item-1.lock").write_text("123", encoding="utf-8")
+            with patch.object(approval_bot.CONFIG, "runtime_dir", runtime):
+                self.assertTrue(approval_bot._posting_worker_active({"id": "item-1"}))
+
+    def test_callback_answer_failure_sends_visible_confirmation(self):
+        item = make_item()
+        item["status"] = "ready_for_review"
+        item["review"] = {"owner_approved": False, "decided_at": None, "via": None}
+        messages: list[str] = []
+        spawned: list[tuple[str, str]] = []
+
+        with (
+            patch.object(approval_bot.queue_lib, "load_item", return_value=item),
+            patch.object(approval_bot.queue_lib, "transition", side_effect=FakeQueue.transition),
+            patch.object(
+                approval_bot,
+                "_spawn_post_worker",
+                side_effect=lambda updated, reason: spawned.append((updated["id"], reason)) or True,
+            ),
+            patch.object(approval_bot, "_answer_callback", return_value=False),
+            patch.object(approval_bot.notify, "send_message", side_effect=lambda text: messages.append(text)),
+        ):
+            approval_bot.handle_callback({"id": "cb-1", "data": "approve:item-1", "message": {}})
+
+        self.assertEqual(item["status"], "approved")
+        self.assertTrue(item["review"]["owner_approved"])
+        self.assertEqual(spawned, [("item-1", "approved:telegram")])
+        self.assertIn("承認を受け付けました", messages[0])
 
 
 if __name__ == "__main__":
