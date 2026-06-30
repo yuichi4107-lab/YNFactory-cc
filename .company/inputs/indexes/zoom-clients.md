@@ -2,7 +2,7 @@
 source: organize_zoom_inputs.py
 type: input-index
 scope: zoom-meeting-summaries
-generated_at: 2026-06-29T07:00:20
+generated_at: 2026-06-30T07:00:07
 ---
 
 # Zoom Clients and Counterparties
