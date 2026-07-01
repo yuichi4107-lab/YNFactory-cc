@@ -242,8 +242,14 @@ def _save(data: dict) -> None:
     _write_cache(data)
 
 
-def next_topic(difficulty: str | None = None) -> tuple[str | None, int]:
-    """指定難易度のトピックと残数を返す（取り出しはまだしない）。"""
+def _public_topic_entry(entry: dict) -> dict:
+    copied = dict(entry)
+    copied["difficulty"] = _difficulty(copied)
+    return copied
+
+
+def next_topic_entry(difficulty: str | None = None) -> tuple[dict | None, int]:
+    """指定難易度のトピックentryと残数を返す（取り出しはまだしない）。"""
     data = _load()
     backlog = data.get("backlog", [])
     if not backlog:
@@ -253,12 +259,20 @@ def next_topic(difficulty: str | None = None) -> tuple[str | None, int]:
     if normalized:
         for entry in backlog:
             if _difficulty(entry) == normalized and not is_duplicate_topic(entry.get("topic"), reserved):
-                return entry["topic"], backlog_count(normalized)
+                return _public_topic_entry(entry), backlog_count(normalized)
         return None, 0
     for entry in backlog:
         if not is_duplicate_topic(entry.get("topic"), reserved):
-            return entry["topic"], len(backlog)
+            return _public_topic_entry(entry), len(backlog)
     return None, 0
+
+
+def next_topic(difficulty: str | None = None) -> tuple[str | None, int]:
+    """指定難易度のトピック文字列と残数を返す（後方互換API）。"""
+    entry, remaining = next_topic_entry(difficulty)
+    if not entry:
+        return None, remaining
+    return entry.get("topic"), remaining
 
 
 def consume_topic(topic: str, slug: str, title: str, difficulty: str | None = None) -> int:
@@ -272,15 +286,25 @@ def consume_topic(topic: str, slug: str, title: str, difficulty: str | None = No
         return len(data.get("backlog", []))
     topic_difficulty = normalize_difficulty(difficulty) or _difficulty(matched)
     data["backlog"] = [t for t in data.get("backlog", []) if t.get("topic") != topic]
-    used.append(
-        {
-            "topic": topic,
-            "difficulty": topic_difficulty,
-            "date": date.today().isoformat(),
-            "slug": slug,
-            "title": title,
-        }
-    )
+    used_entry = {
+        "topic": topic,
+        "difficulty": topic_difficulty,
+        "date": date.today().isoformat(),
+        "slug": slug,
+        "title": title,
+    }
+    for key in (
+        "domain",
+        "business_function",
+        "primary_tools",
+        "expertise_angle",
+        "target_persona",
+        "platform_angles",
+        "avoid_angles",
+    ):
+        if key in matched:
+            used_entry[key] = matched[key]
+    used.append(used_entry)
     _save(data)
     return len(data["backlog"])
 

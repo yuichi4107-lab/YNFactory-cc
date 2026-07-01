@@ -9,6 +9,7 @@ import json
 import os
 import re
 import shutil
+import tempfile
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -59,6 +60,53 @@ def _ensure_upload_cache(item: dict) -> Path:
     path = retry_io(_copy_once, attempts=5, delay_sec=2.0)
     item.setdefault("video", {})["upload_path"] = str(path)
     return path
+
+
+def _posting_ledger_path(item_id: str) -> Path:
+    ledger_dir = CONFIG.runtime_dir / "posting_ledger"
+    ledger_dir.mkdir(parents=True, exist_ok=True)
+    return ledger_dir / f"{item_id}.json"
+
+
+def _load_posting_ledger(item_id: str) -> dict:
+    path = _posting_ledger_path(item_id)
+    if not path.exists():
+        return {"item_id": item_id, "platforms": {}}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {"item_id": item_id, "platforms": {}}
+
+
+def _save_posting_ledger(item_id: str, data: dict) -> None:
+    path = _posting_ledger_path(item_id)
+    fd, tmp = tempfile.mkstemp(dir=str(path.parent), suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        os.replace(tmp, path)
+    except Exception:
+        Path(tmp).unlink(missing_ok=True)
+        raise
+
+
+def _ledger_posted_url(item_id: str, platform: str) -> str | None:
+    entry = (_load_posting_ledger(item_id).get("platforms") or {}).get(platform) or {}
+    if entry.get("status") == "posted" and entry.get("url"):
+        return str(entry["url"])
+    return None
+
+
+def _record_ledger_posted(item_id: str, platform: str, url: str) -> None:
+    ledger = _load_posting_ledger(item_id)
+    ledger["item_id"] = item_id
+    platforms = ledger.setdefault("platforms", {})
+    platforms[platform] = {
+        "status": "posted",
+        "url": url,
+        "posted_at": _now(),
+    }
+    _save_posting_ledger(item_id, ledger)
 
 
 def _sns_env_cache_path() -> Path:
@@ -733,9 +781,15 @@ def post_item(
             if retry_delay_sec:
                 time.sleep(retry_delay_sec)
         for platform in pending:
+            ledger_url = _ledger_posted_url(item["id"], platform)
+            if ledger_url:
+                item = queue_lib.mark_platform(item, platform, "posted", url=ledger_url)
+                results.append(f"↩️ {platform}: 既存投稿を台帳から復元 {ledger_url}")
+                continue
             try:
                 _record_attempt(item, queue_lib, platform, retry_round)
                 url = POSTERS[platform](item)
+                _record_ledger_posted(item["id"], platform, url)
                 item = queue_lib.mark_platform(item, platform, "posted", url=url)
                 results.append(f"✅ {platform}: {url}")
             except Exception as e:  # 1媒体の失敗で他媒体を止めない

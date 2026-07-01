@@ -76,6 +76,11 @@ class FakeNotify:
 class PostingCoreTest(unittest.TestCase):
     def setUp(self):
         FakeNotify.messages = []
+        self._runtime_tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._runtime_tmp.cleanup)
+        runtime_patch = patch.object(poster.CONFIG, "runtime_dir", Path(self._runtime_tmp.name))
+        runtime_patch.start()
+        self.addCleanup(runtime_patch.stop)
 
     def test_redacts_telegram_tokens(self):
         raw = "https://api.telegram.org/bot123456789:ABCdef_012345678901234567890/getUpdates"
@@ -287,6 +292,111 @@ class PostingCoreTest(unittest.TestCase):
         self.assertIn("プロフィールの無料診断", copies["tiktok"]["caption"])
         self.assertIn("utm_source=youtube", copies["youtube"]["description"])
         self.assertIn("音声・映像はAIで自動生成しています", copies["youtube"]["description"])
+
+    def test_queue_item_can_limit_enabled_platforms(self):
+        script = {
+            "title": "title",
+            "caption": "AI導入の実務向けテストです。小さく試して、結果を見て、社内に広げます。",
+            "hashtags": ["#AI活用", "#生成AI", "#業務効率化"],
+            "target_platform": "instagram",
+        }
+        with tempfile.TemporaryDirectory() as td:
+            with patch.object(queue_lib.CONFIG, "queue_dir", Path(td)):
+                item = queue_lib.new_item(
+                    "item-platform-only",
+                    "topic",
+                    script,
+                    Path("/tmp/final.mp4"),
+                    42.0,
+                    4.2,
+                    Path("/tmp/quality.json"),
+                    True,
+                    0.02,
+                    Path("/tmp/out"),
+                    enabled_platforms=["instagram"],
+                    variant_group_id="group-1",
+                )
+
+        self.assertEqual(item["variant_group_id"], "group-1")
+        self.assertTrue(item["platforms"]["instagram"]["enabled"])
+        self.assertFalse(item["platforms"]["x"]["enabled"])
+        self.assertFalse(item["platforms"]["youtube"]["enabled"])
+        self.assertFalse(item["platforms"]["tiktok"]["enabled"])
+
+    def test_produce_platform_variants_queues_one_item_per_enabled_platform(self):
+        old_platforms = pipeline.CONFIG.cfg["queue"].get("platforms")
+        pipeline.CONFIG.cfg["queue"]["platforms"] = ["x", "instagram"]
+        candidates: list[dict] = []
+        queued: list[tuple[str, list[str] | None, str | None]] = []
+        transitions: list[tuple[str, str]] = []
+
+        def fake_candidate(topic_entry, difficulty, attempt, target_platform, item_suffix=None):
+            candidate = {
+                "item_id": f"{target_platform}-item",
+                "out_dir": Path("/tmp") / f"{target_platform}-item",
+                "report": {
+                    "pass": True,
+                    "duration": 42.0,
+                    "size_mb": 4.2,
+                    "accuracy": {"avg_cer": 0.02, "failed_indices": []},
+                    "checks": [],
+                },
+                "title": f"{target_platform} title",
+                "topic": topic_entry["topic"],
+                "script": {
+                    "title": f"{target_platform} title",
+                    "caption": "AI導入の実務向けテストです。小さく試して、結果を見て、社内に広げます。",
+                    "hashtags": ["#AI活用", "#生成AI", "#業務効率化"],
+                    "target_platform": target_platform,
+                    "difficulty": difficulty,
+                },
+                "attempt": attempt,
+            }
+            candidates.append(candidate)
+            return candidate
+
+        def fake_new_item(item_id, *_args, **kwargs):
+            queued.append((item_id, kwargs.get("enabled_platforms"), kwargs.get("variant_group_id")))
+            return {
+                "id": item_id,
+                "title": item_id,
+                "quality": {"pass": True, "avg_cer": 0.02},
+                "review": {},
+                "telegram": {},
+                "platforms": {
+                    "x": {"enabled": item_id.startswith("x")},
+                    "instagram": {"enabled": item_id.startswith("instagram")},
+                },
+                "history": [],
+            }
+
+        def fake_transition(item, status, event=None):
+            transitions.append((item["id"], status))
+            item["status"] = status
+            return item
+
+        try:
+            with (
+                patch.object(pipeline, "_build_candidate", side_effect=fake_candidate),
+                patch.object(pipeline.topic_store, "next_topic_entry", return_value=({"topic": "topic", "difficulty": "intermediate"}, 99)),
+                patch.object(pipeline.topic_store, "consume_topic", return_value=98),
+                patch.object(pipeline.queue_lib, "new_item", side_effect=fake_new_item),
+                patch.object(pipeline.queue_lib, "save_item"),
+                patch.object(pipeline.queue_lib, "transition", side_effect=fake_transition),
+            ):
+                result = pipeline.produce_platform_variants(difficulty="intermediate")
+        finally:
+            pipeline.CONFIG.cfg["queue"]["platforms"] = old_platforms
+
+        self.assertEqual([c["script"]["target_platform"] for c in candidates], ["x", "instagram"])
+        self.assertEqual([q[0] for q in queued], ["x-item", "instagram-item"])
+        self.assertEqual(queued[0][1], ["x"])
+        self.assertEqual(queued[1][1], ["instagram"])
+        self.assertTrue(queued[0][2])
+        self.assertEqual(queued[0][2], queued[1][2])
+        self.assertEqual(transitions, [("x-item", "ready_for_review"), ("instagram-item", "ready_for_review")])
+        self.assertTrue(result["platform_variants"])
+        self.assertEqual([item["platform"] for item in result["items"]], ["x", "instagram"])
 
     def test_post_x_uses_platform_specific_copy(self):
         item = make_item()
@@ -501,7 +611,7 @@ class PostingCoreTest(unittest.TestCase):
             with (
                 patch.object(pipeline, "_quality_remake_settings", return_value=(True, 2)),
                 patch.object(pipeline, "_build_candidate", side_effect=candidates),
-                patch.object(pipeline.topic_store, "next_topic", return_value=("topic", 99)),
+                patch.object(pipeline.topic_store, "next_topic_entry", return_value=({"topic": "topic", "difficulty": "beginner"}, 99)),
                 patch.object(pipeline.topic_store, "consume_topic", return_value=99),
                 patch.object(pipeline.queue_lib, "new_item", side_effect=fake_new_item),
                 patch.object(pipeline.queue_lib, "transition", side_effect=fake_transition),
@@ -527,6 +637,16 @@ class PostingCoreTest(unittest.TestCase):
 
             with patch.object(approval_bot.CONFIG, "work_dir", runtime):
                 self.assertEqual(approval_bot._preview_video_path(item), local_video)
+
+    def test_approval_preview_lock_blocks_parallel_sender(self):
+        with tempfile.TemporaryDirectory() as td:
+            runtime = Path(td)
+            with patch.object(approval_bot.CONFIG, "runtime_dir", runtime):
+                self.assertTrue(approval_bot._acquire_preview_lock("item-1"))
+                self.assertFalse(approval_bot._acquire_preview_lock("item-1"))
+                approval_bot._release_preview_lock("item-1")
+                self.assertTrue(approval_bot._acquire_preview_lock("item-1"))
+                approval_bot._release_preview_lock("item-1")
 
     def test_retry_io_retries_resource_deadlock(self):
         calls = []
@@ -565,13 +685,15 @@ class PostingCoreTest(unittest.TestCase):
 
         script_gen.normalize_generated_script(data)
 
-        joined = json.dumps(data, ensure_ascii=False)
-        self.assertNotIn("PDF", joined)
-        self.assertNotIn("API", joined)
-        self.assertNotIn("AI確認", joined)
-        self.assertIn("ピーディーエフ", joined)
-        self.assertIn("エーピーアイ", joined)
-        self.assertIn("エーアイ確認", joined)
+        display_joined = "\n".join(data["cues"][0]["display"])
+        voice_joined = data["cues"][0]["tts_text"] + data["cues"][0]["reading_kana"]
+        self.assertNotIn("PDF", display_joined)
+        self.assertNotIn("API", display_joined)
+        self.assertIn("AI確認", display_joined)
+        self.assertIn("ピーディーエフ", display_joined)
+        self.assertIn("エーピーアイ", display_joined)
+        self.assertNotIn("AI確認", voice_joined)
+        self.assertIn("エーアイ確認", voice_joined)
 
     def test_generic_fallback_script_is_valid(self):
         data = script_gen._fallback_script("ChatGPTで資料を要約する方法", "beginner", ["err"])
@@ -866,7 +988,7 @@ class PostingCoreTest(unittest.TestCase):
             with patch.object(approval_bot.CONFIG, "runtime_dir", runtime):
                 self.assertTrue(approval_bot._posting_worker_active({"id": "item-1"}))
 
-    def test_callback_answer_failure_sends_visible_confirmation(self):
+    def test_callback_answer_failure_does_not_mutate_review_state(self):
         item = make_item()
         item["status"] = "ready_for_review"
         item["review"] = {"owner_approved": False, "decided_at": None, "via": None}
@@ -886,10 +1008,123 @@ class PostingCoreTest(unittest.TestCase):
         ):
             approval_bot.handle_callback({"id": "cb-1", "data": "approve:item-1", "message": {}})
 
-        self.assertEqual(item["status"], "approved")
-        self.assertTrue(item["review"]["owner_approved"])
-        self.assertEqual(spawned, [("item-1", "approved:telegram")])
-        self.assertIn("承認を受け付けました", messages[0])
+        self.assertEqual(item["status"], "ready_for_review")
+        self.assertFalse(item["review"]["owner_approved"])
+        self.assertEqual(spawned, [])
+        self.assertIn("操作は反映していません", messages[0])
+
+    def test_next_topic_entry_preserves_content_metadata(self):
+        data = {
+            "backlog": [
+                {
+                    "topic": "ChatGPT、Claude、Geminiを業務別に使い分ける判断基準",
+                    "difficulty": "intermediate",
+                    "domain": "ai_tool_comparison",
+                    "primary_tools": ["ChatGPT", "Claude", "Gemini"],
+                    "platform_angles": {"instagram": "保存版。AIツール使い分け表"},
+                }
+            ],
+            "used": [],
+        }
+
+        with (
+            patch.object(topic_store, "_load", return_value=data),
+            patch.object(topic_store, "_queue_topic_entries", return_value=[]),
+        ):
+            entry, remaining = topic_store.next_topic_entry("intermediate")
+            topic, topic_remaining = topic_store.next_topic("intermediate")
+
+        self.assertEqual(remaining, 1)
+        self.assertEqual(topic_remaining, 1)
+        self.assertEqual(topic, data["backlog"][0]["topic"])
+        self.assertEqual(entry["domain"], "ai_tool_comparison")
+        self.assertEqual(entry["platform_angles"]["instagram"], "保存版。AIツール使い分け表")
+
+    def test_script_prompt_includes_topic_context_and_platform_guidance(self):
+        topic = {
+            "topic": "NotebookLMで社内資料を検索しやすい知識ベースにする方法",
+            "difficulty": "intermediate",
+            "domain": "knowledge_management",
+            "primary_tools": ["NotebookLM", "Google Drive"],
+            "platform_angles": {"instagram": "保存版。社内資料をAIで探しやすくする3手順"},
+        }
+        with patch.object(topic_store, "recent_titles", return_value=[]):
+            prompt = script_gen._build_prompt(topic, image_count=4, difficulty="intermediate", target_platform="instagram")
+
+        self.assertIn("AIツール・AI導入・業務自動化", prompt)
+        self.assertIn("target_platform: `instagram`", prompt)
+        self.assertIn("保存版・チェックリスト", prompt)
+        self.assertIn("NotebookLM、Google Drive", prompt)
+        self.assertIn("保存版。社内資料をAIで探しやすくする3手順", prompt)
+
+    def test_normalize_generated_script_preserves_display_brand_terms(self):
+        data = {
+            "cues": [
+                {
+                    "display": ["ClaudeとGemini", "NotebookLMとAI"],
+                    "tts_text": "ClaudeとGeminiとNotebookLMを比較します。",
+                    "reading_kana": "ClaudeトGeminiトNotebookLMトAIヲヒカクシマス。",
+                }
+            ]
+        }
+
+        script_gen.normalize_generated_script(data)
+
+        self.assertEqual(data["cues"][0]["display"], ["ClaudeとGemini", "ノートブックエルエムとAI"])
+        self.assertNotIn("Claude", data["cues"][0]["tts_text"])
+        self.assertNotIn("Gemini", data["cues"][0]["tts_text"])
+        self.assertIn("クロード", data["cues"][0]["tts_text"])
+        self.assertIn("ジェミニ", data["cues"][0]["tts_text"])
+        self.assertIn("ノートブックエルエム", data["cues"][0]["tts_text"])
+        self.assertIn("エーアイ", data["cues"][0]["reading_kana"])
+
+    def test_display_validator_allows_only_canonical_ai_brand_terms(self):
+        self.assertFalse(script_gen._display_unstable_text("AIとClaude"))
+        self.assertFalse(script_gen._display_unstable_text("GeminiとChatGPT"))
+        self.assertFalse(script_gen._display_unstable_text("生成AI"))
+        self.assertTrue(script_gen._display_unstable_text("OpenAI"))
+        self.assertTrue(script_gen._display_unstable_text("15%改善"))
+
+    def test_platform_copy_prepends_platform_angle(self):
+        item = make_item()
+        item["platform_angles"] = {
+            "x": "AI導入はツール選びより最初の1業務選びで差が出ます",
+            "instagram": "保存版。AI導入前に見る3項目",
+        }
+
+        copies = platform_copy.build_platform_copy_set(item)
+
+        self.assertIn("AI導入はツール選び", copies["x"]["text"])
+        self.assertIn("保存版。AI導入前", copies["instagram"]["caption"])
+        self.assertNotIn("保存版。AI導入前", copies["x"]["text"])
+
+    def test_new_item_persists_content_strategy_metadata(self):
+        script = {
+            "title": "AI導入は最初の業務選び",
+            "caption": "AI導入では、ツール選びより最初に任せる業務を決めることが重要です。",
+            "hashtags": ["#生成AI", "#AI導入", "#仕事術"],
+            "difficulty": "intermediate",
+            "target_platform": "common",
+            "content_strategy": {"domain": "ai_adoption", "primary_tools": ["ChatGPT", "Gemini"]},
+            "platform_angles": {"youtube": "AI導入で最初の1業務を選ぶ基準"},
+        }
+        with tempfile.TemporaryDirectory() as td, patch.object(queue_lib.CONFIG, "queue_dir", Path(td)):
+            item = queue_lib.new_item(
+                "item-meta",
+                "AI導入で最初の1業務を選ぶ3つの条件",
+                script,
+                Path("/tmp/final.mp4"),
+                40.0,
+                4.0,
+                Path("/tmp/quality.json"),
+                True,
+                0.02,
+                Path("/tmp/out"),
+            )
+
+        self.assertEqual(item["target_platform"], "common")
+        self.assertEqual(item["content_strategy"]["domain"], "ai_adoption")
+        self.assertEqual(item["platform_angles"]["youtube"], "AI導入で最初の1業務を選ぶ基準")
 
 
 if __name__ == "__main__":

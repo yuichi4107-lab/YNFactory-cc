@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-30T07:00:06
+generated_at: 2026-07-01T07:02:25
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,45 @@ generated_at: 2026-06-30T07:00:06
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-30
+
+- [ ] 小包の重さとサイズを確認し、適切な発送方法（データパックか郵便局か）を検討する。 | time:18:40 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 新しい業務フローの運用状況を観察し、必要に応じて変更・調整を検討する。 | time:18:32 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 現在の業務プロセスをよりシンプルな形に見直す。 | time:18:35 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] ファイルをより使いやすいように整理する。 | time:18:24 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 従業員に対し、未払い賃金の具体的な金額を提示するよう依頼する。 | time:17:54 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 未払い賃金がこれ以上ないことを確認し、従業員から確認書へのサインを取得する。 | time:17:58 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 確定した未払い賃金を速やかに支払い、遅延損害金の増加を防ぐ。 | time:18:07 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 「明日基準」で遅延損害金を計算し、処理する。 | time:18:10 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 未払い賃金や遅延損害金の支払いについて、税金処理（所得、年末調整など）を適切に行う。 | time:18:09 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 今後のメール送信時、正しい差出人アドレスやフォルダ（例：日々のフォルダ）が選択されているか注意する。 | time:17:35 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] ラップトップを借りてセットアップ作業を完了させる。 | time:17:28 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 不審なリモート接続やウェブサイトへのアクセスについて調査する。 | time:16:50 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] Miken/ビデオメンテナンスに関する請求書（PDF）をメールで送付する。 | time:15:55 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] ビデオメンテナンス関連のメールに、適切な担当者名（例：大山商会またはチーフ）を含める。 | time:16:00 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 社会保険料（2社分、各15万円）の納付手続きを行う。 | time:14:13 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 入金された金額が引き落とし予定額に対して十分であるかを確認する。 | time:13:33 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 予定されていた4本の送金がすべて完了しているか確認する。 | time:13:34 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 翌日の会議予定を確認する。 | time:13:03 | priority:normal | due:2026-07-01 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 不良品弁償における保険適用後の差額のみを実績として経費計上する。 | time:13:06 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 保険に関する再発防止策を見直し、更新する。 | time:12:39 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 経費計算における端数処理（小数点以下の桁数）のシステム設定を見直す。 | time:12:41 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 新しい従業員に対し、適切なチェック・手順（システム設定や端数処理など）に関する教育を行う。 | time:12:42 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 保険金の支払いについて、適切な経理処理と記録を行う。 | time:12:44 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] Yuichiの保険料またはその他の自動引き落とし設定を確認・管理する。 | time:11:57 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 5月分の給与が発生している場合、関連書類を本人および役所に送付する。 | time:11:23 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 転居届などの書類作成にPCを活用し、手書きよりも迅速に処理する。 | time:11:28 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] PCAシステムを活用して、転居届などの手続きを効率的に行う。 | time:10:51 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 計算間違いを修正し、引き落とし額を調整する。 | time:10:28 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 商談会に参加し、名古屋でのサービス提供における数量、頻度、具体的な要件に関する情報を収集する。 | time:10:09 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 商談会で会社の事業説明を行い、情報交換できるように準備する。 | time:10:13 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 入金完了後、領収書（紙媒体）を作成し郵送する。 | time:10:04 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 来週までに引き継ぎ関連の書類を準備し、渡せるようにする。 | time:10:06 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 新入社員のオンボーディングとして、2〜3ヶ月間の評価期間を設け、その期間を乗り越えた人材に責任ある役割や業務を引き継ぐことを検討する。 | time:09:33 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] ウェブサイト等のプロフィール欄を充実させる。 | time:05:44 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] 楽天ルームのアカウントを開設する。 | time:04:51 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- [ ] BGMの技術的な問題を調査し、解決する。 | time:04:55 | priority:low | due:- | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
 
 ## 2026-06-27
 

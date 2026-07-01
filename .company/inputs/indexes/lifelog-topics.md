@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-30T07:00:06
+generated_at: 2026-07-01T07:02:25
 ---
 
 # Lifelog Topics
@@ -10,6 +10,39 @@ generated_at: 2026-06-30T07:00:06
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-30
+
+- - **労働協定（共同協定）の2024年/2025年の最新状況** (18:37) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+-   - 理由: 現在の労働代表者協定の有効性や、2022年の情報が古くなっている可能性について確認が必要。 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **DocuWorksの最適な活用方法** (18:26) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+-   - 理由: 富士フィルムの担当者からの情報に基づき、作業ごとのタブ作成や押印プロセスの効率化など、DocuWorksの機能を使ったワークフロー改善の具体的な方法を調査する。 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **未払い賃金に関する遅延損害金の詳細な計算方法** (18:04) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+-   - 理由: 5万円や1500円といった金額が挙がっており、年3%の遅延損害金、日割りの計算方法、過去の事例（吉井さんの件）も踏まえ、正確な計算方法を理解する必要がある。 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **未払い賃金と遅延損害金の支払いにおける税務上の取り扱い** (18:09) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+-   - 理由: 支払いが個人の所得となる可能性があり、年末調整や給与項目への計上方法を確認する必要がある。 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **不明な画面表示とリモート接続の出所** (16:54) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+-   - 理由: 「変なサイトに繋がっている」「リモートで繋いでいる」「ヤバいやつかも」といった発言があり、セキュリティ上の脅威である可能性があるため、接続元や内容を特定する必要がある。 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **オンライン面接・面談における画面共有等のベストプラクティス** (10:03) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+-   - 理由: 他者のオンラインでの上手な対応について言及があり、自身のオンラインでのコミュニケーション品質向上や、将来的なコンテンツ制作、コーチングへの応用可能性を考慮する。 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **駐車場サービス事業における情報（数量、頻度、機械トラブル時の連絡先）** (10:09) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+-   - 理由: 名古屋市内での駐車場ビジネスへの参入を検討するにあたり、投資の頻度、機械トラブル時の対応（自社対応か顧客センターか）に関する詳細な情報が必要。 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **経営陣と現場の営業・業務遂行に関する認識の乖離を埋める戦略** (09:17) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+-   - 理由: 社長が「営業は要らない、管理が処理すれば良い」と考えていることに対し、現場との認識の乖離が指摘されており、このギャップを埋めるための戦略を模索する必要がある。 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **ジョブ紹介サービス「コモンメーカー」の活用可能性** (09:13) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+-   - 理由: 社長が、上場企業の医薬品経験者のコネクションを活用する「コモンメーカー」のようなサービスに頼ることを考えているとあり、この種のサービスが事業獲得に有効か調査する。 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **楽天ルームの自動投稿設定とアカウント作成方法** (04:51) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+-   - 理由: 楽天ルームへの自動投稿の要望とアカウントが未作成であることから、具体的な設定方法と開設手順を調査する必要がある。 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- 1. **DocuWorksを活用した文書管理・ワークフローの効率化** [freelance] ★★★★☆ (18:26) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+-    - DocuWorksのタブ機能やスタンプ機能を活用し、作業ごとのタブ作成や押印プロセスを最適化することで、文書管理および業務フロー全体の効率化を図る。富士フィルムの担当者の知見も活用する。 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- 2. **長文コンテンツの要約サービス提供または効率化ツール活用** [ebook] ★★★☆☆ (12:17) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+-    - 200〜400ページに及ぶコンテンツの要約作業が話題となっており、これを効率化するサービス提供や、そのためのツール開発・活用を検討する。 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- 3. **名古屋市内での駐車場関連サービス（キャッシュレス決済・メンテナンス・環境整備）展開** [other] ★★★★☆ (10:08) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+-    - 商談会を通じて名古屋市内での駐車場におけるキャッシュレス決済システム、機械メンテナンス、環境整備に関するサービス提供の可能性を探る。具体的な頻度や連絡先などの詳細を今後詰める。 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- 4. **セカンドキャリア人材の採用戦略** [other] ★★★★☆ (09:07) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+-    - 現場管理をメインとし、高給与を求めず社会貢献や働く意味を重視する65歳前後のセカンドキャリア人材を5年スパンで採用する戦略を検討する。これにより現場の安定化を図り、若手の育成を後回しにする。 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- 5. **楽天ルームアカウント開設と商品プロモーション** [other] ★★★☆☆ (04:51) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+-    - 楽天ルームのアカウントを開設し、自動投稿の設定を行うことで、商品（現時点では不明だが、オーナーの事業領域のいずれかに紐づく可能性）のプロモーションに活用する。 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
 
 ## 2026-06-27
 

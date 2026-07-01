@@ -33,11 +33,13 @@ LOCK_FILE = CONFIG.runtime_dir / "approval_bot.pid"
 QUEUE_SCAN_INTERVAL = 30
 PENDING_REJECTIONS_DIR = CONFIG.marketing_dir / "pending_rejections"
 PREVIEW_RETRY_DELAY = timedelta(minutes=10)
+PREVIEW_LOCK_STALE_AFTER = timedelta(minutes=15)
 QUEUE_SCAN_RECENT_FILES = 80
 QUEUE_SCAN_MAX_ITEMS = 20
 WATCHDOG_TIMEOUT_SEC = 600
 WATCHDOG_CHECK_INTERVAL_SEC = 60
 POST_WORKER_STALE_AFTER = timedelta(minutes=30)
+APPROVED_SCAN_RESUME_WINDOW = timedelta(minutes=10)
 TEXT_COMMANDS = {
     "/approve": "approve",
     "approve": "approve",
@@ -213,6 +215,48 @@ def _preview_retry_allowed(item: dict) -> bool:
     return datetime.now().astimezone() - started_at >= PREVIEW_RETRY_DELAY
 
 
+def _preview_lock_path(item_id: str) -> Path:
+    lock_dir = CONFIG.runtime_dir / "preview_locks"
+    lock_dir.mkdir(parents=True, exist_ok=True)
+    safe_id = item_id.replace("/", "_").replace(":", "_")
+    return lock_dir / f"{safe_id}.lock"
+
+
+def _preview_lock_stale(path: Path) -> bool:
+    try:
+        modified_at = datetime.fromtimestamp(path.stat().st_mtime).astimezone()
+    except OSError:
+        return True
+    return datetime.now().astimezone() - modified_at >= PREVIEW_LOCK_STALE_AFTER
+
+
+def _acquire_preview_lock(item_id: str) -> bool:
+    path = _preview_lock_path(item_id)
+    try:
+        fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError:
+        if _preview_lock_stale(path):
+            try:
+                path.unlink()
+            except OSError:
+                return False
+            return _acquire_preview_lock(item_id)
+        return False
+    except OSError as exc:
+        log(f"プレビュー送信ロック作成失敗: {item_id}: {exc}")
+        return False
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
+        json.dump({"pid": os.getpid(), "created_at": _now_iso()}, f, ensure_ascii=False)
+    return True
+
+
+def _release_preview_lock(item_id: str) -> None:
+    try:
+        _preview_lock_path(item_id).unlink(missing_ok=True)
+    except OSError as exc:
+        log(f"プレビュー送信ロック解除失敗: {item_id}: {exc}")
+
+
 def _as_bool(value) -> bool:
     if isinstance(value, str):
         return value.strip().lower() not in {"0", "false", "no", "off"}
@@ -357,6 +401,43 @@ def _posting_worker_active(item: dict, now: datetime | None = None) -> bool:
     return now - started_at < POST_WORKER_STALE_AFTER
 
 
+def _enabled_platform_statuses(item: dict) -> list[str]:
+    return [
+        info.get("status")
+        for info in (item.get("platforms") or {}).values()
+        if info.get("enabled")
+    ]
+
+
+def _approved_scan_resume_allowed(item: dict) -> tuple[bool, str]:
+    """Only resume very recent approved items that have not posted anywhere yet."""
+    review = item.get("review") or {}
+    if not review.get("owner_approved"):
+        return False, "not_owner_approved"
+    decided_at = _parse_iso(review.get("decided_at"))
+    if not decided_at:
+        return False, "missing_decided_at"
+    now = datetime.now().astimezone()
+    if decided_at.tzinfo is None and now.tzinfo is not None:
+        decided_at = decided_at.replace(tzinfo=now.tzinfo)
+    if now - decided_at > APPROVED_SCAN_RESUME_WINDOW:
+        return False, "approval_expired_for_scan_resume"
+    statuses = _enabled_platform_statuses(item)
+    if any(status == "posted" for status in statuses):
+        return False, "already_partially_posted"
+    return True, "ok"
+
+
+def _record_posting_guard_skip(item: dict, reason: str) -> None:
+    guard = item.setdefault("posting_guard", {})
+    if guard.get("last_scan_skip_reason") == reason:
+        return
+    guard["last_scan_skip_reason"] = reason
+    guard["last_scan_skip_at"] = _now_iso()
+    queue_lib.save_item(item)
+    log(f"承認済み自動再開を停止: {item['id']} reason={reason}")
+
+
 def _spawn_post_worker(item: dict, reason: str) -> bool:
     if _posting_worker_active(item):
         return False
@@ -393,8 +474,12 @@ def _spawn_post_worker(item: dict, reason: str) -> bool:
             log(f"投稿ワーカー起動失敗: {item['id']} {exc}")
             return False
 
+    latest = queue_lib.load_item(item["id"])
+    worker = latest.setdefault("posting_worker", {})
     worker["pid"] = proc.pid
-    queue_lib.save_item(item)
+    worker.setdefault("started_at", now)
+    worker.setdefault("reason", reason)
+    queue_lib.save_item(latest)
     log(f"投稿ワーカー起動: {item['id']} pid={proc.pid} reason={reason}")
     return True
 
@@ -552,7 +637,20 @@ def scan_queue() -> None:
 
     for item in _scan_items("ready_for_review"):
         telegram = item.setdefault("telegram", {})
-        if not telegram.get("message_id") and _preview_retry_allowed(item):
+        if telegram.get("message_id") or not _preview_retry_allowed(item):
+            continue
+        if not _acquire_preview_lock(item["id"]):
+            continue
+        try:
+            try:
+                item = queue_lib.load_item(item["id"])
+            except FileNotFoundError:
+                continue
+            if item.get("status") != "ready_for_review":
+                continue
+            telegram = item.setdefault("telegram", {})
+            if telegram.get("message_id") or not _preview_retry_allowed(item):
+                continue
             telegram["preview_send_started_at"] = _now_iso()
             telegram["preview_send_attempts"] = int(telegram.get("preview_send_attempts") or 0) + 1
             queue_lib.save_item(item)
@@ -571,8 +669,14 @@ def scan_queue() -> None:
                 telegram["preview_send_failed_at"] = _now_iso()
                 queue_lib.save_item(item)
                 log(f"プレビュー送信未確認（短時間の自動再送を抑止）: {item['id']}")
+        finally:
+            _release_preview_lock(item["id"])
 
     for item in _scan_items("approved"):
+        allowed, reason = _approved_scan_resume_allowed(item)
+        if not allowed:
+            _record_posting_guard_skip(item, reason)
+            continue
         _spawn_post_worker(item, "scan_queue")
 
 
@@ -600,16 +704,28 @@ def handle_callback(cb: dict) -> None:
 
     if action == "approve":
         if not _answer_callback(cb_id, "承認しました。投稿します…"):
-            notify.send_message(f"✅ 承認を受け付けました。投稿します: <code>{item_id}</code>")
+            notify.send_message(
+                "⚠️ 承認ボタンの応答期限切れ/確認失敗のため、操作は反映していません。\n"
+                f"投稿する場合は <code>承認 {item_id}</code> と送ってください。"
+            )
+            return
         _approve_item(item, via="telegram", message_id=msg.get("message_id"))
     elif action == "reject":
         chat_id = msg.get("chat", {}).get("id") or CONFIG.telegram_chat_id
         if not _answer_callback(cb_id, "却下しました。代替候補を作成します…"):
-            notify.send_message(f"🔁 却下を受け付けました。代替候補を作成します: <code>{item_id}</code>")
+            notify.send_message(
+                "⚠️ 却下ボタンの応答期限切れ/確認失敗のため、操作は反映していません。\n"
+                f"却下する場合は <code>却下 {item_id}</code> と送ってください。"
+            )
+            return
         _reject_item(item, chat_id=chat_id, via="telegram", message_id=msg.get("message_id"))
     elif action == "hold":
         if not _answer_callback(cb_id, "保留しました。ボタンはそのまま使えます"):
-            notify.send_message(f"⏸ 保留を受け付けました: <code>{item_id}</code>")
+            notify.send_message(
+                "⚠️ 保留ボタンの応答期限切れ/確認失敗のため、操作は反映していません。\n"
+                f"保留する場合は <code>保留 {item_id}</code> と送ってください。"
+            )
+            return
         _hold_item(item, via="telegram")
     else:
         if not _answer_callback(cb_id, "不明な操作"):
@@ -721,6 +837,10 @@ def main() -> None:
     while True:
         try:
             _mark_progress()
+            if time.time() - last_scan > QUEUE_SCAN_INTERVAL:
+                scan_queue()
+                last_scan = time.time()
+                _mark_progress()
             r = requests.get(
                 _api("getUpdates"),
                 params={

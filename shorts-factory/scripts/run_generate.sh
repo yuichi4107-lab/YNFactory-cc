@@ -6,15 +6,47 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 source "$SCRIPT_DIR/shorts_env.sh"
 
+if [ -d "$HOME/.nvm/versions/node" ]; then
+  NODE_BIN="$(find "$HOME/.nvm/versions/node" -maxdepth 2 -type d -name bin 2>/dev/null | sort -V | tail -1)"
+  if [ -n "$NODE_BIN" ]; then
+    export PATH="$NODE_BIN:$PATH"
+  fi
+fi
+
 APP_DIR="$HOME/shorts-factory/app"
 VENV_PY="$HOME/shorts-factory/.venv/bin/python"
 DRIVE_ROOT="$(shorts_resolve_repo_root || true)"
 
-# Driveがマウントされていれば最新コードを同期（失敗しても手元コードで続行）
-if [ -n "$DRIVE_ROOT" ] && [ -d "$DRIVE_ROOT/shorts-factory/src" ]; then
-  shorts_sync_app_from_repo "$DRIVE_ROOT" "$APP_DIR" || echo "[warn] コード同期に失敗。既存コードで続行"
-else
-  echo "[warn] Driveルートを解決できません。既存コードで続行"
+# Driveがロックされる場合に備え、コード同期だけはローカルGitミラーへフォールバックする。
+CODE_ROOTS=()
+shorts_add_code_root() {
+  local root="${1:-}"
+  [ -n "$root" ] || return 0
+  [ -d "$root/shorts-factory/src" ] || return 0
+  local existing
+  for existing in "${CODE_ROOTS[@]+"${CODE_ROOTS[@]}"}"; do
+    [ "$existing" = "$root" ] && return 0
+  done
+  CODE_ROOTS+=("$root")
+}
+
+shorts_add_code_root "${SHORTS_CODE_ROOT:-}"
+shorts_add_code_root "$DRIVE_ROOT"
+shorts_add_code_root "$HOME/YNFactory-cc"
+
+SYNC_OK=0
+if [ "${#CODE_ROOTS[@]}" -gt 0 ]; then
+  for CODE_ROOT in "${CODE_ROOTS[@]}"; do
+    if shorts_sync_app_from_repo "$CODE_ROOT" "$APP_DIR"; then
+      echo "[info] コード同期: $CODE_ROOT -> $APP_DIR"
+      SYNC_OK=1
+      break
+    fi
+    echo "[warn] コード同期に失敗: $CODE_ROOT"
+  done
+fi
+if [ "$SYNC_OK" -ne 1 ]; then
+  echo "[warn] コード同期に失敗。既存コードで続行"
 fi
 
 cd "$APP_DIR"

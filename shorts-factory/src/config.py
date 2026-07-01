@@ -138,6 +138,7 @@ DEFAULTS: dict = {
     },
     "content": {
         "default_difficulty": "beginner",
+        "platform_variant_videos": True,
         "scheduled_slots": [
             {"hour": 9, "minute": 0, "difficulty": "beginner"},
             {"hour": 14, "minute": 0, "difficulty": "intermediate"},

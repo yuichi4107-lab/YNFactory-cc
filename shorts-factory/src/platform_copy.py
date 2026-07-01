@@ -43,7 +43,7 @@ EXTRA_HASHTAGS = {
     "x": ["#AI導入", "#業務効率化"],
     "instagram": ["#AI導入", "#中小企業DX", "#仕事術"],
     "tiktok": ["#AI活用", "#仕事効率化", "#生成AI"],
-    "youtube": ["#AI導入", "#ChatGPT", "#業務効率化"],
+    "youtube": ["#AI導入", "#生成AI", "#AIツール", "#業務効率化"],
 }
 
 TAG_LIMITS = {
@@ -75,6 +75,13 @@ def _utm_url(platform: str, medium: str) -> str:
 
 def _clean_text(text: str) -> str:
     return re.sub(r"\s+", " ", str(text or "")).strip()
+
+
+def _platform_angle(item: dict, platform: str) -> str:
+    angles = item.get("platform_angles") or {}
+    if isinstance(angles, dict):
+        return _clean_text(angles.get(platform))
+    return ""
 
 
 def _width(text: str) -> int:
@@ -136,6 +143,9 @@ def build_platform_copy(item: dict, platform: str) -> dict:
 
     title = _clean_text(item.get("title"))
     body = _clean_text(item.get("caption"))
+    angle = _platform_angle(item, platform)
+    if angle and angle not in body:
+        body = f"{angle}。{body}"
     cta = PLATFORM_CTA[platform]
     tags = _hashtags(item, platform)
     profile_url = _utm_url(platform, PROFILE_MEDIUM.get(platform, "profile"))

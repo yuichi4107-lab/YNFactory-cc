@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-30T07:00:06
+generated_at: 2026-07-01T07:02:25
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,14 @@ generated_at: 2026-06-30T07:00:06
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-30
+
+- - 現在の業務手順で進行するが、今後の様子を見て変更を検討する。 | time:18:32 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - 従業員からの未払い賃金請求に対しては、支払いに応じるものの、関係性の悪化により契約更新を見送る可能性を考慮する。 | time:17:48 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - 確定した未払い賃金は、遅延損害金の発生期間を短縮するため、速やかに支払う。 | time:18:07 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - Aika関連の保険金が5万円程度で解決するなら、その保険契約または関連する取り決めは継続しないことを検討する。 | time:12:05 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - 社長は営業部門の必要性を低いと見ており、管理部門が処理を行うべきだと考えている（経営陣の認識）。 | time:09:13 | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
 
 ## 2026-06-27
 

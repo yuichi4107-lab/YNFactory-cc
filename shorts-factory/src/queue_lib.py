@@ -140,11 +140,19 @@ def new_item(
     quality_pass: bool,
     avg_cer: float,
     output_dir: Path,
+    *,
+    enabled_platforms: list[str] | tuple[str, ...] | None = None,
+    variant_group_id: str | None = None,
 ) -> dict:
     platforms = {}
+    enabled_set = (
+        set(enabled_platforms)
+        if enabled_platforms is not None
+        else set(CONFIG.get("queue", "platforms", default=["x"]) or [])
+    )
     for p in ("x", "youtube", "instagram", "tiktok"):
         platforms[p] = {
-            "enabled": p in (CONFIG.get("queue", "platforms", default=["x"]) or []),
+            "enabled": p in enabled_set,
             "status": "pending",
             "url": None,
             "error": None,
@@ -158,9 +166,12 @@ def new_item(
         "created_at": _now(),
         "topic": topic,
         "difficulty": script.get("difficulty", "beginner"),
+        "target_platform": script.get("target_platform", "common"),
         "title": script["title"],
         "caption": script["caption"],
         "hashtags": script["hashtags"],
+        "content_strategy": script.get("content_strategy", {}),
+        "platform_angles": script.get("platform_angles", {}),
         "video": {
             "path": str(video_path),
             "duration": round(duration, 2),
@@ -178,6 +189,8 @@ def new_item(
         "platforms": platforms,
         "history": [{"ts": _now(), "event": "created"}],
     }
+    if variant_group_id:
+        item["variant_group_id"] = variant_group_id
     item["platform_copy"] = build_platform_copy_set(item)
     save_item(item)
     return item

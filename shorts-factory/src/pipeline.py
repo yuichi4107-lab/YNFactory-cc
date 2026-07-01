@@ -132,12 +132,34 @@ def _mark_discarded_candidate(candidate: dict, next_attempt: int) -> None:
     path.write_text(json.dumps(marker, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-def _build_candidate(topic: str, selected_difficulty: str, attempt: int = 1) -> dict:
+def _topic_text(topic_entry: str | dict) -> str:
+    if isinstance(topic_entry, dict):
+        return str(topic_entry.get("topic") or "").strip()
+    return str(topic_entry or "").strip()
+
+
+def _build_candidate(
+    topic_entry: str | dict,
+    selected_difficulty: str,
+    attempt: int = 1,
+    target_platform: str = "common",
+    item_suffix: str | None = None,
+) -> dict:
     """Generate one full video candidate and persist its artifacts."""
     # --- 1. 台本生成（生成層バリデーション込み） ---
-    script = script_gen.generate_script(topic, selected_difficulty)
+    topic = _topic_text(topic_entry)
+    script = script_gen.generate_script(
+        topic_entry,
+        selected_difficulty,
+        target_platform=target_platform,
+    )
     title = script["title"]
-    item_id = make_item_id(title, suffix=f"try{attempt}" if attempt > 1 else None)
+    suffix_parts = []
+    if item_suffix:
+        suffix_parts.append(item_suffix)
+    if attempt > 1:
+        suffix_parts.append(f"try{attempt}")
+    item_id = make_item_id(title, suffix="-".join(suffix_parts) if suffix_parts else None)
     work = CONFIG.work_dir / item_id
     if work.exists():
         shutil.rmtree(work)
@@ -280,16 +302,121 @@ def _build_candidate(topic: str, selected_difficulty: str, attempt: int = 1) -> 
         "images": images,
         "previews": previews,
         "attempt": attempt,
+        "target_platform": target_platform,
     }
+
+
+def _enabled_platforms() -> list[str]:
+    configured = CONFIG.get("queue", "platforms", default=["x"]) or ["x"]
+    valid = ("x", "instagram", "tiktok", "youtube")
+    platforms = []
+    for platform in configured:
+        platform = script_gen.normalize_target_platform(str(platform))
+        if platform in valid and platform not in platforms:
+            platforms.append(platform)
+    return platforms or ["x"]
+
+
+def _select_topic_entry(topic: str | None, selected_difficulty: str) -> dict:
+    if topic:
+        return {"topic": topic, "difficulty": selected_difficulty}
+
+    topic_entry, remaining = topic_store.next_topic_entry(selected_difficulty)
+    if not topic_entry:
+        fallback_entry, fallback_remaining = topic_store.next_topic_entry()
+        if fallback_entry:
+            notify.send_message(
+                f"⚠️ shorts-factory: {selected_difficulty} のネタが空です。"
+                "別難易度のネタで代替します。"
+            )
+            return fallback_entry
+        notify.send_message("⚠️ shorts-factory: ネタ帳が空です。topics.json に補充してください。")
+        raise SystemExit("ネタ帳が空")
+    return topic_entry
+
+
+def _queue_candidate(
+    candidate: dict,
+    *,
+    enabled_platforms: list[str] | tuple[str, ...] | None = None,
+    variant_group_id: str | None = None,
+) -> dict:
+    report = candidate["report"]
+    queue_kwargs = {}
+    if enabled_platforms is not None:
+        queue_kwargs["enabled_platforms"] = enabled_platforms
+    if variant_group_id is not None:
+        queue_kwargs["variant_group_id"] = variant_group_id
+    item = queue_lib.new_item(
+        candidate["item_id"],
+        candidate["topic"],
+        candidate["script"],
+        candidate["out_dir"] / "final.mp4",
+        report["duration"],
+        report["size_mb"],
+        candidate["out_dir"] / "quality_report.json",
+        report["pass"],
+        report["accuracy"]["avg_cer"],
+        candidate["out_dir"],
+        **queue_kwargs,
+    )
+    return item
+
+
+def _generate_passable_candidate(
+    topic_entry: str | dict,
+    selected_difficulty: str,
+    target_platform: str,
+    item_suffix: str | None = None,
+) -> tuple[dict, int]:
+    remake_enabled, remake_max_attempts = _quality_remake_settings()
+    candidate = None
+    discarded_count = 0
+    for attempt in range(1, remake_max_attempts + 1):
+        candidate = _build_candidate(
+            topic_entry,
+            selected_difficulty,
+            attempt,
+            target_platform,
+            item_suffix=item_suffix,
+        )
+        report = candidate["report"]
+        if report["pass"]:
+            break
+        if not remake_enabled or attempt >= remake_max_attempts:
+            break
+        discarded_count += 1
+        _mark_discarded_candidate(candidate, attempt + 1)
+        failed_checks = ", ".join(c["name"] for c in report.get("checks", []) if not c.get("pass"))
+        log(
+            f"品質検証不合格のため候補を作り直し: "
+            f"{candidate['item_id']} → attempt {attempt + 1}/{remake_max_attempts}"
+            + (f" failed={failed_checks}" if failed_checks else "")
+        )
+    assert candidate is not None
+    return candidate, discarded_count
+
+
+def _record_topic_consume_deferred(item: dict, exc: OSError) -> None:
+    item.setdefault("topic_store", {})["consume_deferred_error"] = str(exc)
+    item.setdefault("history", []).append(
+        {
+            "ts": datetime.now().astimezone().isoformat(timespec="seconds"),
+            "event": "topic_consume_deferred",
+        }
+    )
+    queue_lib.save_item(item)
 
 
 def produce(
     topic: str | None = None,
     send_queue: bool = True,
     difficulty: str | None = None,
+    target_platform: str = "common",
 ) -> dict:
     """1本の動画を生成して結果情報を返す。"""
     selected_difficulty = topic_store.normalize_difficulty(difficulty) or scheduled_difficulty()
+    target_platform = script_gen.normalize_target_platform(target_platform)
     if not topic and send_queue:
         scheduled_item = queue_lib.find_due_scheduled_draft(
             datetime.now().astimezone(), selected_difficulty
@@ -310,42 +437,19 @@ def produce(
             }
 
     # --- 0. トピック決定 ---
-    if not topic:
-        topic, remaining = topic_store.next_topic(selected_difficulty)
-        if not topic:
-            fallback_topic, fallback_remaining = topic_store.next_topic()
-            if fallback_topic:
-                notify.send_message(
-                    f"⚠️ shorts-factory: {selected_difficulty} のネタが空です。"
-                    "別難易度のネタで代替します。"
-                )
-                topic, remaining = fallback_topic, fallback_remaining
-                selected_difficulty = "beginner"
-            else:
-                notify.send_message("⚠️ shorts-factory: ネタ帳が空です。topics.json に補充してください。")
-                raise SystemExit("ネタ帳が空")
-    log(f"テーマ: {topic} (difficulty={selected_difficulty})")
+    topic_entry = _select_topic_entry(topic, selected_difficulty)
+    selected_difficulty = topic_store.normalize_difficulty(
+        topic_entry.get("difficulty") if isinstance(topic_entry, dict) else None
+    ) or selected_difficulty
+    topic = _topic_text(topic_entry)
+    log(f"テーマ: {topic} (difficulty={selected_difficulty}, target_platform={target_platform})")
 
-    remake_enabled, remake_max_attempts = _quality_remake_settings()
-    candidate = None
-    discarded_count = 0
-    for attempt in range(1, remake_max_attempts + 1):
-        candidate = _build_candidate(topic, selected_difficulty, attempt)
-        report = candidate["report"]
-        if report["pass"]:
-            break
-        if not remake_enabled or attempt >= remake_max_attempts:
-            break
-        discarded_count += 1
-        _mark_discarded_candidate(candidate, attempt + 1)
-        failed_checks = ", ".join(c["name"] for c in report.get("checks", []) if not c.get("pass"))
-        log(
-            f"品質検証不合格のため候補を作り直し: "
-            f"{candidate['item_id']} → attempt {attempt + 1}/{remake_max_attempts}"
-            + (f" failed={failed_checks}" if failed_checks else "")
-        )
-
-    assert candidate is not None
+    candidate, discarded_count = _generate_passable_candidate(
+        topic_entry,
+        selected_difficulty,
+        target_platform,
+        item_suffix=None if target_platform == "common" else target_platform,
+    )
     item_id = candidate["item_id"]
     out_dir = candidate["out_dir"]
     report = candidate["report"]
@@ -363,12 +467,7 @@ def produce(
         return result
 
     # --- 7. キュー登録 + ネタ帳消費 + Telegramプレビュー ---
-    item = queue_lib.new_item(
-        item_id, topic, script, out_dir / "final.mp4",
-        report["duration"], report["size_mb"],
-        out_dir / "quality_report.json", report["pass"],
-        report["accuracy"]["avg_cer"], out_dir,
-    )
+    item = _queue_candidate(candidate)
 
     try:
         remaining = topic_store.consume_topic(topic, item_id, title, selected_difficulty)
@@ -378,14 +477,7 @@ def produce(
         if not is_transient_io_error(exc):
             raise
         log(f"ネタ帳消費を後回し: {exc}")
-        item.setdefault("topic_store", {})["consume_deferred_error"] = str(exc)
-        item.setdefault("history", []).append(
-            {
-                "ts": datetime.now().astimezone().isoformat(timespec="seconds"),
-                "event": "topic_consume_deferred",
-            }
-        )
-        queue_lib.save_item(item)
+        _record_topic_consume_deferred(item, exc)
         notify.send_message(
             "⚠️ shorts-factory: Driveロックでネタ帳更新だけ後回しになりました。"
             f"キュー登録は完了しています: <code>{item_id}</code>"
@@ -416,8 +508,156 @@ def produce(
     return result
 
 
+def produce_platform_variants(
+    topic: str | None = None,
+    send_queue: bool = True,
+    difficulty: str | None = None,
+) -> dict:
+    """有効SNSごとに別台本・別動画を生成し、1媒体1キューで登録する。"""
+    selected_difficulty = topic_store.normalize_difficulty(difficulty) or scheduled_difficulty()
+    if not topic and send_queue:
+        scheduled_item = queue_lib.find_due_scheduled_draft(
+            datetime.now().astimezone(), selected_difficulty
+        )
+        if scheduled_item:
+            queue_lib.transition(
+                scheduled_item,
+                "ready_for_review",
+                f"予約済み動画を{scheduled_item.get('scheduled_for')}枠へ投入",
+            )
+            log(f"予約済み動画を投入: {scheduled_item['id']}")
+            return {
+                "id": scheduled_item["id"],
+                "output_dir": scheduled_item.get("output_dir"),
+                "report": scheduled_item.get("quality", {}),
+                "title": scheduled_item.get("title"),
+                "scheduled": True,
+            }
+
+    topic_entry = _select_topic_entry(topic, selected_difficulty)
+    selected_difficulty = topic_store.normalize_difficulty(
+        topic_entry.get("difficulty") if isinstance(topic_entry, dict) else None
+    ) or selected_difficulty
+    topic_text = _topic_text(topic_entry)
+    platforms = _enabled_platforms()
+    group_id = f"{datetime.now().date().isoformat()}_{datetime.now().strftime('%H%M%S')}_platforms"
+    log(
+        f"テーマ: {topic_text} (difficulty={selected_difficulty}, "
+        f"platform_variants={','.join(platforms)})"
+    )
+
+    candidates: list[tuple[str, dict, int]] = []
+    for platform in platforms:
+        candidate, discarded_count = _generate_passable_candidate(
+            topic_entry,
+            selected_difficulty,
+            platform,
+            item_suffix=platform,
+        )
+        candidates.append((platform, candidate, discarded_count))
+
+    results = []
+    queued_items = []
+    for platform, candidate, discarded_count in candidates:
+        item = _queue_candidate(
+            candidate,
+            enabled_platforms=[platform],
+            variant_group_id=group_id,
+        )
+        queued_items.append(item)
+        report = candidate["report"]
+        results.append(
+            {
+                "id": candidate["item_id"],
+                "platform": platform,
+                "output_dir": str(candidate["out_dir"]),
+                "report": report,
+                "title": candidate["title"],
+                "quality_attempt": candidate.get("attempt", 1),
+                "discarded_quality_failures": discarded_count,
+            }
+        )
+
+    try:
+        remaining = topic_store.consume_topic(
+            topic_text,
+            group_id,
+            f"SNS別動画: {topic_text}",
+            selected_difficulty,
+        )
+        for item in queued_items:
+            item.setdefault("topic_store", {})["consume_group_slug"] = group_id
+            item["topic_store"]["remaining"] = remaining
+            queue_lib.save_item(item)
+        if remaining <= topic_store.LOW_STOCK_THRESHOLD:
+            notify.send_message(f"📋 shorts-factory: ネタ帳の残りが{remaining}本です。補充してください。")
+    except OSError as exc:
+        if not is_transient_io_error(exc):
+            raise
+        log(f"ネタ帳消費を後回し: {exc}")
+        if queued_items:
+            _record_topic_consume_deferred(queued_items[0], exc)
+        notify.send_message(
+            "⚠️ shorts-factory: Driveロックでネタ帳更新だけ後回しになりました。"
+            f"SNS別キュー登録は完了しています: <code>{group_id}</code>"
+        )
+
+    for item, result in zip(queued_items, results):
+        report = result["report"]
+        out_dir = Path(result["output_dir"])
+        if not report.get("pass"):
+            item = queue_lib.transition(item, "blocked", "品質検証が上限到達でも不合格のため要人間確認")
+            mid = notify.send_video(
+                out_dir / "final.mp4",
+                "⚠️ 品質検証不合格のため投稿保留\n"
+                "次の対応をボタンで選んでください。\n\n"
+                + notify.preview_caption(item),
+                reply_markup=notify.quality_blocked_keyboard(item["id"]),
+            )
+            if mid:
+                item.setdefault("telegram", {})["message_id"] = mid
+                queue_lib.save_item(item)
+        elif CONFIG.get("queue", "auto_post", default=False):
+            item["review"].update(
+                {"owner_approved": True, "decided_at": datetime.now().isoformat(), "via": "auto_post"}
+            )
+            queue_lib.transition(item, "approved", "auto_post=true により自動承認")
+            notify.send_video(
+                out_dir / "final.mp4",
+                "🤖 自動投稿モード: まもなく投稿します\n" + notify.preview_caption(item),
+            )
+        else:
+            queue_lib.transition(item, "ready_for_review", "Telegram承認待ち")
+
+    return {
+        "id": group_id,
+        "topic": topic_text,
+        "difficulty": selected_difficulty,
+        "platform_variants": True,
+        "items": results,
+    }
+
+
 def result_summary(result: dict) -> dict:
     """Build stable CLI output for both newly generated and scheduled items."""
+    if result.get("items"):
+        items = result["items"]
+        return {
+            "id": result.get("id"),
+            "platform_variants": True,
+            "items": [
+                {
+                    "id": item.get("id"),
+                    "platform": item.get("platform"),
+                    "pass": (item.get("report") or {}).get("pass"),
+                    "avg_cer": ((item.get("report") or {}).get("accuracy") or {}).get("avg_cer"),
+                    "output": item.get("output_dir"),
+                    "quality_attempt": item.get("quality_attempt"),
+                    "discarded_quality_failures": item.get("discarded_quality_failures", 0),
+                }
+                for item in items
+            ],
+        }
     report = result.get("report") or {}
     accuracy = report.get("accuracy") or {}
     return {
@@ -440,9 +680,38 @@ def main() -> None:
         choices=["beginner", "intermediate"],
         help="ネタ選択と台本の難易度。省略時は実行時刻のスロットから自動判定",
     )
+    ap.add_argument(
+        "--target-platform",
+        choices=sorted(script_gen.VALID_TARGET_PLATFORMS),
+        default="common",
+        help="台本の寄せ先。通常運用はcommon、SNS別台本テスト時に x/instagram/tiktok/youtube を指定",
+    )
+    ap.add_argument(
+        "--single-video",
+        action="store_true",
+        help="SNS別動画モードを使わず、従来どおり1本の動画を有効媒体へ投稿する",
+    )
     args = ap.parse_args()
     try:
-        result = produce(topic=args.topic, send_queue=not args.no_queue, difficulty=args.difficulty)
+        use_platform_variants = (
+            not args.no_queue
+            and not args.single_video
+            and args.target_platform == "common"
+            and bool(CONFIG.get("content", "platform_variant_videos", default=True))
+        )
+        if use_platform_variants:
+            result = produce_platform_variants(
+                topic=args.topic,
+                send_queue=not args.no_queue,
+                difficulty=args.difficulty,
+            )
+        else:
+            result = produce(
+                topic=args.topic,
+                send_queue=not args.no_queue,
+                difficulty=args.difficulty,
+                target_platform=args.target_platform,
+            )
         print(json.dumps(result_summary(result), ensure_ascii=False))
     except Exception as e:
         log(f"❌ パイプライン失敗: {e}")

@@ -139,10 +139,17 @@ def preview_caption(item: dict) -> str:
     q = item.get("quality", {})
     plats = [p for p, v in item.get("platforms", {}).items() if v.get("enabled")]
     difficulty = item.get("difficulty") or "beginner"
+    target_platform = item.get("target_platform") or "common"
+    platform_line = (
+        f"媒体別動画: {target_platform}\n"
+        if target_platform != "common"
+        else ""
+    )
     return (
         f"🎬 <b>{item['title']}</b>\n"
         f"id: {item['id']}\n"
         f"難易度: {difficulty}\n"
+        f"{platform_line}"
         f"尺: {item['video']['duration']}s / {item['video']['size_mb']}MB\n"
         f"字幕検証: {'✅PASS' if q.get('pass') else '⚠️FAIL'} (平均CER {q.get('avg_cer')})\n"
         f"投稿先: {', '.join(plats) or 'なし'}\n\n"

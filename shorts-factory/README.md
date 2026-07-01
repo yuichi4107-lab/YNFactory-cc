@@ -15,7 +15,7 @@ APIキーを入れるとAI画像等にアップグレード可能。
 
 ## 日常運用
 
-- 09:00 / 14:00 / 19:00 に1本ずつ自動生成 → Telegram にプレビュー動画＋ボタンが届く
+- 09:00 / 14:00 / 19:00 に自動生成 → 標準では有効媒体ごとに別動画を生成し、Telegram に媒体別プレビュー動画＋ボタンが届く
 - 難易度バランスは 09:00=初級、14:00=中級、19:00=中級
 - **✅承認して投稿** を押すと有効媒体へ自動投稿（結果URLが返ってくる）
 - **❌却下** でスキップ、**⏸保留** で後回し
@@ -78,6 +78,8 @@ PY=~/shorts-factory/.venv/bin/python
 $PY -m src.pipeline                          # ネタ帳から1本生成→キュー→Telegram
 $PY -m src.pipeline --difficulty intermediate # 中級ネタを明示生成
 $PY -m src.pipeline --topic "..." --no-queue # テーマ指定・キュー登録なし（テスト）
+$PY -m src.pipeline --topic "..." --target-platform instagram --no-queue # SNS別台本寄せのテスト
+$PY -m src.pipeline --single-video           # 従来どおり1本の動画を有効媒体へ投稿するキューを作成
 $PY -m src.approval_bot                      # 承認デーモンを手動起動
 ```
 
@@ -96,6 +98,20 @@ python3 shorts-factory/scripts/retry_failed_posts.py <queue_id> --execute
 
 自動再投稿の回数や待機秒数は `queue.retry_max_attempts` / `queue.retry_delay_sec` で変更できる。
 
+### 動画被り・二重投稿防止
+
+2026-07-01 に、Claude CLI未ログイン時のフォールバック台本が過去動画と同じ内容を再生成したため、動画被り防止を強化した。
+
+- 台本生成後、直近50本のタイトルと一致する場合は不合格にする
+- 字幕・読み上げ文・読み仮名を正規化したキュー署名が直近動画と一致する場合は不合格にする
+- フォールバック台本も同じ重複検査に通し、被る場合はqueue登録しない
+- 重複検知はDrive outputsではなくruntimeローカル `~/shorts-factory/work/` を見る（Driveロック回避）
+- Claude CLIの復旧確認は `claude auth status` と非対話実行 `claude -p` の両方で見る
+
+投稿側は `~/shorts-factory/posting_ledger/` に媒体別の成功URLを残す。retryや承認bot復旧時にledgerへ成功記録がある媒体は外部投稿せず、queueへURLだけ復元する。Telegram callback失敗時は承認状態を変更せず、古い `approved` item や一部媒体投稿済みitemはworker側でも再投稿を止める。
+
+重複が見つかった場合は、後続queueを `skipped` にし、`review.reason=duplicate_guard` を残してから別topic/別切り口で再生成する。
+
 ### SNS別CTA・説明文
 
 投稿時は `src/platform_copy.py` が媒体別の本文を作る。
@@ -106,6 +122,23 @@ python3 shorts-factory/scripts/retry_failed_posts.py <queue_id> --execute
 - YouTube Shorts: 説明欄に `utm_source=youtube` 付きLP URLを直接記載
 
 新規キューには `platform_copy` として媒体別本文を保存する。旧キューに `platform_copy` が無い場合も、投稿時に同じルールで自動生成される。
+
+### AI専門家向けコンテンツ拡張
+
+2026-07-01 以降、動画テーマはChatGPT単体の小技だけでなく、AIツール比較・AI導入・業務自動化・社内定着・品質チェックへ広げる。
+
+- `topics.json` は `domain` / `business_function` / `primary_tools` / `expertise_angle` / `platform_angles` を持つ構造化topicを扱える
+- `script_prompt.md` は「AIツール・AI導入・業務自動化」向けに調整済み
+- `--target-platform x|instagram|tiktok|youtube` で、台本の見せ方をSNS別に寄せられる
+- キューには `content_strategy` と `platform_angles` を保存する
+- 投稿文は媒体別の `platform_angles` があれば本文冒頭に反映する
+
+通常運用では `content.platform_variant_videos: true` により、1つのsource topicから有効媒体ごとに別台本・別動画を生成する。
+
+- X / Instagram / TikTok / YouTube それぞれ `target_platform` を変えて台本生成する
+- 生成後は1媒体1キューになり、各キューの有効投稿先は対象SNSだけになる
+- Telegramプレビューには `媒体別動画: x` のように対象SNSが表示される
+- 従来どおり共通動画を使いたい場合は `--single-video` または `content.platform_variant_videos: false` を使う
 
 ## 設定変更
 
@@ -128,6 +161,7 @@ python3 shorts-factory/scripts/retry_failed_posts.py <queue_id> --execute
 | VOICEVOX起動失敗 | `~/shorts-factory/logs/voicevox_engine.log` |
 | `rsync失敗` が続く | `SHORTS_REPO_ROOT` または `YNFACTORY_ROOT` を確認。`scripts/run_generate.sh` は候補パスを解決し、失敗理由をログに残す |
 | 一部媒体だけ投稿失敗 | 標準で失敗媒体だけ最大2回自動再投稿。それでも残る場合は `python3 shorts-factory/scripts/retry_failed_posts.py --all` で対象確認 → `--execute` |
+| 同じ動画が連続生成される | `script.json` の `title` / `cues` と `~/shorts-factory/work/` の直近履歴を比較。Claude CLIは `claude -p` まで確認し、重複queueは `skipped` にして別topicで再生成 |
 
 ## クレジット・コンプライアンス
 

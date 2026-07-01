@@ -7,7 +7,7 @@ import json
 import os
 import signal
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 APP_ROOT = Path(__file__).resolve().parents[1]
@@ -19,6 +19,7 @@ from src import notify, queue_lib  # noqa: E402
 from src.platforms import poster  # noqa: E402
 
 WORKER_TIMEOUT_SEC = 900
+APPROVAL_POST_WINDOW = timedelta(minutes=30)
 
 
 def _now() -> str:
@@ -56,6 +57,41 @@ def _timeout_handler(_signum, _frame) -> None:
     raise TimeoutError(f"post worker timed out after {WORKER_TIMEOUT_SEC}s")
 
 
+def _parse_iso(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value)
+    except ValueError:
+        return None
+
+
+def _enabled_platform_statuses(item: dict) -> list[str]:
+    return [
+        info.get("status")
+        for info in (item.get("platforms") or {}).values()
+        if info.get("enabled")
+    ]
+
+
+def _posting_allowed(item: dict) -> tuple[bool, str]:
+    review = item.get("review") or {}
+    if not review.get("owner_approved"):
+        return False, "not_owner_approved"
+    decided_at = _parse_iso(review.get("decided_at"))
+    if not decided_at:
+        return False, "missing_decided_at"
+    now = datetime.now().astimezone()
+    if decided_at.tzinfo is None and now.tzinfo is not None:
+        decided_at = decided_at.replace(tzinfo=now.tzinfo)
+    if now - decided_at > APPROVAL_POST_WINDOW:
+        return False, "approval_expired"
+    statuses = _enabled_platform_statuses(item)
+    if any(status == "posted" for status in statuses):
+        return False, "already_partially_posted"
+    return True, "ok"
+
+
 def post_one(item_id: str) -> int:
     fd, lock_path = _acquire_lock(item_id)
     if fd is None:
@@ -70,6 +106,13 @@ def post_one(item_id: str) -> int:
         if item.get("status") != "approved":
             _finish_worker(item, exit_code=0)
             print(json.dumps({"id": item_id, "skipped": item.get("status")}, ensure_ascii=False))
+            return 0
+        allowed, reason = _posting_allowed(item)
+        if not allowed:
+            item.setdefault("posting_guard", {})["worker_block_reason"] = reason
+            item["posting_guard"]["worker_blocked_at"] = _now()
+            _finish_worker(item, exit_code=0, error=f"blocked: {reason}")
+            print(json.dumps({"id": item_id, "skipped": reason}, ensure_ascii=False))
             return 0
 
         updated = poster.post_item(item, queue_lib, notify)

@@ -148,3 +148,16 @@ score: 90/100
 - `~/shorts-factory/.venv/bin/python ~/shorts-factory/app/scripts/check_platforms.py` で全ready確認。
 - 初回テスト投稿の実行可否を明示承認。
 - 問題なければ `queue.auto_post: true` へ切替するか判断。
+
+## 2026-07-01 追補: 動画被り防止
+
+2026-06-29 19:00 と 2026-06-30 09:00 で同一動画が連続生成されたため、1日3回運用の必須品質基準に「直近動画との重複禁止」を追加した。
+
+追加完了条件:
+
+- 直近50本と同じ `title` は生成不合格にする。
+- 字幕・読み上げ文・読み仮名を正規化したキュー署名が直近動画と一致する場合は生成不合格にする。
+- Claude CLI失敗後のフォールバック台本も同じ重複検査を通し、被る場合はqueue登録しない。
+- 重複履歴はDrive outputsではなくruntime `~/shorts-factory/work/` を参照し、Driveロックで生成を止めない。
+- Claude CLI復旧確認は `claude auth status` だけでなく、非対話実行 `claude -p` まで確認する。
+- 重複queueを見つけた場合は `skipped` + `review.reason=duplicate_guard` で残し、別topic/別切り口で再生成する。

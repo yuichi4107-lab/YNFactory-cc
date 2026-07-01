@@ -10,6 +10,7 @@ OpenAI Structured Outputs へ切替できる。
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import unicodedata
@@ -25,6 +26,17 @@ _KANA_RE = re.compile(r"^[ァ-ヶー、。・\s０-９0-9？?！!]+$")
 _UNSTABLE_SPEECH_RE = re.compile(r"[A-Za-z%％]")
 _SPEECH_TERM_REPLACEMENTS = {
     "chatgpt": "チャットジーピーティー",
+    "claude": "クロード",
+    "gemini": "ジェミニ",
+    "perplexity": "パープレキシティ",
+    "notebooklm": "ノートブックエルエム",
+    "notebook lm": "ノートブックエルエム",
+    "canva": "キャンバ",
+    "gamma": "ガンマ",
+    "figma": "フィグマ",
+    "zapier": "ザピアー",
+    "make": "メイク",
+    "n8n": "エヌエイトエヌ",
     "openai": "オープンエーアイ",
     "youtube": "ユーチューブ",
     "instagram": "インスタグラム",
@@ -55,6 +67,29 @@ _SPEECH_TERM_RE = re.compile(
     "|".join(re.escape(k) for k in sorted(_SPEECH_TERM_REPLACEMENTS, key=len, reverse=True)),
     re.IGNORECASE,
 )
+_DISPLAY_CANONICAL_TERMS = {
+    "チャットジーピーティー": "ChatGPT",
+    "チャットジィーピィーティィー": "ChatGPT",
+    "チャットGPT": "ChatGPT",
+    "chatgpt": "ChatGPT",
+    "Claude": "Claude",
+    "claude": "Claude",
+    "クロード": "Claude",
+    "Gemini": "Gemini",
+    "gemini": "Gemini",
+    "ジェミニ": "Gemini",
+    "AI": "AI",
+    "ai": "AI",
+    "エーアイ": "AI",
+}
+_DISPLAY_CANONICAL_TERM_RE = re.compile(
+    "|".join(re.escape(k) for k in sorted(_DISPLAY_CANONICAL_TERMS, key=len, reverse=True)),
+    re.IGNORECASE,
+)
+_ALLOWED_DISPLAY_LATIN_RE = re.compile(
+    r"(?<![A-Za-z0-9])(?:ChatGPT|Claude|Gemini|AI)(?![A-Za-z0-9])",
+    re.IGNORECASE,
+)
 
 
 def _speech_unstable_text(s: str) -> bool:
@@ -66,6 +101,19 @@ def _replace_unstable_terms(text: str) -> str:
         lambda m: _SPEECH_TERM_REPLACEMENTS[m.group(0).lower()],
         text,
     )
+
+
+def _normalize_display_terms(text: str) -> str:
+    text = unicodedata.normalize("NFKC", _replace_unstable_terms(text))
+    return _DISPLAY_CANONICAL_TERM_RE.sub(
+        lambda m: _DISPLAY_CANONICAL_TERMS.get(m.group(0), _DISPLAY_CANONICAL_TERMS[m.group(0).lower()]),
+        text,
+    )
+
+
+def _display_unstable_text(s: str) -> bool:
+    stripped = _ALLOWED_DISPLAY_LATIN_RE.sub("", s)
+    return bool(_UNSTABLE_SPEECH_RE.search(stripped))
 
 
 def normalize_generated_script(data: dict) -> dict:
@@ -81,7 +129,7 @@ def normalize_generated_script(data: dict) -> dict:
         display = cue.get("display")
         if isinstance(display, list):
             cue["display"] = [
-                _replace_unstable_terms(line) if isinstance(line, str) else line
+                _normalize_display_terms(line) if isinstance(line, str) else line
                 for line in display
             ]
         for key in ("tts_text", "reading_kana"):
@@ -134,10 +182,10 @@ def validate_script(data: dict, image_count: int) -> list[str]:
                     errs.append(
                         f"cue[{i}].display[{j}]「{line}」が{_char_width(line)}文字で上限{max_line}文字超過。短く分割すること"
                     )
-                elif _speech_unstable_text(line):
+                elif _display_unstable_text(line):
                     errs.append(
                         f"cue[{i}].display[{j}]「{line}」に英字または%記号あり。"
-                        "ChatGPT以外はカタカナ・日本語表記にすること"
+                        "AI、Claude、Gemini、ChatGPT以外はカタカナ・日本語表記にすること"
                     )
         tts = cue.get("tts_text", "")
         if not isinstance(tts, str) or len(tts.strip()) < 3:
@@ -185,6 +233,67 @@ def validate_script(data: dict, image_count: int) -> list[str]:
     return errs
 
 
+def _cue_signature(data: dict) -> str:
+    parts: list[str] = []
+    for cue in data.get("cues") or []:
+        if not isinstance(cue, dict):
+            continue
+        display = cue.get("display")
+        if isinstance(display, list):
+            parts.extend(str(line) for line in display)
+        parts.append(str(cue.get("tts_text") or ""))
+        parts.append(str(cue.get("reading_kana") or ""))
+    return re.sub(r"\s+", "", unicodedata.normalize("NFKC", "\n".join(parts))).lower()
+
+
+def _recent_output_scripts(limit: int = 50) -> list[dict]:
+    # Drive上のoutputsを直接走査するとFile Providerのロックで生成が止まりやすい。
+    # 生成時の重複検知はruntimeローカルのwork履歴を正とする。
+    try:
+        paths = sorted(
+            (p for p in CONFIG.work_dir.iterdir() if p.is_dir()),
+            key=lambda p: p.stat().st_mtime,
+            reverse=True,
+        )
+    except OSError:
+        return []
+    scripts: list[dict] = []
+    for out_dir in paths[:limit]:
+        script_path = out_dir / "script.json"
+        try:
+            scripts.append(json.loads(script_path.read_text(encoding="utf-8")))
+        except (FileNotFoundError, json.JSONDecodeError, OSError):
+            continue
+    return scripts
+
+
+def recent_duplicate_errors(data: dict) -> list[str]:
+    """Reject scripts that would recreate a recent video."""
+    errs: list[str] = []
+    title = str(data.get("title") or "").strip()
+    if title:
+        recent_titles = {
+            unicodedata.normalize("NFKC", t).strip()
+            for t in topic_store.recent_titles(50)
+        }
+        if unicodedata.normalize("NFKC", title).strip() in recent_titles:
+            errs.append(f"title「{title}」は最近使用済み。別タイトル・別切り口にすること")
+
+    signature = _cue_signature(data)
+    if not signature:
+        return errs
+    for old in _recent_output_scripts(50):
+        if signature == _cue_signature(old):
+            old_title = old.get("title") or "無題"
+            old_topic = old.get("topic") or ""
+            errs.append(
+                f"字幕/読み上げキューが過去動画「{old_title}」と同一。"
+                f"別構成にすること（過去topic: {old_topic}）"
+            )
+            break
+    return errs
+
+
 def _extract_json(text: str) -> dict:
     """LLM出力からJSONを頑健に抽出する。"""
     text = text.strip()
@@ -211,8 +320,87 @@ DIFFICULTY_GUIDANCE = {
     ),
 }
 
+VALID_TARGET_PLATFORMS = {"common", "x", "instagram", "tiktok", "youtube"}
 
-def _build_prompt(topic: str, image_count: int, difficulty: str = "beginner") -> str:
+PLATFORM_GUIDANCE = {
+    "common": (
+        "共通動画向け。4媒体すべてで違和感が出ないよう、業務課題・判断基準・"
+        "次に試す1アクションを中心にする。"
+    ),
+    "x": (
+        "X向け。逆張り・問題提起・短い判断軸を強める。"
+        "経営者やAI感度の高い実務家が返信・引用したくなる見解を入れる。"
+    ),
+    "instagram": (
+        "Instagram向け。保存版・チェックリスト・3ステップを強める。"
+        "後で見返せる実務テンプレとして成立させる。"
+    ),
+    "tiktok": (
+        "TikTok向け。驚き・実演・あるあるを強める。"
+        "難しいAI導入論を短く見せ、テンポを落とさない。"
+    ),
+    "youtube": (
+        "YouTube Shorts向け。検索意図に合うHow-to・ツール比較・使い分けを強める。"
+        "タイトルと内容を一致させ、長期で見られる解説にする。"
+    ),
+}
+
+
+def normalize_target_platform(value: str | None) -> str:
+    if not value:
+        return "common"
+    value = value.strip().lower()
+    return value if value in VALID_TARGET_PLATFORMS else "common"
+
+
+def _topic_text(topic: str | dict) -> str:
+    if isinstance(topic, dict):
+        return str(topic.get("topic") or "").strip()
+    return str(topic or "").strip()
+
+
+def _topic_meta(topic: str | dict) -> dict:
+    if isinstance(topic, dict):
+        return {k: v for k, v in topic.items() if v not in (None, "", [])}
+    return {"topic": _topic_text(topic)}
+
+
+def _list_text(value) -> str:
+    if isinstance(value, list):
+        return "、".join(str(v) for v in value if str(v).strip())
+    return str(value or "").strip()
+
+
+def _topic_context(meta: dict) -> str:
+    lines: list[str] = []
+    fields = [
+        ("domain", "カテゴリ"),
+        ("business_function", "業務領域"),
+        ("primary_tools", "主なAIツール"),
+        ("expertise_angle", "専門家視点"),
+        ("target_persona", "想定視聴者"),
+        ("avoid_angles", "避ける切り口"),
+    ]
+    for key, label in fields:
+        value = _list_text(meta.get(key))
+        if value:
+            lines.append(f"- {label}: {value}")
+    platform_angles = meta.get("platform_angles")
+    if isinstance(platform_angles, dict) and platform_angles:
+        lines.append("- SNS別の切り口:")
+        for platform in ("x", "instagram", "tiktok", "youtube"):
+            angle = str(platform_angles.get(platform) or "").strip()
+            if angle:
+                lines.append(f"  - {platform}: {angle}")
+    return "\n".join(lines) if lines else "（追加メタ情報なし）"
+
+
+def _build_prompt(
+    topic: str | dict,
+    image_count: int,
+    difficulty: str = "beginner",
+    target_platform: str = "common",
+) -> str:
     prompt_path = CONFIG.prompts_dir / "script_prompt.md"
     try:
         tpl = retry_io(
@@ -232,10 +420,16 @@ def _build_prompt(topic: str, image_count: int, difficulty: str = "beginner") ->
     recent = topic_store.recent_titles(30)
     recent_str = "\n".join(f"- {t}" for t in recent) if recent else "（まだ無し）"
     difficulty = topic_store.normalize_difficulty(difficulty) or "beginner"
+    target_platform = normalize_target_platform(target_platform)
+    meta = _topic_meta(topic)
+    topic_text = _topic_text(topic)
     return (
-        tpl.replace("{topic}", topic)
+        tpl.replace("{topic}", topic_text)
         .replace("{difficulty}", difficulty)
         .replace("{difficulty_guidance}", DIFFICULTY_GUIDANCE[difficulty])
+        .replace("{target_platform}", target_platform)
+        .replace("{platform_guidance}", PLATFORM_GUIDANCE[target_platform])
+        .replace("{topic_context}", _topic_context(meta))
         .replace("{image_count}", str(image_count))
         .replace("{recent_titles}", recent_str)
     )
@@ -247,6 +441,14 @@ def _call_claude_cli(prompt: str) -> str:
     cmd = [bin_path, "-p", "--output-format", "json"]
     if model:
         cmd += ["--model", model]
+    env = os.environ.copy()
+    path_parts = []
+    nvm_root = Path.home() / ".nvm" / "versions" / "node"
+    if nvm_root.exists():
+        path_parts.extend(str(p / "bin") for p in sorted(nvm_root.glob("v*"), reverse=True))
+    path_parts.extend(["/opt/homebrew/bin", "/usr/local/bin", str(Path.home() / ".local" / "bin")])
+    path_parts.append(env.get("PATH", ""))
+    env["PATH"] = ":".join(p for p in path_parts if p)
     # cwd はランタイムディレクトリ（プロジェクトのCLAUDE.md等を読み込ませない）
     proc = subprocess.run(
         cmd,
@@ -255,9 +457,16 @@ def _call_claude_cli(prompt: str) -> str:
         text=True,
         timeout=CONFIG.get("llm", "timeout_sec", default=300),
         cwd=str(CONFIG.runtime_dir),
+        env=env,
     )
     if proc.returncode != 0:
-        raise RuntimeError(f"claude CLI failed rc={proc.returncode}: {proc.stderr[:500]}")
+        detail = proc.stderr[:500]
+        if not detail.strip() and proc.stdout:
+            try:
+                detail = str(json.loads(proc.stdout).get("result") or proc.stdout[:500])
+            except json.JSONDecodeError:
+                detail = proc.stdout[:500]
+        raise RuntimeError(f"claude CLI failed rc={proc.returncode}: {detail}")
     wrapper = json.loads(proc.stdout)
     result = wrapper.get("result")
     if not result:
@@ -627,25 +836,39 @@ def _fallback_cues_for_topic(topic: str) -> tuple[str, list[dict]]:
     ]
 
 
-def _fallback_script(topic: str, difficulty: str, last_errs: list[str]) -> dict:
-    title, cues = _fallback_cues_for_topic(topic)
+def _fallback_script(
+    topic: str | dict,
+    difficulty: str,
+    last_errs: list[str],
+    target_platform: str = "common",
+) -> dict:
+    meta = _topic_meta(topic)
+    topic_text = _topic_text(topic)
+    title, cues = _fallback_cues_for_topic(topic_text)
     return {
         "title": title,
         "cues": cues,
         "caption": (
-            f"{topic}の実務向けショートです。"
+            f"{topic_text}の実務向けショートです。"
             "一回で当てにいくより、前提をそろえて記録しながら改善する方が安定します。"
             "保存して、次の仕事でそのまま試してみてください。"
         ),
-        "hashtags": ["#ChatGPT", "#AI活用術", "#仕事術", "#業務効率化", "#営業"],
+        "hashtags": ["#生成AI", "#AI活用", "#AI導入", "#仕事術", "#業務効率化"],
         "card_keywords": ["前提整理", "記録", "改善", "共有"],
-        "topic": topic,
+        "topic": topic_text,
         "difficulty": difficulty,
+        "target_platform": normalize_target_platform(target_platform),
+        "content_strategy": {
+            key: meta[key]
+            for key in ("domain", "business_function", "primary_tools", "expertise_angle", "target_persona")
+            if key in meta
+        },
+        "platform_angles": meta.get("platform_angles", {}),
         "fallback_reason": "; ".join(last_errs[:3]),
     }
 
 
-def generate_script(topic: str, difficulty: str = "beginner") -> dict:
+def generate_script(topic: str | dict, difficulty: str = "beginner", target_platform: str = "common") -> dict:
     """テーマから検証済み台本JSONを生成する。"""
     image_count = int(CONFIG.get("images", "count", default=4))
     provider = CONFIG.get("llm", "provider", default="claude_cli")
@@ -653,7 +876,10 @@ def generate_script(topic: str, difficulty: str = "beginner") -> dict:
         provider = "claude_cli"
 
     difficulty = topic_store.normalize_difficulty(difficulty) or "beginner"
-    prompt = _build_prompt(topic, image_count, difficulty)
+    target_platform = normalize_target_platform(target_platform)
+    topic_text = _topic_text(topic)
+    meta = _topic_meta(topic)
+    prompt = _build_prompt(topic, image_count, difficulty, target_platform)
     retries = int(CONFIG.get("llm", "retries", default=3))
     last_errs: list[str] = []
     for attempt in range(1, retries + 1):
@@ -681,12 +907,23 @@ def generate_script(topic: str, difficulty: str = "beginner") -> dict:
             continue
         errs = validate_script(data, image_count)
         if not errs:
-            data["topic"] = topic
+            errs = recent_duplicate_errors(data)
+        if not errs:
+            data["topic"] = topic_text
             data["difficulty"] = difficulty
+            data["target_platform"] = target_platform
+            data["content_strategy"] = {
+                key: meta[key]
+                for key in ("domain", "business_function", "primary_tools", "expertise_angle", "target_persona")
+                if key in meta
+            }
+            data["platform_angles"] = meta.get("platform_angles", {})
             return data
         last_errs = errs
-    data = _fallback_script(topic, difficulty, last_errs)
+    data = _fallback_script(topic, difficulty, last_errs, target_platform)
     errs = validate_script(data, image_count)
+    if not errs:
+        errs = recent_duplicate_errors(data)
     if not errs:
         return data
     raise RuntimeError(

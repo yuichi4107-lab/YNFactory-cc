@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-06-30T07:00:06
+generated_at: 2026-07-01T07:02:25
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,22 @@ generated_at: 2026-06-30T07:00:06
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-06-30
+
+- - **Yuichi** — 新しい業務フローの検討、顧客対応トレーニング、給与・保険料の自動引き落とし、PC利用に関する相談など、複数の場面で言及されている。 (18:32) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **Takahashi** — 労働代表者または労働協定に関する人物として言及されており、協定への記載漏れが懸念されている。 (18:38) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **富士フィルムの人** — DocuWorksの活用方法（タブ作成や押印プロセス）に関する専門知識を持つ人物。 (18:26) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **吉井さん** — 過去の未払い賃金問題（打刻時間と勤務開始時間のずれ）の事例として言及されている。 (17:56) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **美賢** — 過去に金銭的な紹介（仲介）の形で協力関係にあった人物。 (17:11) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **営業担当** — ビデオメンテナンスに関するメールのやり取りで言及された担当者。大山商会やチーフの可能性もある。 (16:00) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **日備の中田** — 社会保険料の納付に関して連絡してきた人物。 (14:08) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **Aika** — 不良品弁償と保険金に関する問題に関連するプロジェクト名または取引先名。 (13:06) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **林さん** — 書類の修正依頼を唯一返してくれる人物として言及されている。 (12:42) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **アンチラーさん** — 商談会を主催している人物または企業名。 (10:13) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **佐藤さん** — 現場の引き継ぎや、不在になった場合の影響について言及されている人物。 (09:17) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **野村さん** — マネジメント能力があり、現場をうまく回せる可能性について言及されている人物。 (09:18) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
+- - **コマさん** — 後輩の育成を開始する前に、まず本人が一人前になる必要があるとされている人物。 (09:12) | source:`.company/inputs/organized/lifelogs/2026-06-30-lifelog-insights.md`
 
 ## 2026-06-27
 
