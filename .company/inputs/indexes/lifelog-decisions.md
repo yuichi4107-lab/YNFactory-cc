@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-01T07:02:25
+generated_at: 2026-07-02T07:01:04
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,18 @@ generated_at: 2026-07-01T07:02:25
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-01
+
+- - AIツールの選定基準と最終確認のプロセスを明確にする（読む系、作る系、調べる系で選び、出力は必ず人が確認し、事実と数字は元の資料で裏取りする）。 | time:20:00 | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - AIモデルの運用において、セキュリティ基準と判断プロセスを明確に持つこと（99%以上のブロック訓練、習慣枠の活用）。 | time:18:54 | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - AIモデル「Aブル」（おそらくClaude）が6月1日から世界中の全ユーザー向けに利用再開されたことを認識する。 | time:18:42 | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - 入社・退職手続きに関して、まずは数の多い「日米」の手続きで慣れることを優先する。 | time:13:12 | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - 保険ファイルの手続きにおいては、雇用保険と社会保険を一旦は同じフォルダで扱う方針にする。 | time:13:39 | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - 労働時間計算は現状週40時間を基準とし、大きな差異がない限りはその方針で進める（30時間や20時間といったギリギリのラインの場合は詳細な確認が必要）。 | time:11:55 | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - 登録情報と異なるメールアドレスからの問い合わせには本人確認を促す対応をする。 | time:10:51 | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - 事務所内の喫煙スペースは1階のエレベーター奥にあり、現在社内で利用者は小林さんくらいであると認識する。 | time:09:09 | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - 会議室の利用は予約台帳で先着順とし、当日利用は直接記入。総務が朝に予約状況を転記する運用とする。 | time:09:23 | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
 
 ## 2026-06-30
 

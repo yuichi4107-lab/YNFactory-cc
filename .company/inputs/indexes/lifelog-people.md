@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-01T07:02:25
+generated_at: 2026-07-02T07:01:04
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,26 @@ generated_at: 2026-07-01T07:02:25
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-01
+
+- - **Yuichi** — 新しい仕事の状況について言及あり。 (20:09) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **ジョー** — 過去のシステム開発案件の担当者、業務をやりたがらず放置。 (17:44) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **コバさん** — 過去のシステム開発案件をジョーから引き継いだが放置。 (17:44) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **近藤さん** — 過去のシステム開発案件で自ら担当に名乗り出た可能性。 (17:44) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **川口** — チームメンバー、業務に対する感覚が古いとの指摘あり。 (14:48) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **佐々木** — 以前SE1の現場に入っていた。 (14:48) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **たけし** — SE1のメンバー、年末調整の対応が必要。 (14:48) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **よこたさん** — SE1のメンバー。 (14:48) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **今村さん** — SE1のメンバー。 (14:48) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **野村さん** — 新入社員、取材日程の確認とオリエンテーションの対象者。 (15:48) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **専務** — 会社の鍵の管理者の一人。 (08:49) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **番野部長** — 会社の鍵の管理者の一人。 (08:49) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **奥** — 会社の鍵の管理者の一人。 (08:49) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **西日の林部長** — 会社の鍵の管理者の一人。 (08:49) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **美犬の小林君** — 会社の鍵の管理者の一人、社内で喫煙している従業員。 (08:49) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **長谷川主任** — 日米と美犬を兼務、会社の鍵の管理者の一人。 (08:49) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **田中原** — 新しい従業員、または関係者。 (08:10) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
 
 ## 2026-06-30
 

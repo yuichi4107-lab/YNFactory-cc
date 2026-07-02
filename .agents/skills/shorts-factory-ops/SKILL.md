@@ -44,6 +44,20 @@ Drive上のoutputsを広く走査するとGoogle Drive File Providerのロック
 - `Not logged in - Please run /login` が出たら、動画を量産せずログイン復旧を先に行う
 - 重複動画を見つけたら、後続の重複queueは `skipped` にし、Telegramボタンは無効化してから別テーマで再生成する
 
+## 2026-07-02 英語ツール名テロップ修正の登録内容
+
+発生した問題:
+
+- `Canva` / `Gamma` / `NotebookLM` などの英語ツール名が、音声を安定させるためのカタカナ読みに引っ張られ、画面テロップにもカタカナで焼き込まれた
+- 既存動画は字幕が焼き込み済みのため、`script.json` やプロンプトだけ直しても表示は変わらない
+
+以後の必須ルール:
+
+- 英語ツール名・サービス名・一般的な英字略語（PDFなど）は `display` では英字表記を維持する
+- `tts_text` / `reading_kana` では読み上げ安定のためカタカナへ変換してよい
+- 新しい英語ツール名を扱う時は、`src/script_gen.py` の表示正規化と `src/jp_text.py` の音韻比較読み辞書を同時に追加する
+- テロップ表示修正後の差し替えでは、旧queueを `skipped` にしてTelegramボタンを外し、再レンダリング後に `subtitles.ass` と動画フレームで焼き込み表示を確認する
+
 ## 実装済みガード
 
 - `shorts-factory/src/script_gen.py`
@@ -51,6 +65,7 @@ Drive上のoutputsを広く走査するとGoogle Drive File Providerのロック
   - `_recent_output_scripts()` はDriveではなく `CONFIG.work_dir` のruntime履歴を見る
   - フォールバック台本も重複検査で落とす
   - Claude CLI失敗時はstdout JSONを含め、ログイン失効などの理由を通知に出す
+  - 英語ツール名・サービス名・英字略語は `display` 側で英字へ正規化し、読み上げ側はカタカナへ正規化する
 
 - `shorts-factory/scripts/run_generate.sh`
   - nvm配下の最新NodeをPATHへ追加し、launchd実行でも `claude` が動きやすくする
@@ -102,6 +117,8 @@ printf '{"ok": true}' | claude -p 'Return this JSON unchanged.'
 
 ## 品質基準
 
+- 英語ツール名・サービス名・英字略語はテロップで英字表記になり、読み上げだけカタカナになる
+- テロップ修正後の差し替えでは、`script.json` だけでなく `subtitles.ass` と動画フレームも確認する
 - 同一 `title` の直近再利用が生成段階で止まる
 - 同一字幕/読み上げキューの動画が生成段階で止まる
 - 生成失敗時のフォールバックでも重複検査を必ず通る

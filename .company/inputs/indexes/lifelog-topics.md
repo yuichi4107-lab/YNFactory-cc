@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-01T07:02:25
+generated_at: 2026-07-02T07:01:04
 ---
 
 # Lifelog Topics
@@ -10,6 +10,23 @@ generated_at: 2026-07-01T07:02:25
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-01
+
+- - **AIモデル（Aブル/Claude）のセキュリティインシデント詳細** (18:48) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+-   - 理由: AI活用案件において、利用するAIモデルのセキュリティリスクと対策を理解することは必須であるため。 | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **AIモデル（Aブル/Claude）の利用条件と課金体系の変更** (18:52) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+-   - 理由: AI活用案件のコストと運用計画に直接影響するため、詳細を把握する必要があるため。 | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **Aブル（Claude）の利用再開プラットフォームと地域制限** (18:42) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+-   - 理由: AI活用案件での具体的な利用可否と範囲を確認するため。 | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **シフト制における労働時間の算出方法** (11:52) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+-   - 理由: 適切な労働時間管理と給与計算のため、月間労働時間（例: 159.5時間）の算出根拠と40時間/週との関連を明確にする必要があるため。 | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- - **地域指数の確認と適用** (10:19) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+-   - 理由: 何らかの料金設定や評価基準に影響するため、正確な把握が必要であるため。 | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- 1. **AIツールごとの得意分野と使い分けに関するコンテンツ作成** [freelance] ★★★★☆ (20:00) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+-    - 長い資料の要約や契約チェックはClaude、企画の叩き台やアイデア出しはChatGPT、最新情報の調査や下調べはGeminiを活用する。作業の種類（読む系、作る系、調べる系）でツールを選定し、出力は必ず人が確認し、事実と数字は元の資料で裏取りする、という使い分けノウハウをコンテンツ化する。 | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- 2. **ファイル管理の視覚的改善** [freelance] ★★★☆☆ (14:14) | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+-    - ファイルのプロパティ変更（色分けや新着マークの付与）により、フォルダを開かなくてもファイルの状態（新規、待機中など）を識別できるようにする管理方法を導入する。 | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
 
 ## 2026-06-30
 

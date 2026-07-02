@@ -132,6 +132,7 @@ python3 shorts-factory/scripts/retry_failed_posts.py <queue_id> --execute
 - `--target-platform x|instagram|tiktok|youtube` で、台本の見せ方をSNS別に寄せられる
 - キューには `content_strategy` と `platform_angles` を保存する
 - 投稿文は媒体別の `platform_angles` があれば本文冒頭に反映する
+- 英語ツール名・サービス名・英字略語は動画テロップでは英字表記、読み上げ用 `tts_text` / `reading_kana` ではカタカナ読みに分離する
 
 通常運用では `content.platform_variant_videos: true` により、1つのsource topicから有効媒体ごとに別台本・別動画を生成する。
 
@@ -162,6 +163,7 @@ python3 shorts-factory/scripts/retry_failed_posts.py <queue_id> --execute
 | `rsync失敗` が続く | `SHORTS_REPO_ROOT` または `YNFACTORY_ROOT` を確認。`scripts/run_generate.sh` は候補パスを解決し、失敗理由をログに残す |
 | 一部媒体だけ投稿失敗 | 標準で失敗媒体だけ最大2回自動再投稿。それでも残る場合は `python3 shorts-factory/scripts/retry_failed_posts.py --all` で対象確認 → `--execute` |
 | 同じ動画が連続生成される | `script.json` の `title` / `cues` と `~/shorts-factory/work/` の直近履歴を比較。Claude CLIは `claude -p` まで確認し、重複queueは `skipped` にして別topicで再生成 |
+| 英語ツール名・英字略語がカタカナで表示される | `src/script_gen.py` の表示正規化辞書と `src/jp_text.py` の読み辞書を追加。旧queueは `skipped`、Telegramボタンを外して再生成し、`subtitles.ass` と動画フレームで焼き込みを確認 |
 
 ## クレジット・コンプライアンス
 

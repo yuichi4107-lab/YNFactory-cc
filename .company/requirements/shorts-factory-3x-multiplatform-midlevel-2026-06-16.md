@@ -161,3 +161,14 @@ score: 90/100
 - 重複履歴はDrive outputsではなくruntime `~/shorts-factory/work/` を参照し、Driveロックで生成を止めない。
 - Claude CLI復旧確認は `claude auth status` だけでなく、非対話実行 `claude -p` まで確認する。
 - 重複queueを見つけた場合は `skipped` + `review.reason=duplicate_guard` で残し、別topic/別切り口で再生成する。
+
+## 2026-07-02 追補: 英語ツール名テロップ
+
+AIツール全般へテーマを広げたことで、`NotebookLM` などの英語ツール名が読み上げ用カタカナに寄ってテロップへ焼き込まれる問題が発生した。
+
+追加完了条件:
+
+- 英語ツール名・サービス名・一般的な英字略語（PDFなど）は `display` で英字表記を維持する。
+- `tts_text` / `reading_kana` は音声安定のためカタカナ読みでよい。
+- 表示正規化辞書と音韻比較辞書を同時に更新し、英字表示とカタカナ読みを同一語として検証できる。
+- 表示ルールを修正した既存候補は、旧queueを `skipped` にしてTelegramボタンを外し、再レンダリング後に `subtitles.ass` と動画フレームで確認する。

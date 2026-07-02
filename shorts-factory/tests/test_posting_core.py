@@ -16,7 +16,7 @@ if str(APP_ROOT) not in sys.path:
 
 from src.logging_utils import redact_secrets
 from src.fs_retry import retry_io
-from src import approval_bot, pipeline, platform_copy, queue_lib, script_gen, topic_store
+from src import approval_bot, jp_text, pipeline, platform_copy, queue_lib, script_gen, topic_store
 from src.pipeline import result_summary, scheduled_difficulty
 from src.platforms import poster
 
@@ -398,6 +398,76 @@ class PostingCoreTest(unittest.TestCase):
         self.assertTrue(result["platform_variants"])
         self.assertEqual([item["platform"] for item in result["items"]], ["x", "instagram"])
 
+    def test_produce_platform_variants_retries_failed_platform_generation(self):
+        old_platforms = pipeline.CONFIG.cfg["queue"].get("platforms")
+        old_retry_attempts = pipeline.CONFIG.cfg.setdefault("content", {}).get("platform_generation_retry_attempts")
+        pipeline.CONFIG.cfg["queue"]["platforms"] = ["x", "instagram"]
+        pipeline.CONFIG.cfg["content"]["platform_generation_retry_attempts"] = 2
+        calls: list[str] = []
+        queued: list[str] = []
+
+        def fake_candidate(platform: str) -> dict:
+            return {
+                "item_id": f"{platform}-item",
+                "out_dir": Path("/tmp") / f"{platform}-item",
+                "report": {
+                    "pass": True,
+                    "duration": 42.0,
+                    "size_mb": 4.2,
+                    "accuracy": {"avg_cer": 0.02, "failed_indices": []},
+                    "checks": [],
+                },
+                "title": f"{platform} title",
+                "topic": "topic",
+                "script": {
+                    "title": f"{platform} title",
+                    "caption": "AI導入の実務向けテストです。小さく試して、結果を見て、社内に広げます。",
+                    "hashtags": ["#AI活用", "#生成AI", "#業務効率化"],
+                    "target_platform": platform,
+                    "difficulty": "intermediate",
+                },
+                "attempt": 1,
+            }
+
+        def fake_generate(_topic_entry, _difficulty, target_platform, item_suffix=None):
+            calls.append(target_platform)
+            if target_platform == "instagram" and calls.count("instagram") == 1:
+                raise RuntimeError("temporary script validation failure")
+            return fake_candidate(target_platform), 0
+
+        def fake_new_item(item_id, *_args, **_kwargs):
+            queued.append(item_id)
+            return {
+                "id": item_id,
+                "title": item_id,
+                "quality": {"pass": True, "avg_cer": 0.02},
+                "review": {},
+                "telegram": {},
+                "platforms": {},
+                "history": [],
+            }
+
+        try:
+            with (
+                patch.object(pipeline, "_generate_passable_candidate", side_effect=fake_generate),
+                patch.object(pipeline.topic_store, "next_topic_entry", return_value=({"topic": "topic", "difficulty": "intermediate"}, 99)),
+                patch.object(pipeline.topic_store, "consume_topic", return_value=98),
+                patch.object(pipeline.queue_lib, "new_item", side_effect=fake_new_item),
+                patch.object(pipeline.queue_lib, "save_item"),
+                patch.object(pipeline.queue_lib, "transition", side_effect=FakeQueue.transition),
+            ):
+                result = pipeline.produce_platform_variants(difficulty="intermediate")
+        finally:
+            pipeline.CONFIG.cfg["queue"]["platforms"] = old_platforms
+            if old_retry_attempts is None:
+                pipeline.CONFIG.cfg["content"].pop("platform_generation_retry_attempts", None)
+            else:
+                pipeline.CONFIG.cfg["content"]["platform_generation_retry_attempts"] = old_retry_attempts
+
+        self.assertEqual(calls, ["x", "instagram", "instagram"])
+        self.assertEqual(queued, ["x-item", "instagram-item"])
+        self.assertEqual([item["platform"] for item in result["items"]], ["x", "instagram"])
+
     def test_post_x_uses_platform_specific_copy(self):
         item = make_item()
         seen = {"text": None, "video_path": None}
@@ -687,11 +757,15 @@ class PostingCoreTest(unittest.TestCase):
 
         display_joined = "\n".join(data["cues"][0]["display"])
         voice_joined = data["cues"][0]["tts_text"] + data["cues"][0]["reading_kana"]
-        self.assertNotIn("PDF", display_joined)
-        self.assertNotIn("API", display_joined)
+        self.assertIn("PDF", display_joined)
+        self.assertIn("API", display_joined)
         self.assertIn("AI確認", display_joined)
-        self.assertIn("ピーディーエフ", display_joined)
-        self.assertIn("エーピーアイ", display_joined)
+        self.assertNotIn("ピーディーエフ", display_joined)
+        self.assertNotIn("エーピーアイ", display_joined)
+        self.assertNotIn("PDF", voice_joined)
+        self.assertNotIn("API", voice_joined)
+        self.assertIn("ピーディーエフ", voice_joined)
+        self.assertIn("エーピーアイ", voice_joined)
         self.assertNotIn("AI確認", voice_joined)
         self.assertIn("エーアイ確認", voice_joined)
 
@@ -1061,29 +1135,45 @@ class PostingCoreTest(unittest.TestCase):
         data = {
             "cues": [
                 {
-                    "display": ["ClaudeとGemini", "NotebookLMとAI"],
-                    "tts_text": "ClaudeとGeminiとNotebookLMを比較します。",
-                    "reading_kana": "ClaudeトGeminiトNotebookLMトAIヲヒカクシマス。",
+                    "display": ["CanvaとGamma", "NotebookLMとPDF"],
+                    "tts_text": "CanvaとGammaとNotebookLMとPDFを比較します。",
+                    "reading_kana": "CanvaトGammaトNotebookLMトPDFヲヒカクシマス。",
                 }
             ]
         }
 
         script_gen.normalize_generated_script(data)
 
-        self.assertEqual(data["cues"][0]["display"], ["ClaudeとGemini", "ノートブックエルエムとAI"])
-        self.assertNotIn("Claude", data["cues"][0]["tts_text"])
-        self.assertNotIn("Gemini", data["cues"][0]["tts_text"])
-        self.assertIn("クロード", data["cues"][0]["tts_text"])
-        self.assertIn("ジェミニ", data["cues"][0]["tts_text"])
+        self.assertEqual(data["cues"][0]["display"], ["CanvaとGamma", "NotebookLMとPDF"])
+        self.assertNotIn("Canva", data["cues"][0]["tts_text"])
+        self.assertNotIn("Gamma", data["cues"][0]["tts_text"])
+        self.assertNotIn("NotebookLM", data["cues"][0]["tts_text"])
+        self.assertNotIn("PDF", data["cues"][0]["tts_text"])
+        self.assertIn("キャンバ", data["cues"][0]["tts_text"])
+        self.assertIn("ガンマ", data["cues"][0]["tts_text"])
         self.assertIn("ノートブックエルエム", data["cues"][0]["tts_text"])
-        self.assertIn("エーアイ", data["cues"][0]["reading_kana"])
+        self.assertIn("ピーディーエフ", data["cues"][0]["reading_kana"])
 
     def test_display_validator_allows_only_canonical_ai_brand_terms(self):
         self.assertFalse(script_gen._display_unstable_text("AIとClaude"))
         self.assertFalse(script_gen._display_unstable_text("GeminiとChatGPT"))
+        self.assertFalse(script_gen._display_unstable_text("NotebookLMとPerplexity"))
+        self.assertFalse(script_gen._display_unstable_text("CanvaとGamma"))
+        self.assertFalse(script_gen._display_unstable_text("ZapierとMakeとn8n"))
+        self.assertFalse(script_gen._display_unstable_text("Google DriveとNotion"))
+        self.assertFalse(script_gen._display_unstable_text("PDFとAPIとURL"))
+        self.assertFalse(script_gen._display_unstable_text("CSVとKPIとCRM"))
         self.assertFalse(script_gen._display_unstable_text("生成AI"))
-        self.assertTrue(script_gen._display_unstable_text("OpenAI"))
+        self.assertFalse(script_gen._display_unstable_text("OpenAIとFigma"))
+        self.assertTrue(script_gen._display_unstable_text("Before改善"))
+        self.assertTrue(script_gen._display_unstable_text("UnknownTool"))
         self.assertTrue(script_gen._display_unstable_text("15%改善"))
+
+    def test_phonetic_match_allows_tool_display_with_kana_tts(self):
+        display = jp_text.phonetic_hira("この三つをNotebookLMやPDFに渡します")
+        tts = jp_text.phonetic_hira("この三つをノートブックエルエムやピーディーエフに渡します。")
+
+        self.assertGreaterEqual(jp_text.lcs_coverage(display, tts), 0.70)
 
     def test_platform_copy_prepends_platform_angle(self):
         item = make_item()

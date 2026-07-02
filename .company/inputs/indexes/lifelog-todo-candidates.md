@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-01T07:02:25
+generated_at: 2026-07-02T07:01:04
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,28 @@ generated_at: 2026-07-01T07:02:25
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-01
+
+- [ ] AI Chat GPTのテロップカタカナ表記を修正する（4つ全て）。 | time:20:03 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- [ ] Telegram通知が二重に届く問題を調査し、見直す。 | time:20:03 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- [ ] 面接における「鞄の中身チェック」企画の詳細（本人に身に覚えのないものを仕込み、アドリブ対応力を試す）を詰める。 | time:19:50 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- [ ] 放置されているシステム開発案件（現場管理システム）の現状を把握し、対応方針を決定する。 | time:17:44 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- [ ] 野村さんの取材日程を再確認し、必要であれば調整する。 | time:15:48 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- [ ] SE1の欠員状況に対する人員配置または業務分担の改善策を検討・実施する。 | time:14:48 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- [ ] 入社・退職書類のフォルダ構造と作業フローを再設計し、視覚的な管理方法（色分け、新着マークなど）を導入する。 | time:14:08 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- [ ] 入社・退職手続きの処理フローを確立し、特に数の多い日米のケースで習熟する。 | time:13:12 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- [ ] 保険ファイルのデータ作成から申請までのフローをスムーズにする方法（一時保存活用、申請前のチェックなど）を検討する。 | time:13:28 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- [ ] 入社・退職手続きの一元管理フォルダを作成し、作業フェーズごとの移動、番号順管理を試行する。 | time:13:35 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- [ ] 退職連絡表に、必要な処理項目（約6項目）のチェックボックスを追加する。 | time:13:57 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- [ ] デュアルモニター環境を試行し、ファイル管理の効率化に役立てる。 | time:14:02 | priority:low | due:- | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- [ ] 銀行に提出する決算書の準備を行う。 | time:13:01 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- [ ] 野村さんの様子を見て、今週中に次の採用募集層を決定する。 | time:13:02 | priority:normal | due:2026-07-04 | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- [ ] 振込名義（会社名でよいか）を確認し、相手に伝える。 | time:11:12 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- [ ] 登録情報と異なるメールアドレスからの問い合わせに対する本人確認対応プロセスを検討・策定する。 | time:10:51 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- [ ] たけしに対し、扶養控除申告書を提出すれば返金できること、今年の年末調整は確実に提出するよう伝える。確定申告しないと戻ってこなくなる旨も説明。 | time:10:39 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- [ ] 新入社員（野村さん）へのオリエンテーションを実施する。 | time:08:45 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
+- [ ] 新入社員の入社書類（扶養控除申告書、住民票、健康診断書、保険証、マイナンバーコピー等）の確認と収集。 | time:09:16 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-01-lifelog-insights.md`
 
 ## 2026-06-30
 

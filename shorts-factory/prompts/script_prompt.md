@@ -31,7 +31,7 @@
 
 ## 各キューのフィールド
 
-- `display`: 字幕表示用。1〜2行の配列。**1行は最大13文字**（全角換算）。英字・%記号は原則使わず、読み上げやすい日本語にする（例: Before/After→改善前/改善後、15%→15パーセント）。ただし `AI` / `Claude` / `Gemini` / `ChatGPT` は必ずこの英字表記で表示し、カタカナ表記にしない
+- `display`: 字幕表示用。1〜2行の配列。**1行は最大13文字**（全角換算）。英字・%記号は原則使わず、読み上げやすい日本語にする（例: Before/After→改善前/改善後、15%→15パーセント）。ただし英語のツール名・サービス名・一般的な英字略語は必ず英字表記で表示し、カタカナ表記にしない（例: `AI` / `ChatGPT` / `Claude` / `Gemini` / `Perplexity` / `NotebookLM` / `Canva` / `Gamma` / `Zapier` / `Make` / `n8n` / `OpenAI` / `Figma` / `Google Drive` / `Notion` / `Slack` / `Zoom` / `Teams` / `Excel` / `PowerPoint` / `PDF` / `API` / `URL` / `CSV` / `KPI` / `CRM` / `SNS` / `LLM` / `DX`）
 - `tts_text`: 読み上げ用の文。displayと同内容。ChatGPT以外の英字・%記号は避け、カタカナまたは日本語に直す（例: ABテスト→エービーテスト）
 - `reading_kana`: tts_text の正確な読みを**全てカタカナ**で。英語用語もカタカナ化（ChatGPT→チャットジーピーティー）。数字も読みで（3分→サンプン）
 - `emphasis`: 特に強調したいキューなら true（全体の2〜3個まで）。冒頭1キュー目は必ず true にする

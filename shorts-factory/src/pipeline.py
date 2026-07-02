@@ -397,6 +397,41 @@ def _generate_passable_candidate(
     return candidate, discarded_count
 
 
+def _platform_generation_retry_attempts() -> int:
+    try:
+        configured = int(CONFIG.get("content", "platform_generation_retry_attempts", default=2))
+    except (TypeError, ValueError):
+        configured = 2
+    return max(1, configured)
+
+
+def _generate_platform_candidate_with_retries(
+    topic_entry: str | dict,
+    selected_difficulty: str,
+    target_platform: str,
+    item_suffix: str | None = None,
+) -> tuple[dict, int]:
+    attempts = _platform_generation_retry_attempts()
+    last_exc: Exception | None = None
+    for platform_attempt in range(1, attempts + 1):
+        try:
+            return _generate_passable_candidate(
+                topic_entry,
+                selected_difficulty,
+                target_platform,
+                item_suffix=item_suffix,
+            )
+        except Exception as exc:
+            last_exc = exc
+            if platform_attempt >= attempts:
+                break
+            log(
+                f"{target_platform}向け生成が失敗したため再試行: "
+                f"attempt {platform_attempt + 1}/{attempts}: {exc}"
+            )
+    raise RuntimeError(f"{target_platform}向け生成が{attempts}回失敗: {last_exc}") from last_exc
+
+
 def _record_topic_consume_deferred(item: dict, exc: OSError) -> None:
     item.setdefault("topic_store", {})["consume_deferred_error"] = str(exc)
     item.setdefault("history", []).append(
@@ -548,7 +583,7 @@ def produce_platform_variants(
 
     candidates: list[tuple[str, dict, int]] = []
     for platform in platforms:
-        candidate, discarded_count = _generate_passable_candidate(
+        candidate, discarded_count = _generate_platform_candidate_with_retries(
             topic_entry,
             selected_difficulty,
             platform,
