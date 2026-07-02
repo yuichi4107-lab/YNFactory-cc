@@ -12,7 +12,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob, WebSearch, WebFetch
 
 ## Phase 0: 制作開始前の選択式質問＋自由記述
 
-スキル起動直後、リサーチや原稿作成を始める前に、`request_user_input` のクリック式選択UIでユーザーの回答を待つ。Markdownの表や `1A、2B...` 形式を標準にしない。UIツールが使えない場合は、代替質問へ勝手に切り替えず、「この環境ではクリック式選択UIを出せない」と短く伝えて止める。最後に自由記述が必要な場合は、UI側の `Other` またはクリック回答後の短い補足確認で受け取る。
+スキル起動直後、リサーチや原稿作成を始める前に、クリック式選択UIでユーザーの回答を待つ。`request_user_input` が使える場合はその選択カードを使う。使えない場合は `.company/scripts/ebook_setup_ui.py` のローカルクリック式フォームを起動する。Markdownの表や `1A、2B...` 形式を標準にしない。最後に自由記述が必要な場合は、UI側の `Other` またはクリック回答後の短い補足確認で受け取る。
 
 **クリック式UIの出し方:**
 
@@ -55,6 +55,14 @@ allowed-tools: Read, Write, Edit, Bash, Glob, WebSearch, WebFetch
 - 選択値を変数として記録し、Phase 4 の `ebook-to-manga` 引き渡し案内に引き継ぐ。
 - 自由記述は選択値より優先して、Phase 1 の検索クエリ、Phase 2 の構成、Phase 4 の `project.md` に反映する。
 - ユーザーに `1A、2B...` のような長いコード型回答を要求しない。クリックで選ばせる。
+
+**ローカルフォームの出し方（`request_user_input` が使えない場合）:**
+
+```bash
+python3 .company/scripts/ebook_setup_ui.py --theme "{テーマ}" --mode ebook-from-theme
+```
+
+保存先は `.company/outputs/ebook-setup-inputs/latest.json`。回答を読み取り、Phase 0回答として扱う。
 
 ---
 

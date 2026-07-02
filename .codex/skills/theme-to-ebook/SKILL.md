@@ -16,7 +16,7 @@ description: テーマ指定または添付素材から、初回だけクリッ�
 - Phase 0では、利用可能な場合は必ず `request_user_input` のクリック式選択UIを使う。
 - クリック式UIの1回あたり質問数に制限がある場合は、従来の質問セットを複数回に分けて提示する。質問項目そのものを削らない。
 - 推奨案のラベルには必ず `(Recommended)` を付ける。
-- クリック式の選択UIが利用できない実行環境では、Markdownの代替質問へ勝手に切り替えない。「この環境ではクリック式選択UIを出せない」と短く伝え、テキスト回答へ切り替えてよいか確認する。
+- `request_user_input` が利用できない実行環境では、Markdownの代替質問へ勝手に切り替えない。代わりに `.company/scripts/ebook_setup_ui.py` のローカルクリック式フォームを起動し、ブラウザで選択してもらう。
 - Phase 0の回答が不足している場合は、不足項目だけ短く再質問する。
 - 判断に迷う仕様・範囲・優先順位が途中で出た場合も、クリック式UIで短く確認する。
 - 軽微な判断は止まらず、Phase 0回答とStep 0リサーチから妥当な前提を置いて進める。
@@ -37,7 +37,7 @@ description: テーマ指定または添付素材から、初回だけクリッ�
 
 ## Phase 0: 初回質問UI
 
-スキル起動直後、リサーチやStep 1に入る前に、`request_user_input` のクリック式選択UIでユーザーの回答を待つ。各質問を独立した選択カードとして提示する。質問項目・選択肢の意味は従来のPhase 0から変えない。
+スキル起動直後、リサーチやStep 1に入る前に、クリック式選択UIでユーザーの回答を待つ。`request_user_input` が使える場合は各質問を独立した選択カードとして提示する。使えない場合は `.company/scripts/ebook_setup_ui.py` を起動し、ローカルブラウザフォームで同等の選択肢を提示する。質問項目・選択肢の意味は従来のPhase 0から変えない。
 
 **クリック式UIの必須仕様:**
 - 1回に出せる質問数が1〜3問までの場合は、Phase 0を2回に分けて提示する。
@@ -79,6 +79,17 @@ description: テーマ指定または添付素材から、初回だけクリッ�
   - 標準（章ごとに数点） (Recommended)
   - 少なめ
   - 図解中心
+
+**ローカルフォームの出し方（`request_user_input` が使えない場合）:**
+
+```bash
+python3 .company/scripts/ebook_setup_ui.py --theme "{テーマ}" --mode theme-to-ebook
+```
+
+- サーバーは `127.0.0.1` の空きポートで起動する
+- 表示された `ebook_setup_ui_url=...` をユーザーへ案内する
+- ユーザーが保存すると `.company/outputs/ebook-setup-inputs/latest.json` に回答が保存される
+- 回答を読み取り、`progress.json` の `initial_questions` に `ui: "local_clickable_form"` として保存する
 
 **質問セット（内容は従来どおり）:**
 
@@ -459,7 +470,7 @@ ebook-to-manga source = .company/outputs/ebooks/{book-name}/
   "target_chars": 100000,
   "status": "in_progress",
   "initial_questions": {
-    "ui": "clickable_selection_or_markdown_setup_card",
+    "ui": "request_user_input_or_local_clickable_form",
     "theme_handling": "入力内容のテーマで進める",
     "target_reader": "初心者・これから始める人",
     "book_type": "実践書・手順書",
