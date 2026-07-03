@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-02T07:01:04
+generated_at: 2026-07-03T07:01:04
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,22 @@ generated_at: 2026-07-02T07:01:04
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-02
+
+- [ ] マイナビの代理店営業と直販の窓口一本化の調整を促す。 | time:16:36 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- [ ] 雇用手続きの取り消し処理を進める（本人からの申し出を根拠とする）。 | time:15:54 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- [ ] ハローワークへの連絡と、雇用手続き取り消しに関する本人との口裏合わせを行う。 | time:16:07 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- [ ] 入社取り消しに関する本人からの「一筆」を取得する。 | time:13:41 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- [ ] 電子申請の取り下げが完了したかの確認を行う。 | time:10:34 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- [ ] 6月末退職者の退職処理（離職票作成含む）を行う。 | time:08:20 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- [ ] 年金手帳の郵送対応を行う。 | time:16:06 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- [ ] ハローワークの人には電話で「私（オーナー）から」と伝える。 | time:16:08 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- [ ] 採用候補者（66歳の元役員など）への条件提示を含む対応を進める。 | time:13:27 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- [ ] 社内での社員（コバさん、青木）の仕事ぶりへのフィードバックや改善策を検討する。 | time:13:39 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- [ ] 現場（中部労災、愛知学院など）の引き継ぎ状況を確認する。 | time:13:34 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- [ ] 大森さんの月額請求（2万5千円）の確認とメールでの通知を行う。 | time:10:58 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- [ ] 会議の参加者確定（17人、野村さん含む）を確認する。 | time:08:29 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
 
 ## 2026-07-01
 

@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-02T07:01:04
+generated_at: 2026-07-03T07:01:04
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,21 @@ generated_at: 2026-07-02T07:01:04
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-02
+
+- - **Yuichi** — 新しい仕事の雇用手続き関連、UIに関する要望 (23:08) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- - **野村さん** — 雇用手続き関連、顧客対応、会議参加者 (16:07) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- - **谷田裕さん** — マイナビ代理店営業の担当者（男性） (16:36) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- - **佐藤さん** — 採用候補者または関係者、雇用手続き取り消しに関する会話の相手 (13:28) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- - **コバさん** — 社員、仕事ぶりに関する評価 (13:39) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- - **青木** — 社員、仕事ぶりに関する評価 (13:39) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- - **バンド部長** — 上司または関係者、雇用手続き取り消しに関する会話の相手 (13:39) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- - **大森さん** — 月額請求関連 (10:56) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- - **ビッケンのなかだ** — 雇用手続き取り消しに関する電話の相手 (10:41) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- - **テラさん** — 会議参加者（誕生日2月4日） (06:35) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- - **なるみさん** — 会議参加者（誕生日2月4日） (06:35) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- - **ゆかさん** — 会議参加者 (06:36) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
 
 ## 2026-07-01
 

@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-02T07:01:04
+generated_at: 2026-07-03T07:01:04
 ---
 
 # Lifelog Topics
@@ -10,6 +10,35 @@ generated_at: 2026-07-02T07:01:04
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-02
+
+- - **労務管理に関する法務・実務知識の深化** (15:01) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+-   - 理由: 雇用に関するトラブル（交通費支給基準、派遣社員の精神的負担対応、素行不良、未払い賃金・遅延損害金など）の対応経験から、より効率的・法的に適切な対応をシステム化する可能性を探るため。 | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- - **入社・退職手続きにおける法的なリスク回避策** (13:41) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+-   - 理由: 入社直後の退職におけるトラブル（募集要項との齟齬、本人からの書面『一筆』の必要性など）の発生を防ぐため。 | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- - **製造業における高度加工技術（5軸加工、UMB処理）と市場ニーズ** (21:46) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+-   - 理由: フリーランス（AI活用・業務自動化）の文脈で技術的な知見を深めるため、また将来的な応用可能性を探るため。 | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- - **沖縄の基地問題（国土面積、左派の主張、住民の意見）** (06:59) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+-   - 理由: YouTube日本史解説チャンネルのコンテンツ検討の参考になる可能性。 | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- - **プロジェクト遅延における責任の所在、訴訟問題と経営陣の対応** (06:28) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+-   - 理由: 一般的なビジネスリスク管理の知識として、類似事例への対応力を高めるため。 | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- - **「ゼロ」という名称使用に関する法的または商標上の問題点** (04:29) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+-   - 理由: 事業運営における名称選定のリスク管理のため。 | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- 1. **ネットワークビジネス成功者向け電子書籍プロデュース** [ebook] ★★★★★ (21:11) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+-    - ネットワークビジネスの成功者（中ボス・小ボス層）をターゲットに、彼らのノウハウを電子書籍として執筆・制作・プロデュースする。信者への販売を通じてAmazonベストセラーを獲得し、その権威付けが布教活動ツールとしても機能する。電子書籍の高い印税率、在庫リスクなし、価格設定の自由度を活用し、高収益を目指す。 | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- 2. **労務管理システム開発** [freelance] ★★★☆☆ (15:01) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+-    - 交通費支給基準の自動判断、派遣社員の精神的負担対応、素行不良対応、未払い賃金・遅延損害金計算などを自動化するシステム開発。過去の経験から生じた人事・労務トラブルを効率的に解決するソリューションとして提供。 | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- 3. **採用・定着を促すポイント制度設計** [other] ★★★☆☆ (13:54) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+-    - 労働市場の現状と副業の課題を考慮し、従業員の採用と定着を促すためのポイント制度を設計する。自社内だけでなく、外部サービスでも利用可能な汎用性や、高い還元率を特徴とする制度を検討する。 | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- 4. **スライド作成自動化・レポート機能開発** [freelance] ★★★☆☆ (20:09) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+-    - スライドの終了動画作成やレポート機能を自動化する開発案件。業務効率化に貢献する可能性。 | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- 5. **住民税計算・支払いに関する業務自動化システム開発** [freelance] ★★★☆☆ (16:23) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+-    - 住民税の計算・支払いに関連するデータ入力プロセス（手打ちからデータ取り込み）を自動化するシステム開発。社内業務効率化や外部へのサービス展開の可能性を検討。 | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- 6. **選択式クリック形式UIの開発** [freelance] ★★★☆☆ (23:13) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+-    - 質問に対して選択式でクリックして選択する形式のUI開発。フリーランス案件として具体的な要望が出ている。 | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- 7. **座標入力・占領ゲーム/CAD関連業務自動化** [freelance] ★★★☆☆ (22:37) | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+-    - 地図上で座標を入力し、占領できない場所への進軍メッセージ表示、その座標の記録、CADへの登録を自動化するシステム開発。ゲーム開発かCAD関連の業務自動化案件の可能性。 | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
 
 ## 2026-07-01
 

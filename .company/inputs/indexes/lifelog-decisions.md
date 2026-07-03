@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-02T07:01:04
+generated_at: 2026-07-03T07:01:04
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,12 @@ generated_at: 2026-07-02T07:01:04
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-02
+
+- - 採用において営業経験必須とする方針。 | time:13:48 | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- - スカウト採用では営業経験必須とする方針。 | time:13:49 | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
+- - 保険証は前のものを使用し、今後はマイナンバーカードを推奨する。 | time:08:29 | source:`.company/inputs/organized/lifelogs/2026-07-02-lifelog-insights.md`
 
 ## 2026-07-01
 
