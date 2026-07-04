@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-03T07:01:04
+generated_at: 2026-07-04T07:01:19
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,15 @@ generated_at: 2026-07-03T07:01:04
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-03
+
+- - **渡辺直樹** — ラーメン店「トラ吉屋」に関する情報を提供できる人物。 (09:58) | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- - **木野課長** — 杉山女学院の近くの人物で、糖尿病専門医の情報を持っている可能性がある。 (20:29) | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- - **かきやないか** — 糖尿病専門医で、マンジャロの処方が可能かもしれない医療機関。 (20:29) | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- - **なか (ビケン)** — 本人の決断について最終確認を行った人物。オーナーの業務連携先。 (13:07) | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- - **唐** — 新しいプロジェクト/状況に関する詳細な話し合いを予定している人物。 (10:48) | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- - **ビケン** — オーナーが業務を行っている取引先。 (08:54) | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
 
 ## 2026-07-02
 

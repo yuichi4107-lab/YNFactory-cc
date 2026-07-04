@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-03T07:01:04
+generated_at: 2026-07-04T07:01:19
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,25 @@ generated_at: 2026-07-03T07:01:04
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-03
+
+- [ ] 効果動画/動画の作成を依頼または調整する。 | time:21:07 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- [ ] 糖尿病の専門医宛に紹介状を作成し、依頼者に渡す。 | time:20:31 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- [ ] 「急遽さん」の請求書・契約書関連業務のタスク割り当てを見直し、高負荷によるミス発生リスクを低減する。 | time:18:11 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- [ ] 請求書・契約書関連業務のタスク量とエラーリスクを管理するための解決策や戦略を検討する。 | time:18:12 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- [ ] 雇用保険と社会保険の手続きについて、手順を習得するまで一つずつ処理する方法を導入する。 | time:18:00 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- [ ] 営業職の採用戦略を見直し、営業担当者の早期離職を受けて調整する。 | time:12:59 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- [ ] 新しい採用活動のため、経験者層と未経験者層（20代・30代/第二新卒）の両方に向けた求人票の記述やスカウト基準を具体化する。 | time:13:02 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- [ ] Dodaの仮保存中の内容を元に、新しい求人広告を作成する。 | time:13:04 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- [ ] Doda求人広告の反応が悪い原因を分析し、改善策を検討・実施する。 | time:13:05 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- [ ] 唐さんとの具体的なプロジェクト/状況について、来週中に詳細な話し合いの機会を設ける。 | time:10:48 | priority:normal | due:2026-07-10 | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- [ ] フィット移住の法人会員登録に必要な在籍証明を、GoogleフォームとIT Visionマイページから提出する。 | time:10:11 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- [ ] ビケン関連の仕事のため、9時半に早退する。 | time:08:54 | priority:high | due:2026-07-03 | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- [ ] 印鑑データの登録作業を行い、役員関与による処理遅延がないよう確認する。 | time:08:58 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- [ ] 社内全体での引き継ぎ書作成の標準プロセスを確立し、退職者の発生時に作成を義務付ける。 | time:07:46 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- [ ] 電子書籍/コンテンツ（表紙・差し絵、改行・スペーシング、改ページ）のデザインとレイアウトの修正を行う。 | time:07:34 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- [ ] 現在のシステム/チャットで選択肢が提供できるようにする問題解決策を検討し、チャットツールの変更が解決策になるか調査する。 | time:04:42 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
 
 ## 2026-07-02
 

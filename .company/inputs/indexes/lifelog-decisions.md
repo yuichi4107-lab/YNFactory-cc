@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-03T07:01:04
+generated_at: 2026-07-04T07:01:19
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,20 @@ generated_at: 2026-07-03T07:01:04
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-03
+
+- - 17,790円の販売取引を完了した。 | time:20:42 | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- - 「急遽さん」による請求書・契約書関連業務の量と誤りの可能性を認識し、対策を検討する必要がある。 | time:18:11 | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- - 雇用保険と社会保険の手続きにおいて、マルチタスクが苦手なスタッフ向けに、まずは一つずつ手順を習得させる方法を採用する。 | time:18:00 | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- - 営業職の新入社員が早期退職したため、採用戦略の方向転換（経験者層と未経験者層の両方へのアプローチ）が必要である。 | time:12:59 | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- - 営業職の採用に関して、経験者（進捗管理能力）と未経験者（20代・30代、第二新卒）の双方をターゲットとする二重戦略を採用する。 | time:13:00 | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- - PCスキル（Wordは得意だがExcelは苦手）を持つ個人のタスク割り当てやトレーニング計画を検討する必要がある。 | time:12:08 | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- - ネットワークビジネスは持続可能性が低く、トップ層しか利益を得られないため、自身のビジネスモデルとしては不適格であると判断した。 | time:11:20 | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- - オーナーが現在の担当業務から外れ、別の担当者に引き継ぐ可能性があることを認識した。 | time:10:16 | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- - クラウドファンディングの予算編成において、本人の給料は諸経費に分類されることを確認した。 | time:09:10 | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- - 社内全体で引き継ぎ書が体系的に作成されていないという問題認識。引き継ぎプロセスの確立が必要。 | time:07:46 | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
+- - 引き継ぎ時に特定のチームメンバーが弱気な姿勢を見せ、チームとの距離を作ろうとしている可能性があるという状況認識。 | time:07:53 | source:`.company/inputs/organized/lifelogs/2026-07-03-lifelog-insights.md`
 
 ## 2026-07-02
 
