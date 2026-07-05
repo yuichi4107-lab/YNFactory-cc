@@ -23,4 +23,4 @@
 ## 関連
 
 - 既存プロジェクト `AI導入支援営業`（法人アウトバウンド営業基盤・Sales OS）— 営業導線の受け皿として共用予定
-- 公開連絡先: info@ynfactory.online
+- 公開連絡先: y-nakada@yn-factory.com
