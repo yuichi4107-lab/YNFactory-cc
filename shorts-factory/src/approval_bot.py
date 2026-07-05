@@ -633,15 +633,13 @@ def _retry_deferred_topic_consumes() -> None:
 
 
 def scan_queue() -> None:
-    """未送信プレビューの送付と、approved の投稿実行。"""
+    """未送信プレビューを優先送付し、後続で復旧処理と投稿実行を行う。"""
     flushed = notify.flush_pending_messages()
     if flushed:
         log(f"保留通知を再送: {flushed}件")
 
-    _retry_deferred_topic_consumes()
-    _scan_deferred_retries()
-
-    for item in _scan_items("ready_for_review"):
+    ready_items = _scan_items("ready_for_review")
+    for item in ready_items:
         _mark_progress()
         telegram = item.setdefault("telegram", {})
         if telegram.get("message_id") or not _preview_retry_allowed(item):
@@ -680,6 +678,14 @@ def scan_queue() -> None:
                 log(f"プレビュー送信未確認（短時間の自動再送を抑止）: {item['id']}")
         finally:
             _release_preview_lock(item["id"])
+
+    if ready_items:
+        # 承認待ちがある間はボタン応答を優先し、Drive系の復旧処理は次回以降へ回す。
+        return
+
+    # Driveロック復旧や失敗投稿リトライが詰まっても、承認通知を遅らせない。
+    _retry_deferred_topic_consumes()
+    _scan_deferred_retries()
 
     for item in _scan_items("approved"):
         allowed, reason = _approved_scan_resume_allowed(item)
