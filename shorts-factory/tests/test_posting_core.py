@@ -1023,6 +1023,39 @@ class PostingCoreTest(unittest.TestCase):
         self.assertIn("topic_consume_recovered", item["history"][-1]["event"])
         self.assertEqual(len(saved), 1)
 
+    def test_approval_bot_recovers_deferred_platform_group_consume(self):
+        item = {
+            "id": "item-1-x",
+            "status": "ready_for_review",
+            "topic": "topic-a",
+            "title": "X Title",
+            "difficulty": "intermediate",
+            "variant_group_id": "2026-07-04_190630_platforms",
+            "topic_store": {
+                "consume_deferred_error": "[Errno 11] Resource deadlock avoided",
+            },
+            "history": [],
+        }
+
+        def fake_list_items(status=None, **_kwargs):
+            return [item] if status == "ready_for_review" else []
+
+        with (
+            patch.object(approval_bot.queue_lib, "list_items", side_effect=fake_list_items),
+            patch.object(approval_bot.queue_lib, "save_item", return_value=Path("/tmp/item.json")),
+            patch.object(approval_bot.topic_store, "consume_topic", return_value=11) as consume,
+        ):
+            approval_bot._retry_deferred_topic_consumes()
+
+        consume.assert_called_once_with(
+            "topic-a",
+            "2026-07-04_190630_platforms",
+            "SNS別動画: topic-a",
+            "intermediate",
+        )
+        self.assertNotIn("consume_deferred_error", item["topic_store"])
+        self.assertEqual(item["topic_store"]["remaining"], 11)
+
     def test_telegram_text_command_approves_item(self):
         item = make_item()
         item["status"] = "ready_for_review"

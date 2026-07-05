@@ -18,7 +18,7 @@ from difflib import SequenceMatcher
 from pathlib import Path
 
 from .config import CONFIG
-from .fs_retry import is_transient_io_error, retry_io
+from .fs_retry import is_transient_io_error, retry_io, run_with_timeout
 
 LOW_STOCK_THRESHOLD = 7
 VALID_DIFFICULTIES = {"beginner", "intermediate"}
@@ -213,7 +213,15 @@ def _load_cache_once() -> dict:
 
 def _load(allow_cache: bool = True) -> dict:
     try:
-        return retry_io(_load_once, attempts=8, delay_sec=3.0)
+        return retry_io(
+            lambda: run_with_timeout(
+                _load_once,
+                timeout_sec=5.0,
+                label="read topics.json",
+            ),
+            attempts=8,
+            delay_sec=3.0,
+        )
     except OSError as exc:
         if not allow_cache or not is_transient_io_error(exc):
             raise
@@ -238,7 +246,15 @@ def _save_once(data: dict) -> None:
 
 
 def _save(data: dict) -> None:
-    retry_io(lambda: _save_once(data), attempts=8, delay_sec=3.0)
+    retry_io(
+        lambda: run_with_timeout(
+            lambda: _save_once(data),
+            timeout_sec=8.0,
+            label="write topics.json",
+        ),
+        attempts=8,
+        delay_sec=3.0,
+    )
     _write_cache(data)
 
 

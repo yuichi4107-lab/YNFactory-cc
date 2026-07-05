@@ -613,15 +613,19 @@ def produce_platform_variants(
             }
         )
 
+    consume_title = f"SNS別動画: {topic_text}"
+    for item in queued_items:
+        item.setdefault("topic_store", {})["consume_group_slug"] = group_id
+        item["topic_store"]["consume_title"] = consume_title
+
     try:
         remaining = topic_store.consume_topic(
             topic_text,
             group_id,
-            f"SNS別動画: {topic_text}",
+            consume_title,
             selected_difficulty,
         )
         for item in queued_items:
-            item.setdefault("topic_store", {})["consume_group_slug"] = group_id
             item["topic_store"]["remaining"] = remaining
             queue_lib.save_item(item)
         if remaining <= topic_store.LOW_STOCK_THRESHOLD:

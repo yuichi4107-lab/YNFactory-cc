@@ -164,6 +164,7 @@ python3 shorts-factory/scripts/retry_failed_posts.py <queue_id> --execute
 | 一部媒体だけ投稿失敗 | 標準で失敗媒体だけ最大2回自動再投稿。それでも残る場合は `python3 shorts-factory/scripts/retry_failed_posts.py --all` で対象確認 → `--execute` |
 | 同じ動画が連続生成される | `script.json` の `title` / `cues` と `~/shorts-factory/work/` の直近履歴を比較。Claude CLIは `claude -p` まで確認し、重複queueは `skipped` にして別topicで再生成 |
 | 英語ツール名・英字略語がカタカナで表示される | `src/script_gen.py` の表示正規化辞書と `src/jp_text.py` の読み辞書を追加。旧queueは `skipped`、Telegramボタンを外して再生成し、`subtitles.ass` と動画フレームで焼き込みを確認 |
+| `Driveロックでネタ帳更新だけ後回し` | 投稿キュー登録は完了。`topic_store.consume_deferred_error` が残る場合、`shorts-approval.log` の `ネタ帳消費を復旧` を確認。`approval_bot watchdog` が連続する場合は `shorts-factory/scripts/deploy.sh` 後に `launchctl kickstart -k gui/$(id -u)/com.ynfactory.shorts-approval` |
 
 ## クレジット・コンプライアンス
 

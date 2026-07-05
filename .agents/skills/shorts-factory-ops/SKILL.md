@@ -78,11 +78,26 @@ Drive上のoutputsを広く走査するとGoogle Drive File Providerのロック
   - Telegram callback応答が失敗した場合は、承認/却下/保留の状態変更をしない
   - 古い `approved` item は自動再開しない
   - 一部媒体が投稿済みのitemは承認スキャンから再投稿しない
+  - Driveロックで `topics.json` の消費が後回しになったitemを後続スキャンで復旧する
+  - SNS別動画の復旧では `variant_group_id` / `consume_group_slug` を優先し、媒体別1本目ではなくグループ単位でネタ帳を使用済みにする
+  - 復旧スキャンとTelegramプレビュー送信中にもwatchdog進捗を更新し、長いDrive I/Oや動画送信で10分ごとに再起動し続けない
 
 - `shorts-factory/scripts/post_approved_item.py`
   - 承認後30分超過、または一部媒体投稿済みの `approved` item をworker側でもブロックする
 
+- `shorts-factory/src/fs_retry.py` / `queue_lib.py` / `topic_store.py`
+  - Google Drive File Provider がファイル読み込みで固まる場合に備え、queue読み込み・個別queue読み書き・`topics.json` 読み書きへ短時間タイムアウトを入れる
+  - タイムアウトは一時I/Oエラーとして扱い、該当ファイルを読み飛ばしてapproval bot全体の停止を避ける
+
 ## 復旧手順
+
+### Driveロック通知が出た時
+
+1. 通知文が `ネタ帳更新だけ後回し` なら、生成とqueue登録は完了している。投稿失敗とは分けて扱う
+2. 対象queueの `topic_store.consume_deferred_error` を確認する
+3. `~/Library/Logs/shorts-approval.log` に `ネタ帳消費を復旧` が出ているか確認する
+4. `approval_bot watchdog: 600秒応答なし` が連続している場合は、runtime `~/shorts-factory/app` に最新コードを同期し、`com.ynfactory.shorts-approval` を再起動する
+5. 復旧後は `topics.json` で対象topicが `backlog` から外れ、`used` に入っていること、queueの `consume_deferred_error` が消えていることを確認する
 
 ### 同じ動画ができた時
 

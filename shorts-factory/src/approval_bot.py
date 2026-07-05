@@ -588,17 +588,23 @@ def _retry_deferred_topic_consumes() -> None:
     """Recover topic-store updates that were deferred by transient Drive locks."""
     statuses = ("ready_for_review", "approved", "posted", "partial_failed", "failed", "blocked", "skipped")
     for status in statuses:
+        _mark_progress()
         for item in _scan_items(status):
+            _mark_progress()
             topic_state = item.get("topic_store") or {}
             if not topic_state.get("consume_deferred_error"):
                 continue
             if not item.get("topic"):
                 continue
+            consume_slug = topic_state.get("consume_group_slug") or item.get("variant_group_id") or item["id"]
+            consume_title = topic_state.get("consume_title") or (
+                f"SNS別動画: {item['topic']}" if item.get("variant_group_id") else item["title"]
+            )
             try:
                 remaining = topic_store.consume_topic(
                     item["topic"],
-                    item["id"],
-                    item["title"],
+                    consume_slug,
+                    consume_title,
                     item.get("difficulty"),
                 )
             except OSError as exc:
@@ -621,7 +627,7 @@ def _retry_deferred_topic_consumes() -> None:
                 }
             )
             queue_lib.save_item(item)
-            log(f"ネタ帳消費を復旧: {item['id']} remaining={remaining}")
+            log(f"ネタ帳消費を復旧: {item['id']} slug={consume_slug} remaining={remaining}")
             if remaining <= topic_store.LOW_STOCK_THRESHOLD:
                 notify.send_message(f"📋 shorts-factory: ネタ帳の残りが{remaining}本です。補充してください。")
 
@@ -636,6 +642,7 @@ def scan_queue() -> None:
     _scan_deferred_retries()
 
     for item in _scan_items("ready_for_review"):
+        _mark_progress()
         telegram = item.setdefault("telegram", {})
         if telegram.get("message_id") or not _preview_retry_allowed(item):
             continue
@@ -654,11 +661,13 @@ def scan_queue() -> None:
             telegram["preview_send_started_at"] = _now_iso()
             telegram["preview_send_attempts"] = int(telegram.get("preview_send_attempts") or 0) + 1
             queue_lib.save_item(item)
+            _mark_progress()
             mid = notify.send_video(
                 _preview_video_path(item),
                 notify.preview_caption(item),
                 reply_markup=notify.approval_keyboard(item["id"]),
             )
+            _mark_progress()
             if mid:
                 telegram["message_id"] = mid
                 telegram["preview_sent_at"] = _now_iso()

@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from .config import CONFIG
-from .fs_retry import retry_io
+from .fs_retry import retry_io, run_with_timeout
 from .platform_copy import build_platform_copy_set
 
 STATUSES = {
@@ -55,12 +55,24 @@ def _save_item_once(item: dict) -> Path:
 
 
 def save_item(item: dict) -> Path:
-    return retry_io(lambda: _save_item_once(item), attempts=5, delay_sec=3.0)
+    return retry_io(
+        lambda: run_with_timeout(
+            lambda: _save_item_once(item),
+            timeout_sec=8.0,
+            label=f"write queue {item.get('id', 'unknown')}",
+        ),
+        attempts=5,
+        delay_sec=3.0,
+    )
 
 
 def _load_item_once(item_id: str) -> dict:
-    with open(queue_path(item_id), "r", encoding="utf-8") as f:
-        return json.load(f)
+    text = run_with_timeout(
+        lambda: queue_path(item_id).read_text(encoding="utf-8"),
+        timeout_sec=5.0,
+        label=f"read queue {item_id}",
+    )
+    return json.loads(text)
 
 
 def load_item(item_id: str) -> dict:
@@ -83,7 +95,13 @@ def list_items(
     for p in paths:
         try:
             item = retry_io(
-                lambda p=p: json.loads(p.read_text(encoding="utf-8")),
+                lambda p=p: json.loads(
+                    run_with_timeout(
+                        lambda p=p: p.read_text(encoding="utf-8"),
+                        timeout_sec=3.0,
+                        label=f"read queue {p.name}",
+                    )
+                ),
                 attempts=3,
                 delay_sec=1.0,
             )
