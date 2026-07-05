@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>日本でこれから伸びるAIスモールビジネス上位3件 実装計画</title>
+  <style>
+    :root {
+      --ink: #1f2937;
+      --muted: #64748b;
+      --line: #d9dee8;
+      --paper: #ffffff;
+      --wash: #f6f8fb;
+      --teal: #0f766e;
+      --blue: #1d4ed8;
+      --green: #15803d;
+      --amber: #b45309;
+      --rose: #be123c;
+      --slate: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--wash);
+      color: var(--ink);
+      font-family: "Yu Gothic", "Meiryo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.72;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    header {
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .wrap {
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 42px 0 30px;
+    }
+
+    .kicker {
+      margin: 0 0 10px;
+      color: var(--teal);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 980px;
+      font-size: clamp(29px, 4vw, 50px);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 980px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .stat {
+      background: #fbfcff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+
+    .stat b {
+      display: block;
+      font-size: 22px;
+      line-height: 1.15;
+      color: var(--ink);
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    main {
+      padding: 28px 0 56px;
+    }
+
+    section {
+      margin-top: 28px;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 24px;
+      line-height: 1.3;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 21px;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    h4 {
+      margin: 0 0 7px;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .notice {
+      border-left: 4px solid var(--teal);
+      background: var(--paper);
+      padding: 14px 16px;
+      color: var(--muted);
+    }
+
+    .table-shell {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+
+    table {
+      width: 100%;
+      min-width: 980px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      background: #eef2f7;
+      color: #263241;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .cards {
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 14px;
+      margin-bottom: 14px;
+    }
+
+    .title-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .rank {
+      min-width: 42px;
+      min-height: 42px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      background: var(--teal);
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .badge {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 12px;
+      padding: 4px 10px;
+      white-space: nowrap;
+    }
+
+    .hot { border-color: #fecdd3; background: #fff1f2; color: var(--rose); }
+    .easy { border-color: #bbf7d0; background: #f0fdf4; color: var(--green); }
+    .trend { border-color: #bfdbfe; background: #eff6ff; color: var(--blue); }
+    .money { border-color: #fde68a; background: #fffbeb; color: var(--amber); }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .box {
+      border-top: 3px solid #dce5ef;
+      padding-top: 10px;
+    }
+
+    .box b {
+      display: block;
+      margin-bottom: 5px;
+      color: #263241;
+    }
+
+    .box p,
+    .box li {
+      color: var(--muted);
+    }
+
+    ul,
+    ol {
+      margin: 6px 0 0 20px;
+      padding: 0;
+    }
+
+    li {
+      margin: 4px 0;
+    }
+
+    .mini {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .package {
+      background: #fbfcff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .package b {
+      display: block;
+      color: var(--slate);
+      margin-bottom: 4px;
+    }
+
+    .sources {
+      margin-top: 14px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    footer {
+      background: #fff;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      padding: 22px 0 36px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 880px) {
+      .stats,
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .card-head {
+        display: block;
+      }
+
+      .badges {
+        justify-content: flex-start;
+        margin-top: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <p class="kicker">AI Small Business Implementation Plan / Japan</p>
+      <h1>日本でこれから伸びるAIスモールビジネス上位3件 実装計画</h1>
+      <p class="lead">
+        先に選んだ上位3件、AI検索対策/GEO監査、AI電話受付・予約導入代行、AI商品写真・ECモックアップ制作を、日本市場で個人が始める前提で具体化した実行用レポートです。最初は大きなプロダクトを作らず、売れる業務パッケージとして検証し、受注が見えた段階で自動化・SaaS化します。
+      </p>
+      <div class="stats">
+        <div class="stat"><b>3</b><span>優先実装テーマ</span></div>
+        <div class="stat"><b>30日</b><span>初回検証ロードマップ</span></div>
+        <div class="stat"><b>5万-30万円</b><span>初期受注の現実的レンジ</span></div>
+        <div class="stat"><b>2026-07-05</b><span>作成日</span></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section>
+      <h2>総合判断</h2>
+      <div class="notice">
+        日本の中小企業ではAI導入がまだ初期段階です。中小機構の2026年3月調査では、AI導入率は20.4%、導入検討中を含めても39.0%です。導入済み企業では生成AIの利用が82.6%と高い一方、音声認識・音声対話AIは29.8%で、電話・予約領域はまだ伸びしろがあります。さらに、2026年から「デジタル化・AI導入補助金2026」が中小企業向けに動いており、AIツール導入への追い風があります。
+      </div>
+    </section>
+
+    <section>
+      <h2>優先順位サマリー</h2>
+      <div class="table-shell">
+        <table>
+          <thead>
+            <tr>
+              <th>優先</th>
+              <th>事業テーマ</th>
+              <th>日本でまだ流行りきっていない理由</th>
+              <th>これから伸びる理由</th>
+              <th>最初の商品</th>
+              <th>初期単価目安</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>AI検索対策/GEO監査 + レビュー整備</td>
+              <td>SEOやMEOは普及済みだが、ChatGPT、Gemini、Perplexity、Google AI Overviews上で「推薦されるか」を測る中小企業向けサービスはまだ少ない。</td>
+              <td>AI検索では、検索順位だけでなく引用・言及・ブランド推薦が重要になる。EC、地域ビジネス、B2Bサービスが新しい集客課題として予算化しやすい。</td>
+              <td>AI検索露出診断レポート + 競合比較 + 改善チェックリスト</td>
+              <td>診断3万-10万円、改善10万-30万円、月額5万-15万円</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>AI電話受付・予約導入代行</td>
+              <td>電話代行や予約システムはあるが、小規模店舗ごとに会話設計・台帳連携・有人転送まで整える導入支援はまだ空きがある。</td>
+              <td>人手不足、営業時間外の取り逃し、施術中・作業中の電話負担が強い。音声対話AIは導入検討率が高く、補助金とも相性がよい。</td>
+              <td>営業時間外AI受付 + LINE/メール通知 + 予約候補ヒアリング</td>
+              <td>初期5万-20万円、月額2万-10万円</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>AI商品写真・ECモックアップ制作</td>
+              <td>画像生成AI自体は知られているが、商品を正確に保ちながらEC/SNS/広告用に量産する運用代行は小規模セラーに浸透しきっていない。</td>
+              <td>EC市場は成長し、撮影・モデル・スタジオ費用を下げたい需要が大きい。成果物が目で見えるため個人でも営業しやすい。</td>
+              <td>10商品 x 5枚のAI商品画像パック</td>
+              <td>1商品3,000円-1.5万円、月額5万-20万円</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>詳細計画</h2>
+      <div class="cards">
+        <article class="card">
+          <div class="card-head">
+            <div class="title-row">
+              <span class="rank">1</span>
+              <div>
+                <h3>AI検索対策/GEO監査 + レビュー整備</h3>
+                <p class="subtitle">ChatGPT、Gemini、Perplexity、Google AI Overviewsで「見つかる・引用される・推薦される」状態を作る</p>
+              </div>
+            </div>
+            <div class="badges">
+              <span class="badge hot">最優先</span>
+              <span class="badge trend">未成熟</span>
+              <span class="badge money">高単価化しやすい</span>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="box">
+              <b>狙う顧客</b>
+              <ul>
+                <li>地域ビジネス: 歯科、整体、美容室、工務店、修理業、士業</li>
+                <li>EC/D2C: 化粧品、健康食品、アパレル、ペット用品、ギフト</li>
+                <li>B2Bサービス: SaaS、制作会社、採用支援、研修会社</li>
+                <li>既にSEOや広告にお金を使っているが、AI検索対策は未着手の会社</li>
+              </ul>
+            </div>
+            <div class="box">
+              <b>顧客の痛み</b>
+              <ul>
+                <li>Googleでは出るが、ChatGPTやGeminiに聞くと競合だけ推薦される。</li>
+                <li>AI検索で古い情報、間違った料金、競合優位の説明が出る。</li>
+                <li>レビュー、会社情報、FAQ、実績が散らばっていてAIが理解しにくい。</li>
+                <li>SEO会社に相談しても、AI検索での見え方までは測っていない。</li>
+              </ul>
+            </div>
+            <div class="box">
+              <b>最初の商品</b>
+              <p>「AI検索露出診断」です。10-30個の検索質問を作り、ChatGPT、Gemini、Perplexity、Google AI Overviewsで自社・競合・引用元・誤情報を確認します。診断後に、Webサイト、Google Business Profile、レビュー導線、FAQ、構造化データ、比較記事、外部掲載の改善案を出します。</p>
+            </div>
+            <div class="box">
+              <b>納品物</b>
+              <ul>
+                <li>AI検索露出スコア表</li>
+                <li>競合3-5社との比較表</li>
+                <li>AIに引用されたページ・引用されなかった理由</li>
+                <li>誤情報・弱い表現の修正リスト</li>
+                <li>レビュー依頼テンプレート、FAQ案、構造化データ案</li>
+                <li>30日改善ロードマップ</li>
+              </ul>
+            </div>
+          </div>
+
+          <section>
+            <h4>実装する機能</h4>
+            <div class="table-shell">
+              <table>
+                <thead>
+                  <tr>
+                    <th>機能</th>
+                    <th>MVPでやること</th>
+                    <th>後で自動化すること</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>質問セット作成</td>
+                    <td>業種別に「おすすめ」「比較」「料金」「口コミ」「近くの」など30問を手作業で作る。</td>
+                    <td>業種と地域を入力すると質問セットを自動生成する。</td>
+                  </tr>
+                  <tr>
+                    <td>AI検索チェック</td>
+                    <td>主要AIに手入力し、回答、引用、競合名、順位をスプレッドシートへ記録する。</td>
+                    <td>ブラウザ自動化やAPIで定期モニタリングする。</td>
+                  </tr>
+                  <tr>
+                    <td>Web/プロフィール監査</td>
+                    <td>公式サイト、Google Business Profile、SNS、レビューサイトの情報差分を見る。</td>
+                    <td>URLを入れると会社情報、FAQ、構造化データ、レビュー不足を抽出する。</td>
+                  </tr>
+                  <tr>
+                    <td>改善コンテンツ作成</td>
+                    <td>FAQ、サービス比較、事例ページ、会社概要、レビュー返信を作る。</td>
+                    <td>CMSへの下書き投入、月次更新、レビュー返信の半自動化をする。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section>
+            <h4>料金パッケージ</h4>
+            <div class="grid-3">
+              <div class="package"><b>ライト診断 3万円</b><p class="mini">10質問、競合3社、改善10項目。最初の営業用に最適。</p></div>
+              <div class="package"><b>標準改善 15万円</b><p class="mini">30質問、競合5社、FAQ/構造化データ/レビュー導線/プロフィール整備まで。</p></div>
+              <div class="package"><b>月額運用 8万円</b><p class="mini">月次AI検索チェック、FAQ追加、レビュー返信、競合変化の報告。</p></div>
+            </div>
+          </section>
+
+          <section>
+            <h4>30日ロードマップ</h4>
+            <div class="table-shell">
+              <table>
+                <thead><tr><th>期間</th><th>やること</th><th>成果物</th></tr></thead>
+                <tbody>
+                  <tr><td>1-3日目</td><td>歯科、整体、工務店、ECなど1業種に絞る。競合10社を調べる。</td><td>業種別の質問テンプレート</td></tr>
+                  <tr><td>4-7日目</td><td>サンプル診断を3社分作る。実際にAI検索で露出比較する。</td><td>営業用サンプルPDF/HTML</td></tr>
+                  <tr><td>8-14日目</td><td>30社へ無料ミニ診断を送る。返信が来た会社に15分説明する。</td><td>商談3件</td></tr>
+                  <tr><td>15-21日目</td><td>初回3万円の診断を受注し、改善提案を出す。</td><td>有料診断1-2件</td></tr>
+                  <tr><td>22-30日目</td><td>改善作業と月額運用へアップセルする。</td><td>月額契約1件</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <div class="grid-2">
+            <div class="box">
+              <b>営業文句</b>
+              <p>「Google検索だけでなく、ChatGPTやGeminiに“地域名 + おすすめ業種”と聞いた時に御社が出るか診断します。競合が出て御社が出ない場合、AIに理解される情報設計を整えます。」</p>
+            </div>
+            <div class="box">
+              <b>注意点</b>
+              <p>AI検索での表示を保証しないこと。偽レビューや誇大表示は避け、公式情報、実績、レビュー、第三者情報を正しく整える支援として売ります。Google公式は、生成AI検索でも基本的なSEOの考え方が引き続き重要だと説明しています。</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div class="title-row">
+              <span class="rank">2</span>
+              <div>
+                <h3>AI電話受付・予約導入代行</h3>
+                <p class="subtitle">営業時間外・施術中・作業中の電話取り逃しを、AI受付と有人転送で減らす</p>
+              </div>
+            </div>
+            <div class="badges">
+              <span class="badge hot">人手不足に強い</span>
+              <span class="badge money">月額化しやすい</span>
+              <span class="badge trend">音声AI</span>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="box">
+              <b>狙う顧客</b>
+              <ul>
+                <li>予約型店舗: 美容室、ネイル、整体、パーソナルジム、レンタルスタジオ</li>
+                <li>問い合わせ型: 修理業、リフォーム、士業、スクール、ペット関連</li>
+                <li>小規模クリニックや歯科は需要が大きいが、医療判断をさせない設計が必須</li>
+              </ul>
+            </div>
+            <div class="box">
+              <b>顧客の痛み</b>
+              <ul>
+                <li>施術中や接客中に電話へ出られない。</li>
+                <li>営業時間外の予約・問い合わせを逃している。</li>
+                <li>電話メモが属人的で、折り返し漏れがある。</li>
+                <li>電話代行は便利だが、予約台帳やLINEとの連携まで整っていない。</li>
+              </ul>
+            </div>
+            <div class="box">
+              <b>最初の商品</b>
+              <p>いきなり完全自動予約にせず、「営業時間外AI受付 + 要件ヒアリング + LINE/メール通知」から始めます。AIが名前、希望日時、相談内容、折り返し希望を聞き、オーナーへ要約を送るだけでも価値があります。</p>
+            </div>
+            <div class="box">
+              <b>納品物</b>
+              <ul>
+                <li>電話応答シナリオ</li>
+                <li>FAQと禁止回答リスト</li>
+                <li>予約候補ヒアリング項目</li>
+                <li>LINE/メール通知テンプレート</li>
+                <li>緊急・クレーム時の有人転送ルール</li>
+                <li>通話ログと月次改善レポート</li>
+              </ul>
+            </div>
+          </div>
+
+          <section>
+            <h4>実装する機能</h4>
+            <div class="table-shell">
+              <table>
+                <thead>
+                  <tr>
+                    <th>段階</th>
+                    <th>機能</th>
+                    <th>目的</th>
+                    <th>難度</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Phase 1</td>
+                    <td>営業時間外のAI受付、要件聴取、要約通知</td>
+                    <td>取り逃しを減らし、低リスクで効果を出す。</td>
+                    <td>低</td>
+                  </tr>
+                  <tr>
+                    <td>Phase 2</td>
+                    <td>予約候補日の確認、カレンダー仮押さえ、SMS/LINE確認</td>
+                    <td>予約受付の手間を減らす。</td>
+                    <td>中</td>
+                  </tr>
+                  <tr>
+                    <td>Phase 3</td>
+                    <td>既存予約台帳、CRM、決済、リマインド連携</td>
+                    <td>店舗の運用に深く入り、継続契約化する。</td>
+                    <td>中-高</td>
+                  </tr>
+                  <tr>
+                    <td>Phase 4</td>
+                    <td>クレーム検知、VIP判定、多言語対応、会話分析</td>
+                    <td>高単価顧客向けの差別化を作る。</td>
+                    <td>高</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section>
+            <h4>推奨MVP構成</h4>
+            <div class="grid-3">
+              <div class="package"><b>最小構成</b><p class="mini">AI電話受付ツールまたは音声ボット + Googleカレンダー + Gmail/LINE通知。</p></div>
+              <div class="package"><b>運用構成</b><p class="mini">FAQ、禁止回答、有人転送、通話ログ、月次改善会をセットにする。</p></div>
+              <div class="package"><b>将来構成</b><p class="mini">Twilio等の電話基盤、音声認識、LLM、予約台帳API、CRMをつなぎ自社テンプレ化する。</p></div>
+            </div>
+          </section>
+
+          <section>
+            <h4>料金パッケージ</h4>
+            <div class="grid-3">
+              <div class="package"><b>受付ライト 初期5万円/月2万円</b><p class="mini">営業時間外受付、要約通知、月1回改善。</p></div>
+              <div class="package"><b>予約連携 初期15万円/月5万円</b><p class="mini">希望日時ヒアリング、カレンダー確認、LINE/SMS通知。</p></div>
+              <div class="package"><b>店舗DX 初期30万円/月10万円</b><p class="mini">予約台帳、CRM、FAQ、レポート、複数店舗対応。</p></div>
+            </div>
+          </section>
+
+          <section>
+            <h4>30日ロードマップ</h4>
+            <div class="table-shell">
+              <table>
+                <thead><tr><th>期間</th><th>やること</th><th>成果物</th></tr></thead>
+                <tbody>
+                  <tr><td>1-3日目</td><td>1業種を選ぶ。最初は美容室、整体、修理業が扱いやすい。</td><td>業種別ヒアリング項目</td></tr>
+                  <tr><td>4-7日目</td><td>デモ番号または録音デモを作り、AIが受付する流れを見せる。</td><td>営業用デモ</td></tr>
+                  <tr><td>8-14日目</td><td>20店舗へ「電話取り逃し診断」を送る。営業時間外の着信課題を聞く。</td><td>商談3件</td></tr>
+                  <tr><td>15-21日目</td><td>1店舗に2週間トライアルを導入する。</td><td>初回導入1件</td></tr>
+                  <tr><td>22-30日目</td><td>通話ログを見てFAQを改善し、月額契約へ切り替える。</td><td>継続契約1件</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <div class="grid-2">
+            <div class="box">
+              <b>営業文句</b>
+              <p>「施術中・作業中・営業時間外の電話を、AIが一次受付して要約をLINEに送ります。完全自動化ではなく、まずは取り逃しと折り返し漏れを減らすところから始められます。」</p>
+            </div>
+            <div class="box">
+              <b>注意点</b>
+              <p>医療、法律、金融の判断はさせません。録音・個人情報・緊急対応・クレーム転送のルールを最初に作ります。飲食店の代理予約のように、店舗側の同意がない電話自動化は避けます。</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div class="title-row">
+              <span class="rank">3</span>
+              <div>
+                <h3>AI商品写真・ECモックアップ制作</h3>
+                <p class="subtitle">商品画像1枚から、EC、SNS、広告用の売れる見せ方を量産する</p>
+              </div>
+            </div>
+            <div class="badges">
+              <span class="badge easy">始めやすい</span>
+              <span class="badge trend">EC向き</span>
+              <span class="badge money">成果物が見せやすい</span>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="box">
+              <b>狙う顧客</b>
+              <ul>
+                <li>BASE、Shopify、楽天、Amazon、Yahoo!ショッピングの小規模店舗</li>
+                <li>アパレル、雑貨、アクセサリー、食品、コスメ、ペット用品</li>
+                <li>ハンドメイド作家、D2Cブランド、クラウドファンディング出品者</li>
+                <li>撮影費、モデル費、スタジオ費を抑えたい事業者</li>
+              </ul>
+            </div>
+            <div class="box">
+              <b>顧客の痛み</b>
+              <ul>
+                <li>商品写真が白背景だけで、SNSや広告に使いにくい。</li>
+                <li>季節キャンペーンやバナーを毎回外注すると高い。</li>
+                <li>アパレルの着用イメージ、雑貨の生活シーン画像を増やせない。</li>
+                <li>写真品質が低く、商品ページの信頼感が弱い。</li>
+              </ul>
+            </div>
+            <div class="box">
+              <b>最初の商品</b>
+              <p>「10商品 x 5枚のAI商品画像パック」です。白背景、利用シーン、SNS正方形、広告縦型、バナー横型の5種類を作ります。商品そのものの形・色・ロゴを変えないことを品質基準にします。</p>
+            </div>
+            <div class="box">
+              <b>納品物</b>
+              <ul>
+                <li>EC商品ページ用画像</li>
+                <li>SNS投稿用画像</li>
+                <li>広告バナー用画像</li>
+                <li>季節キャンペーン画像</li>
+                <li>商品説明文、alt文、短い広告コピー</li>
+                <li>使用ツールとAI生成有無の管理表</li>
+              </ul>
+            </div>
+          </div>
+
+          <section>
+            <h4>実装する機能</h4>
+            <div class="table-shell">
+              <table>
+                <thead>
+                  <tr>
+                    <th>機能</th>
+                    <th>MVPでやること</th>
+                    <th>品質基準</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>商品切り抜き/背景変更</td>
+                    <td>既存写真から商品を切り抜き、白背景・淡色背景・生活背景へ展開する。</td>
+                    <td>商品形状、色、ロゴ、容量、質感を変えない。</td>
+                  </tr>
+                  <tr>
+                    <td>利用シーン生成</td>
+                    <td>雑貨なら部屋、食品なら食卓、コスメなら洗面台など自然なシーンを作る。</td>
+                    <td>実物より過度に大きく見せない。効能を誤認させない。</td>
+                  </tr>
+                  <tr>
+                    <td>アパレル着用イメージ</td>
+                    <td>平置き画像から着用イメージやスタイリング案を作る。</td>
+                    <td>サイズ感・素材感の誤認を避け、必要なら「着用イメージ」と明記する。</td>
+                  </tr>
+                  <tr>
+                    <td>広告/SNS展開</td>
+                    <td>Instagram、楽天、Shopify、Amazon用の比率に展開する。</td>
+                    <td>各媒体の文字量、禁止表現、解像度に合わせる。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section>
+            <h4>料金パッケージ</h4>
+            <div class="grid-3">
+              <div class="package"><b>お試し 1万円</b><p class="mini">1商品5枚。営業時の入口商品。</p></div>
+              <div class="package"><b>標準 8万円</b><p class="mini">10商品 x 5枚、商品説明文とSNSコピー込み。</p></div>
+              <div class="package"><b>月額 15万円</b><p class="mini">毎月20商品、季節バナー、広告素材、改善提案。</p></div>
+            </div>
+          </section>
+
+          <section>
+            <h4>30日ロードマップ</h4>
+            <div class="table-shell">
+              <table>
+                <thead><tr><th>期間</th><th>やること</th><th>成果物</th></tr></thead>
+                <tbody>
+                  <tr><td>1-3日目</td><td>アパレル、雑貨、食品、コスメから1カテゴリを選ぶ。</td><td>カテゴリ別サンプル方針</td></tr>
+                  <tr><td>4-7日目</td><td>架空商品または許可済み商品でBefore/Afterを10例作る。</td><td>ポートフォリオ</td></tr>
+                  <tr><td>8-14日目</td><td>BASE/Shopify/楽天の小規模店舗へ無料1枚サンプルを提案する。</td><td>見込み客30件</td></tr>
+                  <tr><td>15-21日目</td><td>1商品5枚のお試しパックを販売する。</td><td>初回受注3件</td></tr>
+                  <tr><td>22-30日目</td><td>商品ページ改善やGEO監査と組み合わせて月額化する。</td><td>継続契約1件</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <div class="grid-2">
+            <div class="box">
+              <b>営業文句</b>
+              <p>「今ある商品写真から、EC掲載用、SNS投稿用、広告用の画像をまとめて作ります。撮影を増やさず、商品ページとSNSの見栄えを改善できます。」</p>
+            </div>
+            <div class="box">
+              <b>注意点</b>
+              <p>AI生成画像で実物と異なる印象を与えると、優良誤認やクレームにつながります。特にコスメ、健康食品、医療、ダイエット、金融は表現規制に注意します。AI生成・加工の有無を管理表に残し、必要に応じて注記します。</p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>3つを組み合わせた勝ち筋</h2>
+      <div class="table-shell">
+        <table>
+          <thead>
+            <tr>
+              <th>組み合わせ</th>
+              <th>対象顧客</th>
+              <th>提案名</th>
+              <th>売り方</th>
+              <th>月額化の理由</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>GEO + 商品写真</td>
+              <td>EC/D2C</td>
+              <td>AI検索で見つかる商品ページ改善パック</td>
+              <td>AI検索露出診断後、商品写真、FAQ、比較コンテンツ、レビュー導線を改善する。</td>
+              <td>商品追加、季節企画、AI検索順位変化を毎月追える。</td>
+            </tr>
+            <tr>
+              <td>GEO + AI電話受付</td>
+              <td>地域ビジネス</td>
+              <td>AI時代の地域集客・予約取り逃し改善パック</td>
+              <td>AI検索で見つけてもらい、電話受付で予約を逃さない導線を作る。</td>
+              <td>口コミ、FAQ、予約ログ、営業時間変更など運用が続く。</td>
+            </tr>
+            <tr>
+              <td>AI電話受付 + 商品写真</td>
+              <td>美容、サロン、スクール</td>
+              <td>SNS集客から予約受付まで自動化パック</td>
+              <td>SNS画像・キャンペーン画像を作り、問い合わせをAI受付へ流す。</td>
+              <td>キャンペーン更新と電話ログ改善で継続しやすい。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>最初の実行順</h2>
+      <div class="notice">
+        最初に作るべきものは、完成されたアプリではなく営業に使えるデモです。1週目にGEO診断のサンプル、AI電話受付の録音デモ、商品写真のBefore/Afterを作ります。2週目に1業種へ絞って無料ミニ診断を配り、3週目に低価格の初回パックを販売し、4週目に月額運用へ切り替えます。最初の顧客が3件取れるまで、汎用SaaS化はしない方が速いです。
+      </div>
+    </section>
+
+    <section>
+      <h2>参考情報</h2>
+      <div class="sources">
+        <ul>
+          <li><a href="https://www.smrj.go.jp/research_case/questionnaire/fbrion0000002pjw-att/202603_AI_point.pdf">中小機構: 中小企業のAI等の利活用に係る実態調査 2026年3月</a></li>
+          <li><a href="https://it-shien.smrj.go.jp/">デジタル化・AI導入補助金2026 公式サイト</a></li>
+          <li><a href="https://developers.google.com/search/docs/fundamentals/ai-optimization-guide">Google Search Central: Optimizing your website for generative AI features on Google Search</a></li>
+          <li><a href="https://developers.google.com/search/docs/appearance/structured-data/local-business">Google Search Central: Local Business structured data</a></li>
+          <li><a href="https://prtimes.jp/main/html/rd/p/000000020.000092256.html">MediaReach: 生成AI検索最適化/LLMO/AIOの取り組み</a></li>
+          <li><a href="https://www.yano.co.jp/press-release/show/press_id/4065">矢野経済研究所: 生成AIの普及でデジタル広告市場は構造転換期へ</a></li>
+          <li><a href="https://www.yano.co.jp/market_reports/C68101500">矢野経済研究所: 2026 ECプラットフォーム市場の実態と展望</a></li>
+          <li><a href="https://www.tifana.ai/article/reception-article-275">AI電話対応さくらさん: AI電話予約の解説</a></li>
+          <li><a href="https://prtimes.jp/main/html/rd/p/000000720.000096544.html">ModaAI: アパレルEC向け画像生成AI説明会</a></li>
+          <li><a href="https://www.caa.go.jp/policies/policy/representation/fair_labeling/stealth_marketing">消費者庁: 令和5年10月1日からステルスマーケティングは景品表示法違反</a></li>
+          <li><a href="https://www.meti.go.jp/shingikai/mono_info_service/ai_shakai_jisso/20260331_report.html">経済産業省: AI事業者ガイドライン 第1.2版</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>作成日: 2026年7月5日。公開情報をもとにした事業企画・実装計画です。法務、税務、医療判断は専門家確認を前提にしてください。</p>
+    </div>
+  </footer>
+</body>
+</html>

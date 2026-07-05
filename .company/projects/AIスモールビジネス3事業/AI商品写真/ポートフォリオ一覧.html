@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>AI商品写真 Before/Afterポートフォリオ（雑貨カテゴリ）</title>
+<style>
+  :root {
+    --bg: #faf7f2;
+    --card: #ffffff;
+    --ink: #2c2a26;
+    --sub: #6b6357;
+    --accent: #a97142;
+    --line: #e7e0d4;
+    --before: #eee6d8;
+    --after: #eaf2ea;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.7;
+  }
+  header {
+    padding: 48px 24px 32px;
+    text-align: center;
+    background: linear-gradient(180deg, #fffaf3 0%, var(--bg) 100%);
+    border-bottom: 1px solid var(--line);
+  }
+  header h1 { font-size: 1.9rem; margin: 0 0 8px; }
+  header p { color: var(--sub); max-width: 720px; margin: 0 auto; }
+  .notice {
+    max-width: 900px;
+    margin: 24px auto 0;
+    padding: 14px 18px;
+    background: #fff6e5;
+    border: 1px solid #eadaa9;
+    border-radius: 10px;
+    font-size: 0.92rem;
+    color: #6b5220;
+    text-align: left;
+  }
+  main { max-width: 1080px; margin: 0 auto; padding: 32px 20px 64px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  }
+  .card-head {
+    padding: 16px 18px 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  .card-head h3 { margin: 0 0 4px; font-size: 1.05rem; }
+  .tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #f1e8da;
+    color: var(--accent);
+    margin-top: 4px;
+  }
+  .ba-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); }
+  .ba-cell {
+    padding: 18px 14px;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--sub);
+  }
+  .ba-cell.before { background: var(--before); }
+  .ba-cell.after { background: var(--after); }
+  .ba-cell .label {
+    font-weight: bold;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .ba-cell .desc { color: var(--sub); }
+  .placeholder-icon {
+    width: 40px; height: 40px;
+    border: 2px dashed #b8ac97;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; color: #b8ac97;
+  }
+  .copy { padding: 14px 18px 18px; font-size: 0.9rem; color: var(--ink); }
+  .copy b { color: var(--accent); }
+  footer {
+    text-align: center;
+    padding: 32px 20px 48px;
+    color: var(--sub);
+    font-size: 0.85rem;
+  }
+  .disclaimer {
+    max-width: 900px;
+    margin: 40px auto 0;
+    padding: 16px 20px;
+    border-top: 1px solid var(--line);
+    font-size: 0.8rem;
+    color: var(--sub);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>AI商品写真 Before/Afterポートフォリオ</h1>
+  <p>雑貨カテゴリ（ハンドメイド雑貨・生活雑貨）を例に、商品写真1枚からEC・SNS・広告用の画像を量産するサンプルです。すべて架空の商品・ブランドで作成しています。</p>
+  <div class="notice">
+    <b>本ページの画像について:</b> 掲載中の各カードは、実際の生成画像の代わりに<b>プロンプト・構成案のプレースホルダー</b>を表示しています（本セッションでは ChatGPT Images 2.0 / gpt-image-2 の対話型Web生成が実行できなかったため）。各カードのプロンプトをそのまま ChatGPT Pro Web に入力すれば実画像を生成できます。詳細は <code>Before-Afterポートフォリオ/画像生成ステータス.md</code> を参照してください。実際の営業提示時は、生成済みの画像に差し替えてご利用ください。
+  </div>
+</header>
+
+<main>
+  <div class="grid">
+
+    <!-- 例1 -->
+    <div class="card">
+      <div class="card-head">
+        <h3>例1｜陶器マグカップ「森の便り」</h3>
+        <span class="tag">用途：白背景（プロ仕上げ）</span>
+      </div>
+      <div class="ba-row">
+        <div class="ba-cell before">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">BEFORE（自宅撮影風）</div>
+          <div class="desc">蛍光灯の色かぶり・強い影・生活感のある背景で撮った素朴なマグカップ写真</div>
+        </div>
+        <div class="ba-cell after">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">AFTER（白背景プロ仕上げ）</div>
+          <div class="desc">真っ白背景・柔らかいスタジオライティングでECメイン画像に</div>
+        </div>
+      </div>
+      <div class="copy">同じ商品でも、白背景を整えるだけでECサイトのメイン画像として即使える品質になります。</div>
+    </div>
+
+    <!-- 例2 -->
+    <div class="card">
+      <div class="card-head">
+        <h3>例2｜アロマキャンドル「ゆずしずく」</h3>
+        <span class="tag">用途：利用シーン</span>
+      </div>
+      <div class="ba-row">
+        <div class="ba-cell before">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">BEFORE（自宅撮影風）</div>
+          <div class="desc">白い紙の上に置いただけの、影が不均一な素朴な写真</div>
+        </div>
+        <div class="ba-cell after">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">AFTER（利用シーン）</div>
+          <div class="desc">夜のベッドサイドで灯をともした暮らしのワンシーン</div>
+        </div>
+      </div>
+      <div class="copy">実際に使っている場面を見せることで、購入前に「使い心地」を想像してもらえます。</div>
+    </div>
+
+    <!-- 例3 -->
+    <div class="card">
+      <div class="card-head">
+        <h3>例3｜木製コースター4枚セット「年輪」</h3>
+        <span class="tag">用途：SNS正方形</span>
+      </div>
+      <div class="ba-row">
+        <div class="ba-cell before">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">BEFORE（自宅撮影風）</div>
+          <div class="desc">重ねて置いただけの、影が濃く色味が黄ばんだ写真</div>
+        </div>
+        <div class="ba-cell after">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">AFTER（SNS正方形）</div>
+          <div class="desc">コーヒーカップを添えた明るいInstagram投稿向け構図</div>
+        </div>
+      </div>
+      <div class="copy">SNS映えする正方形構図に整えるだけで、そのまま投稿・広告に転用できます。</div>
+    </div>
+
+    <!-- 例4 -->
+    <div class="card">
+      <div class="card-head">
+        <h3>例4｜レザーキーホルダー「小さな旅人」</h3>
+        <span class="tag">用途：広告縦型</span>
+      </div>
+      <div class="ba-row">
+        <div class="ba-cell before">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">BEFORE（自宅撮影風）</div>
+          <div class="desc">白い紙の上、斜めの強い影が出た素朴な写真</div>
+        </div>
+        <div class="ba-cell after">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">AFTER（広告縦型 9:16）</div>
+          <div class="desc">旅行カバンに取り付けたシーンで、上部にコピー余白を確保</div>
+        </div>
+      </div>
+      <div class="copy">縦型広告フォーマットに最適化することで、Instagram/Facebook広告にそのまま出稿できます。</div>
+    </div>
+
+    <!-- 例5 -->
+    <div class="card">
+      <div class="card-head">
+        <h3>例5｜ガラス一輪挿し「しずくの形」</h3>
+        <span class="tag">用途：バナー横型</span>
+      </div>
+      <div class="ba-row">
+        <div class="ba-cell before">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">BEFORE（自宅撮影風）</div>
+          <div class="desc">光の反射が不均一で生活用品が写り込んだ写真</div>
+        </div>
+        <div class="ba-cell after">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">AFTER（バナー横型 16:9）</div>
+          <div class="desc">花を生けた北欧インテリア風、右側にコピー余白</div>
+        </div>
+      </div>
+      <div class="copy">横長バナーはECサイトのトップやキャンペーンページにそのまま使えます。</div>
+    </div>
+
+    <!-- 例6 -->
+    <div class="card">
+      <div class="card-head">
+        <h3>例6｜刺繍ポーチ「花あかり」</h3>
+        <span class="tag">用途：白背景（プロ仕上げ）</span>
+      </div>
+      <div class="ba-row">
+        <div class="ba-cell before">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">BEFORE（自宅撮影風）</div>
+          <div class="desc">床に置いて撮った、照明が暗めで色味が沈んだ写真</div>
+        </div>
+        <div class="ba-cell after">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">AFTER（白背景プロ仕上げ）</div>
+          <div class="desc">刺繍の細部までくっきり見えるECメイン画像</div>
+        </div>
+      </div>
+      <div class="copy">刺繍の細部までしっかり見せることで、ハンドメイドの価値が伝わる商品ページになります。</div>
+    </div>
+
+    <!-- 例7 -->
+    <div class="card">
+      <div class="card-head">
+        <h3>例7｜竹製箸置き5個セット「和のしずく」</h3>
+        <span class="tag">用途：利用シーン</span>
+      </div>
+      <div class="ba-row">
+        <div class="ba-cell before">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">BEFORE（自宅撮影風）</div>
+          <div class="desc">白い皿の上に並べただけの、青白い光の素朴な写真</div>
+        </div>
+        <div class="ba-cell after">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">AFTER（利用シーン）</div>
+          <div class="desc">和食器と箸を並べた食卓シーンで上品に演出</div>
+        </div>
+      </div>
+      <div class="copy">実際の食卓での使用イメージを見せることで、購入後の生活シーンを想像してもらえます。</div>
+    </div>
+
+    <!-- 例8 -->
+    <div class="card">
+      <div class="card-head">
+        <h3>例8｜フェルトコースター3枚セット「羊毛のぬくもり」</h3>
+        <span class="tag">用途：SNS正方形</span>
+      </div>
+      <div class="ba-row">
+        <div class="ba-cell before">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">BEFORE（自宅撮影風）</div>
+          <div class="desc">光量が少なく全体的に暗い写真</div>
+        </div>
+        <div class="ba-cell after">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">AFTER（SNS正方形）</div>
+          <div class="desc">3色を重ねて並べた北欧風の明るい正方形構図</div>
+        </div>
+      </div>
+      <div class="copy">カラー展開がある商品はSNS正方形で並べると魅力が伝わりやすくなります。</div>
+    </div>
+
+    <!-- 例9 -->
+    <div class="card">
+      <div class="card-head">
+        <h3>例9｜真鍮製ブックマーク「小さな栞」</h3>
+        <span class="tag">用途：広告縦型</span>
+      </div>
+      <div class="ba-row">
+        <div class="ba-cell before">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">BEFORE（自宅撮影風）</div>
+          <div class="desc">反射が強すぎて質感が飛んだ部分がある写真</div>
+        </div>
+        <div class="ba-cell after">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">AFTER（広告縦型 9:16）</div>
+          <div class="desc">開いた本に挟んだ読書シーン、上部にコピー余白</div>
+        </div>
+      </div>
+      <div class="copy">ギフト需要が高い商品は、シーン訴求の縦型広告で贈り物需要にアプローチできます。</div>
+    </div>
+
+    <!-- 例10 -->
+    <div class="card">
+      <div class="card-head">
+        <h3>例10｜ラタン編みバスケット「編みかご」</h3>
+        <span class="tag">用途：バナー横型</span>
+      </div>
+      <div class="ba-row">
+        <div class="ba-cell before">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">BEFORE（自宅撮影風）</div>
+          <div class="desc">床に置いて撮った、影が濃く生活感のある写真</div>
+        </div>
+        <div class="ba-cell after">
+          <div class="placeholder-icon">IMG</div>
+          <div class="label">AFTER（バナー横型 16:9）</div>
+          <div class="desc">ブランケットを入れたリビングシーン、右側にコピー余白</div>
+        </div>
+      </div>
+      <div class="copy">収納アイテムは「使っている部屋の雰囲気」を見せることで、生活導線への提案力が上がります。</div>
+    </div>
+
+  </div>
+
+  <div class="disclaimer">
+    <p><b>表示に関する注記:</b> 本ポートフォリオの商品はすべて架空のハンドメイド雑貨ブランドであり、実在の企業・商標・個人とは関係ありません。掲載画像はAI生成（ChatGPT Images 2.0 / gpt-image-2）を予定した構成案であり、実際の納品時にはAI生成・加工の有無を「AI生成有無管理表」で管理し、必要に応じて「画像はイメージです（AI生成）」等の注記を行います。商品の形状・色・ロゴ・容量・質感は、生成前後で変更しないことを品質基準とします。</p>
+  </div>
+</main>
+
+<footer>
+  AIスモールビジネス3事業／AI商品写真・ECモックアップ制作　お問い合わせ：info@ynfactory.online
+</footer>
+
+</body>
+</html>

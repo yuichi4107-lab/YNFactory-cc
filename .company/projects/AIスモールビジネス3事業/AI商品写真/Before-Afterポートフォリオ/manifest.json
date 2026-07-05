@@ -1,0 +1,100 @@
+{
+  "category": "雑貨（ハンドメイド雑貨・生活雑貨）",
+  "generation_tool": "ChatGPT Images 2.0 (gpt-image-2) via ChatGPT Pro Web",
+  "status": "blocked_gpt_image2_web",
+  "status_reason": "本環境の openai-image-gen スキルは API 経由の画像生成を禁止するガードレールのみが実装されており（.agents/skills/openai-image-gen/SKILL.md参照）、対話型ChatGPT Pro Web セッションを必要とするため自動実行エージェントからは生成不可。詳細は 画像生成ステータス.md 参照。",
+  "output_folder": "images/",
+  "naming_convention": "before_{no2桁}.png / after_{no2桁}.png",
+  "items": [
+    {
+      "no": 1,
+      "product": "陶器マグカップ「森の便り」",
+      "use_type": "白背景（プロ仕上げ）",
+      "before_file": "before_01.png",
+      "after_file": "after_01.png",
+      "prompt_ref": "image_prompts.md#例1",
+      "status": "pending_gpt_image2_web"
+    },
+    {
+      "no": 2,
+      "product": "アロマキャンドル「ゆずしずく」",
+      "use_type": "利用シーン",
+      "before_file": "before_02.png",
+      "after_file": "after_02.png",
+      "prompt_ref": "image_prompts.md#例2",
+      "status": "pending_gpt_image2_web"
+    },
+    {
+      "no": 3,
+      "product": "木製コースター4枚セット「年輪」",
+      "use_type": "SNS正方形",
+      "before_file": "before_03.png",
+      "after_file": "after_03.png",
+      "prompt_ref": "image_prompts.md#例3",
+      "status": "pending_gpt_image2_web"
+    },
+    {
+      "no": 4,
+      "product": "レザーキーホルダー「小さな旅人」",
+      "use_type": "広告縦型",
+      "before_file": "before_04.png",
+      "after_file": "after_04.png",
+      "prompt_ref": "image_prompts.md#例4",
+      "status": "pending_gpt_image2_web"
+    },
+    {
+      "no": 5,
+      "product": "ガラス一輪挿し「しずくの形」",
+      "use_type": "バナー横型",
+      "before_file": "before_05.png",
+      "after_file": "after_05.png",
+      "prompt_ref": "image_prompts.md#例5",
+      "status": "pending_gpt_image2_web"
+    },
+    {
+      "no": 6,
+      "product": "刺繍ポーチ「花あかり」",
+      "use_type": "白背景（プロ仕上げ）",
+      "before_file": "before_06.png",
+      "after_file": "after_06.png",
+      "prompt_ref": "image_prompts.md#例6",
+      "status": "pending_gpt_image2_web"
+    },
+    {
+      "no": 7,
+      "product": "竹製箸置き5個セット「和のしずく」",
+      "use_type": "利用シーン",
+      "before_file": "before_07.png",
+      "after_file": "after_07.png",
+      "prompt_ref": "image_prompts.md#例7",
+      "status": "pending_gpt_image2_web"
+    },
+    {
+      "no": 8,
+      "product": "フェルトコースター3枚セット「羊毛のぬくもり」",
+      "use_type": "SNS正方形",
+      "before_file": "before_08.png",
+      "after_file": "after_08.png",
+      "prompt_ref": "image_prompts.md#例8",
+      "status": "pending_gpt_image2_web"
+    },
+    {
+      "no": 9,
+      "product": "真鍮製ブックマーク「小さな栞」",
+      "use_type": "広告縦型",
+      "before_file": "before_09.png",
+      "after_file": "after_09.png",
+      "prompt_ref": "image_prompts.md#例9",
+      "status": "pending_gpt_image2_web"
+    },
+    {
+      "no": 10,
+      "product": "ラタン編みバスケット「編みかご」",
+      "use_type": "バナー横型",
+      "before_file": "before_10.png",
+      "after_file": "after_10.png",
+      "prompt_ref": "image_prompts.md#例10",
+      "status": "pending_gpt_image2_web"
+    }
+  ]
+}
