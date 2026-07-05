@@ -18,6 +18,7 @@ $RECYCLE.BIN/
 *.key
 secrets/
 credentials.json
+.company/engineering/sns-credentials/
 
 # ─── Python ───
 __pycache__/
@@ -110,6 +111,9 @@ ai-trade-system/results/**/*.parquet
 AYC/
 .company/codex/
 
+# ─── ルート整理アーカイブ（Drive専用・2026-07-05整理で退避した旧ファイル置き場）───
+_archive/
+
 # ─── git本体のローカルバックアップ（作業ツリー上の復旧用コピー）───
 # .git_drivebackup は 4.7GB の .git 復元コピー。git履歴に取り込むと再肥大化するためコミット厳禁
 .git_drivebackup/
@@ -126,6 +130,7 @@ AYC/
 *.mov
 # keiba 大容量データ（本番はVPS、ローカルは非稼働の古いコピー）
 keiba-unified/jra/data/
+keiba-unified/win5/data/cache/
 # 各種データダンプ・モデル
 *.pkl
 *.parquet
@@ -141,6 +146,10 @@ settings.local.json
 
 # Playwright MCP snapshots (debug artifacts)
 .playwright-mcp/
+
+# Local virtual environments and generated company outputs
+.company/.venvs/
+.company/outputs/
 
 # ─── アーカイブ済み大容量成果物（svg/xhtml/pdf/ini 等も含むためディレクトリごと除外）2026-06-06 マルチPC移行 ───
 # 画像本体は上の *.png/*.jpg 等で除外済みだが、付随する svg/xhtml/pdf 等を取り込まないようディレクトリ単位で除外しDrive専用にする
