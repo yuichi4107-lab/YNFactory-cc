@@ -15,8 +15,12 @@ from predictor_v1 import get_conn
 
 
 def _normalize_combo(combo):
-    """組合せ文字列を正規化 (スペース除去: '4 - 15' → '4-15')"""
-    return combo.replace(" ", "")
+    """組合せ文字列を正規化 (スペース除去・矢印統一: '4 - 15'/'4 → 15' → '4-15')
+
+    馬単・三連単はdb.netkeiba経路が「a → b」、当日ライブ経路が「a - b」(順序保持)で
+    保存されるため、区切りを統一しないと的中判定が経路依存で失敗する。
+    """
+    return combo.replace(" ", "").replace("→", "-")
 
 
 def check_hit(conn, race_id, bet_type, bets):

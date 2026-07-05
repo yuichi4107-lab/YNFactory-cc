@@ -14,7 +14,7 @@ import os
 import sys
 
 DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "keiba.db")
-HEADERS = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"}
+HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"}
 REQUEST_INTERVAL = 1.5  # サーバー負荷軽減のため1.5秒間隔
 
 
@@ -440,6 +440,134 @@ def scrape_race(race_id, conn):
 
     conn.commit()
     return True
+
+
+def _decode_result_html(content):
+    """netkeibaライブ結果ページのバイト列をデコードする。
+
+    2026-06-20頃にページがEUC-JPからUTF-8へ移行し、EUC-JP固定デコードでは
+    券種名が文字化けしたままDBへ保存されてしまう(2026-07-05修復)。厳密デコードを
+    両方試し、既知の券種語を含むテキストのみ採用する。判定不能なら例外を投げ、
+    化けたデータをDBへ書き込まない。
+    """
+    candidates = []
+    for enc in ("utf-8", "euc-jp"):
+        try:
+            candidates.append(content.decode(enc))
+        except UnicodeDecodeError:
+            continue
+    for text in candidates:
+        if "複勝" in text or "単勝" in text:
+            return text
+    if candidates:
+        return candidates[0]
+    for enc in ("utf-8", "euc-jp"):
+        text = content.decode(enc, "replace")
+        if "複勝" in text or "単勝" in text:
+            return text
+    raise ValueError("result page encoding detection failed")
+
+
+def scrape_result_live_netkeiba(race_id, conn):
+    """当日ライブ結果ページ(race.netkeiba.com)から着順＋払戻を取得してDBへ格納する。
+
+    db.netkeiba.com(履歴DB)は当日結果の反映が遅く、レース当日17:30時点では
+    結果テーブルが未掲載になる。対してライブ結果ページは当日中に着順・払戻を
+    掲載するため、当日分のフォールバックとして使用する(エンコーディング自動判定)。
+
+    既存の出走馬エントリ行(当日朝に作成済)を壊さないよう、着順は
+    UPDATE results SET finish_position=... で更新する。払戻は payouts へ
+    INSERT OR REPLACE する。着順>0 を1件以上書き込めたとき True を返す。
+    """
+    url = f"https://race.netkeiba.com/race/result.html?race_id={race_id}"
+    try:
+        res = requests.get(url, headers=HEADERS, timeout=15)
+    except requests.RequestException as e:
+        print(f"  Error fetching live {race_id}: {e}")
+        return False
+    if res.status_code != 200:
+        print(f"  HTTP {res.status_code} (live) for {race_id}")
+        return False
+
+    try:
+        html = _decode_result_html(res.content)
+        soup = BeautifulSoup(html, "lxml")
+
+        # 着順テーブル
+        wrap = soup.find(id="All_Result_Table") or soup.find("table", class_=re.compile("RaceTable01"))
+        if not wrap:
+            div = soup.find("div", class_="ResultTableWrap")
+            wrap = div.find("table") if div else None
+        if not wrap:
+            return False
+
+        c = conn.cursor()
+        updated = 0
+        for tr in wrap.find_all("tr")[1:]:
+            tds = tr.find_all("td")
+            if len(tds) < 3:
+                continue
+            chaku = tds[0].get_text(strip=True)
+            try:
+                finish_pos = int(chaku)
+            except ValueError:
+                finish_pos = 0  # 中止・取消・除外
+            uma = tds[2].get_text(strip=True)
+            if not uma.isdigit():
+                continue
+            horse_number = int(uma)
+            # 既存エントリ行の着順のみ更新（エントリ情報は保持）
+            c.execute(
+                "UPDATE results SET finish_position = ? WHERE race_id = ? AND horse_number = ?",
+                (finish_pos, race_id, horse_number),
+            )
+            if finish_pos > 0:
+                updated += 1
+
+        if updated == 0:
+            return False
+
+        # 払戻テーブル
+        _bet_normalize = {"3連複": "三連複", "3連単": "三連単"}
+        _ordered_types = {"馬単", "三連単"}  # 順序あり券種はソートしない
+        for pt in soup.find_all("table", class_=re.compile("Payout_Detail_Table")):
+            for tr in pt.find_all("tr"):
+                th = tr.find("th")
+                tds = tr.find_all("td")
+                if not th or len(tds) < 2:
+                    continue
+                bt = _bet_normalize.get(th.get_text(strip=True), th.get_text(strip=True))
+                combos_raw = [s for s in tds[0].stripped_strings]
+                payouts_raw = [s for s in tds[1].stripped_strings]
+                pops_raw = [s for s in tds[2].stripped_strings] if len(tds) > 2 else []
+                num = len(payouts_raw)
+                if num == 0 or not combos_raw or len(combos_raw) % num != 0:
+                    continue
+                hpc = len(combos_raw) // num  # 1組合せあたりの頭数
+                for i in range(num):
+                    horses = combos_raw[i * hpc:(i + 1) * hpc]
+                    if bt not in _ordered_types and hpc > 1:
+                        try:
+                            horses = sorted(horses, key=lambda x: int(x))
+                        except ValueError:
+                            pass
+                    combo = " - ".join(horses)
+                    pay = int(re.sub(r"[^\d]", "", payouts_raw[i]) or 0)
+                    pop = int(re.sub(r"[^\d]", "", pops_raw[i]) or 0) if i < len(pops_raw) else 0
+                    c.execute(
+                        "INSERT OR REPLACE INTO payouts VALUES (?,?,?,?,?)",
+                        (race_id, bt, combo, pay, pop),
+                    )
+
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"  Parse error (live) for {race_id}: {e}")
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        return False
 
 
 def get_race_dates(year, month):

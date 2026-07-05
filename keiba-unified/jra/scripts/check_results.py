@@ -25,17 +25,22 @@ if sys.stdout.encoding and sys.stdout.encoding.lower().startswith("cp"):
 
 sys.path.insert(0, os.path.dirname(__file__))
 from predictor_v1 import get_conn
-from scraper_legacy import HEADERS, REQUEST_INTERVAL, scrape_race, init_db
+from scraper_legacy import HEADERS, REQUEST_INTERVAL, scrape_race, scrape_result_live_netkeiba, init_db
 from run_today import _build_jra_result_cname_map, scrape_result_jra
 from backtest_legacy import check_hit
 
-# Telegram設定（環境変数優先・2026-05-30 ハードコード除去）
+# Telegram設定
 TG_TOKEN = os.environ.get("TG_TOKEN_JRA", os.environ.get("TG_TOKEN", ""))
 TG_CHAT_ID = os.environ.get("TG_CHAT_ID", "8571447808")
+
+# --no-notify / 再集計リプレイ時に Telegram 送信を抑制するためのフラグ
+NOTIFY = True
 
 
 def send_telegram(message):
     """Telegramにメッセージ送信"""
+    if not NOTIFY:
+        return
     try:
         requests.post(
             f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage",
@@ -83,7 +88,14 @@ def scrape_day_results(conn, date_str):
                 time.sleep(0.5)
                 continue
 
-        # JRA失敗時はnetkeibaにフォールバック
+        # 当日ライブ結果(race.netkeiba)を試す（当日中に着順・払戻が掲載される）
+        if scrape_result_live_netkeiba(race_id, conn):
+            scraped += 1
+            print(" OK (live)")
+            time.sleep(0.5)
+            continue
+
+        # 履歴DB(db.netkeiba)にフォールバック（過去日・当日反映後向け）
         if scrape_race(race_id, conn):
             scraped += 1
             print(" OK (netkeiba)")
@@ -177,12 +189,14 @@ def _check_source_results(conn, date_str, source):
         total_bet += bet_total
         total_payout += payout
 
-        # prediction_results に保存
+        # prediction_results に保存（source別に独立保存）
         c.execute("""INSERT OR REPLACE INTO prediction_results
-                     VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
+                     (date, race_id, venue, race_number, race_name, bet_type,
+                      bet_total, hit, payout, profit, quality_score, source)
+                     VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",
                   (date_str, race_id, venue, race_number, race_name,
                    info["bet_type"], bet_total, hit, payout, profit,
-                   info["quality_score"]))
+                   info["quality_score"], source))
 
         results.append({
             "race_id": race_id,
@@ -231,50 +245,63 @@ def _check_source_results(conn, date_str, source):
 
 
 def check_day_results(conn, date_str):
-    """予測と結果を照合して収支を計算（morning/live別 + 合計）"""
+    """予測と結果を照合して収支を計算（morning/live を合算せず source別に独立保存）"""
     morning = _check_source_results(conn, date_str, "morning")
+    morning_nv = _check_source_results(conn, date_str, "morning_nv")
     live = _check_source_results(conn, date_str, "live")
+    live_c3 = _check_source_results(conn, date_str, "live_c3")
+    live_santan = _check_source_results(conn, date_str, "live_santan")
 
-    if not morning and not live:
+    if not morning and not live and not morning_nv and not live_c3 and not live_santan:
         print(f"予測データなし: {date_str}")
         return None
 
-    # 合計をdaily_summaryに保存
-    all_results = []
-    total_bet = 0
-    total_payout = 0
-    hits = 0
-    for src in [morning, live]:
-        if src:
-            all_results.extend(src["results"])
-            total_bet += src["total_bet"]
-            total_payout += src["total_payout"]
-            hits += src["hits"]
-
-    roi = total_payout / total_bet if total_bet > 0 else 0
-    hit_rate = hits / len(all_results) if all_results else 0
-
+    # daily_summary に source別で独立保存（合算行は作らない）
     c = conn.cursor()
-    c.execute("""INSERT OR REPLACE INTO daily_summary VALUES (?,?,?,?,?,?,?,?)""",
-              (date_str, len(all_results), hits, total_bet, total_payout,
-               total_payout - total_bet, roi, hit_rate))
+    for src in (morning, morning_nv, live, live_c3, live_santan):
+        if not src:
+            continue
+        races = len(src["results"])
+        hits = src["hits"]
+        hit_rate = hits / races if races else 0
+        c.execute("""INSERT OR REPLACE INTO daily_summary
+                     (date, source, races_bet, races_hit, total_bet,
+                      total_payout, profit, roi, hit_rate)
+                     VALUES (?,?,?,?,?,?,?,?,?)""",
+                  (date_str, src["source"], races, hits, src["total_bet"],
+                   src["total_payout"], src["profit"], src["roi"], hit_rate))
     conn.commit()
 
     return {
         "date": date_str,
         "morning": morning,
+        "morning_nv": morning_nv,
         "live": live,
-        "total_bet": total_bet,
-        "total_payout": total_payout,
-        "profit": total_payout - total_bet,
-        "roi": roi,
-        "hits": hits,
-        "races": len(all_results),
+        "live_c3": live_c3,
+        "live_santan": live_santan,
     }
 
 
-def _format_source_section(src, label):
-    """1ソース分のレポートセクションを生成"""
+def _source_cumulative(conn, source, upto_date):
+    """指定source単独の累計（daily_summaryベース、upto_date以前を合算）"""
+    if conn is None:
+        return None
+    c = conn.cursor()
+    c.execute("""SELECT COUNT(*), SUM(races_bet), SUM(races_hit),
+                        SUM(total_bet), SUM(total_payout), SUM(profit)
+                 FROM daily_summary WHERE source = ? AND date <= ?""",
+              (source, upto_date))
+    row = c.fetchone()
+    if not row or not row[3]:
+        return None
+    days, races, hits, bet, payout, profit = row
+    roi = payout / bet if bet else 0
+    return {"days": days, "races": races or 0, "hits": hits or 0,
+            "bet": bet or 0, "payout": payout or 0, "profit": profit or 0, "roi": roi}
+
+
+def _format_source_section(src, label, conn=None, date_str=None):
+    """1ソース分のレポートセクションを生成（source単独の累計付き）"""
     if not src:
         return [f"*{label}*: 該当なし"]
 
@@ -293,6 +320,13 @@ def _format_source_section(src, label):
     lines.append(f"投資: {src['total_bet']:,}円 → 回収: {src['total_payout']:,}円")
     lines.append(f"収支: {sign}{profit:,}円 (ROI: {roi_pct:.1f}%)")
 
+    # source単独の累計
+    cum = _source_cumulative(conn, src["source"], date_str)
+    if cum:
+        csign = "+" if cum["profit"] >= 0 else ""
+        lines.append(f"  └ 累計{cum['days']}日: {csign}{cum['profit']:,}円 "
+                     f"(ROI {cum['roi']*100:.1f}% / {cum['hits']}/{cum['races']}的中)")
+
     hit_races = [r for r in src["results"] if r["hit"]]
     miss_races = [r for r in src["results"] if not r["hit"]]
 
@@ -308,34 +342,55 @@ def _format_source_section(src, label):
     return lines
 
 
-def format_result_message(day):
-    """Telegram用の結果メッセージを生成（朝予想・ライブ別レポート）"""
+def format_result_message(day, conn=None):
+    """Telegram用の結果メッセージを生成（朝予想・ライブを合算せず独立表示）"""
     d = day["date"]
-    roi_pct = day["roi"] * 100
-    profit = day["profit"]
-    sign = "+" if profit >= 0 else ""
-
     lines = [f"📊 *競馬結果速報 {d}*", ""]
 
-    # 朝予想の結果
-    lines.extend(_format_source_section(day.get("morning"), "🌅 朝予想"))
+    # 朝予想の結果（単独累計付き）
+    lines.extend(_format_source_section(day.get("morning"), "🌅 朝予想", conn, d))
     lines.append("")
 
-    # ライブモードの結果
-    lines.extend(_format_source_section(day.get("live"), "🔴 ライブ"))
+    # ライブモードの結果（単独累計付き）
+    lines.extend(_format_source_section(day.get("live"), "🔴 ライブ", conn, d))
     lines.append("")
 
-    # 合計
-    lines.append("*📋 合計*")
-    lines.append(f"{day['races']}レース中 {day['hits']}的中")
-    lines.append(f"投資: {day['total_bet']:,}円 → 回収: {day['total_payout']:,}円")
-    lines.append(f"収支: {sign}{profit:,}円 (ROI: {roi_pct:.1f}%)")
+    # ライブC3（オッズ抜きモデル並走・予想時は無通知）の結果（単独累計付き）
+    if day.get("live_c3"):
+        lines.extend(_format_source_section(day.get("live_c3"), "🟣 ライブC3(オッズ抜き)", conn, d))
+        lines.append("")
 
-    return "\n".join(lines)
+    # サンタンシャドー（新馬未勝利ダ短の三連単1点・記録のみ）の結果（単独累計付き）
+    if day.get("live_santan"):
+        lines.extend(_format_source_section(day.get("live_santan"), "🎯 サンタンシャドー(新馬未勝利ダ短)", conn, d))
+        lines.append("")
+
+    # A/Bテスト（バリューなし版）
+    if day.get("morning_nv"):
+        lines.extend(_format_source_section(day.get("morning_nv"), "🧪 朝予想B(バリューなし)", conn, d))
+        lines.append("")
+        # 比較サマリー
+        m = day.get("morning")
+        nv = day.get("morning_nv")
+        if m and nv:
+            lines.append("*🔬 A/B比較*")
+            lines.append(f"  A(現行): {m['hits']}/{m['races']}的中 ROI {m['roi']*100:.0f}%")
+            lines.append(f"  B(提案): {nv['hits']}/{nv['races']}的中 ROI {nv['roi']*100:.0f}%")
+            diff = nv['profit'] - m['profit']
+            lines.append(f"  差分: {diff:+,}円(B-A)")
+            lines.append("")
+
+    # ※ 朝予想とライブは独立集計のため「合計」欄は設けない
+    return "\n".join(lines).rstrip()
+
+
+SRC_LABELS = {"morning": "🌅 朝予想", "live": "🔴 ライブ", "morning_nv": "🧪 朝予想B",
+              "live_c3": "🟣 ライブC3(オッズ抜き)",
+              "live_santan": "🎯 サンタンシャドー(新馬未勝利ダ短)"}
 
 
 def monthly_summary(conn, year=None, month=None):
-    """月間サマリーを生成して送信"""
+    """月間サマリーを生成して送信（朝予想・ライブを合算せず source別に集計）"""
     if year is None or month is None:
         today = date.today()
         # 前月の集計（月初に実行される想定）
@@ -351,56 +406,62 @@ def monthly_summary(conn, year=None, month=None):
         end = f"{year}-{month + 1:02d}-01"
 
     c = conn.cursor()
-    c.execute("""SELECT COUNT(*), SUM(races_bet), SUM(races_hit),
+    c.execute("""SELECT source, COUNT(*), SUM(races_bet), SUM(races_hit),
                         SUM(total_bet), SUM(total_payout), SUM(profit)
-                 FROM daily_summary WHERE date >= ? AND date < ?""", (start, end))
-    row = c.fetchone()
-    days, races, hit_total, bet_total, payout_total, profit_total = row
+                 FROM daily_summary WHERE date >= ? AND date < ?
+                 GROUP BY source ORDER BY source""", (start, end))
+    rows = c.fetchall()
 
-    if not days or not races:
+    if not rows:
         print(f"{year}年{month}月: データなし")
         return
 
-    roi = payout_total / bet_total if bet_total > 0 else 0
-    hit_rate = hit_total / races if races > 0 else 0
-    sign = "+" if profit_total >= 0 else ""
-
-    lines = [f"📈 *月間成績 {year}年{month}月*", ""]
-    lines.append(f"開催日数: {days}日 / 対象レース: {races}レース")
-    lines.append(f"的中: {hit_total}レース ({hit_rate * 100:.1f}%)")
-    lines.append(f"投資: {bet_total:,}円 → 回収: {payout_total:,}円")
-    lines.append(f"収支: {sign}{profit_total:,}円 (ROI: {roi * 100:.1f}%)")
-
-    # ROIアラート
-    if roi < 0.80:
+    lines = [f"📈 *月間成績 {year}年{month}月*"]
+    for source, days, races, hit_total, bet_total, payout_total, profit_total in rows:
+        if not races:
+            continue
+        label = SRC_LABELS.get(source, source)
+        roi = payout_total / bet_total if bet_total else 0
+        hit_rate = hit_total / races if races else 0
+        sign = "+" if profit_total >= 0 else ""
         lines.append("")
-        lines.append("⚠️ *ROI低下: モデル見直しを検討してください*")
+        lines.append(f"*{label}*")
+        lines.append(f"開催{days}日 / {races}レース / 的中{hit_total} ({hit_rate * 100:.1f}%)")
+        lines.append(f"投資 {bet_total:,}円 → 回収 {payout_total:,}円")
+        lines.append(f"収支 {sign}{profit_total:,}円 (ROI {roi * 100:.1f}%)")
+        if roi < 0.80:
+            lines.append("  ⚠️ ROI低下: 見直し検討")
 
     msg = "\n".join(lines)
     print(msg)
     send_telegram(msg)
 
-    # 直近4週のROIも確認
+    # 直近4週のROIも source別に確認
     four_weeks_ago = (date(year, month, 1) - timedelta(days=28)).isoformat()
-    c.execute("""SELECT SUM(total_bet), SUM(total_payout)
-                 FROM daily_summary WHERE date >= ?""", (four_weeks_ago,))
-    r2 = c.fetchone()
-    if r2 and r2[0] and r2[0] > 0:
-        recent_roi = r2[1] / r2[0]
-        if recent_roi < 0.80:
-            alert = (f"⚠️ *モデル要確認*\n"
-                     f"直近4週のROI: {recent_roi * 100:.1f}%\n"
-                     f"モデルパラメータの見直しを検討してください。")
-            send_telegram(alert)
+    c.execute("""SELECT source, SUM(total_bet), SUM(total_payout)
+                 FROM daily_summary WHERE date >= ?
+                 GROUP BY source""", (four_weeks_ago,))
+    for source, bet, payout in c.fetchall():
+        if bet and bet > 0:
+            recent_roi = payout / bet
+            if recent_roi < 0.80:
+                label = SRC_LABELS.get(source, source)
+                alert = (f"⚠️ *モデル要確認 ({label})*\n"
+                         f"直近4週のROI: {recent_roi * 100:.1f}%\n"
+                         f"モデルパラメータの見直しを検討してください。")
+                send_telegram(alert)
 
 
 def main():
+    global NOTIFY
     target_date = date.today()
     do_monthly = False
 
     for arg in sys.argv[1:]:
         if arg == "--monthly":
             do_monthly = True
+        elif arg == "--no-notify":
+            NOTIFY = False  # 再集計リプレイ時に Telegram 送信を止める
         elif re.match(r'\d{4}-\d{2}-\d{2}', arg):
             target_date = datetime.strptime(arg, "%Y-%m-%d").date()
 
@@ -430,12 +491,37 @@ def main():
         return
 
     # 結果表示
-    msg = format_result_message(day)
+    msg = format_result_message(day, conn)
     print("\n" + msg)
 
     # Telegram送信
     send_telegram(msg)
     print("\nTelegram通知送信完了")
+
+
+    # ====================================================
+    # --- 穴予想（Longshot Wide）結果チェック ---
+    # ====================================================
+    try:
+        import sys as _sys_ls
+        _sys_ls.path.insert(0, os.path.dirname(__file__))
+        from longshot_wide_tracker import check_longshot_results, format_longshot_result_message
+
+        for src_name, src_label in [("morning", "モーニング"), ("live", "直前")]:
+            print(f"\n穴予想({src_label}) 結果チェック中...")
+            ls_result = check_longshot_results(date_str, source=src_name)
+            if ls_result:
+                ls_msg = format_longshot_result_message(ls_result)
+                ls_msg = ls_msg.replace("穴予想 結果速報", f"穴予想({src_label}) 結果速報")
+                print(ls_msg)
+                send_telegram(ls_msg)
+                print(f"穴予想({src_label})結果 Telegram送信完了")
+            else:
+                print(f"穴予想({src_label}): 予測データなし（スキップ）")
+    except Exception as _ls_e:
+        import traceback as _tb
+        print(f"穴予想結果チェックエラー（既存処理には影響なし）: {_ls_e}")
+        _tb.print_exc()
 
     conn.close()
 
