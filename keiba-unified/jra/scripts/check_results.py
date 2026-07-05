@@ -106,6 +106,70 @@ def scrape_day_results(conn, date_str):
     return scraped
 
 
+from bet_constants import KNOWN_BET_TYPES
+
+
+def _data_quality_warnings(conn, date_str):
+    """当日データの品質チェック。異常があれば警告文リストを返す。
+
+    2026-06-20〜07-04にnetkeibaのUTF-8化で払戻券種が文字化けしたまま保存され、
+    1か月間の成績が過小報告された事故（2026-07-05修復）の再発検知ゲート。
+    サイト側の仕様変更で「静かにデータが壊れる」ことを当日中に検知する。
+    """
+    c = conn.cursor()
+    warns = []
+
+    # 1. 券種名の文字化け（未知のbet_type）
+    ph = ",".join("?" * len(KNOWN_BET_TYPES))
+    c.execute(f"""SELECT COUNT(*) FROM payouts p JOIN races r ON p.race_id = r.race_id
+                  WHERE r.date = ? AND p.bet_type NOT IN ({ph})""",
+              (date_str, *KNOWN_BET_TYPES))
+    n = c.fetchone()[0]
+    if n:
+        warns.append(f"⚠ データ品質: 未知の券種名の払戻が{n}行（文字化けの疑い。エンコーディング変更を確認）")
+
+    # 2. 買い予測があるのに結果未取得のレース
+    c.execute("""SELECT COUNT(DISTINCT p.race_id) FROM predictions p
+                 WHERE p.date = ? AND p.amount > 0
+                   AND NOT EXISTS (SELECT 1 FROM results r
+                                   WHERE r.race_id = p.race_id AND r.finish_position > 0)""",
+              (date_str,))
+    n = c.fetchone()[0]
+    if n:
+        warns.append(f"⚠ データ品質: 買い予測ありで着順未取得のレースが{n}件（結果取得系の不調を確認）")
+
+    # 3. 着順は取れたのに払戻行が極端に少ないレース（正常時はレースあたり10行前後）
+    c.execute("""SELECT COUNT(*) FROM (
+                   SELECT r.race_id FROM races r
+                   WHERE r.date = ?
+                     AND EXISTS (SELECT 1 FROM results x
+                                 WHERE x.race_id = r.race_id AND x.finish_position > 0)
+                   GROUP BY r.race_id
+                   HAVING (SELECT COUNT(*) FROM payouts p WHERE p.race_id = r.race_id) < 6)""",
+              (date_str,))
+    n = c.fetchone()[0]
+    if n:
+        warns.append(f"⚠ データ品質: 払戻行が6行未満の確定レースが{n}件（払戻パース不調の疑い）")
+
+    # 4. 母数があるのに全ソース的中ゼロ（照合ロジック故障のソフトサイン）
+    #    直近90日の実的中率から「偶然すべて外れる確率」を二項分布で見積り、
+    #    2%未満のときだけ警告する（固定閾値だと自然発生の不運で誤検知するため）
+    c.execute("""SELECT COUNT(*), COALESCE(SUM(hit), 0) FROM prediction_results
+                 WHERE date >= date(?, '-90 day') AND date < ?""", (date_str, date_str))
+    n90, h90 = c.fetchone()
+    p_hit = (h90 / n90) if n90 and n90 >= 30 else 0.25
+    c.execute("""SELECT COUNT(*), COALESCE(SUM(hit), 0) FROM prediction_results
+                 WHERE date = ?""", (date_str,))
+    races, hits = c.fetchone()
+    if races >= 5 and hits == 0 and (1.0 - p_hit) ** races < 0.02:
+        warns.append(
+            f"⚠ データ品質: 買い{races}レースで的中0"
+            f"（直近90日の的中率{p_hit:.0%}なら偶然の確率{100 * (1 - p_hit) ** races:.1f}%。"
+            f"券種マッチ・払戻照合の故障も疑って確認推奨）")
+
+    return warns
+
+
 def _check_source_results(conn, date_str, source):
     """指定ソース(morning/live)の予測と結果を照合して収支を計算"""
     c = conn.cursor()
@@ -490,8 +554,11 @@ def main():
         conn.close()
         return
 
-    # 結果表示
+    # 結果表示（データ品質警告があれば冒頭に付ける）
     msg = format_result_message(day, conn)
+    dq = _data_quality_warnings(conn, date_str)
+    if dq:
+        msg = "\n".join(dq) + "\n\n" + msg
     print("\n" + msg)
 
     # Telegram送信
