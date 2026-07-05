@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-04T07:01:19
+generated_at: 2026-07-05T07:01:26
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,32 @@ generated_at: 2026-07-04T07:01:19
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-04
+
+- - **Sakamoto-sensei** — 相談相手として言及 (07:06) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **Kon-chan-san** — ライブ配信視聴者 (07:10) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **Ryotan** — ライブ配信視聴者 (07:10) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **Rさん** — ライブ配信視聴者 (07:11) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **Kさん** — ライブ配信視聴者 (07:11) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **Nさん** — ライブ配信視聴者 (07:12) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **Manjimaru-san** — ライブ配信視聴者 (07:12) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **Chroniid-san** — ライブ配信視聴者、メールで交流 (07:12) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **Shyun-san** — ライブ配信視聴者 (07:12) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **Kobu-chan** — ライブ配信視聴者 (07:12) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **En-san** — ライブ配信視聴者 (07:13) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **Debaru-sa Soo-san** — ライブ配信フォロワー (07:13) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **Ryu-chan** — ライブ配信視聴者 (07:14) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **Lさん** — ライブ配信視聴者 (07:14) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **Takumi-san** — ライブ配信フォロワー (07:16) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **Yu-chan** — ライブ配信参加者/サポーター (01:21) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **Shishako** — ライブ配信参加者/サポーター (01:21) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **My make** — ライブ配信参加者/サポーター (01:21) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **Micchan** — ライブ配信参加者/サポーター (01:21) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **T-girl** — ライブ配信参加者/サポーター (01:21) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **Dimus** — ライブ配信参加者/サポーター (01:21) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **Hirocchi** — ライブ配信参加者/サポーター (01:21) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
+- - **Dai-ai** — ライブ配信参加者/サポーター (01:23) | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
 
 ## 2026-07-03
 

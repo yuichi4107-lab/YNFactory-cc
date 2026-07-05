@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-04T07:01:19
+generated_at: 2026-07-05T07:01:26
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,10 @@ generated_at: 2026-07-04T07:01:19
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-04
+
+- [ ] ホームページ開設 | time:06:45 | priority:high | due:2026-07-18 | source:`.company/inputs/organized/lifelogs/2026-07-04-lifelog-insights.md`
 
 ## 2026-07-03
 
