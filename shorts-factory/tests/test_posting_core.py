@@ -1112,6 +1112,7 @@ class PostingCoreTest(unittest.TestCase):
                 side_effect=lambda updated, reason: spawned.append((updated["id"], reason)) or True,
             ),
             patch.object(approval_bot, "_answer_callback_status", return_value="expired"),
+            patch.object(approval_bot, "_remove_buttons"),
             patch.object(approval_bot.notify, "send_message", side_effect=lambda text: messages.append(text)),
         ):
             approval_bot.handle_callback({"id": "cb-1", "data": "approve:item-1", "message": {"message_id": 42}})
