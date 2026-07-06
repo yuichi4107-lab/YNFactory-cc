@@ -1095,7 +1095,33 @@ class PostingCoreTest(unittest.TestCase):
             with patch.object(approval_bot.CONFIG, "runtime_dir", runtime):
                 self.assertTrue(approval_bot._posting_worker_active({"id": "item-1"}))
 
-    def test_callback_answer_failure_does_not_mutate_review_state(self):
+    def test_expired_callback_with_current_message_is_applied(self):
+        item = make_item()
+        item["status"] = "ready_for_review"
+        item["review"] = {"owner_approved": False, "decided_at": None, "via": None}
+        item["telegram"] = {"message_id": 42}
+        messages: list[str] = []
+        spawned: list[tuple[str, str]] = []
+
+        with (
+            patch.object(approval_bot.queue_lib, "load_item", return_value=item),
+            patch.object(approval_bot.queue_lib, "transition", side_effect=FakeQueue.transition),
+            patch.object(
+                approval_bot,
+                "_spawn_post_worker",
+                side_effect=lambda updated, reason: spawned.append((updated["id"], reason)) or True,
+            ),
+            patch.object(approval_bot, "_answer_callback_status", return_value="expired"),
+            patch.object(approval_bot.notify, "send_message", side_effect=lambda text: messages.append(text)),
+        ):
+            approval_bot.handle_callback({"id": "cb-1", "data": "approve:item-1", "message": {"message_id": 42}})
+
+        self.assertEqual(item["status"], "approved")
+        self.assertTrue(item["review"]["owner_approved"])
+        self.assertEqual(spawned, [("item-1", "approved:telegram")])
+        self.assertIn("期限切れ", messages[0])
+
+    def test_expired_callback_without_current_message_does_not_mutate_review_state(self):
         item = make_item()
         item["status"] = "ready_for_review"
         item["review"] = {"owner_approved": False, "decided_at": None, "via": None}
@@ -1110,7 +1136,7 @@ class PostingCoreTest(unittest.TestCase):
                 "_spawn_post_worker",
                 side_effect=lambda updated, reason: spawned.append((updated["id"], reason)) or True,
             ),
-            patch.object(approval_bot, "_answer_callback", return_value=False),
+            patch.object(approval_bot, "_answer_callback_status", return_value="expired"),
             patch.object(approval_bot.notify, "send_message", side_effect=lambda text: messages.append(text)),
         ):
             approval_bot.handle_callback({"id": "cb-1", "data": "approve:item-1", "message": {}})
