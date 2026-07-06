@@ -110,7 +110,7 @@ def _api(method: str) -> str:
     return f"https://api.telegram.org/bot{CONFIG.telegram_token}/{method}"
 
 
-def _answer_callback(cb_id: str, text: str) -> bool:
+def _answer_callback_status(cb_id: str, text: str) -> str:
     try:
         response = requests.post(
             _api("answerCallbackQuery"),
@@ -118,14 +118,59 @@ def _answer_callback(cb_id: str, text: str) -> bool:
             timeout=15,
         )
         response.raise_for_status()
-        return True
+        return "ok"
     except requests.RequestException as exc:
         response = getattr(exc, "response", None)
         detail = ""
         if response is not None and response.text:
             detail = f" body={response.text[:300]}"
         log(f"Telegram callback応答失敗: {exc}{detail}")
+        body = (getattr(response, "text", "") or "").lower() if response is not None else ""
+        if response is not None and response.status_code == 400 and (
+            "query is too old" in body or "query id is invalid" in body
+        ):
+            return "expired"
+        return "failed"
+
+
+def _answer_callback(cb_id: str, text: str) -> bool:
+    return _answer_callback_status(cb_id, text) == "ok"
+
+
+def _callback_message_matches_item(item: dict, msg: dict) -> bool:
+    expected = item.get("telegram", {}).get("message_id")
+    actual = msg.get("message_id")
+    if expected is None or actual is None:
         return False
+    try:
+        return int(expected) == int(actual)
+    except (TypeError, ValueError):
+        return False
+
+
+def _allow_action_after_callback_answer(
+    cb_id: str,
+    response_text: str,
+    item: dict,
+    msg: dict,
+    action_label: str,
+    retry_command: str,
+) -> bool:
+    status = _answer_callback_status(cb_id, response_text)
+    if status == "ok":
+        return True
+    if status == "expired" and _callback_message_matches_item(item, msg):
+        log(f"callback応答期限切れだが現行メッセージ一致のため反映: action={action_label} item={item['id']}")
+        notify.send_message(
+            f"⚠️ Telegram側の応答期限切れでしたが、現行ボタンの操作として{action_label}を反映します: "
+            f"<code>{item['id']}</code>"
+        )
+        return True
+    notify.send_message(
+        "⚠️ 承認ボタンの応答期限切れ/確認失敗のため、操作は反映していません。\n"
+        f"操作する場合は <code>{retry_command} {item['id']}</code> と送ってください。"
+    )
+    return False
 
 
 def _remove_buttons(message_id: int) -> None:
@@ -175,6 +220,7 @@ def _spawn_replacement(item: dict) -> None:
                 [str(script), "--difficulty", difficulty],
                 cwd=str(CONFIG.runtime_dir / "app"),
                 env=env,
+                stdin=subprocess.DEVNULL,
                 stdout=log_file,
                 stderr=subprocess.STDOUT,
                 start_new_session=True,
@@ -464,6 +510,7 @@ def _spawn_post_worker(item: dict, reason: str) -> bool:
                 [sys.executable, str(script), item["id"]],
                 cwd=str(CONFIG.runtime_dir / "app"),
                 env=env,
+                stdin=subprocess.DEVNULL,
                 stdout=log_file,
                 stderr=subprocess.STDOUT,
                 start_new_session=True,
@@ -718,28 +765,37 @@ def handle_callback(cb: dict) -> None:
         return
 
     if action == "approve":
-        if not _answer_callback(cb_id, "承認しました。投稿します…"):
-            notify.send_message(
-                "⚠️ 承認ボタンの応答期限切れ/確認失敗のため、操作は反映していません。\n"
-                f"投稿する場合は <code>承認 {item_id}</code> と送ってください。"
-            )
+        if not _allow_action_after_callback_answer(
+            cb_id,
+            "承認しました。投稿します…",
+            item,
+            msg,
+            "承認",
+            "承認",
+        ):
             return
         _approve_item(item, via="telegram", message_id=msg.get("message_id"))
     elif action == "reject":
         chat_id = msg.get("chat", {}).get("id") or CONFIG.telegram_chat_id
-        if not _answer_callback(cb_id, "却下しました。代替候補を作成します…"):
-            notify.send_message(
-                "⚠️ 却下ボタンの応答期限切れ/確認失敗のため、操作は反映していません。\n"
-                f"却下する場合は <code>却下 {item_id}</code> と送ってください。"
-            )
+        if not _allow_action_after_callback_answer(
+            cb_id,
+            "却下しました。代替候補を作成します…",
+            item,
+            msg,
+            "却下",
+            "却下",
+        ):
             return
         _reject_item(item, chat_id=chat_id, via="telegram", message_id=msg.get("message_id"))
     elif action == "hold":
-        if not _answer_callback(cb_id, "保留しました。ボタンはそのまま使えます"):
-            notify.send_message(
-                "⚠️ 保留ボタンの応答期限切れ/確認失敗のため、操作は反映していません。\n"
-                f"保留する場合は <code>保留 {item_id}</code> と送ってください。"
-            )
+        if not _allow_action_after_callback_answer(
+            cb_id,
+            "保留しました。ボタンはそのまま使えます",
+            item,
+            msg,
+            "保留",
+            "保留",
+        ):
             return
         _hold_item(item, via="telegram")
     else:
