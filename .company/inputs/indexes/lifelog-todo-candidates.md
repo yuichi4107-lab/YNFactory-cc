@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-06T07:00:05
+generated_at: 2026-07-07T07:00:06
 ---
 
 # Lifelog TODO Candidates
