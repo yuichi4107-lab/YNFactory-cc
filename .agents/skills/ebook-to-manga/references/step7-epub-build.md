@@ -81,6 +81,8 @@ epub.writestr("OEBPS/text/page_cta.xhtml", make_page_xhtml("../images/page_cta.p
 - `content.opf` の manifest に `media-type="application/vnd.ms-opentype"` で登録
 
 > **注意**: 下記の「EPUB生成スクリプト」は画像ページ中心の基本形であり、CTA固定ページ挿入・フォント埋め込み・テキストページ改ページの各処理は上記仕様に従って組み込むこと。
+>
+> **要検証（既知の不整合）**: Step 6 は表紙を `cover.png` で保存する一方、本スクリプトの `COVER_PATH` は `cover.jpg` を前提としている。実行時は「KDP出版用」フォルダ内の実際の表紙ファイル拡張子を確認し、`COVER_PATH`・manifest の media-type（`image/png` / `image/jpeg`）・EPUB内パスを実ファイルに合わせて統一すること（2026-07-08 オーナー決定: 次回実行時に検証して修正する）。
 
 ### EPUB生成スクリプト
 

@@ -40,6 +40,32 @@ For image generation that asks for ChatGPT Images, gpt-image-2, gpt-image2.0, Op
    - `pending_gpt_image2_web`
    - `blocked_gpt_image2_web`
 
+## gpt-image-2 仕様リファレンス（ChatGPT Web手動生成時の参考）
+
+APIは使わないが、gpt-image-2 のネイティブ仕様はWeb経由の生成・プロンプト設計時にも変わらないため参考として残す。
+
+### 対応サイズ
+
+| 値 | ピクセル | 用途例 |
+|----|---------|--------|
+| `1024x1024` | 1024×1024 | SNSアイコン、正方形素材 |
+| `1024x1536` | 1024×1536 | マンガコマ、書籍カバー、縦長（デフォルト） |
+| `1536x1024` | 1536×1024 | 横長バナー、YouTubeサムネイル |
+| `auto` | モデル任せ | 判断を OpenAI に委ねる |
+
+※ NanoBanana2 のような `9:16` や `4:5` 等の任意アスペクト比は非対応（4種のネイティブサイズのみ）。
+
+### 対応画質（API時代の料金目安: 1024x1536 1枚あたり）
+
+| 値 | 料金目安 | 用途例 |
+|----|----------|--------|
+| `low` | $0.016 | テスト、ラフ、大量生成 |
+| `medium` | $0.063 | 通常用途（デフォルト） |
+| `high` | $0.21 | 最終版、印刷物 |
+| `auto` | 不定 | OpenAI任せ |
+
+※ 料金はAPI直叩き時の目安（現在は禁止）。ChatGPT Pro Web経由ではサブスクリプション内で生成される。
+
 ## Prompt Package Fallback
 
 When direct ChatGPT Pro Web generation is unavailable, create a prompt package instead of calling an API:
