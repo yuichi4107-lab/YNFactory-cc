@@ -1,6 +1,6 @@
 ---
 name: sales-briefing
-description: 毎朝の営業オペレーション承認UI。軸C（法人アウトバウンド）の pending DM をオーナーに提示し、承認・却下を受け付けてVPSに送信指示を出す。Phase 1 では軸Cのみ対応、Phase 2で軸A・Bを統合する。
+description: 毎朝の営業オペレーション承認UI。軸C（法人アウトバウンド）の pending DM をオーナーに提示し、承認・却下を受け付けてVPSに送信指示を出す。Phase 1 では軸Cのみ対応、Phase 2で軸A・Bを統合する。平日朝の営業DM承認や「今日のDM承認」「営業ブリーフィング」を求められたとき、または `/sales-briefing` と入力されたときに使う。
 ---
 
 # Sales Briefing — 朝の営業承認ワークフロー
@@ -69,7 +69,7 @@ Telegram tool の reply で完了報告:
 
 ### 7. DASHBOARD_SALES.md 更新
 
-今日の送信数を `.company/DASHBOARD_SALES.md` の §1「現状スナップショット」に追記する。
+今日の送信数を `.company/projects/AI導入支援営業/DASHBOARD_SALES.md` の §1「現状スナップショット」に追記する。
 
 - DM送信数 累計: [前日値] → [前日値 + 今日の承認送信数]
 - 今週送信数: [今週累計 + 今日の承認送信数]

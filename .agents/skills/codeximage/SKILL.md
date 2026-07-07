@@ -1,6 +1,6 @@
 ---
 name: codeximage
-description: Process Codex image-generation handoff jobs placed in `.company/codex/queue/`. Use when the user asks to run or check a Codex image job, generate manga/page/cover images without an API key, process queue contents with Codex/ChatGPT image generation, save outputs to `.company/codex/done/job_id/`, archive the original queue folder to `.company/codex/archive/job_id_input/`, and empty the queue afterward.
+description: "Process Codex image-generation handoff jobs placed in `.company/codex/queue/`. Use when the user asks to run or check a Codex image job, generate manga/page/cover images without an API key, process queue contents with Codex/ChatGPT image generation, save outputs to `.company/codex/done/job_id/`, archive the original queue folder to `.company/codex/archive/job_id_input/`, and empty the queue afterward. This is the batch/queue-based execution path for ChatGPT Images 2.0 / gpt-image-2 jobs (same underlying constraint as the openai-image-gen guardrail: no OpenAI Images API, no API keys). For a single ad-hoc image (no queue folder), use openai-image-gen's manual ChatGPT Pro Web flow instead. For Gemini/NanoBanana2 API-based generation, use nanobanana2-image-gen instead."
 ---
 
 # Codex Image Queue
@@ -24,7 +24,7 @@ Use this skill for the recurring queue-based image generation handoff.
    - completion checklist
    - quality checks
 4. Generate images without using API keys.
-   - Use ChatGPT Images 2.0 / `gpt-image-2` through the Codex/ChatGPT-side image generation path, not `gen_manga_bundle.py` API execution, unless the user explicitly requests API use.
+   - Use ChatGPT Pro Web / ChatGPT Images 2.0 / `gpt-image-2` through the Codex/ChatGPT-side image generation path, not `gen_manga_bundle.py` API execution or any OpenAI Images API route.
    - Do not substitute local procedural/Pillow/placeholder art for requested final images. If `gpt-image-2` generation cannot be completed, mark the job `partial` or `failed` and keep prompts/manifests for retry.
    - Extract prompts from `manifest.json` or CSV.
    - When reference images are present, view them and summarize their visual traits into the generation prompt.

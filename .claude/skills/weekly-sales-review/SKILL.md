@@ -1,6 +1,6 @@
 ---
 name: weekly-sales-review
-description: 週次営業レビューUI。DASHBOARD_SALES.mdからKPIを集計し、未達KPIへの具体的アクションを提案、今週の必達アクション1〜3個を確定してDASHBOARDを更新する。停滞を二度と起こさないための強制力を持つ週次レビュースキル。
+description: 週次営業レビューUI。DASHBOARD_SALES.mdからKPIを集計し、未達KPIへの具体的アクションを提案、今週の必達アクション1〜3個を確定してDASHBOARDを更新する。停滞を二度と起こさないための強制力を持つ週次レビュースキル。毎週月曜（sales-briefing終了後の提案）または「週次営業レビュー」「今週の振り返り」を求められたとき、`/weekly-sales-review` と入力されたときに使う。
 ---
 
 # Weekly Sales Review — 週次営業レビュー
@@ -25,7 +25,7 @@ Host yn-vps
 
 ### 1. DASHBOARD_SALES.md からデータ読み込み
 
-`.company/DASHBOARD_SALES.md` を Read して以下の数値を取得する:
+`.company/projects/AI導入支援営業/DASHBOARD_SALES.md` を Read して以下の数値を取得する:
 
 - §1「現状スナップショット」: DM送信累計・今週送信数・返信数・返信率
 - §1「ウェビナー」: 申込数・実施回数・次回開催予定日
@@ -102,7 +102,7 @@ ssh yn-vps "cd /opt/sales-ops && ./venv/bin/python -c 'import os, json; from dot
   → "【緊急】ウェビナーまであとXX日。現在の申込者はX名（目標5名）です。
      今すぐできるアクション：
      1. 既存接点（LinkedIn/Facebook）に個別DM送信
-     2. SNSに告知投稿（ウェビナー成果物パス: .company/outputs/sales-content/webinar-v1-jinzai-busoku/）
+     2. SNSに告知投稿（ウェビナー成果物パス: .company/projects/AI導入支援営業/ウェビナー/第1回-人手不足AI活用5選/）
      3. DM本文にウェビナー告知文を追加してこの週の送信で告知を兼ねる"
 ```
 
@@ -248,9 +248,9 @@ KGI期限まであとXX日
 
 ## 参考ファイル
 
-- `.company/DASHBOARD_SALES.md` — KPIデータの読み書き先
-- `.company/sales/STRATEGY.md` — KPI・警告ライン・KGIの正本
-- `.company/sales/LAUNCH_CHECKLIST.md` — 工程8b（DRY_RUN=false手順）
-- `.company/sales/system-2026-06/booking-ops/` — 商談導線テンプレート群
+- `.company/projects/AI導入支援営業/DASHBOARD_SALES.md` — KPIデータの読み書き先
+- `.company/projects/AI導入支援営業/戦略/STRATEGY.md` — KPI・警告ライン・KGIの正本
+- `.company/projects/AI導入支援営業/戦略/LAUNCH_CHECKLIST.md` — 工程8b（DRY_RUN=false手順）
+- `.company/projects/AI導入支援営業/商談・クロージング/商談運用テンプレ/` — 商談導線テンプレート群
 - `.company/reviews/` — レビュー記録の保存先（YYYY-WXX-sales.md 形式）
 - `.claude/skills/sales-briefing/SKILL.md` — 日次DM承認スキル（月曜連携元）

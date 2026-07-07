@@ -1,6 +1,6 @@
 ---
 name: post-sns
-description: SNS（X / Instagram / Facebook / Threads）へ投稿する。テキスト・画像を指定して各プラットフォームに最適化した内容を投稿。対象SNSの指定も可能。
+description: SNS（X / Instagram / Facebook / Threads）へ投稿する。テキスト・画像を指定して各プラットフォームに最適化した内容を投稿。対象SNSの指定も可能。ユーザーが単発でSNS投稿したい時に使う（shorts-factoryの自動生成動画投稿はshorts-factory-opsを使う）。
 ---
 
 # SNS投稿スキル (post-sns)
@@ -42,14 +42,14 @@ description: SNS（X / Instagram / Facebook / Threads）へ投稿する。テキ
 dry-run（投稿しない検証）:
 
 ```bash
-cd "G:/マイドライブ/YNFactory-cc"
+cd YNFactory-cc
 python scripts/post_to_x.py "投稿テキスト" --dry-run
 ```
 
 投稿スクリプトを実行する：
 
 ```bash
-cd "G:/マイドライブ/YNFactory-cc"
+cd YNFactory-cc
 python scripts/post_to_x.py "投稿テキスト"
 ```
 
@@ -130,7 +130,7 @@ python scripts/social_auto_ops.py dry-run ".company/marketing/social-auto-ops/qu
 
 ## ファイル構成
 
-- 認証情報: `G:/マイドライブ/YNFactory-cc/.company/engineering/sns-credentials/.env`
-- X投稿スクリプト: `G:/マイドライブ/YNFactory-cc/scripts/post_to_x.py`
-- Meta投稿スクリプト: `G:/マイドライブ/YNFactory-cc/scripts/post_to_meta.py`
-- 共通投稿キューdry-run: `G:/マイドライブ/YNFactory-cc/scripts/social_auto_ops.py`
+- 認証情報: `.company/engineering/sns-credentials/.env`（リポジトリルートからの相対パス）
+- X投稿スクリプト: `scripts/post_to_x.py`
+- Meta投稿スクリプト: `scripts/post_to_meta.py`
+- 共通投稿キューdry-run: `scripts/social_auto_ops.py`

@@ -1,10 +1,11 @@
 ---
 name: company
 description: >
-  仮想会社組織を構築・運営するスキル。
-  秘書が常駐の窓口として何でも相談に乗り、
+  仮想会社組織を構築・運営するスキル。秘書が常駐の窓口として何でも相談に乗り、
   必要に応じてCEOが判断して各部署に指示を振り分ける。
-trigger: /company
+  「会社」「組織」「秘書」「相談」「TODO」「管理」と言われたとき、
+  日々の業務や生活を組織的に管理したいとき、壁打ち相手が欲しいとき、
+  またはユーザーが `/company` と入力したときに使う。
 ---
 
 # 仮想カンパニー
@@ -31,7 +32,7 @@ trigger: /company
 
 対象ディレクトリに `.company/` が存在するか確認する。
 
-- **`.company/` が存在する場合**: `.company/AGENTS.md` を読み込み、**運営モード**へ
+- **`.company/` が存在する場合**: `.company/CLAUDE.md` を読み込み、**運営モード**へ
 - **`.company/` が存在しない場合**: **Step 2: オンボーディング**へ
 
 ### Step 2: オンボーディング（Interactive）
@@ -129,9 +130,9 @@ Step 2a〜2c の回答を分析し、おすすめの部署構成を提案する�
 
 ```
 .company/
-├── AGENTS.md                    # 組織全体のルール・設定
+├── CLAUDE.md                    # 組織全体のルール・設定
 ├── secretary/                   # 秘書室（常設）
-│   ├── AGENTS.md                # 秘書室のルール・口調
+│   ├── CLAUDE.md                # 秘書室のルール・口調
 │   ├── _template.md
 │   ├── inbox/
 │   │   └── _template.md
@@ -141,13 +142,13 @@ Step 2a〜2c の回答を分析し、おすすめの部署構成を提案する�
 │   └── notes/
 │       └── _template.md
 ├── ceo/                         # CEO（常設）
-│   ├── AGENTS.md                # CEOのルール・振り分け基準
+│   ├── CLAUDE.md                # CEOのルール・振り分け基準
 │   └── decisions/
 │       └── _template.md
 ├── reviews/                     # レビュー（常設）
 │   └── _template.md
 ├── [selected departments]/      # 選択された部署
-│   ├── AGENTS.md                # 部署固有のルール
+│   ├── CLAUDE.md                # 部署固有のルール
 │   └── ...
 ```
 
@@ -155,12 +156,12 @@ Step 2a〜2c の回答を分析し、おすすめの部署構成を提案する�
    - `references/departments.md` からテンプレートを取得
    - 言語設定に応じて日本語版/英語版を選択
 
-3. **各部署の `AGENTS.md` を配置**
-   - `references/departments.md` の「部署別 AGENTS.md テンプレート」セクションから取得
+3. **各部署の `CLAUDE.md` を配置**
+   - `references/departments.md` の「部署別 CLAUDE.md テンプレート」セクションから取得
    - 部署固有のルール、ステータス遷移、命名規則が定義される
 
-4. **`.company/AGENTS.md` を生成**
-   - `references/Codex-md-template.md` のテンプレートを使用
+4. **`.company/CLAUDE.md` を生成**
+   - `references/claude-md-template.md` のテンプレートを使用
    - オンボーディングデータで変数を埋め込む
 
 5. **今日の日次ファイルを作成**（secretary/todos/ に配置）
@@ -187,7 +188,7 @@ Step 2a〜2c の回答を分析し、おすすめの部署構成を提案する�
 ## 運営モード
 
 `.company/` が存在する場合に自動で切り替わる。
-まず `.company/AGENTS.md` を読み込む。
+まず `.company/CLAUDE.md` を読み込む。
 
 ### 基本フロー
 
@@ -288,7 +289,7 @@ PM:
 
 ```
 secretary/
-├── AGENTS.md          # 口調ルール、対応範囲、振る舞い
+├── CLAUDE.md          # 口調ルール、対応範囲、振る舞い
 ├── _template.md
 ├── inbox/
 │   └── _template.md
@@ -303,7 +304,7 @@ secretary/
 
 ```
 ceo/
-├── AGENTS.md          # 振り分け基準、意思決定ルール
+├── CLAUDE.md          # 振り分け基準、意思決定ルール
 └── decisions/
     └── _template.md
 ```
@@ -312,7 +313,7 @@ ceo/
 
 ```
 pm/
-├── AGENTS.md          # ステータス遷移、チケット規則
+├── CLAUDE.md          # ステータス遷移、チケット規則
 ├── _template.md
 ├── projects/
 │   └── _template.md
@@ -324,7 +325,7 @@ pm/
 
 ```
 research/
-├── AGENTS.md          # 調査フォーマット、出典ルール
+├── CLAUDE.md          # 調査フォーマット、出典ルール
 ├── _template.md
 └── topics/
     └── _template.md
@@ -334,7 +335,7 @@ research/
 
 ```
 marketing/
-├── AGENTS.md          # コンテンツ管理、KPIルール
+├── CLAUDE.md          # コンテンツ管理、KPIルール
 ├── _template.md
 ├── content-plan/
 │   └── _template.md
@@ -346,7 +347,7 @@ marketing/
 
 ```
 engineering/
-├── AGENTS.md          # 設計書フォーマット、デバッグ手順
+├── CLAUDE.md          # 設計書フォーマット、デバッグ手順
 ├── _template.md
 ├── docs/
 │   └── _template.md
@@ -358,7 +359,7 @@ engineering/
 
 ```
 finance/
-├── AGENTS.md          # 金額フォーマット、請求ルール
+├── CLAUDE.md          # 金額フォーマット、請求ルール
 ├── _template.md
 ├── invoices/
 │   └── _template.md
@@ -370,7 +371,7 @@ finance/
 
 ```
 sales/
-├── AGENTS.md          # 案件管理、部署間連携ルール
+├── CLAUDE.md          # 案件管理、部署間連携ルール
 ├── _template.md
 ├── clients/
 │   └── _template.md
@@ -382,7 +383,7 @@ sales/
 
 ```
 creative/
-├── AGENTS.md          # ブリーフ必須項目、アセット管理
+├── CLAUDE.md          # ブリーフ必須項目、アセット管理
 ├── _template.md
 ├── briefs/
 │   └── _template.md
@@ -394,7 +395,7 @@ creative/
 
 ```
 hr/
-├── AGENTS.md          # 選考フロー、個人情報取扱い
+├── CLAUDE.md          # 選考フロー、個人情報取扱い
 ├── _template.md
 └── hiring/
     └── _template.md
@@ -405,7 +406,7 @@ hr/
 ## ファイル参照
 
 - 部署別テンプレート: `references/departments.md`
-- AGENTS.md 生成テンプレート: `references/Codex-md-template.md`
+- CLAUDE.md 生成テンプレート: `references/claude-md-template.md`
 
 ---
 
@@ -414,8 +415,8 @@ hr/
 - 秘書が常にエントリーポイント。ユーザーに部署を意識させない
 - インタラクティブなステップでは必ず `AskUserQuestion` を使う
 - 秘書室・CEO・レビューは選択に関わらず常設
-- 運営モードでは必ず最初に `.company/AGENTS.md` を読み込む
-- 部署に振り分ける際は、該当部署の `AGENTS.md` も読み込んでルールに従う
+- 運営モードでは必ず最初に `.company/CLAUDE.md` を読み込む
+- 部署に振り分ける際は、該当部署の `CLAUDE.md` も読み込んでルールに従う
 - 既存ファイルは上書きしない。追記または新規作成のみ
 - ファイル名はkebab-case、日付ベースは YYYY-MM-DD
 - CEOの意思決定は `ceo/decisions/` にログとして残す

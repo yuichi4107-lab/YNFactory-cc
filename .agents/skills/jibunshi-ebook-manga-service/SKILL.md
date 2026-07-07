@@ -1,6 +1,6 @@
 ---
 name: jibunshi-ebook-manga-service
-description: 祖父母・両親・シニアの自分史を、完全文字版電子書籍と完全漫画版電子書籍の二本立てで受注制作するためのYNFactory専用スキル。LP/QR導線、受注フォルダ作成、ヒアリング、同意確認、theme-to-ebook / theme-to-ebook-to-manga / ebook-to-manga への接続、納品前QAまで扱う。
+description: 祖父母・両親・シニアの自分史を、完全文字版電子書籍と完全漫画版電子書籍の二本立てで受注制作するためのYNFactory専用スキル。LP/QR導線、受注フォルダ作成、ヒアリング、同意確認、theme-to-ebook / theme-to-ebook-to-manga / ebook-to-manga への接続、納品前QAまで扱う。ユーザーが「自分史」「祖父母向け」「両親の人生を本にする」「文字版と漫画版」「個別受注」と言ったとき、絵本KDPのQR/LP導線から次の商品として自分史サービスを案内するとき、または受注後に注文フォルダを作り制作を開始するときに使う。
 ---
 
 # 自分史 文字版＋フル漫画版サービス

@@ -146,11 +146,11 @@ Default raster geometry:
 
 Image generation rules:
 
-- Default final art generation should use ChatGPT Images 2.0 / `gpt-image-2` through the ChatGPT/Codex-side image generation path.
-- Do not treat local procedural/Pillow placeholder art as final KDP art unless the user explicitly approves a placeholder-only edition.
+- Default final art generation should use ChatGPT Pro Web / ChatGPT Images 2.0 / `gpt-image-2` through the ChatGPT/Codex-side image generation path.
+- Do not treat local procedural/Pillow placeholder art as final KDP art.
 - Do not create `KDP出版用/UPLOAD_` EPUB/PDF/cover files from local procedural/Pillow placeholder art. If final `gpt-image-2` art is not integrated yet, keep draft EPUB/PDF/cover files under `_not_for_upload/` or prefix them with `PREVIEW_`, and mark `progress.json` as `pending_gpt_image2_final_art` or `blocked_gpt_image2_final_art`.
-- A project is not `completed_ready_for_owner_preview` until all 32 final page images, and the final cover when applicable, are generated with ChatGPT Images 2.0 / `gpt-image-2` and integrated into the build.
-- Do not switch to OpenAI API / `openai-image-gen` for picture-book final art unless the user explicitly requests API generation.
+- A project is not `completed_ready_for_owner_preview` until all 32 final page images, and the final cover when applicable, are generated with ChatGPT Pro Web / ChatGPT Images 2.0 / `gpt-image-2` and integrated into the build.
+- Do not switch to OpenAI API / `openai-image-gen` for picture-book final art.
 - If the environment cannot complete ChatGPT `gpt-image-2` generation in the current run, preserve the full prompt/manifest package and mark the image stage as blocked or pending instead of pretending final art was generated.
 - If generating images through Codex/ChatGPT in a queued workflow, use the local `codeximage` workflow and keep the original page IDs and filenames.
 

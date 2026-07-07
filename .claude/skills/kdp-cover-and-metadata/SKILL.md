@@ -1,6 +1,6 @@
 ---
 name: kdp-cover-and-metadata
-description: KDP出版用の表紙画像（gpt-image-2 / 1024x1536 PNG）と、KDPアップロード時に必要な3点メタデータ（書籍情報.md / ジャンル・キーワード.md / 書籍紹介文_HTML.html）を生成するポータブルスキル。ebook-to-manga スキルから Step 6（表紙）と Step 8（メタデータ）だけを抽出した独立版。
+description: KDP出版用の表紙画像をChatGPT Pro Web / ChatGPT Images 2.0 / gpt-image-2で生成し、KDPアップロード時に必要な3点メタデータ（書籍情報.md / ジャンル・キーワード.md / 書籍紹介文_HTML.html）を生成するポータブルスキル。OpenAI Images API、APIキー、SDK直接実行は使わない。ebook-to-mangaのStep6（表紙作成）・Step8（メタデータ）だけを抽出した独立版で、既存のマンガ化パイプラインを通さず表紙とメタデータだけを単独で作りたいとき、または他プロジェクト・他PCへ表紙生成手順だけを持ち出したいときに使う。
 ---
 
 # KDP Cover & Metadata Generator
@@ -12,7 +12,7 @@ KDP（Kindle Direct Publishing）出版に必要な「表紙画像」と「3点�
 
 ## このスキルでできること
 
-1. **表紙画像の生成**（OpenAI gpt-image-2、`images.edit` API、2:3 縦長 1024x1536 PNG）
+1. **表紙画像の生成**（ChatGPT Pro Web / ChatGPT Images 2.0 / `gpt-image-2`、2:3 縦長 1024x1536 PNG）
    - キャラクターのリファレンス画像（PNG）を渡してマンガ調表紙を生成
    - PNG 直保存（再エンコードしないので画質劣化なし、KDP も PNG 受理）
 2. **KDPメタデータの生成**
@@ -24,21 +24,16 @@ KDP（Kindle Direct Publishing）出版に必要な「表紙画像」と「3点�
 
 ## 前提条件
 
-- Python 3.x（`python` コマンドで起動できること）
-- `pip install openai`（`openai` パッケージ）
-- 環境変数 `OPENAI_API_KEY` が設定されていること
-- 表紙生成にはキャラクターのリファレンス画像（PNG）が1枚以上必要
+- ChatGPT Pro Web にログイン済みで、ChatGPT Images 2.0 / `gpt-image-2` を使えること
+- 表紙生成にはキャラクターのリファレンス画像（PNG）が1枚以上あること
+- OpenAI Images API、APIキー、OpenAI SDK、`scripts/generate_cover.py` の旧API実行は使わないこと
 
 ### 他のPCでセットアップする手順
 
 1. このフォルダ（`kdp-cover-and-metadata/`）を丸ごとコピー
-   - 推奨配置: `<任意プロジェクト>/.claude/skills/kdp-cover-and-metadata/`
-   - Claude Code以外のClaude（API直接利用やCodex等）でも `SKILL.md` を読み込ませれば動作する
-2. `pip install openai` を実行
-3. `OPENAI_API_KEY` を環境変数に設定
-   - Windows: `setx OPENAI_API_KEY sk-...`
-   - macOS/Linux: `export OPENAI_API_KEY=sk-...`（`~/.zshrc` や `~/.bashrc` に追記）
-4. `scripts/generate_cover.py` の使い方は下記「使い方」を参照
+   - 推奨配置: `<任意プロジェクト>/.Codex/skills/kdp-cover-and-metadata/`
+2. ChatGPT Pro Web 側で表紙生成できる状態か確認する
+3. `scripts/generate_cover.py` は互換性のため残すが、API実行は禁止。表紙生成は下記「使い方」の手順で行う
 
 ---
 
@@ -46,24 +41,11 @@ KDP（Kindle Direct Publishing）出版に必要な「表紙画像」と「3点�
 
 ### A. 表紙画像の生成
 
-```bash
-python scripts/generate_cover.py \
-  --prompt-file path/to/cover_prompt.txt \
-  --char-refs path/to/chara_main.png path/to/chara_sub.png \
-  --out path/to/KDP出版用/cover.png
-```
-
-オプション:
-
-| 引数 | 必須 | 説明 |
-|---|---|---|
-| `--prompt-file` | ◯ | 表紙プロンプトのテキストファイル（UTF-8） |
-| `--char-refs` | ◯ | キャラクターリファレンスPNGの一覧（1枚以上、複数可）|
-| `--out` | ◯ | 出力先パス（拡張子は `.png`）|
-| `--size` | ✗ | デフォルト `1024x1536`（2:3 縦長）|
-| `--quality` | ✗ | デフォルト `high`（`low`/`medium`/`high`/`auto`）|
-
-プロンプトの書き方は「表紙プロンプト構成」のセクションを参照。
+1. `cover_prompt.txt` を作成し、「表紙プロンプト構成」のルールを満たす。
+2. キャラクター参照画像を確認し、必要なら視覚特徴をプロンプトへ要約する。
+3. ChatGPT Pro Web / ChatGPT Images 2.0 / `gpt-image-2` で、参照画像と `cover_prompt.txt` を使って表紙を生成する。
+4. 生成結果を `KDP出版用/cover.png` に保存する。PNGのまま保存し、Pillow等で再エンコードしない。
+5. 生成できない場合は `KDP出版用/cover_prompt.txt` と `KDP出版用/cover_status.md` を保存し、状態を `pending_gpt_image2_web` または `blocked_gpt_image2_web` にする。最終表紙がないまま完了扱いにしない。
 
 ### B. メタデータ3点の生成
 
@@ -98,6 +80,15 @@ design_taste: >
   マンガ・コミック風の書籍カバーデザイン。
   {ジャンルに応じた色調・演出を反映}
   キャラクターを全面に配置し、マンガらしい躍動感を演出。
+  SNSでバズるサムネイルのような高コントラスト・高彩度の配色で、
+  Amazonの検索結果一覧の小さなサムネイルでも一瞬で目を引くデザインにする。
+
+buzz_elements: >
+  - タイトルは画面幅いっぱいの極太文字で、サムネイルサイズでも読めること
+  - 数字や強いベネフィットを入れた帯風キャッチコピーを1本入れる（例:「たった1日10分」「9割の人が知らない」「読むだけで変わる」）
+  - キャラクターは感情がひと目で伝わる大きな表情（驚き・笑顔・決意）にする
+  - 吹き出しやバッジ風の装飾で「初心者OK」「マンガでサクッと」など読者メリットを短く入れる
+  - 情報はタイトル/キャッチコピー/装飾の3階層に整理し、詰め込みすぎてごちゃつかせない
 
 character: >
   {主要キャラクター2-3名の外見設定}
@@ -120,6 +111,7 @@ constraints:
 ### 絶対ルール
 
 - **画風**: プロンプト冒頭に必ず「◆【絶対最優先】必ず日本のアニメ・マンガ調のイラストで描いてください。実写風・フォトリアル風は禁止です。」を含める
+- **バズ要素**: 帯風キャッチコピー（数字またはベネフィット入り）とキャラクターの大きな表情を必ず入れる。生成後、サムネイル縮小表示（幅100px相当）を想定してタイトルとキャッチコピーが判読できるか確認し、読めなければ文字を大きくして再生成する
 - **保存**: PNG のまま保存。Pillow 等での再エンコード禁止（KDP は PNG 表紙を受理）
 - **サイズ**: `1024x1536`（2:3 縦長）固定
 
@@ -177,11 +169,11 @@ KDPダッシュボードでアップロードする際は、このフォルダ4�
 
 | 症状 | 対処 |
 |---|---|
-| `openai.AuthenticationError` | `OPENAI_API_KEY` が設定されていない／無効。`echo $OPENAI_API_KEY`（Windowsは `echo %OPENAI_API_KEY%`）で確認 |
-| `model_not_found: gpt-image-2` | OpenAIアカウントの組織が画像モデルを許可していない。OpenAIダッシュボードで Verify Organization を完了させる |
+| ChatGPT Pro Webで画像生成できない | ログイン状態とプランを確認し、生成できない場合は `cover_status.md` に `blocked_gpt_image2_web` と理由を記録する |
+| `gpt-image-2` / ChatGPT Images が選べない | APIへ切り替えず、Web側の利用可否確認で止める |
 | 表紙の文字が崩れる | プロンプトの `constraints` に「文字は日本語で正確に表記すること」を強調。それでもダメなら2-3回 retry |
-| 表紙にキャラが似ない | `--char-refs` に渡すPNGを差し替え／追加。最大3枚程度まで |
-| 生成画像のアスペクト比が違う | `--size 1024x1536` を明示指定（API側のデフォルトは正方形）|
+| 表紙にキャラが似ない | 参照PNGを差し替え／追加し、視覚特徴をプロンプトへ明示する |
+| 生成画像のアスペクト比が違う | プロンプトで `2:3 portrait, 1024x1536 target` を明示して再生成する |
 
 ---
 

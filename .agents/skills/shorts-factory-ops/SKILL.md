@@ -1,6 +1,6 @@
 ---
 name: shorts-factory-ops
-description: shorts-factory の生成・Telegram承認・4媒体自動投稿・重複動画/二重投稿の障害対応を行う専用運用スキル。動画被り、Claude CLI未ログイン、Driveロック、Telegram操作パネル不応答、SNS投稿失敗、posting ledger復旧を扱う。
+description: shorts-factory の生成・Telegram承認・4媒体自動投稿・重複動画/二重投稿の障害対応を行う専用運用スキル。動画被り、Claude CLI未ログイン、Driveロック、Telegram操作パネル不応答、SNS投稿失敗、posting ledger復旧、Seedance 2.0 AI動画背景生成の失敗・予算超過・フォールバック確認を扱う。
 ---
 
 # shorts-factory 運用スキル
@@ -14,6 +14,8 @@ description: shorts-factory の生成・Telegram承認・4媒体自動投稿・�
 - Telegram承認ボタンが反応しない、または承認前に投稿された
 - X / Instagram / TikTok / YouTube の投稿失敗、部分失敗、二重投稿リスクがある
 - runtime `~/shorts-factory/app` とDrive正本 `shorts-factory/` の反映差分を確認したい
+
+shorts-factory の投稿は `shorts-factory/src/platforms/poster.py` による専用パイプライン（Telegram承認→自動投稿）であり、`post-sns` スキルの単発投稿スクリプト（`post_to_x.py` / `post_to_meta.py`）とは別系統。shorts-factory生成動画の単発re-postなど通常投稿は本スキルの対象外で、その場合はpost-snsを使う。
 
 ## 最初に見るもの
 
@@ -57,6 +59,28 @@ Drive上のoutputsを広く走査するとGoogle Drive File Providerのロック
 - `tts_text` / `reading_kana` では読み上げ安定のためカタカナへ変換してよい
 - 新しい英語ツール名を扱う時は、`src/script_gen.py` の表示正規化と `src/jp_text.py` の音韻比較読み辞書を同時に追加する
 - テロップ表示修正後の差し替えでは、旧queueを `skipped` にしてTelegramボタンを外し、再レンダリング後に `subtitles.ass` と動画フレームで焼き込み表示を確認する
+
+## 2026-07-07 Seedance 2.0（Atlas Cloud）AI動画背景統合
+
+`shorts-factory/src/video_bg_gen.py`（Drive正本のみに存在。本ブラッシュアップ時点で runtime `~/shorts-factory/app` には未同期）が、Atlas Cloud Seedance 2.0 APIを直接叩いてAI動画背景を生成する。
+
+- カット1はtext-to-video、カット2以降は前カットの最終フレームをstart_imageにしたimage-to-videoで連鎖生成し、人物・服装・部屋を統一する
+- reference-to-video（顔画像参照）は権利保護フィルタで弾かれるため使用しない
+- 全リクエストにUser-Agentヘッダーが必須（Cloudflareが標準UAを403で弾く）
+- 生成動画URLは24時間で失効するため、completed直後に即ダウンロードする
+- 失敗（failed/timeout/フィルタブロック）時は課金されない
+- 秒単価: fast=$0.09/s、std=$0.112/s
+- 月次予算上限は `config seedance.monthly_budget_usd`（コード上のデフォルトは130、要件定義書の試算は週5本運用で月$78〜117）。`shorts-factory/src/video_bg_gen.py` の `budget_remaining()` / `is_budget_available()` で予算超過時は生成をスキップする
+- 適用枠は `config seedance.slots`（曜日-時、例 `mon-09` / `wed-14` / `fri-19` / `sat-14` / `sun-09` の週5枠）と実行時刻を `shorts-factory/src/pipeline.py` の枠判定ロジックで照合し、該当枠のみSeedance版、それ以外は従来の静止画カード版を使う
+- コストログは `~/shorts-factory/logs/seedance_costs.jsonl`（`pipeline.py` が記録）
+- 異常時（API失敗・予算超過・枠外）は静止画カード版へ自動フォールバックする
+
+障害対応時の確認ポイント:
+
+1. 週5枠以外の時間帯でSeedance版が使われていないか、`pipeline.py` の枠判定と `seedance_costs.jsonl` のタイムスタンプを突き合わせる
+2. 月次コストが上限に近い場合は `budget_remaining()` の残額を確認し、超過ならフォールバックが機能しているか確認する
+3. Drive正本の `shorts-factory/src/video_bg_gen.py` と runtime `~/shorts-factory/app` の同期状態を確認する（未同期だと本番では旧動作のまま）
+4. 実装の詳細技術知見は `.company/projects/shorts-factory/2026-07-07-seedance-atlas統合要件定義.md` を参照する
 
 ## 実装済みガード
 

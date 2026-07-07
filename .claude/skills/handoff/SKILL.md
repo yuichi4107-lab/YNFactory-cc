@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: セッション終了時のハンドオフ処理。HANDOFF.md更新、TODO更新、git commitを一括実行して次回セッションへの引き継ぎを完了する。
+description: セッション終了時のハンドオフ処理。HANDOFF.md更新、TODO更新、Drive↔ローカルGit同期スクリプトの実行までを一括で行い、次回セッションへの引き継ぎを完了する。
 ---
 
 # ハンドオフスキル (/handoff)
@@ -9,6 +9,16 @@ description: セッション終了時のハンドオフ処理。HANDOFF.md更新
 
 セッションの作業内容を記録し、次回セッション（別端末含む）で確実に引き継げるようにする。
 「おわり」「また明日」と言わなくても、このスキルを呼ぶだけでハンドオフが完了する。
+
+## 前提: マルチPC作業ディレクトリ構成
+
+- 論理上の作業場所はリポジトリルート（`YNFactory-cc`）。相対パスで統一する
+- **Drive側**（このスキルが動く場所。例: `.../GoogleDrive-.../マイドライブ/YNFactory-cc`）には `.git` を置かない。Drive側で `git commit` / `git push` / `git pull` は実行しない
+- **ローカルGit作業ディレクトリ**が別途存在する: Mac = `/Users/yuichi/YNFactory-cc`、Windows = `C:\YNFactory-cc`。git操作は必ずこちら側で行う
+- Drive側とローカルGit側の反映は `.company/scripts/sync_drive_git.py`（ローカルGit作業ディレクトリから実行）を使う
+- 毎日午前3時（Asia/Tokyo）に `.company/scripts/daily_git_sync.py` による自動コミット→push→pullルーティンが動く前提（commit→push→pullの順、機密パターン検知・50MB超ファイル検知つき）。このスキルの手動実行と役割が重複するので、直前に自動同期が走っていないか意識する
+- **Macでは `/Users/yuichi/YNFactory-cc` の存在と `.git` の有無を必ず実行時に確認すること。** 存在しない、または `.git` が無い場合は Mac 側で `git commit` は実行できない。その場合は HANDOFF.md / TODO の更新のみ行い、「Drive側のドキュメント更新のみ完了。commit は Windows 側（`C:\YNFactory-cc`）で実施してください」と明記して終える
+- Windows側でローカルGit作業ディレクトリが確認できる場合は、そちらから `sync_drive_git.py commit-push` を実行する
 
 ## 実行手順
 
@@ -39,84 +49,47 @@ description: セッション終了時のハンドオフ処理。HANDOFF.md更新
 - 完了したタスクにチェックを入れる
 - 新たに発生したタスクを追加
 
-### Step 3: git commit（Google Drive同期 一時停止 任意）
+### Step 3: Drive↔ローカルGit同期・commit・push
 
-#### 3-1. （任意）Drive 同期の一時停止
+Drive側そのものでは git コマンドを実行しない。**ローカルGit作業ディレクトリが存在し `.git` があるか**をまず確認する。
 
-`.git` はローカル `C:\dev\YNFactory-git` に移設済みのため、commit が Drive 同期で壊れる問題は解消した。Drive 同期の一時停止はもう必須ではない（HANDOFF/TODO 書き込み中の "(1)" 重複ファイル発生をやや減らす程度の効果）。停止せずそのまま進めてよい。
-
-念のため停止したい場合のみ、以下をユーザーに案内する（停止完了を待つブロッキングは不要）:
-
-> 「（任意）気になる場合は Google Drive for desktop の同期を一時停止できます。
-> （タスクバーのGoogle Drive アイコン → 歯車 → 『同期を一時停止』）」
-
-#### 3-2. 事前チェック（lock残留の除去）
+#### 3-1. ローカルGit作業ディレクトリの確認
 
 ```bash
-cd "g:/マイドライブ/YNFactory-cc"
-
-# index.lock が残っていれば削除（.git はローカル C:\dev\YNFactory-git に移設済み）
-LOCK="C:/dev/YNFactory-git/.git/index.lock"
-if [ -f "$LOCK" ]; then echo "[WARN] lock 残留 → 削除"; rm -f "$LOCK"; fi
+# Mac の場合
+ls -la /Users/yuichi/YNFactory-cc/.git 2>&1 | head -3
 ```
 
-#### 3-3. ステージ前に想定外の巻き込みをチェック
+- 存在しない／`.git` が無い場合 → **Step 3-2 以降はスキップ**し、Step 4 で「Drive側の更新のみ完了。commit は Windows 側（`C:\YNFactory-cc`）で実施してください」と案内して終える
+- 存在する場合 → 3-2 へ進む
+
+#### 3-2. Drive側の変更をローカルGit側へ反映してcommit・push
+
+ローカルGit作業ディレクトリ（例 `/Users/yuichi/YNFactory-cc`、Windowsは `C:\YNFactory-cc`）で実行する:
 
 ```bash
-# desktop.ini / *.tmp.drivedownload / __pycache__ などが status に出ていないか
-git status --short | grep -E "(desktop\.ini|\.tmp\.drive|__pycache__|\.pyc$)" | head -5
+cd /Users/yuichi/YNFactory-cc   # Windowsは C:\YNFactory-cc
+python3 .company/scripts/sync_drive_git.py commit-push \
+  -m "handoff: [作業サマリーを1行で]" \
+  .company/secretary/HANDOFF.md .company/secretary/todos/YYYY-MM-DD.md [その他更新した相対パス...]
 ```
 
-**何か出たら `.gitignore` 漏れ。ユーザーに報告してから続行する。**
-
-#### 3-4. commit（最大3回リトライ）
-
-```bash
-git add -A
-for i in 1 2 3; do
-  if git commit -m "handoff: [作業サマリーを1行で]
-
-Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"; then
-    echo "[OK] commit 成功 (試行 $i 回目)"
-    break
-  fi
-  echo "[WARN] commit 失敗 (試行 $i 回目) → 10秒待って再試行"
-  sleep 10
-  rm -f "C:/dev/YNFactory-git/.git/index.lock"  # lock残留再除去
-done
-```
-
+- `commit-push` は「Drive側の指定パスをローカルGit側へコピー → `git add` → `git commit` → `git push`」までを一括実行する
+- 引数はリポジトリルートからの**相対パス**のみ（絶対パス不可）。今回のセッションでDrive側で更新した相対パスをすべて列挙する
 - コミットメッセージのプレフィックスは必ず `handoff:` にする
-- 作業内容を簡潔に記述する
-- `git add .` ではなく `git add -A` を使う（削除も検出）
+- push が失敗する場合は `.company/scripts/sync_drive_git.py pull-sync` で最新化してから再実行する
 
-#### 3-5. GitHub へ push
+#### 3-3. 失敗時
 
-```bash
-# GitHub軸: commit後に main を push（複数台同期の要）。最大3回リトライ
-for i in 1 2 3; do
-  if git push origin main; then echo "[OK] push 成功 (試行 $i)"; break; fi
-  echo "[WARN] push 失敗 (試行 $i) → pull --rebase して再試行"
-  git pull --rebase origin main 2>&1 | tail -3
-done
-```
-
-push が認証で失敗する場合は `gh auth status` を確認する。リモートが無い／別構成の端末ではこの Step をスキップしてよい。
-
-#### 3-6. （任意）Drive 同期を再開してもらう
-
-もし Step 3-1 で Drive 同期を一時停止した場合のみ、再開を依頼する:
-
-> 「commit が完了しました。Google Drive の同期を再開してください。
-> （同じメニューから『同期を再開』）」
-
-停止した場合は再開漏れ防止のため、Step 4 の完了報告と同じレスポンスで案内すること。
+- リモートと乖離している場合は先に `python3 .company/scripts/sync_drive_git.py pull-sync` を実行し、GitHub側の最新をpullしてDriveへ反映してから 3-2 を再試行する
+- それでも失敗する場合はユーザーに状況報告する（エラーメッセージを添える）
 
 ### Step 4: 完了報告
 
 ユーザーに以下を一言で報告:
 - 「ハンドオフ完了しました。」
 - 更新した内容の要点（1-2行）
+- commit/push を実施できなかった場合はその旨と「Windows側でのcommitが必要」であることを明記
 
 ## 使い方
 
@@ -126,25 +99,7 @@ push が認証で失敗する場合は `gh auth status` を確認する。リモ
 ## 注意事項
 
 - HANDOFF.md は全端末で共有される最重要ファイル。正確に記述すること
-- Drive 同期の一時停止は任意（`.git` はローカル移設済みのため必須ではない）
-- git commit が失敗した場合（lock等）はリトライし、それでもダメなら手動対応を案内する
-- 機密情報（APIキー等）は HANDOFF.md に直接書かず、「.env参照」と記述する。コード／設定ファイルにもトークン・パスワードを直書きしない。必ず環境変数か .env 経由。2026-05-30 に機密混入の GitHub 誤push が発生したため、push 前に機密スキャンを行うこと。
-
-## 3回リトライしても失敗する場合
-
-以下を案内する:
-
-1. index.lock を再度削除
-   ```bash
-   rm -f "C:/dev/YNFactory-git/.git/index.lock"
-   ```
-2. 手動で commit 実行
-   ```bash
-   cd "g:/マイドライブ/YNFactory-cc"
-   git add -A
-   git commit -m "handoff: ..."
-   ```
-3. それでも失敗する場合はユーザーに状況報告する（Drive 同期を停止していた場合は再開前に報告する）
-
-`.git` をローカル `C:\dev\YNFactory-git` へ移設した経緯・構成は
-[.company/engineering/docs/gdrive-git-setup.md](.company/engineering/docs/gdrive-git-setup.md) を参照。
+- Drive側では `git` コマンドを一切実行しない（`sync_drive_git.py` はローカルGit作業ディレクトリから実行する）
+- 毎日午前3時の自動同期（`daily_git_sync.py`）と手動ハンドオフの内容が競合しないよう、pushが失敗したら必ず `pull-sync` してから再試行する
+- 機密情報（APIキー等）は HANDOFF.md に直接書かず、「.env参照」と記述する。コード／設定ファイルにもトークン・パスワードを直書きしない。**2026-05-30に機密混入ファイルをGitHubへ誤pushする事故が実際に発生している**ため、commit-push 前に対象ファイルへの機密混入スキャン（APIキー・トークン・パスワードのパターン確認）を必ず行うこと
+- 詳細な同期構成の経緯は [.company/engineering/docs/gdrive-git-setup.md](.company/engineering/docs/gdrive-git-setup.md) を参照（内容が古い場合は本SKILL.mdとプロジェクトルート CLAUDE.md の記述を優先する）

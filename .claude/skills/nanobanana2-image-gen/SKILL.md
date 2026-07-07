@@ -1,6 +1,6 @@
 ---
 name: nanobanana2-image-gen
-description: Google AI Studio API経由でNanoBanana2（Gemini画像生成）を使い、プロンプトから画像を生成して保存するスキル。単一・複数枚・アスペクト比指定に対応。
+description: Google AI Studio API経由でNanoBanana2（Gemini画像生成）を使い、プロンプトから画像を生成して保存するスキル。単一・複数枚・アスペクト比指定に対応。ユーザーがNanoBanana/Gemini画像生成を明示的に指定した場合、またはAPIキー保有下でのAPI直接生成が求められる場合に使う。ChatGPT/gpt-image-2系の生成はopenai-image-gen（ガードレール）の対象であり本スキルでは代替しない。KDP本文中の挿絵キュー処理はcodeximageを使う。
 ---
 
 # NanoBanana2 画像生成スキル
@@ -54,7 +54,7 @@ pip install -q google-genai 2>/dev/null || pip install -q google-genai
 - `OUTPUT_FOLDER`: 保存フォルダ名（デフォルト: `nanobanana2-gen`）
 - `ASPECT_RATIO`: アスペクト比（デフォルト: `1:1`）
 - `FILE_PREFIX`: ファイル名プレフィックス（デフォルト: 空）
-- `PROJECT_ROOT`: プロジェクトルートパス（`G:/マイドライブ/YNFactory-cc`）
+- `PROJECT_ROOT`: プロジェクトルートパス（リポジトリルート。Drive側で作業する場合はDrive側の `YNFactory-cc` の絶対パスに置き換える。PC固有パスをスキル本文に固定しない）
 
 **重要: Windows環境では `python3` ではなく `python` を使用すること。**
 
@@ -161,7 +161,7 @@ PYTHON_SCRIPT
 1. 生成された全画像のファイルパス
 2. APIから返されたテキストレスポンス（ある場合）
 3. 保存先フォルダのパス
-4. 画像をReadツールで表示する（ユーザーに確認してもらう）
+4. 画像をReadツールで表示する（ユーザーに確認してもらう）。複数枚生成時は全件表示せず、最新1〜5件のみ表示する
 
 ## 実行例
 

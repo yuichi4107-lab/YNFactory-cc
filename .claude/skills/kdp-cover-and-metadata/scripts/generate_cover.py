@@ -1,106 +1,70 @@
 #!/usr/bin/env python3
 """
-KDP表紙画像ジェネレーター
-OpenAI gpt-image-2 (images.edit) を使って、キャラクターのリファレンス画像を元に
-2:3 縦長 (1024x1536) PNG の書籍表紙を生成する。
+Deprecated compatibility wrapper.
 
-Usage:
-  python generate_cover.py \\
-    --prompt-file path/to/cover_prompt.txt \\
-    --char-refs path/to/chara_main.png path/to/chara_sub.png \\
-    --out path/to/KDP出版用/cover.png
-
-Requirements:
-  - OPENAI_API_KEY environment variable
-  - pip install openai
+KDP cover generation must use ChatGPT Pro Web / ChatGPT Images 2.0 /
+gpt-image-2. This script does not call image APIs. It creates a small prompt
+package and exits with a non-zero status so callers cannot mistake it for a
+completed cover generation step.
 """
 
 import argparse
-import base64
-import os
+import datetime as dt
+import json
 import sys
 from pathlib import Path
 
 
-HARD_RULE = (
-    "◆【絶対最優先】必ず日本のアニメ・マンガ調のイラストで描いてください。"
-    "実写風・フォトリアル風は禁止です。\n\n"
-)
-
-
 def parse_args():
-    p = argparse.ArgumentParser(description="Generate KDP cover image with gpt-image-2")
-    p.add_argument("--prompt-file", required=True, help="Path to cover prompt text file (UTF-8)")
-    p.add_argument("--char-refs", required=True, nargs="+", help="One or more character reference PNGs")
-    p.add_argument("--out", required=True, help="Output PNG path")
-    p.add_argument("--size", default="1024x1536", help="Image size (default: 1024x1536, 2:3 portrait)")
-    p.add_argument("--quality", default="high", choices=["low", "medium", "high", "auto"])
-    p.add_argument("--model", default="gpt-image-2", help="Model name (default: gpt-image-2)")
-    return p.parse_args()
+    parser = argparse.ArgumentParser(
+        description="Prepare a ChatGPT Pro Web gpt-image-2 cover prompt package; no API calls are made."
+    )
+    parser.add_argument("--prompt-file", required=True, help="Path to cover prompt text file (UTF-8)")
+    parser.add_argument("--char-refs", required=True, nargs="+", help="One or more character reference PNGs")
+    parser.add_argument("--out", required=True, help="Intended output PNG path")
+    parser.add_argument("--size", default="1024x1536", help="Target image size")
+    parser.add_argument("--quality", default="high", help="Requested quality note for the Web prompt")
+    parser.add_argument("--model", default="gpt-image-2", help="Expected Web model name")
+    return parser.parse_args()
 
 
 def main():
     args = parse_args()
-
-    api_key = os.environ.get("OPENAI_API_KEY")
-    if not api_key:
-        print("ERROR: OPENAI_API_KEY is not set.", file=sys.stderr)
-        sys.exit(1)
-
     prompt_path = Path(args.prompt_file)
-    if not prompt_path.is_file():
-        print(f"ERROR: prompt file not found: {prompt_path}", file=sys.stderr)
-        sys.exit(1)
-
-    char_paths = [Path(p) for p in args.char_refs]
-    for cp in char_paths:
-        if not cp.is_file():
-            print(f"ERROR: character reference not found: {cp}", file=sys.stderr)
-            sys.exit(1)
-        if cp.suffix.lower() != ".png":
-            print(f"WARNING: character reference is not .png: {cp}", file=sys.stderr)
-
     out_path = Path(args.out)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
+    package_dir = out_path.parent / "cover_gpt_image2_web_prompt_package"
+    package_dir.mkdir(parents=True, exist_ok=True)
 
-    prompt_body = prompt_path.read_text(encoding="utf-8").strip()
-    full_prompt = HARD_RULE + prompt_body
+    prompt_text = prompt_path.read_text(encoding="utf-8") if prompt_path.exists() else ""
+    manifest = {
+        "status": "blocked_gpt_image2_web",
+        "reason": "This compatibility script is not allowed to call image APIs. Generate the cover in ChatGPT Pro Web.",
+        "created_at": dt.datetime.now().isoformat(timespec="seconds"),
+        "model": args.model,
+        "target_size": args.size,
+        "quality": args.quality,
+        "intended_output": str(out_path),
+        "prompt_file": str(prompt_path),
+        "character_references": args.char_refs,
+    }
 
-    try:
-        from openai import OpenAI
-    except ImportError:
-        print("ERROR: openai package not installed. Run: pip install openai", file=sys.stderr)
-        sys.exit(1)
+    (package_dir / "cover_prompt_for_chatgpt_web.txt").write_text(prompt_text, encoding="utf-8")
+    (package_dir / "manifest.json").write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    (package_dir / "cover_status.md").write_text(
+        "# Cover Status\n\n"
+        "status: blocked_gpt_image2_web\n\n"
+        "This script intentionally did not generate an image. Use ChatGPT Pro Web / "
+        "ChatGPT Images 2.0 / gpt-image-2 with the prompt and reference images, then "
+        f"save the final PNG to `{out_path}`.\n",
+        encoding="utf-8",
+    )
 
-    client = OpenAI(api_key=api_key)
-
-    char_files = [open(p, "rb") for p in char_paths]
-    try:
-        image_arg = char_files[0] if len(char_files) == 1 else char_files
-
-        print(f"[INFO] Generating cover via {args.model} ({args.size}, quality={args.quality})...")
-        print(f"[INFO] Character refs: {[str(p) for p in char_paths]}")
-
-        result = client.images.edit(
-            model=args.model,
-            image=image_arg,
-            prompt=full_prompt,
-            size=args.size,
-            quality=args.quality,
-            n=1,
-        )
-    finally:
-        for f in char_files:
-            try:
-                f.close()
-            except Exception:
-                pass
-
-    b64 = result.data[0].b64_json
-    img_bytes = base64.b64decode(b64)
-    out_path.write_bytes(img_bytes)
-    print(f"[OK] Cover saved: {out_path} ({len(img_bytes)} bytes)")
+    print(f"[BLOCKED] API image generation is disabled. Prompt package: {package_dir}", file=sys.stderr)
+    return 2
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

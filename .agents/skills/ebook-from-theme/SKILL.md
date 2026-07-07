@@ -1,12 +1,14 @@
 ---
 name: ebook-from-theme
-description: テーマ入力または添付素材からゼロから電子書籍本文を制作するフロントオーケストレーター。初回に選択式＋自由記述で制作条件を確認し、5層Webリサーチ→指定文字数（15,000/25,000/35,000字）の原稿（画像タグ付き）→ChatGPT/Codex側の画像生成→ebook-to-mangaが期待するproject.md＋manuscript/形式へ橋渡しするまでを一気通貫で実行する。
+description: テーマ入力または添付素材からゼロから電子書籍本文を制作するフロントオーケストレーター。初回に選択式＋自由記述で制作条件を確認し、5層Webリサーチ→指定文字数（15,000/25,000/35,000字）の原稿（画像タグ付き）→ChatGPT/Codex側の画像生成→ebook-to-mangaが期待するproject.md＋manuscript/形式へ橋渡しするまでを一気通貫で実行する。ユーザーが「〇〇というテーマで電子書籍を作って」「Kindle本を書いて」などテーマから書籍本文の新規制作を依頼したときに使う（既存原稿のマンガ化はebook-to-manga）。
 allowed-tools: Read, Write, Edit, Bash, Glob, WebSearch, WebFetch
 ---
 
 # ebook-from-theme: テーマ起点電子書籍制作オーケストレーター
 
 テーマまたは添付素材を受け取り、Phase 0〜4 の順に実行して `.company/outputs/ebooks/{slug}/` に成果物を生成し、最後に `ebook-to-manga` スキルへの引き渡し案内を出力する。
+
+> **Codex側 `theme-to-ebook` との使い分け（意図的な別実装）**: 本スキルは Claude Code 側の実装で、既定 25,000字（15,000/25,000/35,000字）・`image_plan.json` 方式。Codex 側には別実装の `theme-to-ebook`（既定 100,000字・7パート構成・`progress.json` 方式）があり、Codex 側の親スキル `theme-to-ebook-to-manga` は `theme-to-ebook` を正本として使う。両者は実行環境の思想差（Claude=対話型、Codex=無人自律完走型）に基づく意図的な別実装であり、仕様を相互に同期しない（2026-07-07 オーナー承認）。
 
 ---
 
@@ -214,21 +216,34 @@ Phase 0 項目6で選択した文字数に応じて、リサーチ結果から�
 #### 共通スタイル指示（全画像に適用）
 
 ```
-Clean flat design infographic, soft pastel colors, rounded shapes,
+Japanese anime/manga style illustration, pop and cheerful mood.
+Cute expressive anime characters with clearly readable emotions
+(smiling, surprised, troubled, inspired), clean line art, bright vivid colors,
 modern Japanese ebook illustration aesthetic.
 Color palette: primary {meta.jsonのprimary}, accent {accent}, sub {sub}.
 Background: white. {向き}.
 All text in the image must be in Japanese (日本語).
-Kindle電子書籍本文用。実在企業ロゴ・商標ロゴ禁止。日本語テキストは大きく短く読みやすく。PNGとして保存。
+Kindle電子書籍本文用。実在企業ロゴ・商標ロゴ禁止。
+実写風・フォトリアル調、および無機質なピクトグラム/フラットインフォグラフィック調は禁止。
+日本語テキストは大きく短く読みやすく。PNGとして保存。
 ```
+
+#### 読者代理キャラクターの一貫性（全画像に適用）
+
+Phase 3 開始時に、本のテーマ・想定読者に合わせて「読者代理キャラクター」1名（＋必要なら案内役キャラ1名）の外見設定を確定し、`image_plan.json` の `recurring_characters` に記録する。
+
+- 例: `20代後半の女性会社員、黒髪ショートボブ、白いブラウス、丸みのある親しみやすいアニメ調デザイン`
+- HEADER_IMAGE と illustration パターンには必ずこのキャラクターを登場させ、「悩み→気づき→実践→成長」という感情の変化を表情・ポーズで表現して読者の共感を誘う
+- 図解系パターン（tree / flow / pyramid 等）も、レイアウトの明快さは保ちつつ、余白にデフォルメした読者代理キャラのリアクション（ひらめき・驚き・納得の表情）を小さく添えて、無機質な図にしない。ただし構造を伝える線・矢印・ラベルの視認性を最優先し、キャラクター装飾は図の隅・余白のみに配置する
+- 全プロンプトにキャラクターの外見設定文を同じ文言で埋め込み、書籍全体で見た目を統一する
 
 #### HEADER_IMAGE → 章ヘッダー横長（3:2 = 1536x1024px）
 
 ```
 Chapter header illustration for Japanese ebook.
 Large text reads "{章タイトル}" in bold Japanese.
-VISUAL: {elements と description から構成}
-STYLE: Flat design, chapter header, landscape (3:2 ratio, 1536x1024px).
+VISUAL: {recurring_charactersの読者代理キャラ} が {章のテーマに沿った場面・感情} を体験しているアニメ調のシーン。{elements と description から構成}
+STYLE: Japanese anime/manga style, pop and emotional, chapter header, landscape (3:2 ratio, 1536x1024px).
 ```
 
 #### INLINE_IMAGE → パターン別変換
@@ -254,7 +269,7 @@ STYLE: Flat design, chapter header, landscape (3:2 ratio, 1536x1024px).
 | list-vertical | Vertical checklist, each item text reads "{要素N}" |
 | tree | Tree/hierarchy diagram, root text reads "{タイトル}", branches text reads "{要素N}" |
 | layers | Layered stack diagram, each layer text reads "{要素N}" |
-| illustration | Flat illustration depicting: {description} |
+| illustration | Japanese anime/manga style illustration depicting: {description}. Featuring the recurring reader character showing a relatable emotion |
 | その他 | パターン名に応じた構図。タイトル・要素は text reads "日本語" 形式で指定 |
 
 ### Step 3-2: image_plan.json 作成
@@ -265,6 +280,9 @@ STYLE: Flat design, chapter header, landscape (3:2 ratio, 1536x1024px).
 {
   "generation_mode": "chatgpt_codex_direct_no_api",
   "book_title": "{meta.jsonのtitle}",
+  "recurring_characters": [
+    {"role": "読者代理", "appearance": "{外見設定（全プロンプト共通の文言）}"}
+  ],
   "source_image_plan": ".company/outputs/ebooks/{slug}/_images_source/manuscript_raw.md",
   "final_image_dir": ".company/outputs/ebooks/{slug}/_images_source/images",
   "expected_count": {画像タグ総数},
@@ -315,6 +333,8 @@ STYLE: Flat design, chapter header, landscape (3:2 ratio, 1536x1024px).
 - 本文内容との対応
 - 日本語テキストの可読性
 - 実在企業ロゴ・商標なし
+- アニメ・マンガ調のポップな画風（無機質なピクトグラム調になっていない）
+- 読者代理キャラクターの見た目が全画像で統一されている
 - 電子書籍内での統一感
 ```
 

@@ -1,6 +1,6 @@
 ---
 name: post-sns
-description: SNS（X / Instagram / Facebook / Threads）へ投稿する。テキスト・画像を指定して各プラットフォームに最適化した内容を投稿。対象SNSの指定も可能。
+description: SNS（X / Instagram / Facebook / Threads）へ投稿する。テキスト・画像を指定して各プラットフォームに最適化した内容を投稿。対象SNSの指定も可能。ユーザーが単発でSNS投稿したい時に使う（shorts-factoryの自動生成動画投稿はshorts-factory-opsを使う）。
 ---
 
 # SNS投稿スキル (post-sns)
@@ -39,10 +39,17 @@ description: SNS（X / Instagram / Facebook / Threads）へ投稿する。テキ
 
 ### Step 2: X に投稿
 
+dry-run（投稿しない検証）:
+
+```bash
+cd YNFactory-cc
+python scripts/post_to_x.py "投稿テキスト" --dry-run
+```
+
 投稿スクリプトを実行する：
 
 ```bash
-cd "G:/マイドライブ/YNFactory-cc"
+cd YNFactory-cc
 python scripts/post_to_x.py "投稿テキスト"
 ```
 
@@ -54,24 +61,51 @@ python scripts/post_to_x.py "投稿テキスト" --image "画像パス"
 
 投稿成功したらURLを記録する。
 
-### Step 3: Instagram に投稿（Phase 2で実装予定）
+### Step 3: Instagram に投稿
 
-Meta Graph API経由で投稿する。
+Meta Graph API経由で投稿する。本番投稿はMeta Step6/Step7完了・トークン設定・オーナー承認後のみ実行する。
+Instagram本番投稿の画像は、Meta仕様により公開HTTPS画像URLが必要。
+
+dry-run（投稿しない検証）:
 
 ```bash
-python scripts/post_to_meta.py instagram "キャプション" --image "画像パス"
+python scripts/post_to_meta.py instagram "キャプション" --image "画像パス" --dry-run
 ```
 
-### Step 4: Facebook に投稿（Phase 2で実装予定）
+本番投稿（直前承認後のみ）:
 
 ```bash
-python scripts/post_to_meta.py facebook "投稿テキスト" [--image "画像パス"]
+python scripts/post_to_meta.py instagram "キャプション" --image-url "https://example.com/image.png" --publish-approved
+```
+
+### Step 4: Facebook に投稿
+
+dry-run（投稿しない検証）:
+
+```bash
+python scripts/post_to_meta.py facebook "投稿テキスト" [--image "画像パス"] --dry-run
+```
+
+本番投稿（直前承認後のみ）:
+
+```bash
+python scripts/post_to_meta.py facebook "投稿テキスト" [--image "画像パス"] --publish-approved
 ```
 
 ### Step 5: Threads に投稿（Phase 2で実装予定）
 
+dry-run（投稿しない検証）:
+
 ```bash
-python scripts/post_to_meta.py threads "投稿テキスト" [--image "画像パス"]
+python scripts/post_to_meta.py threads "投稿テキスト" [--image "画像パス"] --dry-run
+```
+
+### Step 5.5: 共通投稿キューのdry-run
+
+1企画から X / Threads / Instagram をまとめて確認する場合:
+
+```bash
+python scripts/social_auto_ops.py dry-run ".company/marketing/social-auto-ops/queue/YYYY-MM-DD_slug.json"
 ```
 
 ### Step 6: 結果報告
@@ -88,13 +122,15 @@ python scripts/post_to_meta.py threads "投稿テキスト" [--image "画像パ�
 
 ## 対応状況
 
-- [x] X（対応済み）
-- [ ] Instagram（Phase 2）
-- [ ] Facebook（Phase 2）
-- [ ] Threads（Phase 2）
+- [x] X（dry-run / 本番投稿対応済み）
+- [x] Instagram（dry-run / 本番投稿対応済み。画像は公開HTTPS URL必須）
+- [x] Facebook（dry-run / 本番投稿対応済み）
+- [x] Threads（dry-run対応済み / 本番投稿はPhase 2）
+- [x] 共通投稿キューdry-run（X / Threads / Instagram）
 
 ## ファイル構成
 
-- 認証情報: `G:/マイドライブ/YNFactory-cc/.company/engineering/sns-credentials/.env`
-- X投稿スクリプト: `G:/マイドライブ/YNFactory-cc/scripts/post_to_x.py`
-- Meta投稿スクリプト: `G:/マイドライブ/YNFactory-cc/scripts/post_to_meta.py`（Phase 2で作成）
+- 認証情報: `.company/engineering/sns-credentials/.env`（リポジトリルートからの相対パス）
+- X投稿スクリプト: `scripts/post_to_x.py`
+- Meta投稿スクリプト: `scripts/post_to_meta.py`
+- 共通投稿キューdry-run: `scripts/social_auto_ops.py`
