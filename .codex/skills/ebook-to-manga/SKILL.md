@@ -408,7 +408,7 @@ inline 生成のため不要。生成完了後そのまま 3-3 ユーザー確�
 
 ### Step 4: コマ割りCSV作成
 
-**重要: 既存の `generate_comicle_csv.py` は使用しない。Claude自身がCSVを直接生成する。**
+**重要: 既存の `generate_comicle_csv.py` は使用しない。Codex自身がCSVを直接生成する。**
 
 シナリオ + キャラクター定義 + 作画設定をもとに、コミクル用CSVを生成する。
 
@@ -622,30 +622,30 @@ CSVの末尾（本編終了後）に以下の後付けページを必ず以下�
 #### 概要
 
 Blind-OCR 判定と Vision-check を組み合わせた QC ループで全ページのテキスト正確性を高める。
-`max_iter` 回連続 FAIL 時は最後の iter 画像をベストエフォートとして採用し、手動レビュー対象として記録する。
+`max_iter` 回連続 FAIL 時は該当ページを `blocked_gpt_image2_web` として止め、解消するまで EPUB 化へ進まない。
 
 - **A路線**: 画像生成 → Blind-OCR → プログラム比較 → PASS なら完了
-- **max_iter 超過時**: 最後の iter 画像 `pages/page_{NNN}_iter_{max_iter}.png` を `pages/page_{NNN}.png` にリネームして採用。`progress.json` の `needs_manual_review_pages` / `needs_manual_review_reasons` に記録し、最終レポートで手動確認対象として列挙する。
+- **max_iter 超過時**: 最終プロンプトを `prompts/page_{NNN}_blocked_prompt.txt` に保存し、`progress.json` の `blocked_pages` / `blocked_reasons` に記録する。該当ページを最終成果物にせず、`blocked_pages` が空になるまで Step 7（EPUB製本）に進まない。
 
 リファレンス実装: `.company/outputs/ebooks-manga/manga-career-restart/_prototype/hybrid_loop.py`（465行）
 
 > **モード別フロー概要**
 >
-> - `inline` モード: 各 iter で [A-1] 直接 API 呼び出し → [A-2] Blind-OCR → [A-3] Vision-check → 判定 → PASS or 次 iter / ベストエフォート採用
+> - `inline` モード: 各 iter で [A-1] 直接 API 呼び出し → [A-2] Blind-OCR → [A-3] Vision-check → 判定 → PASS or 次 iter / `blocked_gpt_image2_web`
 > - `codex-handoff` モード: Claude が `.company/codex/queue/<job-id>/` にバンドル（Step 5 全ページ + Step 6 表紙）を 1 回投入するだけで完了。[A-1]〜[A-5] を含む QC ループ全体が **Codex 側で自律完走**する。Claude は `done/<job-id>/progress.json` を受け取って後処理するのみ（本セクションのループ疑似コードは inline 専用）。
 
 #### パラメータ
 
 | パラメータ | 既定値 | 説明 |
 |---|---|---|
-| `max_iter` | `3` | FAIL 判定でフォールバックに切り替えるしきい値 |
+| `max_iter` | `3` | FAIL 判定で再生成を打ち切り `blocked_gpt_image2_web` にするしきい値 |
 | バッチサイズ | `10` | 1バッチあたりのページ数（並列実行単位） |
 | バッチ間待機 | `5秒` | API レート制限対策 |
 | 保存形式 | PNG原本 + JPEG製本版 | gpt-image-2 は b64_json で PNG を返す。QC後に `page_{NNN}.jpg` も作成し、EPUBにはJPEG版を使う |
 
 `max_iter` の調整目安:
-- 高精度が必要な場合: `2` に下げる（フォールバック発動率は上がるがコスト増）
-- 処理速度優先の場合: `1` も可（A路線を1回だけ試して即フォールバック）
+- 高精度が必要な場合: `3` のまま
+- 処理速度優先の場合: `1` も可。ただし不合格ページを最終ページとして通さない（FAIL ページはすぐ `blocked_gpt_image2_web` になる）
 
 #### ループフロー（疑似コード）
 
@@ -657,7 +657,7 @@ CSV を読み込み、全ページリストを取得する
 char_defs = load_json("manuscript/characters/character_defs.json")
 
 for page in pages:
-    # テキストページ判定（OCR・Vision-check・フォールバック全スキップ）
+    # テキストページ判定（OCR・Vision-check・blocked処理全スキップ）
     if page の コマ別テキストJSON == []:
         画像生成をスキップ（テキストページは生成不要）
         PASS として記録 → 次ページへ
@@ -694,14 +694,14 @@ for page in pages:
         # OCR FAIL → ◆【前回失敗・最重要】パネル別の不一致を追記
         # Vision-check FAIL → ◆【前回失敗・最重要】欠落キャラ名を全身イラストで描くよう追記
 
-    # max_iter 超過時: ベストエフォート採用（案A）
+    # max_iter 超過時: blocked（該当ページを止める）
     if not converged:
-        最後の iter 画像 pages/page_{NNN}_iter_{max_iter}.png を pages/page_{NNN}.png にリネーム
-        progress.json に page_num を needs_manual_review_pages[] に追加
-        review_reason = determine_review_reason(ocr_verdict, vision_verdict)
-        # review_reason: "ocr_fail" / "vision_fail" / "both_fail"
-        progress.json に needs_manual_review_reasons{page_num: review_reason} で記録
-        ログに [needs_review] page {NNN}: best-effort accepted (reason=review_reason, missing=[...]) を出力
+        prompts/page_{NNN}_blocked_prompt.txt に最終プロンプトを保存
+        blocked_reason = determine_blocked_reason(ocr_verdict, vision_verdict)
+        # blocked_reason: "ocr_fail" / "vision_fail" / "both_fail"
+        progress.json の blocked_pages[] に page_num を追加し blocked_reasons{page_num: blocked_reason} で記録
+        このページを最終成果物にしない（pages/page_{NNN}.png を作らない）
+        ログに [blocked] page {NNN}: gpt_image2_web blocked (reason=blocked_reason, missing=[...]) を出力
 
 各バッチ完了後に progress.json を更新する
 バッチ間は 5 秒待機する
@@ -717,7 +717,7 @@ CSV の全ページを 10 ページずつのバッチに分割し、各バッチ
 
 CSV の `コマ別テキストJSON` 列が空配列 `[]` のページはテキストページとみなす。
 - 画像生成をスキップする（生成不要）
-- OCR・Vision-check・フォールバック処理もすべてスキップする
+- OCR・Vision-check・blocked処理もすべてスキップする
 - 自動的に PASS として `progress.json` に記録して次ページへ進む
 
 **2a. character_defs.json のロードとキャッシュ**
@@ -766,17 +766,17 @@ CSV の `コマ別テキストJSON` 列が空配列 `[]` のページはテキ�
 
 1. `.company/codex/done/<job-id>/progress.json` を読み込む
 2. `status` フィールドを確認:
-   - `"success"`: 全ページ PASS（ベストエフォート採用含む）
+   - `"success"`: 全ページ PASS
    - `"partial"`: 一部失敗あり（failed 項目を確認）
    - `"failed"`: 大多数失敗（ユーザーに報告して再投入判断）
 3. `done/<job-id>/pages/page_{NNN}.png` を書籍側 `panels/pages/page_{NNN}.png` にコピーし、同寸法JPEG版 `panels/pages/page_{NNN}.jpg` を作成する
 4. `done/<job-id>/cover.png` を `KDP出版用/cover.png` にコピーし、同寸法の `KDP出版用/cover.jpg` も作成
-5. `needs_manual_review_pages[]` が空でない場合、書籍側 `progress.json` に転記 + ユーザーに手動確認を促す
+5. `blocked_pages[]` が空でない場合、書籍側 `progress.json` に転記し、該当ページを再生成して解消するまで Step 7 に進まない
 6. 書籍側 `progress.json` の Step 5 / Step 6 を `done` に更新
 7. `done/<job-id>/` を `.company/codex/archive/<job-id>/` に移動
 8. Step 7（EPUB 化）へ進む
 
-なお、codex-handoff モードでは QC ループ（Blind-OCR・Vision-check・ベストエフォート採用）はすべて Codex 側で実行され、結果が `progress.json` の `needs_manual_review_pages` に反映される。
+なお、codex-handoff モードでは QC ループ（Blind-OCR・Vision-check・blocked判定）はすべて Codex 側で実行され、結果が `progress.json` の `blocked_pages` に反映される。
 
 ChatGPT Images 2.0で生成する:
 
@@ -823,25 +823,28 @@ Vision-check FAIL 分をそれぞれ個別のセクションとしてプロン�
 - 両方 FAIL の場合は両セクションを併記する
 次の iter の画像生成にこのプロンプトを使用する。
 
-**8. max_iter 超過 → ベストエフォート採用**
+**8. max_iter 超過 → blocked**
 
 `max_iter` 回すべて FAIL した場合（OCR FAIL・Vision-check FAIL どちらの原因でも同様）、
-最後の iter 画像 `pages/page_{NNN}_iter_{max_iter}.png` を `pages/page_{NNN}.png` にリネームして
-このページの最終成果物として確定する（ベストエフォート採用）。
-`progress.json` の `needs_manual_review_pages[]` に当該ページ番号を追加し、
-`needs_manual_review_reasons{page_num}` に `"ocr_fail"` / `"vision_fail"` / `"both_fail"` を記録する（→ 進捗管理セクション参照）。
-ログに `[needs_review] page {NNN}: best-effort accepted (reason=..., missing=[...])` を出力する。
+該当ページは `blocked_gpt_image2_web` として止める。
+最終プロンプト・失敗理由・参照画像を保存し、最後の iter 画像を最終成果物として採用しない
+（`pages/page_{NNN}.png` を作らない）。
+`progress.json` の `blocked_pages[]` に当該ページ番号を追加し、
+`blocked_reasons{page_num}` に `"ocr_fail"` / `"vision_fail"` / `"both_fail"` を記録する（→ 進捗管理セクション参照）。
+ログに `[blocked] page {NNN}: gpt_image2_web blocked (reason=..., missing=[...])` を出力する。
 
 #### 成果物ファイル命名
 
 | ファイル名パターン | 生成タイミング | EPUB 向け扱い |
 |---|---|---|
-| `pages/page_{NNN}_iter_{N}.png` | 各 iter の生成画像 | 監査用。PASS した iter の画像は `page_{NNN}.png` にコピー、max_iter 超過時は最後の iter 画像を `page_{NNN}.png` にリネーム |
-| `pages/page_{NNN}.png` | Step 5 の最終原本画像（PASS 時は収束 iter、FAIL 超過時は最後の iter をベストエフォート採用） | 監査・再変換用の原本として保持する |
+| `pages/page_{NNN}_iter_{N}.png` | 各 iter の生成画像 | 監査用。PASS した iter の画像のみ `page_{NNN}.png` にコピーされる |
+| `pages/page_{NNN}.png` | PASS したページの最終原本画像 | 監査・再変換用の原本として保持する |
+| `prompts/page_{NNN}_blocked_prompt.txt` | max_iter 超過時 | 再生成用。EPUBには入れない |
 | `pages/page_{NNN}.jpg` | Step 5 のEPUB製本用画像（`page_{NNN}.png` から同寸法で変換） | Step 7 EPUB 製本が直接参照する |
 
 > **EPUB製本（Step 7）との整合**: Step 7 は `pages/page_{NNN}.jpg` を収集する。JPEG版がない場合のみ、例外的にPNGからJPEGを生成してから製本する。
 > この運用により EPUB 容量を抑えやすくなる。
+> `blocked_gpt_image2_web` ページが残っている場合は Step 7 に進まない。
 
 #### 進捗管理
 
@@ -853,20 +856,20 @@ Vision-check FAIL 分をそれぞれ個別のセクションとしてプロン�
   "completed": 100,
   "total": 100,
   "failed": [],
-  "needs_manual_review_pages": [39, 52],
-  "needs_manual_review_reasons": {"39": "ocr_fail", "52": "vision_fail"},
+  "blocked_pages": [],
+  "blocked_reasons": {},
   "vision_check_failed_pages": [2, 17],
   "vision_check_pages": 95
 }
 ```
 
-- `failed` 配列: iter 内で最終的に PASS したページは記録しない。iter 超過してベストエフォート採用になったページも最終的に完了するため `failed` には記録しない
-- `needs_manual_review_pages`: max_iter 超過によりベストエフォート採用となったページ番号リスト（手動確認が必要なページ）
-- `needs_manual_review_reasons`: 手動確認対象ページごとの理由。値は `"ocr_fail"` / `"vision_fail"` / `"both_fail"` のいずれか
+- `failed` 配列: Web生成またはQCで最終的に処理不能になったページを記録する
+- `blocked_pages`: `blocked_gpt_image2_web` として止めたページ番号リスト
+- `blocked_reasons`: blockedページごとの理由。値は `"ocr_fail"` / `"vision_fail"` / `"both_fail"` / `"web_unavailable"` など
 - `vision_check_failed_pages`: Vision-check で1回以上 FAIL したページ番号リスト。最終的に PASS したページも記録する（監査用）
 - `vision_check_pages`: Vision-check を実施したページ数の集計
-- max_iter 超過時は `needs_manual_review_pages[]` にページ番号を追加し、`needs_manual_review_reasons{}` に `"<page>": "ocr_fail"|"vision_fail"|"both_fail"` を記録する（上記フィールド仕様参照）
-- ログに `[needs_review] page {NNN}: best-effort accepted (reason={reason}, missing=[キャラ名])` を出力する
+- blocked時は `progress.json` の当該ページに `"status": "blocked_gpt_image2_web", "blocked_reason": "{reason}"` を追記する
+- ログに `[blocked] page {NNN}: gpt_image2_web blocked (reason={reason}, missing=[キャラ名])` を出力する
 
 #### コスト試算
 
@@ -895,15 +898,15 @@ Vision-check FAIL 分をそれぞれ個別のセクションとしてプロン�
 
 | max_iter | 期待 OCR コール数 | 期待 Vision-check コール数 | 追加コスト目安 |
 |---|---|---|---|
-| 1 | 100（1回のみ） | 100（1回のみ） | +$1.60〜$2.20（フォールバック多め） |
+| 1 | 100（1回のみ） | 100（1回のみ） | +$1.60〜$2.20（blocked多め） |
 | 2 | 120〜140 | 110〜130 | +$2.60〜$3.20 |
 | **3（既定）** | **130〜150** | **115〜125** | **+$3.15〜$3.75** |
-| 4 | 150〜170 | 120〜135 | +$3.80〜$4.40（フォールバック率低下） |
+| 4 | 150〜170 | 120〜135 | +$3.80〜$4.40（blocked率低下） |
 
 > **注**: `max_iter=3` の追加コスト `+$3.15〜$3.75` は内訳積み上げ値。
 > レート変動・iter 超過・OCR/Vision-check リトライ等のバッファを加味した安全側見積もりは工程1のコスト試算テーブル（`$34.89/冊`）を参照。
 
-**フォールバック発動率の想定**: 全ページの約 5%（難ページ：長セリフ・複数キャラ同時発話・小さいコマ等）。
+**blocked発動率の想定**: 全ページの約 5%（難ページ：長セリフ・複数キャラ同時発話・小さいコマ等）。
 iter 3 回の反復で約 95% のページは A路線で収束する見込み（プロトタイプ実測に基づく推定）。
 
 #### 維持される Step 4 と Step 6 の仕様
@@ -915,7 +918,7 @@ iter 3 回の反復で約 95% のページは A路線で収束する見込み（
 - キャラクターリファレンス画像（`character_defs.json`）は Step 3 の成果物を引き続き使用する
 
 **Step 6 との接続（下流）:**
-- 本ステップ完了後、全ページが `pages/page_{NNN}.png`（原本）と `pages/page_{NNN}.jpg`（EPUB用）として揃っている（フォールバック発動ページはリネーム済み）
+- 本ステップ完了後、全ページが `pages/page_{NNN}.png`（原本）と `pages/page_{NNN}.jpg`（EPUB用）として揃っており、`blocked_pages` が空であること
 - Step 6（カバー画像生成）はこのファイル群を参照しないため影響なし
 - Step 7（EPUB製本）は `pages/page_{NNN}.jpg` を収集するため、命名規則の一貫性が保証されていれば修正不要
 
@@ -1056,7 +1059,7 @@ FAIL の場合、次の iter の生成プロンプト末尾に以下のセクシ
 - リトライ間隔: 1秒
 - 3回すべて失敗した場合は `{"bubbles": []}` を返す（空バブル扱い）
 - 空バブルは比較時に「検出テキストなし」として全エントリが FAIL になる
-- つまり OCR 失敗は自動的に FAIL 扱いとなり、次の iter または フォールバックに進む
+- つまり OCR 失敗は自動的に FAIL 扱いとなり、次の iter または `blocked_gpt_image2_web` に進む
 
 **JSON パースエラー時:**
 - OCR レスポンスが JSON として解析できない場合、部分修復を試みる
@@ -1300,6 +1303,15 @@ design_taste: >
   マンガ・コミック風の書籍カバーデザイン。
   {Step 1で選択したジャンルの作画設定の色調・演出を反映}
   キャラクターを全面に配置し、マンガらしい躍動感を演出。
+  SNSでバズるサムネイルのような高コントラスト・高彩度の配色で、
+  Amazonの検索結果一覧の小さなサムネイルでも一瞬で目を引くデザインにする。
+
+buzz_elements: >
+  - タイトルは画面幅いっぱいの極太文字で、サムネイルサイズでも読めること
+  - 数字や強いベネフィットを入れた帯風キャッチコピーを1本入れる（例:「たった1日10分」「9割の人が知らない」「読むだけで変わる」）
+  - キャラクターは感情がひと目で伝わる大きな表情（驚き・笑顔・決意）にする
+  - 吹き出しやバッジ風の装飾で「初心者OK」「マンガでサクッと」など読者メリットを短く入れる
+  - 情報はタイトル/キャッチコピー/装飾の3階層に整理し、詰め込みすぎてごちゃつかせない
 
 character: >
   {character_defs.jsonの主要キャラクター2-3名の外見設定}
@@ -1338,6 +1350,7 @@ Step 6-A のバンドルに表紙 item（`type: "cover"`）を Step 5-A で一�
 
 #### ユーザー確認
 - 表紙画像をReadツールで表示して確認を得る
+- サムネイル縮小表示（幅100px相当）を想定してタイトル・帯風キャッチコピーが判読できるかを確認し、読めなければ文字を大きくして再生成する
 - 不満があればプロンプトを修正して再生成する
 
 ---
@@ -1642,16 +1655,15 @@ PYTHON_SCRIPT
 #### Step 5 QCループとの下流互換性
 
 Step 5 の QC ループは `pages/page_{NNN}.png` を原本として出力し、QC PASS後に `pages/page_{NNN}.jpg` をEPUB用として出力する。
-本 EPUB 生成スクリプトは `glob("page_*.jpg")` でこのファイル群を収集するため、
-ベストエフォート採用ページも含めて追加改修なしで動作する。
+本 EPUB 生成スクリプトは `glob("page_*.jpg")` でこのファイル群を収集する。
 
 | Step 5 出力パターン | EPUB に含まれるファイル | 対応方法 |
 |---|---|---|
 | PASS ページ | `page_{NNN}.jpg`（収束 iter のPNG原本から変換済み） | そのまま収集 |
-| ベストエフォート採用ページ | `page_{NNN}.jpg`（最後の iter 画像のPNG原本から変換済み） | そのまま収集 |
+| blocked ページ | なし | EPUB化へ進まない（解消後に本ステップを再実行） |
 | 中間ファイル（`_iter_*`） | `glob` パターンに一致しないため自動除外 | 対応不要 |
 
-> **前提**: Step 5 の責務として、全ページの `page_{NNN}.jpg` が揃ってから本ステップを実行すること。PNG原本は再変換・監査用に残す。
+> **前提**: Step 5 の責務として、`blocked_pages` が空であり全ページの `page_{NNN}.jpg` が揃っていることを確認してから本ステップを実行すること。PNG原本は再変換・監査用に残す。
 
 ---
 
@@ -1896,20 +1908,20 @@ KDP商品説明欄にそのまま貼り付けられるHTML形式で作成する�
 | エラー | 対処 |
 |--------|------|
 | ソースフォルダが見つからない | エラー表示し、利用可能なebookフォルダを一覧する |
-| ChatGPT Images 2.0生成に失敗 | 失敗ページをログに記録し、同じセッション内でプロンプトを調整して再生成する。max_iter 超過時はベストエフォート採用 |
+| ChatGPT Images 2.0生成に失敗 | 失敗ページをログに記録し、同じセッション内でプロンプトを調整して再生成する。max_iter 超過時は `blocked_gpt_image2_web` として止める |
 | EPUB構築エラー | エラー詳細を表示し、画像ファイルの存在を確認 |
 | ページ数超過 | Step 2のシナリオを凝縮して再生成 |
 | キャラ外見の不一致 | キャラ定義の詳細を強化してプロンプトを再生成 |
 | **codex-handoff: done/<job-id>/progress.json が出現しない** | 現在の標準運用ではhandoffを使わない。ユーザーが明示的にhandoffを指定した場合のみ、Codex側の進行状況を確認する |
 | **codex-handoff: progress.json の status が "failed"** | `.company/codex/done/<job-id>/progress.json` の `errors[]` を確認し、ユーザーに通知する。新 job-id で queue に再投入するか手動対応を促す |
-| **codex-handoff: needs_manual_review_pages が多数** | ユーザーに該当ページ番号リストを提示して手動確認を案内する。再生成が必要な場合は新 job-id で該当ページのみを manifest に含めて再投入する |
+| **codex-handoff: blocked_pages が多数** | ユーザーに該当ページ番号リストを提示する。再生成する場合は新 job-id で該当ページのみを manifest に含めて再投入する。blocked が解消するまで EPUB 化に進まない |
 | **codex-handoff: partial（部分生成）** | `progress.json` の `status: "partial"` を検出したら不足 items を確認し、ユーザーに通知する。新 job-id で不足分のみを manifest に含めて再投入する |
 
 ## 注意事項
 
 - Windows環境では `python3` ではなく `python` を使用する
 - 100枚規模の画像生成は時間がかかるため、進捗を `progress.json` に記録しながら進める
-- 生成画像の品質にはばらつきがある: QCループ（Step 5）が自動的にリトライを行う。max_iter 超過ページはベストエフォート採用となり、progress.json の needs_manual_review_pages で確認できる
+- 生成画像の品質にはばらつきがある: QCループ（Step 5）が自動的にリトライを行う。max_iter 超過ページは `blocked_gpt_image2_web` として止まり、progress.json の blocked_pages で確認できる。blocked が空になるまで EPUB 化しない
 - 固定レイアウトEPUBはKindle Unlimitedの対象外となる場合がある（KDPの最新規約を確認）
 - EPUBの表示確認はKindleプレビューアで必ず行うこと
 
@@ -1920,7 +1932,7 @@ KDP商品説明欄にそのまま貼り付けられるHTML形式で作成する�
 ### 目的
 
 QCパイプライン（工程1〜5の本実装成果）が実データで期待通り動作することを確認する。
-Step 4 の `コマ別テキストJSON` → Step 5 の Blind-OCR 判定 → max_iter 超過時ベストエフォート採用
+Step 4 の `コマ別テキストJSON` → Step 5 の Blind-OCR 判定 → Web再生成または `blocked_gpt_image2_web`
 という一連のデータフローが途切れなく機能していることを担保する。
 
 ---
@@ -1998,9 +2010,9 @@ FAIL 時に次 iter のプロンプトに FAIL 内容が反映されることを
 
 ---
 
-#### 4. ベストエフォート採用確認（max_iter 超過時）
+#### 4. blocked確認（max_iter 超過時）
 
-`max_iter` 超過時に最後の iter 画像がベストエフォート採用されることを確認する。
+`max_iter` 超過時に該当ページが `blocked_gpt_image2_web` として止まることを確認する。
 
 **確認ステップ:**
 
@@ -2011,13 +2023,14 @@ FAIL 時に次 iter のプロンプトに FAIL 内容が反映されることを
    ```
 2. iter=1 が FAIL した場合、以下が行われることを確認する:
    - `pages/page_039_iter_1.png`（監査用。iter=1 の生成画像）が存在すること
-   - `pages/page_039_iter_1.png` が `pages/page_039.png` にリネームされていること
-   - `progress.json` の `needs_manual_review_pages` に `39` が追加されていること
-   - ログに `[needs_review] page 039: best-effort accepted` が出力されていること
+   - `pages/page_039.png` が作成されていないこと（blocked ページを最終成果物にしない）
+   - `prompts/page_039_blocked_prompt.txt` に最終プロンプトが保存されていること
+   - `progress.json` の `blocked_pages` に `39` が追加されていること
+   - ログに `[blocked] page 039: gpt_image2_web blocked` が出力されていること
 
 **目視確認ポイント:**
-- `page_039.png`（最後の iter 画像）が EPUB 入力として使用されていること
-- `progress.json` の `needs_manual_review_reasons["39"]` に理由（`"ocr_fail"` / `"vision_fail"` / `"both_fail"`）が記録されていること
+- blocked ページが EPUB 入力として使用されないこと（`blocked_pages` が空になるまで Step 7 に進まないこと）
+- `progress.json` の `blocked_reasons["39"]` に理由（`"ocr_fail"` / `"vision_fail"` / `"both_fail"`）が記録されていること
 
 ---
 
@@ -2035,20 +2048,21 @@ FAIL 時に次 iter のプロンプトに FAIL 内容が反映されることを
 }
 ```
 
-**ベストエフォート採用発生時:**
+**blocked発生時:**
 ```json
 "5_images": {
-  "status": "done",
-  "completed": 100,
+  "status": "in_progress",
+  "completed": 98,
   "total": 100,
   "failed": [],
-  "needs_manual_review_pages": [39, 52],
-  "needs_manual_review_reasons": {"39": "ocr_fail", "52": "vision_fail"}
+  "blocked_pages": [39, 52],
+  "blocked_reasons": {"39": "ocr_fail", "52": "vision_fail"}
 }
 ```
 
-- `needs_manual_review_pages` リストにベストエフォート採用ページが記録されていること
-- PASS したページは `failed` に記録されないこと（iter 超過したページのみ `needs_manual_review_pages` に記録）
+- `blocked_pages` リストに blocked ページが記録されていること
+- PASS したページは `failed` に記録されないこと（iter 超過したページは `blocked_pages` に記録）
+- `blocked_pages` が空でない間は Step 5 を `done` にせず、Step 7 に進まないこと
 
 ---
 
@@ -2064,7 +2078,7 @@ FAIL 時に次 iter のプロンプトに FAIL 内容が反映されることを
 **Step 7（EPUB製本）:**
 - `panels/pages/page_{NNN}.jpg`（3桁ゼロ埋め）ファイルが全ページ分存在することを確認する
 - JPEG版の容量と文字可読性を確認する。必要に応じて品質85〜92の範囲で再変換する
-- ベストエフォート採用ページは `page_{NNN}_iter_{max_iter}.png` → `page_{NNN}.png` へのリネームが完了していること
+- blocked ページが残っていないこと（`blocked_pages` が空であること）
 - `_iter_*.png` 等の中間ファイルは `page_*.jpg` のワイルドカードには一致しないため自動的に除外される
 - EPUB 生成スクリプトが `glob("page_*.jpg")` で正しい枚数を収集できることを確認する
 
@@ -2120,12 +2134,12 @@ FAIL 時に次 iter のプロンプトに FAIL 内容が反映されることを
 | CSV生成 | `コマ別テキストJSON` 列が全ページで有効な JSON（または空配列） |
 | OCR判定 | Blind-OCR が期待テキストなしで正しく読み取り PASS/FAIL を判定 |
 | フィードバック注入 | FAIL 時に `◆【前回失敗・最重要】` セクションが次 iter のプロンプトに含まれる |
-| ベストエフォート採用 | max_iter 超過時に最後の iter 画像が `page_{NNN}.png` としてリネームされる |
-| progress.json | `needs_manual_review_pages` / `needs_manual_review_reasons` / `vision_check_failed_pages` が記録され、EPUB Step 7 で参照可能な状態 |
+| blocked管理 | max_iter 超過時に該当ページが `blocked_gpt_image2_web` として止まり、`blocked_pages` が空になるまで EPUB 化しない |
+| progress.json | `blocked_pages` / `blocked_reasons` / `vision_check_failed_pages` が記録され、EPUB Step 7 で参照可能な状態 |
 | ファイル命名 | 全ページが `pages/page_{NNN}.png` として揃っている（中間ファイルは除外） |
 | EPUB生成 | Step 7 が変更なく動作し、正常な EPUB が出力される |
 | KDPメタデータ | Step 8 が変更なく動作し、書籍情報・紹介文が出力される |
-| 日本語テキスト | 全ページのセリフ・ナレーションが Blind-OCR PASS またはベストエフォート採用（手動確認対象として記録）のいずれかで処理済み |
+| 日本語テキスト | 全ページのセリフ・ナレーションが Blind-OCR PASS で処理済み（blocked ページは解消済みであること） |
 | Vision-check 単体動作 | セリフなしページでキャラ欠落を Vision-check が FAIL 検出し再生成ループが発動する |
 | OCR × Vision-check 独立性 | OCR PASS / Vision-check FAIL のケースでもページ全体が FAIL 判定になる |
 | テキストページスキップ | `コマ別テキストJSON == []` のページで OCR・Vision-check 両方スキップ・自動 PASS になる |
