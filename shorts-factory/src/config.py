@@ -164,7 +164,10 @@ DEFAULTS: dict = {
         "model": "fast",  # std ($0.112/s) | fast ($0.09/s)
         "resolution": "720p",
         "ratio": "9:16",
-        "generate_audio": True,  # Seedanceネイティブ日本語音声（VOICEVOXは使わない）
+        "audio_mode": "voicevox",  # voicevox | native
+        "generate_audio": False,  # 音声はVOICEVOXで差し替え、Seedance音声は使わない
+        "voicevox_speaker_id": 13,  # 青山龍星（ノーマル）
+        "voicevox_speaker_credit": "VOICEVOX:青山龍星",
         "watermark": False,
         "seed": 42,  # 固定するとスタイルの一貫性が上がる
         "cut_duration_sec": 10,

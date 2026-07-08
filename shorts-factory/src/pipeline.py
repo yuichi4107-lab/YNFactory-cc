@@ -407,15 +407,30 @@ def _build_seedance_video(script: dict, work: Path) -> tuple[Path, list[dict], l
 #  seedance.cer_line_max / cer_avg_max に緩めている。
 
 
+def _seedance_audio_mode() -> str:
+    mode = str(CONFIG.get("seedance", "audio_mode", default="voicevox") or "voicevox").lower()
+    return mode if mode in {"voicevox", "native"} else "voicevox"
+
+
+def _seedance_voicevox_cues(script: dict) -> list[dict]:
+    cues: list[dict] = []
+    for cue in script.get("cues", []):
+        out = dict(cue)
+        out["reading_kana"] = cue.get("tts_kana") or cue.get("reading_kana") or cue.get("tts_text", "")
+        cues.append(out)
+    return cues
+
+
 def _build_seedance_candidate(
     topic_entry: str | dict,
     selected_difficulty: str,
     attempt: int = 1,
 ) -> dict:
-    """Seedance版（AI動画背景・ネイティブ音声）の候補を1本生成する。
+    """Seedance版（AI動画背景）の候補を1本生成する。
 
     静止画カード版の _build_candidate と対になるが、TTS(VOICEVOX)を使わず、
-    Seedance生成音声をそのままマスター音声として扱う。
+    Seedance生成音声をそのまま使うnativeモードと、映像だけSeedanceで作り
+    音声はVOICEVOXで差し替えるvoicevoxモードを持つ。
     失敗時は video_bg_gen.SeedanceError系 を送出し、呼び出し元でフォールバックする。
     """
     topic = _topic_text(topic_entry)
@@ -445,37 +460,68 @@ def _build_seedance_candidate(
         )
         video_bg_gen.record_cost(video_bg_gen.make_cost_record(video_id, cut_results, success=True))
 
-        total_dur = timed_cues[-1]["end"] if timed_cues else 0.0
-        # Seedance音声をそのままmaster_wavとして抽出（loudnorm測定・最終合成用）
-        master_wav = work / "master_voice.wav"
-        ffmpeg_bin = CONFIG.get("ffmpeg", default="ffmpeg")
-        proc = subprocess.run(
-            [str(ffmpeg_bin), "-y", "-i", str(bg), "-vn", "-ar", "48000", "-ac", "1", str(master_wav)],
-            capture_output=True,
-        )
-        if proc.returncode != 0:
-            raise video_bg_gen.SeedanceError(
-                f"音声抽出失敗: {proc.stderr.decode('utf-8', errors='replace')[:300]}"
+        audio_mode = _seedance_audio_mode()
+        if audio_mode == "voicevox":
+            speaker_id = int(CONFIG.get("seedance", "voicevox_speaker_id", default=13))
+            tts = tts_voicevox.synthesize_cues(
+                _seedance_voicevox_cues(script),
+                work,
+                speaker_id=speaker_id,
             )
-
-        # Seedance版はVOICEVOX不使用のためspeaker_creditを付けない(誤クレジット防止)
-        credit = "音声・映像はAIで自動生成"
+            master_wav = Path(tts["master_wav"])
+            final_cues = tts["cues"]
+            total_dur = tts["total_dur"]
+            credit = (
+                f"{CONFIG.get('seedance', 'voicevox_speaker_credit', default='VOICEVOX:青山龍星')}"
+                "／映像はAIで自動生成"
+            )
+            script["speaker_credit"] = CONFIG.get(
+                "seedance", "voicevox_speaker_credit", default="VOICEVOX:青山龍星"
+            )
+            script["audio_mode"] = "voicevox"
+            log(
+                f"Seedance音声差し替えOK: VOICEVOX speaker={speaker_id} "
+                f"duration={total_dur}s"
+            )
+        else:
+            total_dur = timed_cues[-1]["end"] if timed_cues else 0.0
+            # Seedance音声をそのままmaster_wavとして抽出（loudnorm測定・最終合成用）
+            master_wav = work / "master_voice.wav"
+            ffmpeg_bin = CONFIG.get("ffmpeg", default="ffmpeg")
+            proc = subprocess.run(
+                [str(ffmpeg_bin), "-y", "-i", str(bg), "-vn", "-ar", "48000", "-ac", "1", str(master_wav)],
+                capture_output=True,
+            )
+            if proc.returncode != 0:
+                raise video_bg_gen.SeedanceError(
+                    f"音声抽出失敗: {proc.stderr.decode('utf-8', errors='replace')[:300]}"
+                )
+            final_cues = timed_cues
+            credit = "音声・映像はAIで自動生成"
+            script["speaker_credit"] = "音声・映像はAIで自動生成"
+            script["audio_mode"] = "native"
+        (work / "script.json").write_text(
+            json.dumps(script, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
         overlay = work / "overlay.png"
         renderer.make_overlay(title, credit, overlay)
         ass = work / "subs.ass"
-        renderer.make_ass(timed_cues, total_dur, ass)
+        renderer.make_ass(final_cues, total_dur, ass)
         measured = renderer.measure_loudnorm(master_wav, work)
         final = renderer.compose_final(
             bg, overlay, ass, master_wav, total_dur, work, measured=measured,
         )
         log("SeedanceレンダリングOK")
 
-        cer_line_max = float(CONFIG.get("seedance", "cer_line_max", default=0.30))
-        cer_avg_max = float(CONFIG.get("seedance", "cer_avg_max", default=0.18))
-        report = verifier.verify_video(
-            final, timed_cues, total_dur, work,
-            cer_line_max=cer_line_max, cer_avg_max=cer_avg_max,
-        )
+        if audio_mode == "voicevox":
+            report = verifier.verify_video(final, final_cues, total_dur, work)
+        else:
+            cer_line_max = float(CONFIG.get("seedance", "cer_line_max", default=0.30))
+            cer_avg_max = float(CONFIG.get("seedance", "cer_avg_max", default=0.18))
+            report = verifier.verify_video(
+                final, final_cues, total_dur, work,
+                cer_line_max=cer_line_max, cer_avg_max=cer_avg_max,
+            )
         report["fix_loops"] = 0
         (work / "quality_report.json").write_text(
             json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
@@ -484,7 +530,7 @@ def _build_seedance_candidate(
             f"Seedance検証{'合格✅' if report['pass'] else '不合格⚠️'} "
             f"avg_cer={report['accuracy']['avg_cer']}"
         )
-        previews = renderer.extract_previews(final, timed_cues, work)
+        previews = renderer.extract_previews(final, final_cues, work)
     except video_bg_gen.SeedanceError as e:
         # 課金ゼロの失敗(カット0件)も監査用に必ず記録する
         video_bg_gen.record_cost(
@@ -497,7 +543,7 @@ def _build_seedance_candidate(
     images: list[Path] = []
     out_dir = save_outputs(
         item_id, final, ass, work, images, previews, title, script,
-        credit="音声・映像はAIで自動生成しています",
+        credit=f"{credit}しています",
     )
     log(f"Seedance成果物保存: {out_dir}")
     return {

@@ -49,8 +49,13 @@ PRICE_PER_SEC = {
 # 服装・部屋・カメラフレーミングの明示を書き忘れると、カット間で
 # 服や背景が変わってしまう（v2のカット3で実証済みの不具合）。
 CONTINUITY_SUFFIX = (
-    " The same person, same outfit, same room, same camera framing as before. "
-    "Do not change clothing, background, or camera angle."
+    " Preserve the exact same facial identity from the start image, not just a similar person: "
+    "same slightly long rectangular face, same calm sharp eyes, same medium complexion, "
+    "same hairline, same short side-parted black hair with slight gray at the temples, "
+    "same clean-shaven look, same age, same outfit, same navy suit, same white shirt, "
+    "same dark tie, same room, and same locked-off bust-up camera framing as before. "
+    "Do not zoom in, push in, change the background, change clothing, alter the face, "
+    "change hairstyle, change gray hair amount, add or remove facial hair, or change the camera angle."
 )
 
 

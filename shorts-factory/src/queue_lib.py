@@ -188,6 +188,8 @@ def new_item(
         "title": script["title"],
         "caption": script["caption"],
         "hashtags": script["hashtags"],
+        "speaker_credit": script.get("speaker_credit", CONFIG.get("speaker_credit")),
+        "audio_mode": script.get("audio_mode"),
         "content_strategy": script.get("content_strategy", {}),
         "platform_angles": script.get("platform_angles", {}),
         "video": {

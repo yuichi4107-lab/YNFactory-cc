@@ -146,13 +146,13 @@ python3 shorts-factory/scripts/retry_failed_posts.py <queue_id> --execute
 
 ### Atlas Cloud Seedance 2.0 統合（AI動画背景）
 
-週5枠だけ、静止画カード＋VOICEVOXの代わりにAI動画＋Seedanceネイティブ音声で生成する（反応検証目的）。それ以外の枠は従来どおり静止画版。
+週5枠だけ、静止画カード背景の代わりにSeedance AI動画背景を生成し、音声は日本語TTS（VOICEVOX）で差し替える（反応検証目的）。それ以外の枠は従来どおり静止画版。
 
 - **対象枠**: `mon-09` / `wed-14` / `fri-19` / `sat-14` / `sun-09`（`config.yaml` の `seedance.slots`）。判定は「時」単位マッチ — 例えば `mon-09` は月曜09:00〜09:59台に実行されれば発火する（分は見ない）
 - **共通動画モード前提**: Seedance版は `content.platform_variant_videos: false`（共通動画1本、媒体別動画生成とは併用しない）。動画内CTAも「続きはプロフィールから」等の媒体非依存表現にする
-- **方式**: `bytedance/seedance-2.0-fast` を使い、カット1は text-to-video、カット2以降は前カットの最終フレームを `start_image` にした image-to-video で連鎖生成し人物・服装・部屋を統一する。音声はSeedanceネイティブ日本語音声（VOICEVOXは使わない）
-- **読み分離（漢字の誤読防止）**: VOICEVOX版と同じ「読み上げはカタカナ読み仮名・テロップは漢字表記」を採用。台本の各cueは `tts_text`（漢字仮名交じり。字幕・CER検証の基準）と `tts_kana`（tts_textの正確なカタカナ読み。Seedanceが実際に発話する文字列）を両方持つ。Seedanceのvideo_promptには `tts_kana` だけを注入するため、音読み/訓読みの誤読が起きない。`tts_kana` は全カタカナであること・`tts_text` と音韻CERで読みが一致すること（`SEEDANCE_KANA_MISMATCH_CER_MAX`、既定0.35）を生成時に検証する。英語ツール名の読みは既存の `jp_text.TERM_READINGS`（ChatGPT→チャットジーピーティー等）で機械的に畳み込む
-- **字幕**: Seedance音声を既存のwhisper.cpp基盤で文字起こしし、台本の `tts_text` と音韻CER突合して正確性を検証する（`seedance.cer_line_max` / `seedance.cer_avg_max` はVOICEVOX版より緩め）。CER不合格は1回だけ再生成し、それでも不合格ならフォールバック
+- **方式**: `bytedance/seedance-2.0-fast` を使い、カット1は text-to-video、カット2以降は前カットの最終フレームを `start_image` にした image-to-video で連鎖生成し人物・服装・部屋を統一する。Seedanceの外国語訛りを避けるため、`seedance.audio_mode: voicevox` ではSeedance音声を使わず、VOICEVOX男性話者（既定: 青山龍星）で日本語音声を合成して差し替える
+- **読み分離（漢字の誤読防止）**: VOICEVOX版と同じ「読み上げは読み仮名で保証・テロップは漢字表記」を採用。台本の各cueは `tts_text`（漢字仮名交じり。字幕・CER検証の基準）と `tts_kana`（tts_textの正確なカタカナ読み）を両方持つ。VOICEVOX合成では `tts_text` を基本にし、読みがずれた場合のみ `tts_kana` にフォールバックする。英語ツール名の読みは既存の `jp_text.TERM_READINGS`（ChatGPT→チャットジーピーティー等）で機械的に畳み込む
+- **字幕**: VOICEVOX差し替え音声を既存のwhisper.cpp基盤で文字起こしし、台本の `tts_text` と音韻CER突合して正確性を検証する。`native` 音声モード時のみ `seedance.cer_line_max` / `seedance.cer_avg_max` の緩い閾値を使う
 - **フォールバック条件**: APIキー未設定・API失敗/タイムアウト・月次予算超過・1本あたり上限超過・CER不合格継続のいずれでも、自動的に従来の静止画カード版へ切り替わり投稿を止めない
 - **コスト上限**: `seedance.monthly_budget_usd`（既定$130/月）・`seedance.max_cost_per_video_usd`（既定$10/本）。超過が見込まれる場合は生成前にフォールバックする
 - **コストログ**: `~/shorts-factory/logs/seedance_costs.jsonl`（1行1JSON、日時・動画ID・カット数・秒数・金額・成否を記録）。月次累計はこのログから毎回再計算する

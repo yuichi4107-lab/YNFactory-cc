@@ -36,7 +36,8 @@ def _fixed_seedance_cue(overrides: dict | None = None) -> dict:
         "video_prompt": (
             "Same 45-year-old Japanese male business professional in a dark navy business suit, "
             "crisp white shirt, dark solid tie, sitting in the same modern Japanese office "
-            "meeting room, same bust-up camera angle. He says in Japanese: {{LINE}}"
+            "meeting room, same bust-up locked-off camera angle, no zoom. "
+            "He says in Japanese: {{LINE}}"
         ),
         "tts_text": "実は残業の9割は防げます。",
         "tts_kana": "ジツハザンギョウノキュウワリハフセゲマス。",
@@ -461,6 +462,28 @@ class SubtitleStyleTest(unittest.TestCase):
         emphasis_line = next(line for line in ass.splitlines() if line.startswith("Style: Emphasis"))
         self.assertIn("&H00FFFFFF", emphasis_line)
         self.assertNotIn("&H0000E6FF", emphasis_line)
+
+
+class SeedanceVoicevoxAudioModeTest(unittest.TestCase):
+    """Seedance映像 + VOICEVOX音声差し替えのテスト。"""
+
+    def test_seedance_voicevox_cues_use_tts_kana_as_reading_kana(self):
+        script = {
+            "cues": [
+                {
+                    "tts_text": "ChatGPTに日本語で頼むだけです。",
+                    "tts_kana": "チャットジーピーティーニニホンゴデタノムダケデス。",
+                    "display": ["ChatGPTに頼む"],
+                }
+            ]
+        }
+        cues = pipeline._seedance_voicevox_cues(script)
+        self.assertEqual(cues[0]["reading_kana"], "チャットジーピーティーニニホンゴデタノムダケデス。")
+        self.assertEqual(cues[0]["tts_text"], "ChatGPTに日本語で頼むだけです。")
+
+    def test_seedance_audio_mode_defaults_to_voicevox_for_unknown_values(self):
+        with patch.object(CONFIG, "cfg", {**CONFIG.cfg, "seedance": {**CONFIG.cfg["seedance"], "audio_mode": "bad"}}):
+            self.assertEqual(pipeline._seedance_audio_mode(), "voicevox")
 
 
 class ProduceSeedanceIntegrationTest(unittest.TestCase):

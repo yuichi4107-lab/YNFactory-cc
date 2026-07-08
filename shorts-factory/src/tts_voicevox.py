@@ -114,7 +114,13 @@ def _wav_duration(path: Path) -> float:
         return w.getnframes() / w.getframerate()
 
 
-def synthesize_cues(cues: list[dict], work_dir: Path) -> dict:
+def synthesize_cues(
+    cues: list[dict],
+    work_dir: Path,
+    *,
+    speaker_id: int | None = None,
+    speed_scale: float | None = None,
+) -> dict:
     """全キューを合成し、タイミング情報付きで返す。
 
     Returns:
@@ -126,8 +132,8 @@ def synthesize_cues(cues: list[dict], work_dir: Path) -> dict:
     """
     ensure_engine()
     apply_user_dict()
-    speaker = int(CONFIG.get("speaker_id", default=3))
-    speed = float(CONFIG.get("speed_scale", default=1.0))
+    speaker = int(speaker_id if speaker_id is not None else CONFIG.get("speaker_id", default=3))
+    speed = float(speed_scale if speed_scale is not None else CONFIG.get("speed_scale", default=1.0))
     sr = int(CONFIG.get("tts", "output_sampling_rate", default=48000))
     mismatch_th = float(CONFIG.get("tts", "kana_mismatch_cer", default=0.15))
 

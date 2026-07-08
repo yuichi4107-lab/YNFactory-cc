@@ -188,7 +188,8 @@ def build_platform_copy(item: dict, platform: str) -> dict:
             cta,
             description_url,
             " ".join(tags),
-            f"{CONFIG.get('speaker_credit')}\n音声・映像はAIで自動生成しています",
+            f"{item.get('speaker_credit') or CONFIG.get('speaker_credit')}\n"
+            "音声・映像はAIで自動生成しています",
         ]
     )
     return {

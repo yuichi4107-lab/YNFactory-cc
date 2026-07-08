@@ -1089,9 +1089,10 @@ SEEDANCE_SCHEMA_KEYS = {
 
 LINE_PLACEHOLDER = "{{LINE}}"
 SEEDANCE_FIXED_CHARACTER_DESCRIPTION = (
-    "A 45-year-old Japanese male business professional, short neatly styled black hair "
-    "with slight gray at the temples, clean-shaven, wearing a dark navy business suit, "
-    "crisp white shirt, and dark solid tie, capable and calm executive consultant vibe"
+    "A 45-year-old Japanese male business professional, medium complexion, calm sharp eyes, "
+    "slightly long rectangular face, short neatly side-parted black hair with slight gray "
+    "at the temples, clean-shaven, wearing a dark navy business suit, crisp white shirt, "
+    "and dark solid tie, capable and calm executive consultant vibe"
 )
 SEEDANCE_FIXED_ROOM_DESCRIPTION = (
     "A modern Japanese office meeting room with neutral white walls, glass partition, "
@@ -1099,7 +1100,7 @@ SEEDANCE_FIXED_ROOM_DESCRIPTION = (
 )
 SEEDANCE_FIXED_CAMERA_DESCRIPTION = (
     "Vertical 9:16 video, bust-up framing, camera at eye level, direct eye contact, "
-    "professional talking-head style"
+    "professional talking-head style, locked-off camera, no zoom, no push-in, no close-up change"
 )
 _SEEDANCE_FEMALE_TERMS_RE = re.compile(r"\b(woman|female|girl|she|her)\b", re.IGNORECASE)
 
@@ -1160,6 +1161,8 @@ def _seedance_identity_errors(data: dict) -> list[str]:
         errs.append("Seedance背景はmodern Japanese office meeting roomに固定してください")
     if "bust-up" not in camera.lower() and "upper-body" not in camera.lower():
         errs.append("Seedanceカメラはbust-up/upper-body framingに固定してください")
+    if "locked-off" not in camera.lower() or "no zoom" not in camera.lower():
+        errs.append("Seedanceカメラはlocked-off camera / no zoomに固定してください")
 
     for i, cue in enumerate(data.get("cues", [])):
         if not isinstance(cue, dict):
@@ -1175,6 +1178,7 @@ def _seedance_identity_errors(data: dict) -> list[str]:
             "white shirt": ["white shirt"],
             "tie": ["tie"],
             "office meeting room": ["office", "meeting room"],
+            "locked camera": ["locked-off", "no zoom"],
         }
         for label, aliases in prompt_required.items():
             if not all(alias in lower_prompt for alias in aliases):
