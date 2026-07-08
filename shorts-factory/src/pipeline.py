@@ -14,6 +14,7 @@ import argparse
 import json
 import re
 import shutil
+import subprocess
 import sys
 import traceback
 import unicodedata
@@ -21,7 +22,17 @@ from datetime import date, datetime
 from pathlib import Path
 
 from .config import CONFIG
-from . import image_gen, notify, queue_lib, renderer, script_gen, topic_store, tts_voicevox, verifier
+from . import (
+    image_gen,
+    notify,
+    queue_lib,
+    renderer,
+    script_gen,
+    topic_store,
+    tts_voicevox,
+    verifier,
+    video_bg_gen,
+)
 from .fs_retry import is_transient_io_error, retry_io
 from .logging_utils import redact_secrets
 
@@ -59,6 +70,7 @@ def save_outputs(
     previews: list[Path],
     title: str,
     script: dict,
+    credit: str | None = None,
 ) -> Path:
     """Copy generated artifacts to Drive, retrying transient Drive I/O errors."""
 
@@ -77,7 +89,8 @@ def save_outputs(
         captions = (
             f"# {title}\n\n## キャプション\n{script['caption']}\n\n"
             f"## ハッシュタグ\n{' '.join(script['hashtags'])}\n\n"
-            f"## クレジット（概要欄に含めること）\n{CONFIG.get('speaker_credit')}／音声・映像はAIで自動生成しています\n"
+            f"## クレジット（概要欄に含めること）\n"
+            f"{credit or (str(CONFIG.get('speaker_credit')) + '／音声・映像はAIで自動生成しています')}\n"
         )
         (out_dir / "captions.md").write_text(captions, encoding="utf-8")
         return out_dir
@@ -306,6 +319,234 @@ def _build_candidate(
     }
 
 
+# ===================== Seedance統合（AI動画背景版） =====================
+#
+# 適用枠は config seedance.slots（例: ["mon-09", "wed-14", ...]）と実行時刻の
+# 曜日・時で判定する。該当枠のみSeedance版、他は従来の静止画カード版。
+# API失敗・タイムアウト・キー未設定・コスト上限超過・CER不合格継続の
+# いずれでも、静止画カード版へ自動フォールバックし投稿を止めない。
+
+_WEEKDAY_CODES = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+
+
+def is_seedance_slot(now: datetime | None = None) -> bool:
+    """現在時刻がSeedance適用枠（曜日-時）に該当するかを判定する。"""
+    if not CONFIG.get("seedance", "enabled", default=True):
+        return False
+    now = now or datetime.now()
+    slot_code = f"{_WEEKDAY_CODES[now.weekday()]}-{now.hour:02d}"
+    slots = CONFIG.get("seedance", "slots", default=[]) or []
+    return slot_code in {str(s).strip().lower() for s in slots}
+
+
+def _seedance_cost_settings() -> tuple[float, float]:
+    max_per_video = float(CONFIG.get("seedance", "max_cost_per_video_usd", default=10.0))
+    monthly_budget = float(CONFIG.get("seedance", "monthly_budget_usd", default=130.0))
+    return max_per_video, monthly_budget
+
+
+def _build_seedance_video(script: dict, work: Path) -> tuple[Path, list[dict], list]:
+    """台本のcuesからSeedanceでカットごとの動画を連鎖生成し、1本に連結する。
+
+    Returns:
+        (連結済みmp4パス, タイミング確定済みcues, CutResultリスト)
+
+    Raises:
+        video_bg_gen.SeedanceError系: API失敗・タイムアウト・予算超過等。
+        呼び出し元でフォールバック判断すること。
+    """
+    cues = script["cues"]
+    cut_duration = int(CONFIG.get("seedance", "cut_duration_sec", default=10))
+    model = CONFIG.get("seedance", "model", default="fast")
+    estimated_total_sec = cut_duration * len(cues)
+    estimated_cost = video_bg_gen.estimate_cost(estimated_total_sec, model)
+
+    max_per_video, _ = _seedance_cost_settings()
+    if not video_bg_gen.is_budget_available(estimated_cost):
+        raise video_bg_gen.SeedanceError(
+            f"予算上限超過見込み（推定${estimated_cost}, 1本上限${max_per_video}, "
+            f"今月残${video_bg_gen.budget_remaining()}）"
+        )
+
+    character = script.get("character_description", "")
+    room = script.get("room_description", "")
+    camera = script.get("camera_description", "")
+    chain_cuts = []
+    for i, cue in enumerate(cues):
+        prompt = cue["video_prompt"]
+        # キャラクター統一の固定句をカット1にも明示しておく（カット2以降は
+        # video_bg_gen.CONTINUITY_SUFFIX が自動付与するため、ここでは
+        # カット1向けに設定文をまとめて先頭に足すだけでよい）
+        if i == 0 and character:
+            prompt = f"{character}, in {room}, {camera}. {prompt}"
+        chain_cuts.append({"name": f"cut{i + 1}", "prompt": prompt, "duration": cut_duration})
+
+    chain_config = video_bg_gen.ChainConfig(
+        cuts=chain_cuts,
+        resolution=CONFIG.get("seedance", "resolution", default="720p"),
+        ratio=CONFIG.get("seedance", "ratio", default="9:16"),
+        generate_audio=bool(CONFIG.get("seedance", "generate_audio", default=True)),
+        watermark=bool(CONFIG.get("seedance", "watermark", default=False)),
+        seed=CONFIG.get("seedance", "seed", default=42),
+        model=model,
+    )
+    seedance_dir = work / "seedance"
+    cut_results = video_bg_gen.generate_chained_cuts(chain_config, seedance_dir)
+    timed_cues = video_bg_gen.assign_cue_timings_from_cuts(cues, cut_results)
+    # compose_finalはwork直下のファイル名(cwd相対)でffmpegを呼ぶため、連結結果はwork直下に置く
+    bg = video_bg_gen.concat_cuts(cut_results, work / "bg_seedance.mp4", seedance_dir)
+    return bg, timed_cues, cut_results
+
+
+#  字幕タイミング: 各カットの実尺（video_bg_gen.assign_cue_timings_from_cuts）
+#  で start/end を機械的に確定し、字幕正確性そのものは
+#  verifier.verify_video → verifier.transcribe（whisper.cpp）が
+#  最終mp4の音声を文字起こしして台本の tts_text と音韻CER突合する。
+#  つまり「Seedance音声をwhisperで文字起こしして台本と突合」は
+#  verifier側の既存ロジックをそのまま再利用し、しきい値だけ
+#  seedance.cer_line_max / cer_avg_max に緩めている。
+
+
+def _build_seedance_candidate(
+    topic_entry: str | dict,
+    selected_difficulty: str,
+    attempt: int = 1,
+) -> dict:
+    """Seedance版（AI動画背景・ネイティブ音声）の候補を1本生成する。
+
+    静止画カード版の _build_candidate と対になるが、TTS(VOICEVOX)を使わず、
+    Seedance生成音声をそのままマスター音声として扱う。
+    失敗時は video_bg_gen.SeedanceError系 を送出し、呼び出し元でフォールバックする。
+    """
+    topic = _topic_text(topic_entry)
+    cut_count = 4
+    script = script_gen.generate_seedance_script(topic_entry, selected_difficulty, cut_count)
+    title = script["title"]
+    suffix_parts = ["seedance"]
+    if attempt > 1:
+        suffix_parts.append(f"try{attempt}")
+    item_id = make_item_id(title, suffix="-".join(suffix_parts))
+    work = CONFIG.work_dir / item_id
+    if work.exists():
+        shutil.rmtree(work)
+    work.mkdir(parents=True)
+    (work / "script.json").write_text(
+        json.dumps(script, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    log(f"Seedance台本OK: 「{title}」 cuts={len(script['cues'])} candidate={attempt}")
+
+    video_id = item_id
+    cut_results: list = []
+    try:
+        bg, timed_cues, cut_results = _build_seedance_video(script, work)
+        log(
+            f"Seedance生成OK: {len(cut_results)}カット "
+            f"({sum(c.duration_sec for c in cut_results):.0f}秒)"
+        )
+        video_bg_gen.record_cost(video_bg_gen.make_cost_record(video_id, cut_results, success=True))
+
+        total_dur = timed_cues[-1]["end"] if timed_cues else 0.0
+        # Seedance音声をそのままmaster_wavとして抽出（loudnorm測定・最終合成用）
+        master_wav = work / "master_voice.wav"
+        ffmpeg_bin = CONFIG.get("ffmpeg", default="ffmpeg")
+        proc = subprocess.run(
+            [str(ffmpeg_bin), "-y", "-i", str(bg), "-vn", "-ar", "48000", "-ac", "1", str(master_wav)],
+            capture_output=True,
+        )
+        if proc.returncode != 0:
+            raise video_bg_gen.SeedanceError(
+                f"音声抽出失敗: {proc.stderr.decode('utf-8', errors='replace')[:300]}"
+            )
+
+        # Seedance版はVOICEVOX不使用のためspeaker_creditを付けない(誤クレジット防止)
+        credit = "音声・映像はAIで自動生成"
+        overlay = work / "overlay.png"
+        renderer.make_overlay(title, credit, overlay)
+        ass = work / "subs.ass"
+        renderer.make_ass(timed_cues, total_dur, ass)
+        measured = renderer.measure_loudnorm(master_wav, work)
+        final = renderer.compose_final(
+            bg, overlay, ass, master_wav, total_dur, work, measured=measured,
+        )
+        log("SeedanceレンダリングOK")
+
+        cer_line_max = float(CONFIG.get("seedance", "cer_line_max", default=0.30))
+        cer_avg_max = float(CONFIG.get("seedance", "cer_avg_max", default=0.18))
+        report = verifier.verify_video(
+            final, timed_cues, total_dur, work,
+            cer_line_max=cer_line_max, cer_avg_max=cer_avg_max,
+        )
+        report["fix_loops"] = 0
+        (work / "quality_report.json").write_text(
+            json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+        log(
+            f"Seedance検証{'合格✅' if report['pass'] else '不合格⚠️'} "
+            f"avg_cer={report['accuracy']['avg_cer']}"
+        )
+        previews = renderer.extract_previews(final, timed_cues, work)
+    except video_bg_gen.SeedanceError as e:
+        # 課金ゼロの失敗(カット0件)も監査用に必ず記録する
+        video_bg_gen.record_cost(
+            video_bg_gen.make_cost_record(
+                video_id, cut_results, success=False, detail=str(e)[:200]
+            )
+        )
+        raise
+
+    images: list[Path] = []
+    out_dir = save_outputs(
+        item_id, final, ass, work, images, previews, title, script,
+        credit="音声・映像はAIで自動生成しています",
+    )
+    log(f"Seedance成果物保存: {out_dir}")
+    return {
+        "item_id": item_id,
+        "output_dir": str(out_dir),
+        "out_dir": out_dir,
+        "report": report,
+        "title": title,
+        "topic": topic,
+        "script": script,
+        "final": final,
+        "ass": ass,
+        "work": work,
+        "images": images,
+        "previews": previews,
+        "attempt": attempt,
+        "target_platform": "common",
+        "provider": "seedance",
+    }
+
+
+def _generate_passable_seedance_candidate(
+    topic_entry: str | dict,
+    selected_difficulty: str,
+) -> tuple[dict, int]:
+    """Seedance候補を生成し、CER不合格なら1回だけ再生成する（config seedance.remake_max_attempts）。
+
+    それでも不合格、または例外が発生した場合は呼び出し元でフォールバックする。
+    """
+    remake_max_attempts = max(1, int(CONFIG.get("seedance", "remake_max_attempts", default=1)) + 1)
+    candidate = None
+    discarded_count = 0
+    for attempt in range(1, remake_max_attempts + 1):
+        candidate = _build_seedance_candidate(topic_entry, selected_difficulty, attempt)
+        report = candidate["report"]
+        if report["pass"]:
+            break
+        if attempt >= remake_max_attempts:
+            break
+        discarded_count += 1
+        _mark_discarded_candidate(candidate, attempt + 1)
+        log(
+            f"Seedance品質検証不合格のため再生成: "
+            f"{candidate['item_id']} → attempt {attempt + 1}/{remake_max_attempts}"
+        )
+    assert candidate is not None
+    return candidate, discarded_count
+
+
 def _enabled_platforms() -> list[str]:
     configured = CONFIG.get("queue", "platforms", default=["x"]) or ["x"]
     valid = ("x", "instagram", "tiktok", "youtube")
@@ -320,6 +561,24 @@ def _enabled_platforms() -> list[str]:
 def _select_topic_entry(topic: str | None, selected_difficulty: str) -> dict:
     if topic:
         return {"topic": topic, "difficulty": selected_difficulty}
+
+    try:
+        replenished = topic_store.replenish_topics(selected_difficulty)
+        if replenished.get("added"):
+            detail = replenished.get("details", {}).get(selected_difficulty, {})
+            log(
+                "ネタ帳を自動補充: "
+                f"difficulty={selected_difficulty} added={replenished['added']} "
+                f"before={detail.get('before')} after={detail.get('after')}"
+            )
+            notify.send_message(
+                "📋 shorts-factory: "
+                f"{selected_difficulty} のネタを{replenished['added']}本自動補充しました。"
+            )
+    except OSError as exc:
+        if not topic_store.is_transient_io_error(exc):
+            raise
+        log(f"ネタ帳自動補充を一時スキップ: {exc}")
 
     topic_entry, remaining = topic_store.next_topic_entry(selected_difficulty)
     if not topic_entry:
@@ -479,12 +738,40 @@ def produce(
     topic = _topic_text(topic_entry)
     log(f"テーマ: {topic} (difficulty={selected_difficulty}, target_platform={target_platform})")
 
-    candidate, discarded_count = _generate_passable_candidate(
-        topic_entry,
-        selected_difficulty,
-        target_platform,
-        item_suffix=None if target_platform == "common" else target_platform,
-    )
+    use_seedance = target_platform == "common" and is_seedance_slot()
+    candidate = None
+    discarded_count = 0
+    if use_seedance:
+        try:
+            candidate, discarded_count = _generate_passable_seedance_candidate(
+                topic_entry, selected_difficulty
+            )
+            if not candidate["report"]["pass"]:
+                log(
+                    "Seedance版が品質検証不合格のまま上限到達 → "
+                    "静止画カード版へフォールバック"
+                )
+                candidate = None
+        except video_bg_gen.SeedanceError as exc:
+            log(f"Seedance版の生成に失敗 → 静止画カード版へフォールバック: {exc}")
+            notify.send_message(
+                f"⚠️ shorts-factory: Seedance生成に失敗したため静止画版で代替しました。\n"
+                f"理由: {redact_secrets(str(exc))[:200]}"
+            )
+            candidate = None
+        except Exception as exc:  # noqa: BLE001 - 予期しない失敗でも投稿を止めない
+            log(f"Seedance版で予期しない例外 → 静止画カード版へフォールバック: {exc}")
+            tb = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
+            log("Seedance失敗詳細:\n" + tb[-2000:])
+            candidate = None
+
+    if candidate is None:
+        candidate, discarded_count = _generate_passable_candidate(
+            topic_entry,
+            selected_difficulty,
+            target_platform,
+            item_suffix=None if target_platform == "common" else target_platform,
+        )
     item_id = candidate["item_id"]
     out_dir = candidate["out_dir"]
     report = candidate["report"]

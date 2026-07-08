@@ -19,7 +19,7 @@ APIキーを入れるとAI画像等にアップグレード可能。
 - 難易度バランスは 09:00=初級、14:00=中級、19:00=中級
 - **✅承認して投稿** を押すと有効媒体へ自動投稿（結果URLが返ってくる）
 - **❌却下** でスキップ、**⏸保留** で後回し
-- ネタ帳残り7本以下になると補充アラートが届く → `topics.json` の backlog に追記
+- ネタ帳は難易度別に自動補充される。使用可能ネタが初級8本未満 / 中級16本未満になると、重複チェック済み候補から初級18本 / 中級36本まで補充する
 - **完全自動化**: `~/shorts-factory/config.yaml` に `queue: {auto_post: true}` と書くだけ（承認スキップ・事後通知）
 
 2026-06-16時点の実運用は、`~/shorts-factory/config.yaml` に
@@ -80,6 +80,7 @@ $PY -m src.pipeline --difficulty intermediate # 中級ネタを明示生成
 $PY -m src.pipeline --topic "..." --no-queue # テーマ指定・キュー登録なし（テスト）
 $PY -m src.pipeline --topic "..." --target-platform instagram --no-queue # SNS別台本寄せのテスト
 $PY -m src.pipeline --single-video           # 従来どおり1本の動画を有効媒体へ投稿するキューを作成
+$PY scripts/replenish_topics.py --difficulty intermediate # ネタ帳の手動補充確認
 $PY -m src.approval_bot                      # 承認デーモンを手動起動
 ```
 
@@ -128,6 +129,8 @@ python3 shorts-factory/scripts/retry_failed_posts.py <queue_id> --execute
 2026-07-01 以降、動画テーマはChatGPT単体の小技だけでなく、AIツール比較・AI導入・業務自動化・社内定着・品質チェックへ広げる。
 
 - `topics.json` は `domain` / `business_function` / `primary_tools` / `expertise_angle` / `platform_angles` を持つ構造化topicを扱える
+- `topics.auto_replenish` が有効な場合、生成前に対象難易度の使用可能ネタを確認し、不足時は内蔵候補から自動補充する。補充候補は ChatGPT / Claude / Gemini / NotebookLM / Canva / Gamma / Make / Zapier などを含む
+- 自動補充でも、既存backlog・used・直近queueと類似するtopicは追加しない
 - `script_prompt.md` は「AIツール・AI導入・業務自動化」向けに調整済み
 - `--target-platform x|instagram|tiktok|youtube` で、台本の見せ方をSNS別に寄せられる
 - キューには `content_strategy` と `platform_angles` を保存する
@@ -140,6 +143,20 @@ python3 shorts-factory/scripts/retry_failed_posts.py <queue_id> --execute
 - 生成後は1媒体1キューになり、各キューの有効投稿先は対象SNSだけになる
 - Telegramプレビューには `媒体別動画: x` のように対象SNSが表示される
 - 従来どおり共通動画を使いたい場合は `--single-video` または `content.platform_variant_videos: false` を使う
+
+### Atlas Cloud Seedance 2.0 統合（AI動画背景）
+
+週5枠だけ、静止画カード＋VOICEVOXの代わりにAI動画＋Seedanceネイティブ音声で生成する（反応検証目的）。それ以外の枠は従来どおり静止画版。
+
+- **対象枠**: `mon-09` / `wed-14` / `fri-19` / `sat-14` / `sun-09`（`config.yaml` の `seedance.slots`）。判定は「時」単位マッチ — 例えば `mon-09` は月曜09:00〜09:59台に実行されれば発火する（分は見ない）
+- **共通動画モード前提**: Seedance版は `content.platform_variant_videos: false`（共通動画1本、媒体別動画生成とは併用しない）。動画内CTAも「続きはプロフィールから」等の媒体非依存表現にする
+- **方式**: `bytedance/seedance-2.0-fast` を使い、カット1は text-to-video、カット2以降は前カットの最終フレームを `start_image` にした image-to-video で連鎖生成し人物・服装・部屋を統一する。音声はSeedanceネイティブ日本語音声（VOICEVOXは使わない）
+- **読み分離（漢字の誤読防止）**: VOICEVOX版と同じ「読み上げはカタカナ読み仮名・テロップは漢字表記」を採用。台本の各cueは `tts_text`（漢字仮名交じり。字幕・CER検証の基準）と `tts_kana`（tts_textの正確なカタカナ読み。Seedanceが実際に発話する文字列）を両方持つ。Seedanceのvideo_promptには `tts_kana` だけを注入するため、音読み/訓読みの誤読が起きない。`tts_kana` は全カタカナであること・`tts_text` と音韻CERで読みが一致すること（`SEEDANCE_KANA_MISMATCH_CER_MAX`、既定0.35）を生成時に検証する。英語ツール名の読みは既存の `jp_text.TERM_READINGS`（ChatGPT→チャットジーピーティー等）で機械的に畳み込む
+- **字幕**: Seedance音声を既存のwhisper.cpp基盤で文字起こしし、台本の `tts_text` と音韻CER突合して正確性を検証する（`seedance.cer_line_max` / `seedance.cer_avg_max` はVOICEVOX版より緩め）。CER不合格は1回だけ再生成し、それでも不合格ならフォールバック
+- **フォールバック条件**: APIキー未設定・API失敗/タイムアウト・月次予算超過・1本あたり上限超過・CER不合格継続のいずれでも、自動的に従来の静止画カード版へ切り替わり投稿を止めない
+- **コスト上限**: `seedance.monthly_budget_usd`（既定$130/月）・`seedance.max_cost_per_video_usd`（既定$10/本）。超過が見込まれる場合は生成前にフォールバックする
+- **コストログ**: `~/shorts-factory/logs/seedance_costs.jsonl`（1行1JSON、日時・動画ID・カット数・秒数・金額・成否を記録）。月次累計はこのログから毎回再計算する
+- APIキーは `secrets.yaml` の `atlas_cloud.api_key`（未設定なら常に静止画版）
 
 ## 設定変更
 

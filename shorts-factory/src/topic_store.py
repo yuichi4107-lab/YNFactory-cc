@@ -25,6 +25,9 @@ VALID_DIFFICULTIES = {"beginner", "intermediate"}
 TOPICS_CACHE_PATH = CONFIG.runtime_dir / "cache" / "topics.json"
 TOPIC_SIMILARITY_THRESHOLD = 0.82
 TOPIC_JACCARD_THRESHOLD = 0.74
+QUEUE_RESERVED_RECENT_FILES = 120
+AUTO_REPLENISH_MIN = {"beginner": 8, "intermediate": 16}
+AUTO_REPLENISH_TARGET = {"beginner": 18, "intermediate": 36}
 _TOPIC_NOISE_WORDS = (
     "chatgpt",
     "チャットgpt",
@@ -59,6 +62,47 @@ _TOPIC_SYNONYMS = {
     "型": "標準化",
 }
 
+_BEGINNER_REPLENISH_TASKS = [
+    ("会議メモを要点・TODO・期限に分ける", "meeting", "情報整理"),
+    ("長いメールを失礼のない返信文に整える", "communication", "文章作成"),
+    ("上司への相談文を結論から伝わる形に直す", "communication", "文章改善"),
+    ("Excelの表から確認すべき数字を見つける", "analysis", "数字確認"),
+    ("営業トークの言い換え案を3パターン作る", "sales", "営業改善"),
+    ("マニュアルの抜け漏れをチェックリストにする", "operations", "標準化"),
+    ("採用面接の質問案を職種別に作る", "hr", "採用準備"),
+    ("SNS投稿文を仕事向けに言い換える", "marketing", "発信改善"),
+    ("問い合わせ返信の下書きを丁寧に作る", "customer_support", "顧客対応"),
+    ("研修メモから復習クイズを作る", "training", "学習定着"),
+]
+_BEGINNER_TOOLS = ["ChatGPT", "Claude", "Gemini", "NotebookLM"]
+
+_INTERMEDIATE_REPLENISH_TASKS = [
+    ("提案書の弱点を抽出し、反論対策まで整える", "sales", "提案品質"),
+    ("営業ログから失注理由を分類し、次回提案の仮説に変える", "sales", "営業分析"),
+    ("月次レポートの異常値を見つけ、確認すべき数字を絞る", "analysis", "経営管理"),
+    ("業務マニュアルを現場で使えるチェックリストに変換する", "operations", "標準化"),
+    ("AI導入候補を費用対効果とリスクで優先順位付けする", "ai_adoption", "導入判断"),
+    ("社内FAQ候補を作り、回答品質の確認手順まで決める", "knowledge", "ナレッジ整備"),
+    ("顧客の声を分類し、改善施策の優先順位へ落とし込む", "customer_success", "改善企画"),
+    ("競合比較表を作り、差別化ポイントを一文で言語化する", "marketing", "競合分析"),
+    ("採用要件を分解し、面接評価シートまで作る", "hr", "採用品質"),
+    ("ウェビナー台本を導入・本編・CTAに分けて設計する", "marketing", "導線設計"),
+    ("Google Drive資料を横断し、提案に使える根拠だけ集める", "research", "根拠整理"),
+    ("Notionやスプレッドシートの業務ログから改善候補を抽出する", "operations", "業務改善"),
+    ("営業資料の構成を作り、伝わりにくい箇所を直す", "presentation", "資料改善"),
+    ("MakeやZapierの自動化前に、例外処理と人の確認点を洗い出す", "automation", "自動化設計"),
+    ("AIの出力をそのまま使わず、事実確認の観点を3つに絞る", "quality", "品質管理"),
+    ("複数AIの回答差分から、仕事で採用する案を選ぶ", "ai_tool_comparison", "AI比較"),
+]
+_INTERMEDIATE_TOOL_SETS = [
+    ["ChatGPT", "Claude"],
+    ["Gemini", "NotebookLM"],
+    ["ChatGPT", "Gemini"],
+    ["Claude", "Perplexity"],
+    ["ChatGPT", "Canva", "Gamma"],
+    ["Claude", "Make", "Zapier"],
+]
+
 
 def normalize_difficulty(value: str | None) -> str | None:
     if not value:
@@ -75,6 +119,88 @@ def normalize_difficulty(value: str | None) -> str | None:
 
 def _difficulty(entry: dict) -> str:
     return normalize_difficulty(entry.get("difficulty")) or "beginner"
+
+
+def _configured_count(kind: str, difficulty: str) -> int:
+    defaults = AUTO_REPLENISH_MIN if kind == "min_by_difficulty" else AUTO_REPLENISH_TARGET
+    configured = CONFIG.get("topics", "auto_replenish", kind, default={}) or {}
+    try:
+        return int(configured.get(difficulty, defaults[difficulty]))
+    except (TypeError, ValueError):
+        return defaults[difficulty]
+
+
+def _auto_replenish_enabled() -> bool:
+    return bool(CONFIG.get("topics", "auto_replenish", "enabled", default=True))
+
+
+def _tool_label(tools: list[str]) -> str:
+    if len(tools) == 1:
+        return tools[0]
+    if len(tools) == 2:
+        return f"{tools[0]}と{tools[1]}"
+    return "・".join(tools[:-1]) + f"・{tools[-1]}"
+
+
+def _candidate_entry(
+    topic: str,
+    difficulty: str,
+    *,
+    domain: str,
+    business_function: str,
+    tools: list[str],
+    expertise_angle: str,
+) -> dict:
+    return {
+        "topic": topic,
+        "difficulty": difficulty,
+        "domain": domain,
+        "business_function": business_function,
+        "primary_tools": tools,
+        "expertise_angle": expertise_angle,
+        "target_persona": "AI導入を実務で進めたい中小企業の担当者・管理職",
+        "platform_angles": {
+            "x": "実務で使う判断軸を短く提示",
+            "instagram": "保存して見返せる手順化",
+            "tiktok": "最初のひっかかりを強くして一例で見せる",
+            "youtube": "背景と注意点まで含めて検索流入を狙う",
+        },
+        "source": "auto_replenish_v1",
+    }
+
+
+def _auto_replenish_candidates(difficulty: str) -> list[dict]:
+    if difficulty == "beginner":
+        candidates: list[dict] = []
+        for tool in _BEGINNER_TOOLS:
+            for task, domain, function in _BEGINNER_REPLENISH_TASKS:
+                candidates.append(
+                    _candidate_entry(
+                        f"{tool}で{task}方法",
+                        "beginner",
+                        domain=domain,
+                        business_function=function,
+                        tools=[tool],
+                        expertise_angle="まず1つの作業にAIを使う入口を作る",
+                    )
+                )
+        return candidates
+
+    candidates = []
+    for tools in _INTERMEDIATE_TOOL_SETS:
+        label = _tool_label(tools)
+        for task, domain, function in _INTERMEDIATE_REPLENISH_TASKS:
+            candidates.append(
+                _candidate_entry(
+                    f"{label}で{task}方法",
+                    "intermediate",
+                    domain=domain,
+                    business_function=function,
+                    tools=tools,
+                    expertise_angle="AI専門家として判断・設計・品質管理まで見せる",
+                )
+            )
+    return candidates
 
 
 def normalize_topic_key(topic: str | None) -> str:
@@ -140,10 +266,14 @@ def _queue_topic_entries() -> list[dict]:
     if not CONFIG.queue_dir.exists():
         return []
     entries: list[dict] = []
-    for path in sorted(CONFIG.queue_dir.glob("*.json")):
+    paths = sorted(CONFIG.queue_dir.glob("*.json"), reverse=True)[:QUEUE_RESERVED_RECENT_FILES]
+    for path in paths:
         try:
-            with open(path, "r", encoding="utf-8-sig") as f:
-                item = json.load(f)
+            item = run_with_timeout(
+                lambda p=path: json.loads(p.read_text(encoding="utf-8-sig")),
+                timeout_sec=1.5,
+                label=f"read queue topic {path.name}",
+            )
         except (OSError, json.JSONDecodeError):
             continue
         topic = str(item.get("topic") or "").strip()
@@ -162,7 +292,7 @@ def _queue_topic_entries() -> list[dict]:
     return entries
 
 
-def _reserved_topics(data: dict) -> list[str]:
+def _reserved_topics(data: dict, *, include_queue: bool = False) -> list[str]:
     topics: list[str] = []
     for entry in data.get("used", []):
         topic = str(entry.get("topic") or "").strip()
@@ -171,13 +301,14 @@ def _reserved_topics(data: dict) -> list[str]:
             topics.append(topic)
         if title:
             topics.append(title)
-    for entry in _queue_topic_entries():
-        topic = str(entry.get("topic") or "").strip()
-        title = str(entry.get("title") or "").strip()
-        if topic:
-            topics.append(topic)
-        if title:
-            topics.append(title)
+    if include_queue:
+        for entry in _queue_topic_entries():
+            topic = str(entry.get("topic") or "").strip()
+            title = str(entry.get("title") or "").strip()
+            if topic:
+                topics.append(topic)
+            if title:
+                topics.append(title)
     deduped: list[str] = []
     seen: set[str] = set()
     for topic in topics:
@@ -264,14 +395,18 @@ def _public_topic_entry(entry: dict) -> dict:
     return copied
 
 
-def next_topic_entry(difficulty: str | None = None) -> tuple[dict | None, int]:
+def next_topic_entry(
+    difficulty: str | None = None,
+    *,
+    include_queue: bool = False,
+) -> tuple[dict | None, int]:
     """指定難易度のトピックentryと残数を返す（取り出しはまだしない）。"""
     data = _load()
     backlog = data.get("backlog", [])
     if not backlog:
         return None, 0
     normalized = normalize_difficulty(difficulty)
-    reserved = _reserved_topics(data)
+    reserved = _reserved_topics(data, include_queue=include_queue)
     if normalized:
         for entry in backlog:
             if _difficulty(entry) == normalized and not is_duplicate_topic(entry.get("topic"), reserved):
@@ -283,9 +418,13 @@ def next_topic_entry(difficulty: str | None = None) -> tuple[dict | None, int]:
     return None, 0
 
 
-def next_topic(difficulty: str | None = None) -> tuple[str | None, int]:
+def next_topic(
+    difficulty: str | None = None,
+    *,
+    include_queue: bool = False,
+) -> tuple[str | None, int]:
     """指定難易度のトピック文字列と残数を返す（後方互換API）。"""
-    entry, remaining = next_topic_entry(difficulty)
+    entry, remaining = next_topic_entry(difficulty, include_queue=include_queue)
     if not entry:
         return None, remaining
     return entry.get("topic"), remaining
@@ -352,6 +491,71 @@ def add_topics(topics: list[str | dict]) -> int:
             existing.append(topic)
     _save(data)
     return len(data["backlog"])
+
+
+def _usable_backlog_count(data: dict, difficulty: str, reserved: list[str]) -> int:
+    return sum(
+        1
+        for entry in data.get("backlog", [])
+        if _difficulty(entry) == difficulty and not is_duplicate_topic(entry.get("topic"), reserved)
+    )
+
+
+def replenish_topics(difficulty: str | None = None, *, force: bool = False) -> dict:
+    """不足したネタを内蔵候補から補充する。
+
+    既存backlog・used・直近queueと類似する候補は追加しない。
+    """
+    if not force and not _auto_replenish_enabled():
+        return {"enabled": False, "added": 0, "details": {}}
+
+    normalized = normalize_difficulty(difficulty)
+    targets = [normalized] if normalized else sorted(VALID_DIFFICULTIES)
+    data = _load()
+    reserved = _reserved_topics(data)
+    existing = [
+        str(entry.get("topic") or "")
+        for entry in data.get("backlog", [])
+        if str(entry.get("topic") or "").strip()
+    ] + reserved
+    details: dict[str, dict] = {}
+    added_entries: list[dict] = []
+
+    for target_difficulty in targets:
+        current = _usable_backlog_count(data, target_difficulty, reserved)
+        min_count = _configured_count("min_by_difficulty", target_difficulty)
+        target_count = _configured_count("target_by_difficulty", target_difficulty)
+        details[target_difficulty] = {
+            "before": current,
+            "min": min_count,
+            "target": target_count,
+            "added": 0,
+        }
+        if not force and current >= min_count:
+            details[target_difficulty]["after"] = current
+            continue
+
+        for candidate in _auto_replenish_candidates(target_difficulty):
+            if current >= target_count:
+                break
+            topic = str(candidate.get("topic") or "").strip()
+            if not topic or is_duplicate_topic(topic, existing):
+                continue
+            data.setdefault("backlog", []).append(candidate)
+            existing.append(topic)
+            added_entries.append(candidate)
+            current += 1
+            details[target_difficulty]["added"] += 1
+        details[target_difficulty]["after"] = current
+
+    if added_entries:
+        _save(data)
+    return {
+        "enabled": True,
+        "added": len(added_entries),
+        "details": details,
+        "topics": [entry["topic"] for entry in added_entries],
+    }
 
 
 def backlog_count(difficulty: str | None = None) -> int:

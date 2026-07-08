@@ -89,11 +89,23 @@ def _best_window_cer(cue_norm: str, full_norm: str) -> float:
     return contained_cer(cue_norm, full_norm)
 
 
-def check_subtitle_accuracy(cues: list[dict], segs: list[dict]) -> dict:
-    """各キューの台本文とWhisper結果を音韻ベース（両辺ひらがな読み化）で突合。"""
+def check_subtitle_accuracy(
+    cues: list[dict], segs: list[dict], cer_line_max: float | None = None
+) -> dict:
+    """各キューの台本文とWhisper結果を音韻ベース（両辺ひらがな読み化）で突合。
+
+    Args:
+        cer_line_max: 行ごとのCER上限。省略時は verify.cer_line_max（VOICEVOX向け）。
+            Seedance音声はTTSの読み仮名保証が無いため、呼び出し元が
+            seedance.cer_line_max を渡してしきい値を緩めるのが標準。
+    """
     full_text = "".join(s["text"] for s in segs)
     full_norm = phonetic_hira(full_text)
-    line_max = float(CONFIG.get("verify", "cer_line_max", default=0.20))
+    line_max = (
+        float(cer_line_max)
+        if cer_line_max is not None
+        else float(CONFIG.get("verify", "cer_line_max", default=0.20))
+    )
 
     results = []
     for c in cues:
@@ -153,8 +165,19 @@ def detect_black(path: Path) -> list[str]:
     return re.findall(r"black_start:[\d.]+ black_end:[\d.]+", txt)
 
 
-def verify_video(final: Path, cues: list[dict], total_dur: float, work: Path) -> dict:
-    """全検査を実行して quality_report 形式の dict を返す。"""
+def verify_video(
+    final: Path,
+    cues: list[dict],
+    total_dur: float,
+    work: Path,
+    cer_line_max: float | None = None,
+    cer_avg_max: float | None = None,
+) -> dict:
+    """全検査を実行して quality_report 形式の dict を返す。
+
+    cer_line_max / cer_avg_max を指定すると、その動画だけしきい値を上書きできる
+    （Seedance音声版はVOICEVOXより発音ゆれが大きいため緩めた値を使う）。
+    """
     checks: list[dict] = []
 
     def add(name: str, ok: bool, detail: str) -> None:
@@ -191,10 +214,17 @@ def verify_video(final: Path, cues: list[dict], total_dur: float, work: Path) ->
 
     # 字幕正確性（Whisper逆突合）
     segs = transcribe(final, work)
-    acc = check_subtitle_accuracy(cues, segs)
-    avg_max = float(CONFIG.get("verify", "cer_avg_max", default=0.10))
+    acc = check_subtitle_accuracy(cues, segs, cer_line_max=cer_line_max)
+    avg_max = (
+        float(cer_avg_max)
+        if cer_avg_max is not None
+        else float(CONFIG.get("verify", "cer_avg_max", default=0.10))
+    )
+    line_max_display = (
+        cer_line_max if cer_line_max is not None else CONFIG.get("verify", "cer_line_max")
+    )
     add("subtitle_accuracy_lines", not acc["failed_indices"],
-        f"不合格行 {acc['failed_indices']}（行CER上限{CONFIG.get('verify', 'cer_line_max')}）")
+        f"不合格行 {acc['failed_indices']}（行CER上限{line_max_display}）")
     add("subtitle_accuracy_avg", acc["avg_cer"] <= avg_max,
         f"平均CER={acc['avg_cer']} (上限{avg_max}) / 全文CER={acc['global_cer']}")
 

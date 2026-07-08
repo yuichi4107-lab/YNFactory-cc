@@ -138,12 +138,43 @@ DEFAULTS: dict = {
     },
     "content": {
         "default_difficulty": "beginner",
-        "platform_variant_videos": True,
+        "platform_variant_videos": False,
         "scheduled_slots": [
             {"hour": 9, "minute": 0, "difficulty": "beginner"},
             {"hour": 14, "minute": 0, "difficulty": "intermediate"},
             {"hour": 19, "minute": 0, "difficulty": "intermediate"},
         ],
+    },
+    "topics": {
+        "auto_replenish": {
+            "enabled": True,
+            "min_by_difficulty": {
+                "beginner": 8,
+                "intermediate": 16,
+            },
+            "target_by_difficulty": {
+                "beginner": 18,
+                "intermediate": 36,
+            },
+        }
+    },
+    "seedance": {
+        "enabled": True,  # False にすると枠判定に関わらず常に静止画版
+        "slots": ["mon-09", "wed-14", "fri-19", "sat-14", "sun-09"],  # 週5枠（曜日-時）
+        "model": "fast",  # std ($0.112/s) | fast ($0.09/s)
+        "resolution": "720p",
+        "ratio": "9:16",
+        "generate_audio": True,  # Seedanceネイティブ日本語音声（VOICEVOXは使わない）
+        "watermark": False,
+        "seed": 42,  # 固定するとスタイルの一貫性が上がる
+        "cut_duration_sec": 10,
+        "poll_interval_sec": 15,
+        "timeout_sec": 1800,  # 1カットあたりのポーリングタイムアウト（30分）
+        "monthly_budget_usd": 130.0,
+        "max_cost_per_video_usd": 10.0,
+        "cer_line_max": 0.30,  # Seedance音声はVOICEVOXよりCER許容を緩める
+        "cer_avg_max": 0.18,
+        "remake_max_attempts": 1,  # CER不合格時、再生成は1回だけ（それでもダメならフォールバック）
     },
     "telegram": {"enabled": True},
     "ffmpeg": "/Users/yuichi/bin/ffmpeg",
@@ -216,6 +247,10 @@ class Config:
     @property
     def gemini_api_key(self) -> str | None:
         return os.environ.get("GEMINI_API_KEY") or self.secret("gemini_api_key") or None
+
+    @property
+    def atlas_cloud_api_key(self) -> str | None:
+        return os.environ.get("ATLAS_CLOUD_API_KEY") or self.secret("atlas_cloud", "api_key") or None
 
     @property
     def telegram_token(self) -> str | None:

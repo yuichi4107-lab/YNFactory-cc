@@ -82,6 +82,23 @@ Drive上のoutputsを広く走査するとGoogle Drive File Providerのロック
 3. Drive正本の `shorts-factory/src/video_bg_gen.py` と runtime `~/shorts-factory/app` の同期状態を確認する（未同期だと本番では旧動作のまま）
 4. 実装の詳細技術知見は `.company/projects/shorts-factory/2026-07-07-seedance-atlas統合要件定義.md` を参照する
 
+## 2026-07-08 ネタ帳自動補充ルール
+
+発生した問題:
+
+- `intermediate` のbacklogが0本になり、水曜14時・毎日19時の中級枠が beginner ネタへフォールバックした
+- Telegramの「ネタが空です」「補充してください」通知は出るが、以前の実装では `topics.json` へ自動追記されなかった
+
+以後の必須ルール:
+
+- 生成前に対象難易度の使用可能ネタ数を確認する
+- 使用可能ネタが `beginner < 8` / `intermediate < 16` なら自動補充する
+- 補充後の目標は `beginner=18` / `intermediate=36`
+- 自動補充候補はChatGPT単体に寄せず、Claude / Gemini / NotebookLM / Canva / Gamma / Make / Zapier などAIツール全般を含める
+- 補充時も既存backlog・used・直近queueと類似するtopicは追加しない
+- 手動確認は `~/shorts-factory/app/scripts/replenish_topics.py --difficulty intermediate` を使う
+- Drive同期失敗時にも同じルールが動くよう、Drive正本だけでなく `/Users/yuichi/YNFactory-cc` と runtime `~/shorts-factory/app` の同期状態を確認する
+
 ## 実装済みガード
 
 - `shorts-factory/src/script_gen.py`
@@ -112,6 +129,7 @@ Drive上のoutputsを広く走査するとGoogle Drive File Providerのロック
 - `shorts-factory/src/fs_retry.py` / `queue_lib.py` / `topic_store.py`
   - Google Drive File Provider がファイル読み込みで固まる場合に備え、queue読み込み・個別queue読み書き・`topics.json` 読み書きへ短時間タイムアウトを入れる
   - タイムアウトは一時I/Oエラーとして扱い、該当ファイルを読み飛ばしてapproval bot全体の停止を避ける
+  - `topic_store.replenish_topics()` が難易度別のネタ不足を自動補充し、生成前の `pipeline._select_topic_entry()` から呼ばれる
 
 ## 復旧手順
 

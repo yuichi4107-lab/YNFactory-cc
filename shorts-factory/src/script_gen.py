@@ -18,7 +18,7 @@ from pathlib import Path
 
 from .config import CONFIG
 from .fs_retry import is_transient_io_error, retry_io
-from .jp_text import lcs_coverage, phonetic_hira
+from .jp_text import fold_aliases, lcs_coverage, phonetic_cer, phonetic_hira
 from . import topic_store
 
 SCRIPT_SCHEMA_KEYS = {"title", "cues", "caption", "hashtags", "card_keywords"}
@@ -258,6 +258,11 @@ def normalize_generated_script(data: dict) -> dict:
         for key in ("tts_text", "reading_kana"):
             if isinstance(cue.get(key), str):
                 cue[key] = _replace_unstable_terms(cue[key])
+        # tts_kana（Seedance版のカタカナ読み）は jp_text.TERM_READINGS
+        # （ChatGPT→チャットジーピーティー等、既存のVOICEVOXユーザー辞書と
+        # 共通の読み辞書）で英字残存を機械的にカタカナへ畳み込む。
+        if isinstance(cue.get("tts_kana"), str):
+            cue["tts_kana"] = fold_aliases(cue["tts_kana"])
     return data
 
 
@@ -1051,5 +1056,356 @@ def generate_script(topic: str | dict, difficulty: str = "beginner", target_plat
         return data
     raise RuntimeError(
         f"台本生成が{retries}回失敗し、フォールバック台本も不合格。最終エラー: "
+        + "; ".join((last_errs + errs)[:5])
+    )
+
+
+# ===================== Seedance版（AI動画背景・ネイティブ音声） =====================
+#
+# 通常版と違い、VOICEVOXナレーションを使わず、Seedance 2.0が生成する動画に
+# ネイティブ音声（日本語セリフ）が含まれる。そのため台本は
+# 「カットごとの英語video_prompt + 日本語セリフ(tts_text) + カタカナ読み(tts_kana)」
+# の形を取る。
+#
+# 読み分離方式（オーナーフィードバック対応）:
+# Seedanceにtts_text（漢字仮名交じり）をそのまま読ませると、音読み/訓読みの
+# 誤読が発生する（例:「一昨日」「上手」等の複数読みを持つ語）。VOICEVOX版と
+# 同様に「読み上げはカタカナ読み仮名・テロップは漢字表記」を分離し、
+# Seedanceには tts_kana（正確なカタカナ読み）だけを発話させる。
+# tts_text は字幕表示・CER検証（whisper突合）の基準として引き続き使う。
+#
+# セリフ注入方式（重要・実E2Eで発覚した不具合の修正）:
+# 当初はLLMにvideo_prompt内へ直接セリフを埋め込ませ、tts_textとの完全一致を
+# 検証していたが、LLMは引用符・空白・句読点をわずかに変形するため機械検証が
+# 構造的に通らなかった。そこでLLMには `{{LINE}}` というプレースホルダーだけを
+# 書かせ、後処理（inject_tts_line_into_prompt）でtts_kana原文を機械的に
+# 置換する方式にした。これにより「プロンプト内セリフ=発話させたいカタカナ読み」が
+# 常に構造的に保証され、完全一致検証そのものが不要になる。
+
+SEEDANCE_SCHEMA_KEYS = {
+    "title", "character_description", "room_description", "camera_description",
+    "cues", "caption", "hashtags", "card_keywords",
+}
+
+LINE_PLACEHOLDER = "{{LINE}}"
+
+# tts_kana に許容する文字種（VOICEVOX版のreading_kana検証 _KANA_RE と同じ基準）。
+_SEEDANCE_KANA_RE = _KANA_RE
+
+# tts_textとtts_kanaの読み整合チェックの許容CER。
+# pykakasiの漢字→ひらがな変換は完全ではない（複合語・固有名詞等でずれる）ため、
+# VOICEVOX側のreading_kana突合（kana_mismatch_cer=0.15）よりやや緩める。
+SEEDANCE_KANA_MISMATCH_CER_MAX = 0.35
+
+
+def inject_tts_line_into_prompt(video_prompt: str, tts_kana: str) -> str:
+    """video_prompt内のプレースホルダーをtts_kana（カタカナ読み）原文へ機械的に置換する。
+
+    Seedanceには漢字仮名交じりのtts_textではなく、カタカナ読みのtts_kanaを
+    発話させることで、音読み/訓読みの誤読を防ぐ（VOICEVOX版のreading_kana
+    直読みフォールバックと同じ発想）。
+
+    LLMが `{{LINE}}` を書き忘れた場合や、既にセリフ風の文字列を書いてしまった
+    場合でも、必ずtts_kana原文が1箇所だけ含まれるプロンプトを返す
+    （末尾に `She/He says in Japanese: "<tts_kana>"` を追記するフォールバック）。
+    """
+    quoted = f'says in Japanese: "{tts_kana}"'
+    if LINE_PLACEHOLDER in video_prompt:
+        return video_prompt.replace(LINE_PLACEHOLDER, f'"{tts_kana}"')
+    # プレースホルダーが無い場合は、確実にtts_kana原文が入るよう末尾に追記する。
+    # LLMが独自にセリフを書いていても、検証・生成が依存するのはこの追記分だけ。
+    prompt = video_prompt.rstrip()
+    if not prompt.endswith((".", "!", "?", "。")):
+        prompt += "."
+    return f"{prompt} She/He {quoted}."
+
+
+def _build_seedance_prompt(topic: str | dict, difficulty: str, cut_count: int) -> str:
+    prompt_path = CONFIG.prompts_dir / "seedance_script_prompt.md"
+    try:
+        tpl = retry_io(
+            lambda: prompt_path.read_text(encoding="utf-8"),
+            attempts=8,
+            delay_sec=3.0,
+        )
+    except OSError as exc:
+        if not is_transient_io_error(exc):
+            raise
+        local_prompt = Path(__file__).resolve().parents[1] / "prompts" / "seedance_script_prompt.md"
+        tpl = retry_io(
+            lambda: local_prompt.read_text(encoding="utf-8"),
+            attempts=3,
+            delay_sec=1.0,
+        )
+    recent = topic_store.recent_titles(30)
+    recent_str = "\n".join(f"- {t}" for t in recent) if recent else "（まだ無し）"
+    difficulty = topic_store.normalize_difficulty(difficulty) or "beginner"
+    topic_text = _topic_text(topic)
+    return (
+        tpl.replace("{topic}", topic_text)
+        .replace("{difficulty}", difficulty)
+        .replace("{difficulty_guidance}", DIFFICULTY_GUIDANCE[difficulty])
+        .replace("{cut_count}", str(cut_count))
+        .replace("{recent_titles}", recent_str)
+    )
+
+
+def validate_seedance_script(data: dict, cut_count: int) -> list[str]:
+    """Seedance版台本JSONの機械検証。問題点のリストを返す（空なら合格）。"""
+    errs: list[str] = []
+    if not isinstance(data, dict):
+        return ["JSONオブジェクトではない"]
+    missing = SEEDANCE_SCHEMA_KEYS - set(data)
+    if missing:
+        errs.append(f"必須キー欠落: {sorted(missing)}")
+        return errs
+
+    title = data["title"]
+    if not isinstance(title, str) or not (4 <= len(title) <= 32):
+        errs.append("title は4〜32文字の文字列にすること")
+
+    for key in ("character_description", "room_description", "camera_description"):
+        if not isinstance(data.get(key), str) or len(data[key].strip()) < 10:
+            errs.append(f"{key} は具体的な英語説明にすること（10文字以上）")
+
+    cues = data["cues"]
+    if not isinstance(cues, list) or len(cues) != cut_count:
+        errs.append(f"cues は{cut_count}個ちょうどにすること（現在 {len(cues) if isinstance(cues, list) else '不正'}）")
+        return errs
+
+    max_line = CONFIG.get("subtitle", "max_chars_per_line", default=13)
+    for i, cue in enumerate(cues):
+        if not isinstance(cue, dict):
+            errs.append(f"cue[{i}] がオブジェクトでない")
+            continue
+        vp = cue.get("video_prompt", "")
+        if not isinstance(vp, str) or len(vp.strip()) < 20:
+            errs.append(f"cue[{i}].video_prompt が短すぎる（20文字以上の英語プロンプトにすること）")
+        tts = cue.get("tts_text", "")
+        if not isinstance(tts, str) or not (10 <= len(tts.strip()) <= 90):
+            errs.append(f"cue[{i}].tts_text は10〜90文字にすること（現在 {len(tts.strip()) if isinstance(tts, str) else 0}）")
+        # 注意: video_prompt内にtts_text（漢字仮名交じり）と同一の文字列が
+        # 含まれるかの完全一致検証は行わない。LLMは引用符・空白・句読点を
+        # わずかに変形するため構造的に通らないことが実E2Eで判明したため撤廃した。
+        # セリフの注入は inject_tts_line_into_prompt() が機械的に保証する
+        # （プレースホルダー置換 or 末尾追記のフォールバック）。
+        kana = cue.get("tts_kana", "")
+        if not isinstance(kana, str) or len(kana.strip()) < 3:
+            errs.append(f"cue[{i}].tts_kana が空または短すぎる（漢字の誤読防止のため必須）")
+        elif not _SEEDANCE_KANA_RE.match(kana.strip()):
+            bad = "".join(sorted({c for c in kana if not _SEEDANCE_KANA_RE.match(c)}))[:10]
+            errs.append(f"cue[{i}].tts_kana に非カタカナ文字あり（{bad}）。全てカタカナにすること")
+        elif isinstance(tts, str) and tts.strip():
+            # tts_text（漢字仮名交じり）とtts_kana（カタカナ読み）が同じ内容を
+            # 指しているかを、両者を音韻正規化した上でCERで突合する。
+            # pykakasiの自動読み（tts_text側）と人手相当の読み（tts_kana側）を
+            # 比較するため、VOICEVOXのreading_kana突合よりCER許容を緩めている。
+            mismatch = phonetic_cer(tts, kana)
+            if mismatch > SEEDANCE_KANA_MISMATCH_CER_MAX:
+                errs.append(
+                    f"cue[{i}].tts_kana「{kana}」が tts_text「{tts}」と読みが一致しない"
+                    f"（音韻CER={mismatch:.2f} > 上限{SEEDANCE_KANA_MISMATCH_CER_MAX}）。"
+                    "tts_textの正確な読みをカタカナで書き直すこと"
+                )
+        disp = cue.get("display")
+        if not isinstance(disp, list) or not (1 <= len(disp) <= 2):
+            errs.append(f"cue[{i}].display は1〜2行の配列にすること")
+        else:
+            for j, line in enumerate(disp):
+                if not isinstance(line, str) or not line.strip():
+                    errs.append(f"cue[{i}].display[{j}] が空")
+                elif _char_width(line) > max_line:
+                    errs.append(
+                        f"cue[{i}].display[{j}]「{line}」が{_char_width(line)}文字で上限{max_line}文字超過"
+                    )
+
+    cap = data["caption"]
+    if not isinstance(cap, str) or not (60 <= len(cap) <= 350):
+        errs.append("caption は60〜350文字にすること")
+    tags = data["hashtags"]
+    if not isinstance(tags, list) or not (3 <= len(tags) <= 10) or not all(
+        isinstance(t, str) and t.startswith("#") for t in tags
+    ):
+        errs.append("hashtags は #始まりの文字列3〜10個にすること")
+    kws = data["card_keywords"]
+    if not isinstance(kws, list) or len(kws) < cut_count:
+        errs.append(f"card_keywords は{cut_count}個以上にすること（フォールバック用）")
+    return errs
+
+
+def _apply_line_injection(data: dict) -> dict:
+    """全cueのvideo_promptにtts_kana（カタカナ読み）を機械的に注入する（破壊的に
+    見えるがdataを直接書き換える。呼び出し元は検証・返却の前に必ずこれを通すこと）。
+
+    Seedanceにはtts_text（漢字仮名交じり）ではなくtts_kana（カタカナ読み）を
+    発話させることで、漢字の音読み/訓読み誤読を防ぐ（オーナーフィードバック対応）。
+    tts_kanaが欠落している異常データでは、注入をスキップせずtts_textにフォール
+    バックする（validate_seedance_scriptで別途tts_kana必須エラーを検出する）。
+    """
+    for cue in data.get("cues", []):
+        if not isinstance(cue, dict):
+            continue
+        vp = cue.get("video_prompt")
+        kana = cue.get("tts_kana")
+        tts = cue.get("tts_text")
+        line_source = kana if isinstance(kana, str) and kana.strip() else tts
+        if isinstance(vp, str) and isinstance(line_source, str):
+            cue["video_prompt"] = inject_tts_line_into_prompt(vp, line_source)
+    return data
+
+
+def _fallback_seedance_script(topic: str | dict, difficulty: str, last_errs: list[str]) -> dict:
+    """Seedance生成もLLM生成も失敗した場合の最終フォールバック台本。
+
+    この場合でも呼び出し元（pipeline.py）は例外を検知して静止画版へ
+    フォールバックする設計のため、ここでは軽量な汎用台本を返す。
+    決定論的な固定文言のため、直近動画との重複チェック
+    （recent_duplicate_errors）の対象からは意図的に除外する
+    （非常用フォールバックにまで「ネタ被り禁止」を課すと、同一topicの
+    2回目以降で必ず重複判定に引っかかり、フォールバックが機能しなくなるため）。
+    """
+    topic_text = _topic_text(topic)
+    character = (
+        "A cheerful Japanese woman in her mid-20s with shoulder-length black hair, "
+        "wearing a light beige sweater"
+    )
+    room = "a bright modern Japanese apartment room with soft warm lighting"
+    camera = "front-facing, upper-body framing, talking directly to the camera, vlog style"
+    lines = [
+        (
+            "実は多くの人が知らない使い方があります。今日は3つだけ紹介しますね。",
+            "ジツハオオクノヒトガシラナイツカイカタガアリマス。キョウハミッツダケショウカイシマスネ。",
+            ["知らない使い方", "3つ紹介します"],
+            True,
+        ),
+        (
+            "1つ目は業務時間を記録して、無駄な作業を見える化することです。",
+            "ヒトツメハギョウムジカンヲキロクシテ、ムダナサギョウヲミエルカスルコトデス。",
+            ["業務時間を記録", "無駄を見える化"],
+            False,
+        ),
+        (
+            "2つ目は判断基準をチームで共有して、ばらつきを減らすことです。",
+            "フタツメハハンダンキジュンヲチームデキョウユウシテ、バラツキヲヘラスコトデス。",
+            ["判断基準を共有", "ばらつき減らす"],
+            False,
+        ),
+        (
+            "続きはプロフィールから見てくださいね。それではまた次回。",
+            "ツヅキハプロフィールカラミテクダサイネ。ソレデハマタジカイ。",
+            ["続きはプロフィールから"],
+            False,
+        ),
+    ]
+    cues = []
+    for text, kana, disp, emph in lines:
+        cues.append(
+            {
+                "video_prompt": (
+                    f"{character}, sitting in {room}, {camera}. "
+                    f"She looks at the camera and says in Japanese: {LINE_PLACEHOLDER}"
+                ),
+                "tts_text": text,
+                "tts_kana": kana,
+                "display": disp,
+                "emphasis": emph,
+            }
+        )
+    data = {
+        "title": f"{topic_text}の実務ポイント",
+        "character_description": character,
+        "room_description": room,
+        "camera_description": camera,
+        "cues": cues,
+        "caption": (
+            f"{topic_text}の実務向けショートです。"
+            "前提をそろえて記録しながら改善すると安定します。"
+            "続きはプロフィールから見てください。"
+        ),
+        "hashtags": ["#生成AI", "#AI活用", "#AI導入", "#仕事術", "#業務効率化"],
+        "card_keywords": ["前提整理", "記録", "改善", "共有"],
+        "topic": topic_text,
+        "difficulty": difficulty,
+        "target_platform": "common",
+        "content_strategy": {},
+        "platform_angles": {},
+        "fallback_reason": "; ".join(last_errs[:3]),
+        "is_fallback": True,
+    }
+    return _apply_line_injection(data)
+
+
+def generate_seedance_script(topic: str | dict, difficulty: str = "beginner", cut_count: int = 4) -> dict:
+    """Seedance版（AI動画背景・ネイティブ音声）台本を生成する。
+
+    通常版 generate_script と同じ検証済み台本JSONを返すが、cues は
+    display/tts_text に加えて video_prompt（Seedance用英語プロンプト）と
+    tts_kana（tts_textの正確なカタカナ読み）を持つ。
+    target_platform は常に common（共通動画モード）。
+
+    video_prompt内のセリフは、LLMが書いた `{{LINE}}` プレースホルダー（または
+    それに相当する箇所）を tts_kana（カタカナ読み）原文で機械的に置換して
+    確定させる（inject_tts_line_into_prompt）。Seedanceには漢字仮名交じりの
+    tts_textではなくtts_kanaを発話させることで、漢字の音読み/訓読み誤読を
+    防ぐ（VOICEVOX版のreading_kana直読みフォールバックと同じ発想）。
+    LLM出力の完全一致検証はしない。字幕・CER検証の基準は引き続きtts_text。
+    """
+    provider = CONFIG.get("llm", "provider", default="claude_cli")
+    if provider == "openai" and not CONFIG.openai_api_key:
+        provider = "claude_cli"
+
+    difficulty = topic_store.normalize_difficulty(difficulty) or "beginner"
+    topic_text = _topic_text(topic)
+    meta = _topic_meta(topic)
+    prompt = _build_seedance_prompt(topic, difficulty, cut_count)
+    retries = int(CONFIG.get("llm", "retries", default=3))
+    last_errs: list[str] = []
+    for attempt in range(1, retries + 1):
+        full_prompt = prompt
+        if last_errs:
+            full_prompt += (
+                "\n\n## 前回出力の問題点（必ず修正すること）\n"
+                + "\n".join(f"- {e}" for e in last_errs)
+            )
+        try:
+            raw = _call_openai(full_prompt) if provider == "openai" else _call_claude_cli(full_prompt)
+        except subprocess.TimeoutExpired:
+            last_errs = [
+                f"{provider} が {CONFIG.get('llm', 'timeout_sec', default=300)} 秒でタイムアウト。"
+                "同じ条件で再試行すること"
+            ]
+            continue
+        except RuntimeError as e:
+            last_errs = [str(e)]
+            continue
+        try:
+            data = normalize_generated_script(_extract_json(raw))
+        except (json.JSONDecodeError, ValueError) as e:
+            last_errs = [f"JSONとしてパース不能: {e}"]
+            continue
+        errs = validate_seedance_script(data, cut_count)
+        if not errs:
+            errs = recent_duplicate_errors(data)
+        if not errs:
+            data = _apply_line_injection(data)
+            data["topic"] = topic_text
+            data["difficulty"] = difficulty
+            data["target_platform"] = "common"
+            data["content_strategy"] = {
+                key: meta[key]
+                for key in ("domain", "business_function", "primary_tools", "expertise_angle", "target_persona")
+                if key in meta
+            }
+            data["platform_angles"] = meta.get("platform_angles", {})
+            return data
+        last_errs = errs
+    # フォールバック台本は決定論的な固定文言のため、重複チェック
+    # （recent_duplicate_errors）は意図的に適用しない（上記docstring参照）。
+    data = _fallback_seedance_script(topic, difficulty, last_errs)
+    errs = validate_seedance_script(data, cut_count)
+    if not errs:
+        return data
+    raise RuntimeError(
+        f"Seedance台本生成が{retries}回失敗し、フォールバック台本も不合格。最終エラー: "
         + "; ".join((last_errs + errs)[:5])
     )

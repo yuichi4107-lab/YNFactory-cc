@@ -679,6 +679,11 @@ class PostingCoreTest(unittest.TestCase):
                 return item
 
             with (
+                # is_seedance_slot は実行時刻依存のため、テストの決定論性を保つために
+                # 常にFalse固定する（実運用configのseedance.slotsが実行時刻を含む
+                # 状態だと、このテストが静止画版フローだけを検証しているつもりでも
+                # 意図せずSeedance分岐に入り、実際にLLM呼び出しが発生してしまう）
+                patch.object(pipeline, "is_seedance_slot", return_value=False),
                 patch.object(pipeline, "_quality_remake_settings", return_value=(True, 2)),
                 patch.object(pipeline, "_build_candidate", side_effect=candidates),
                 patch.object(pipeline.topic_store, "next_topic_entry", return_value=({"topic": "topic", "difficulty": "beginner"}, 99)),
@@ -889,7 +894,7 @@ class PostingCoreTest(unittest.TestCase):
         self.assertEqual(len(data["used"]), 1)
         self.assertEqual(data["used"][0]["slug"], "slug-1")
 
-    def test_next_topic_skips_topics_already_in_queue(self):
+    def test_next_topic_can_skip_topics_already_in_queue_when_requested(self):
         data = {
             "backlog": [
                 {
@@ -917,7 +922,7 @@ class PostingCoreTest(unittest.TestCase):
                 ],
             ),
         ):
-            topic, remaining = topic_store.next_topic("intermediate")
+            topic, remaining = topic_store.next_topic("intermediate", include_queue=True)
 
         self.assertEqual(topic, "ChatGPTにプロンプトの評価基準を作らせ、出力品質を比較する方法")
         self.assertEqual(remaining, 2)
@@ -961,6 +966,38 @@ class PostingCoreTest(unittest.TestCase):
         self.assertEqual(
             [entry["topic"] for entry in data["backlog"]],
             ["ChatGPTで月次レポートの異常値を見つける方法"],
+        )
+        self.assertEqual(len(saved), 1)
+
+    def test_replenish_topics_adds_intermediate_without_duplicates(self):
+        data = {
+            "backlog": [],
+            "used": [
+                {
+                    "topic": "ChatGPTとClaudeで提案書の弱点を抽出し、反論対策まで整える方法",
+                    "title": "提案書の弱点をAIで見抜く",
+                }
+            ],
+        }
+        saved: list[dict] = []
+
+        def fake_save(updated):
+            saved.append(json.loads(json.dumps(updated, ensure_ascii=False)))
+            data.clear()
+            data.update(updated)
+
+        with (
+            patch.object(topic_store, "_load", side_effect=lambda *args, **kwargs: json.loads(json.dumps(data, ensure_ascii=False))),
+            patch.object(topic_store, "_save", side_effect=fake_save),
+            patch.object(topic_store, "_queue_topic_entries", return_value=[]),
+        ):
+            result = topic_store.replenish_topics("intermediate", force=True)
+
+        self.assertGreaterEqual(result["added"], 30)
+        self.assertEqual({entry["difficulty"] for entry in data["backlog"]}, {"intermediate"})
+        self.assertNotIn(
+            "ChatGPTとClaudeで提案書の弱点を抽出し、反論対策まで整える方法",
+            [entry["topic"] for entry in data["backlog"]],
         )
         self.assertEqual(len(saved), 1)
 
