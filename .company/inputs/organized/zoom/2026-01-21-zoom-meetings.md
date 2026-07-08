@@ -4,7 +4,7 @@ source: zoom
 type: organized-input
 input_type: zoom-meeting-summaries
 meeting_count: 1
-generated_at: 2026-07-07T07:00:07
+generated_at: 2026-07-08T07:00:08
 raw_source: .company/inputs/conversations/2026-01-21-zoom.md
 tags:
   - zoom
