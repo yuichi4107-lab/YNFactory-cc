@@ -221,21 +221,32 @@ def _check_source_results(conn, date_str, source):
         if race_id not in finished_ids:
             continue
 
-        # 買い目を取得（amount > 0 のみ）
+        # 買い目を取得（amount > 0 のみ）。券種混在レースに対応するため
+        # bet_typeごとに分けて精算し合算する（2026-07-08修正: 旧構成の
+        # 三連複+馬連併用レースで片方の的中が未計上になっていた）
         if has_source:
-            c.execute("""SELECT combination, amount FROM predictions
+            c.execute("""SELECT bet_type, combination, amount FROM predictions
                          WHERE date = ? AND race_id = ? AND source = ? AND amount > 0""",
                       (date_str, race_id, source))
         else:
-            c.execute("""SELECT combination, amount FROM predictions
+            c.execute("""SELECT bet_type, combination, amount FROM predictions
                          WHERE date = ? AND race_id = ? AND amount > 0""",
                       (date_str, race_id))
-        bets = [{"combination": row[0], "amount": row[1]} for row in c.fetchall()]
-        if not bets:
+        bets_by_type = {}
+        for bt_row, comb_row, amt_row in c.fetchall():
+            bets_by_type.setdefault(bt_row, []).append(
+                {"combination": comb_row, "amount": amt_row})
+        if not bets_by_type:
             continue
 
-        bet_total = sum(b["amount"] for b in bets)
-        hit_result = check_hit(conn, race_id, info["bet_type"], bets)
+        bet_total = sum(b["amount"] for bs in bets_by_type.values() for b in bs)
+        hit_result = {"hit": False, "total_payout": 0, "hit_details": []}
+        for bt_row, bs in bets_by_type.items():
+            hr = check_hit(conn, race_id, bt_row, bs)
+            hit_result["total_payout"] += hr["total_payout"]
+            hit_result["hit_details"].extend(hr["hit_details"])
+            if hr["hit"]:
+                hit_result["hit"] = True
 
         # レース情報
         c.execute("SELECT venue, race_number, name FROM races WHERE race_id = ?", (race_id,))

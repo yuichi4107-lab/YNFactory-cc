@@ -93,6 +93,18 @@ def audit(db_path, days, notify):
     if garbled:
         issues.append(f"未知の券種名の払戻 {garbled}行（文字化け疑い）")
 
+    # 0.5) 欠落日検知: 買い予測があるのに prediction_results が1行も無い日
+    #      （結果取得が失敗したまま再試行されず、累計から静かに抜け落ちるパターン。
+    #        2026年に5開催日が該当していた事故の再発検知 2026-07-08追加）
+    cur.execute("""SELECT DISTINCT p.date FROM predictions p
+                   WHERE p.date >= ? AND p.date < date('now', 'localtime') AND p.amount > 0
+                     AND NOT EXISTS (SELECT 1 FROM prediction_results pr WHERE pr.date = p.date)
+                   ORDER BY p.date""", (since,))
+    missing_days = [r[0] for r in cur.fetchall()]
+    if missing_days:
+        issues.append(f"未精算の開催日 {len(missing_days)}日: {', '.join(missing_days)}"
+                      f"（check_results.py <日付> --no-notify でリプレイ精算を）")
+
     # 1) prediction_results をレース×ソース単位で独立再計算と突合
     cur.execute("""SELECT date, race_id, source, bet_type, hit, payout
                    FROM prediction_results WHERE date >= ?""", (since,))
