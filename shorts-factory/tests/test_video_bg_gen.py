@@ -27,8 +27,38 @@ APP_ROOT = Path(__file__).resolve().parents[1]
 if str(APP_ROOT) not in sys.path:
     sys.path.insert(0, str(APP_ROOT))
 
-from src import pipeline, script_gen, video_bg_gen
+from src import pipeline, renderer, script_gen, video_bg_gen
 from src.config import CONFIG
+
+
+def _fixed_seedance_cue(overrides: dict | None = None) -> dict:
+    cue = {
+        "video_prompt": (
+            "Same 45-year-old Japanese male business professional in a dark navy business suit, "
+            "crisp white shirt, dark solid tie, sitting in the same modern Japanese office "
+            "meeting room, same bust-up camera angle. He says in Japanese: {{LINE}}"
+        ),
+        "tts_text": "実は残業の9割は防げます。",
+        "tts_kana": "ジツハザンギョウノキュウワリハフセゲマス。",
+        "display": ["残業の9割は", "防げます"],
+        "emphasis": True,
+    }
+    if overrides:
+        cue.update(overrides)
+    return cue
+
+
+def _fixed_seedance_data(cue_overrides: dict | None = None) -> dict:
+    return {
+        "title": "AI活用で残業を減らす3つの技",
+        "character_description": script_gen.SEEDANCE_FIXED_CHARACTER_DESCRIPTION,
+        "room_description": script_gen.SEEDANCE_FIXED_ROOM_DESCRIPTION,
+        "camera_description": script_gen.SEEDANCE_FIXED_CAMERA_DESCRIPTION,
+        "cues": [_fixed_seedance_cue(cue_overrides) for _ in range(4)],
+        "caption": "A" * 100,
+        "hashtags": ["#生成AI", "#AI活用", "#仕事術"],
+        "card_keywords": ["見える化", "自動判定", "優先度", "効率化"],
+    }
 
 
 class VideoBgGenCostTest(unittest.TestCase):
@@ -281,51 +311,28 @@ class SeedanceLineInjectionTest(unittest.TestCase):
         # 完全一致検証を撤廃したことの回帰防止: video_prompt内にセリフの
         # 文字列がそのまま含まれていなくても（{{LINE}}未置換の生データでも）
         # バリデーションはvideo_prompt/tts_text/tts_kana自体の妥当性だけを見て合格にする。
-        data = {
-            "title": "AI活用で残業を減らす3つの技",
-            "character_description": "A cheerful Japanese woman in her mid-20s wearing a beige sweater",
-            "room_description": "a bright modern Japanese apartment room",
-            "camera_description": "front-facing upper-body framing",
-            "cues": [
-                {
-                    "video_prompt": "A woman talks to the camera. She says in Japanese: {{LINE}}",
-                    "tts_text": "実は残業の9割は防げます。",
-                    "tts_kana": "ジツハザンギョウノキュウワリハフセゲマス。",
-                    "display": ["残業の9割は", "防げます"],
-                    "emphasis": True,
-                }
-            ]
-            * 4,
-            "caption": "A" * 100,
-            "hashtags": ["#生成AI", "#AI活用", "#仕事術"],
-            "card_keywords": ["見える化", "自動判定", "優先度", "効率化"],
-        }
+        data = _fixed_seedance_data()
         errs = script_gen.validate_seedance_script(data, 4)
         self.assertEqual(errs, [])
+
+    def test_validate_seedance_script_rejects_female_or_non_fixed_identity(self):
+        data = _fixed_seedance_data(
+            {
+                "video_prompt": "A young Japanese woman in a beige sweater talks to the camera. {{LINE}}",
+            }
+        )
+        data["character_description"] = "A cheerful Japanese woman in her mid-20s wearing a beige sweater"
+        data["room_description"] = "a bright modern Japanese apartment room"
+        data["camera_description"] = "front-facing upper-body framing"
+        errs = script_gen.validate_seedance_script(data, 4)
+        self.assertTrue(any("女性" in e or "45-year-old male" in e for e in errs))
 
 
 class SeedanceKanaValidationTest(unittest.TestCase):
     """tts_kana必須化・読み整合検証のテスト（オーナーフィードバック対応）。"""
 
     def _base_data(self, cue_overrides: dict) -> dict:
-        cue = {
-            "video_prompt": "A woman talks to the camera. She says in Japanese: {{LINE}}",
-            "tts_text": "実は残業の9割は防げます。",
-            "tts_kana": "ジツハザンギョウノキュウワリハフセゲマス。",
-            "display": ["残業の9割は", "防げます"],
-            "emphasis": True,
-        }
-        cue.update(cue_overrides)
-        return {
-            "title": "AI活用で残業を減らす3つの技",
-            "character_description": "A cheerful Japanese woman in her mid-20s wearing a beige sweater",
-            "room_description": "a bright modern Japanese apartment room",
-            "camera_description": "front-facing upper-body framing",
-            "cues": [cue] * 4,
-            "caption": "A" * 100,
-            "hashtags": ["#生成AI", "#AI活用", "#仕事術"],
-            "card_keywords": ["見える化", "自動判定", "優先度", "効率化"],
-        }
+        return _fixed_seedance_data(cue_overrides)
 
     def test_missing_tts_kana_is_rejected(self):
         data = self._base_data({"tts_kana": ""})
@@ -335,7 +342,6 @@ class SeedanceKanaValidationTest(unittest.TestCase):
     def test_tts_kana_key_absent_is_rejected(self):
         data = self._base_data({})
         del data["cues"][0]["tts_kana"]
-        # list * 4 は同一dict参照なので、全cueから消える
         errs = script_gen.validate_seedance_script(data, 4)
         self.assertTrue(any("tts_kana" in e for e in errs))
 
@@ -433,6 +439,28 @@ class SeedanceFallbackScriptTest(unittest.TestCase):
         self.assertTrue(data.get("is_fallback"))
         for cue in data["cues"]:
             self.assertNotIn("{{LINE}}", cue["video_prompt"])
+
+
+class SubtitleStyleTest(unittest.TestCase):
+    """テロップ色の統一テスト。"""
+
+    def test_emphasis_style_uses_same_white_color_as_default(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "subs.ass"
+            renderer.make_ass(
+                [
+                    {"start": 0.0, "end": 1.0, "display": ["強調"], "emphasis": True},
+                    {"start": 1.0, "end": 2.0, "display": ["通常"], "emphasis": False},
+                ],
+                2.0,
+                out,
+            )
+            ass = out.read_text(encoding="utf-8")
+        self.assertIn("Style: Default", ass)
+        self.assertIn("Style: Emphasis", ass)
+        emphasis_line = next(line for line in ass.splitlines() if line.startswith("Style: Emphasis"))
+        self.assertIn("&H00FFFFFF", emphasis_line)
+        self.assertNotIn("&H0000E6FF", emphasis_line)
 
 
 class ProduceSeedanceIntegrationTest(unittest.TestCase):

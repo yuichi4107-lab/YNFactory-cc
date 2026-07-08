@@ -1088,6 +1088,20 @@ SEEDANCE_SCHEMA_KEYS = {
 }
 
 LINE_PLACEHOLDER = "{{LINE}}"
+SEEDANCE_FIXED_CHARACTER_DESCRIPTION = (
+    "A 45-year-old Japanese male business professional, short neatly styled black hair "
+    "with slight gray at the temples, clean-shaven, wearing a dark navy business suit, "
+    "crisp white shirt, and dark solid tie, capable and calm executive consultant vibe"
+)
+SEEDANCE_FIXED_ROOM_DESCRIPTION = (
+    "A modern Japanese office meeting room with neutral white walls, glass partition, "
+    "tidy desk, soft natural daylight, no distracting props"
+)
+SEEDANCE_FIXED_CAMERA_DESCRIPTION = (
+    "Vertical 9:16 video, bust-up framing, camera at eye level, direct eye contact, "
+    "professional talking-head style"
+)
+_SEEDANCE_FEMALE_TERMS_RE = re.compile(r"\b(woman|female|girl|she|her)\b", re.IGNORECASE)
 
 # tts_kana に許容する文字種（VOICEVOX版のreading_kana検証 _KANA_RE と同じ基準）。
 _SEEDANCE_KANA_RE = _KANA_RE
@@ -1107,7 +1121,7 @@ def inject_tts_line_into_prompt(video_prompt: str, tts_kana: str) -> str:
 
     LLMが `{{LINE}}` を書き忘れた場合や、既にセリフ風の文字列を書いてしまった
     場合でも、必ずtts_kana原文が1箇所だけ含まれるプロンプトを返す
-    （末尾に `She/He says in Japanese: "<tts_kana>"` を追記するフォールバック）。
+    （末尾に `He says in Japanese: "<tts_kana>"` を追記するフォールバック）。
     """
     quoted = f'says in Japanese: "{tts_kana}"'
     if LINE_PLACEHOLDER in video_prompt:
@@ -1117,7 +1131,57 @@ def inject_tts_line_into_prompt(video_prompt: str, tts_kana: str) -> str:
     prompt = video_prompt.rstrip()
     if not prompt.endswith((".", "!", "?", "。")):
         prompt += "."
-    return f"{prompt} She/He {quoted}."
+    return f"{prompt} He {quoted}."
+
+
+def _seedance_identity_errors(data: dict) -> list[str]:
+    """Seedance版の話者・部屋・服装が固定条件を満たしているか検証する。"""
+    errs: list[str] = []
+    character = str(data.get("character_description", ""))
+    room = str(data.get("room_description", ""))
+    camera = str(data.get("camera_description", ""))
+    identity_text = " ".join([character, room, camera]).lower()
+    required_character_terms = {
+        "45-year-old": ["45-year-old", "45 year old", "45"],
+        "male": ["male", "man"],
+        "business professional": ["business professional", "businessman", "executive consultant"],
+        "dark navy suit": ["navy", "suit"],
+        "white shirt": ["white shirt"],
+        "tie": ["tie"],
+    }
+    for label, aliases in required_character_terms.items():
+        if not any(alias in identity_text for alias in aliases):
+            errs.append(f"Seedance話者設定に {label} が含まれていません")
+    if _SEEDANCE_FEMALE_TERMS_RE.search(identity_text):
+        errs.append("Seedance話者設定に女性を示す語が含まれています")
+
+    required_room_terms = ("office", "meeting room")
+    if not all(term in room.lower() for term in required_room_terms):
+        errs.append("Seedance背景はmodern Japanese office meeting roomに固定してください")
+    if "bust-up" not in camera.lower() and "upper-body" not in camera.lower():
+        errs.append("Seedanceカメラはbust-up/upper-body framingに固定してください")
+
+    for i, cue in enumerate(data.get("cues", [])):
+        if not isinstance(cue, dict):
+            continue
+        prompt = str(cue.get("video_prompt", ""))
+        lower_prompt = prompt.lower()
+        if _SEEDANCE_FEMALE_TERMS_RE.search(lower_prompt):
+            errs.append(f"cue[{i}].video_prompt に女性を示す語が含まれています")
+        if "45" not in lower_prompt or not any(term in lower_prompt for term in ("male", "man")):
+            errs.append(f"cue[{i}].video_prompt に固定条件 45-year-old male が不足しています")
+        prompt_required = {
+            "navy suit": ["navy", "suit"],
+            "white shirt": ["white shirt"],
+            "tie": ["tie"],
+            "office meeting room": ["office", "meeting room"],
+        }
+        for label, aliases in prompt_required.items():
+            if not all(alias in lower_prompt for alias in aliases):
+                errs.append(f"cue[{i}].video_prompt に固定条件 {label} が不足しています")
+        if i > 0 and "same" not in lower_prompt:
+            errs.append(f"cue[{i}].video_prompt に前カットと同一人物・同一環境を示す same が不足しています")
+    return errs
 
 
 def _build_seedance_prompt(topic: str | dict, difficulty: str, cut_count: int) -> str:
@@ -1167,6 +1231,8 @@ def validate_seedance_script(data: dict, cut_count: int) -> list[str]:
     for key in ("character_description", "room_description", "camera_description"):
         if not isinstance(data.get(key), str) or len(data[key].strip()) < 10:
             errs.append(f"{key} は具体的な英語説明にすること（10文字以上）")
+
+    errs.extend(_seedance_identity_errors(data))
 
     cues = data["cues"]
     if not isinstance(cues, list) or len(cues) != cut_count:
@@ -1265,12 +1331,9 @@ def _fallback_seedance_script(topic: str | dict, difficulty: str, last_errs: lis
     2回目以降で必ず重複判定に引っかかり、フォールバックが機能しなくなるため）。
     """
     topic_text = _topic_text(topic)
-    character = (
-        "A cheerful Japanese woman in her mid-20s with shoulder-length black hair, "
-        "wearing a light beige sweater"
-    )
-    room = "a bright modern Japanese apartment room with soft warm lighting"
-    camera = "front-facing, upper-body framing, talking directly to the camera, vlog style"
+    character = SEEDANCE_FIXED_CHARACTER_DESCRIPTION
+    room = SEEDANCE_FIXED_ROOM_DESCRIPTION
+    camera = SEEDANCE_FIXED_CAMERA_DESCRIPTION
     lines = [
         (
             "実は多くの人が知らない使い方があります。今日は3つだけ紹介しますね。",
@@ -1302,8 +1365,8 @@ def _fallback_seedance_script(topic: str | dict, difficulty: str, last_errs: lis
         cues.append(
             {
                 "video_prompt": (
-                    f"{character}, sitting in {room}, {camera}. "
-                    f"She looks at the camera and says in Japanese: {LINE_PLACEHOLDER}"
+                    f"{character}, sitting in the same {room}, same {camera}. "
+                    f"He looks at the camera and says in Japanese: {LINE_PLACEHOLDER}"
                 ),
                 "tts_text": text,
                 "tts_kana": kana,

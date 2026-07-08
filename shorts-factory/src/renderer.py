@@ -141,7 +141,7 @@ ScaledBorderAndShadow: yes
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Default,{font},{size},&H00FFFFFF,&H00FFFFFF,&H00141414,&H96000000,1,0,0,0,100,100,1,0,1,4.5,1.8,2,40,40,{mv},1
-Style: Emphasis,{font},{int(size * 1.08)},&H0000E6FF,&H00FFFFFF,&H00141414,&H96000000,1,0,0,0,100,100,1,0,1,4.5,1.8,2,40,40,{mv},1
+Style: Emphasis,{font},{size},&H00FFFFFF,&H00FFFFFF,&H00141414,&H96000000,1,0,0,0,100,100,1,0,1,4.5,1.8,2,40,40,{mv},1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text

@@ -99,6 +99,21 @@ Drive上のoutputsを広く走査するとGoogle Drive File Providerのロック
 - 手動確認は `~/shorts-factory/app/scripts/replenish_topics.py --difficulty intermediate` を使う
 - Drive同期失敗時にも同じルールが動くよう、Drive正本だけでなく `/Users/yuichi/YNFactory-cc` と runtime `~/shorts-factory/app` の同期状態を確認する
 
+## 2026-07-08 Seedance人物・テロップ固定ルール
+
+発生した問題:
+
+- 臨時AI動画で字幕の強調色が通常色と混ざり、テロップ色がバラバラに見えた
+- Seedance台本が話者を自由に決めていたため、ユーザー要望の人物像と違う女性話者になった
+
+以後の必須ルール:
+
+- Seedance版の話者は「45歳の日本人男性、仕事のできそうなビジネスマン」に固定する
+- 外見は短く整えた黒髪に少し白髪、清潔感のある顔、濃紺スーツ、白シャツ、濃色ネクタイを基本にする
+- カット間で人物・年齢・髪型・服装・部屋・カメラ位置を変えない
+- 女性、若い人物、カジュアル服、カットごとの衣装変更は生成前の台本検証で落とす
+- AI動画の焼き込みテロップは通常/強調とも白ベースに統一し、カットごとに色を変えない
+
 ## 実装済みガード
 
 - `shorts-factory/src/script_gen.py`
@@ -107,6 +122,7 @@ Drive上のoutputsを広く走査するとGoogle Drive File Providerのロック
   - フォールバック台本も重複検査で落とす
   - Claude CLI失敗時はstdout JSONを含め、ログイン失効などの理由を通知に出す
   - 英語ツール名・サービス名・英字略語は `display` 側で英字へ正規化し、読み上げ側はカタカナへ正規化する
+  - Seedance版は45歳男性ビジネスマン固定条件を `validate_seedance_script()` で検査し、不一致なら再生成する
 
 - `shorts-factory/scripts/run_generate.sh`
   - nvm配下の最新NodeをPATHへ追加し、launchd実行でも `claude` が動きやすくする

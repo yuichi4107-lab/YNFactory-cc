@@ -23,15 +23,17 @@ VOICEVOXナレーションは使わず、字幕はAI生成音声をあとで文�
 - ChatGPTだけを万能扱いしない。Claude、Gemini、Perplexity等、テーマに合うAIツールを扱ってよい
 - 誇大表現・断定的な効果保証・他社誹謗は禁止。実在しない機能をでっち上げない
 
-## キャラクター設定（カット間で統一・必ず全カットのvideo_promptに反映すること）
+## キャラクター設定（固定・全カット厳守）
 
-- `character_description`: 話者の外見（性別・年齢・髪型・服装の色や種類・雰囲気）を1つ具体的に決める
-- `room_description`: 部屋・背景の設定を1つ具体的に決める（例: 明るいモダンな日本の部屋、白い壁、観葉植物）
-- `camera_description`: カメラアングル・フレーミング（例: バストアップ、正面、カメラ目線）
+- `character_description`: **A 45-year-old Japanese male business professional, short neatly styled black hair with slight gray at the temples, clean-shaven, wearing a dark navy business suit, crisp white shirt, and dark solid tie, capable and calm executive consultant vibe**
+- `room_description`: **A modern Japanese office meeting room with neutral white walls, glass partition, tidy desk, soft natural daylight, no distracting props**
+- `camera_description`: **Vertical 9:16 video, bust-up framing, camera at eye level, direct eye contact, professional talking-head style**
+- 全カットで同じ人物・同じ年齢・同じ髪型・同じ服装・同じ部屋・同じカメラ位置を維持すること
+- 女性、若い人物、カジュアル服、カットごとの服装変更は禁止
 
 ## 各カットのフィールド
 
-- `video_prompt`: Seedance 2.0への英語プロンプト。**必ず** character_description・room_description・camera_description の内容を含め、服装・部屋・カメラが前カットと変わらないことを明示する。セリフ内の物体（冷蔵庫等の小道具）にカメラが引っ張られないよう、小道具は最小限にする。**日本語セリフ自体は書かない**。セリフを埋め込みたい箇所には、リテラルなプレースホルダー文字列 `{{LINE}}` を1回だけ置く（例: `She looks at the camera and says in Japanese: {{LINE}}`）。このプレースホルダーは後処理で **`tts_kana`（カタカナ読み）** の原文に機械的に置換されるため、セリフの内容・引用符・言い回しをここで再現する必要はない
+- `video_prompt`: Seedance 2.0への英語プロンプト。**必ず**上記の45歳男性ビジネスパーソン・部屋・カメラ設定を含め、服装・部屋・カメラが前カットと変わらないことを明示する。セリフ内の物体（冷蔵庫等の小道具）にカメラが引っ張られないよう、小道具は最小限にする。**日本語セリフ自体は書かない**。セリフを埋め込みたい箇所には、リテラルなプレースホルダー文字列 `{{LINE}}` を1回だけ置く（例: `He looks at the camera and says in Japanese: {{LINE}}`）。このプレースホルダーは後処理で **`tts_kana`（カタカナ読み）** の原文に機械的に置換されるため、セリフの内容・引用符・言い回しをここで再現する必要はない
 - `tts_text`: カットの日本語セリフ本体（漢字仮名交じり）。video_promptには含めず、ここにだけ書く。字幕の正確性はこの文をもとに、あとでWhisper文字起こしと突合して検証する
 - `tts_kana`: `tts_text` の**正確な読みを全てカタカナで**書いたもの。Seedance 2.0はこのカタカナ読みをそのまま発話するため、**漢字の音読み/訓読み誤読を防ぐには、この欄の精度が最重要**。数字も読みで書く（3分→サンプン）。英語のツール名・略語もカタカナ化する（ChatGPT→チャットジーピーティー、AI→エーアイ、Claude→クロード、Gemini→ジェミニ、Perplexity→パープレキシティ、API→エーピーアイ、SNS→エスエヌエス）。tts_textと意味・語順が一致していること（読み仮名を振っただけの関係にすること）
 - `display`: 字幕表示用。1〜2行の配列。1行は最大13文字（全角換算）。tts_textの要約でよい
