@@ -1,4 +1,6 @@
 ---
+last_session_summary_v2026_07_08_pdf_annotator: "【PDF書き込みツール(pdf-annotator)新規作成セッション（Windows・Sonnet/Fable分担）】オーナー要望『Adobe風にPDFへ日本語で書き込めるツールをOSS10個調査の上で作成』。(1)GitHub OSS 12個調査: pdf.js内蔵FreeText注釈はCJKで表示崩れの既知バグ(#20117)→pdf.jsは表示専用に限定し、保存はpdf-lib+fontkitでコンテンツストリーム焼き込み方式を採用。(2)要件定義書=.company/projects/PDF書き込みツール/要件定義書.md（3工程・各85点合格制）。(3)実装=リポジトリルート直下 pdf-annotator/。ビルド不要静的Webアプリ（pdf-annotator/で python -m http.server 8000 → index.html）、vendor同梱でCDN依存ゼロ・オフライン動作。機能=PDF読込(選択/D&D)・ページ送り・ズーム・日本語テキスト(IME対応・編集/移動/削除/サイズ/色)・ペン・蛍光ペン・undo・NotoSansCJKjpサブセット埋め込み保存(annotated_*.pdf)。QC3工程とも合格(100/97/100点)、保存PDFはpypdf/pikepdf/PyMuPDF独立検証で文字化けなし・未書込ページはピクセル完全一致。【重要知見】@pdf-lib/fontkitはCJK CFFフォントのsubset埋め込みでフォント破損する既知バグ(pdf-lib#1232)→修正フォークpdf-fontkit(MIT)のUMDに差し替えて解決(vendor/fontkit.umd.min.js)。既知の制限: 回転ページ(/Rotate≠0)は変換式実装済みだが未検証、テキスト新規作成直後にフォーカスが当たらず再クリックが必要な場合あり(次回改修候補)。"
+last_session_summary_v2026_07_08_keiba_model_search: "【競馬予想AI「もっと勝てるモデル探し」セッション（Windows・JRA限定・Sonnet/Fable分担）】オーナー指示=中央競馬のみ・簡単タスクはSonnet5/難しいタスクはFable5。(1)Sonnet5×3体並列: 特徴量棚卸し(80特徴量マップ・バイアス系は不在・未使用=weather/prize/start_time)、データ実現性調査、較正測定(G1)。(2)本番データ障害3件を発見・修復【最重要成果】: ①races.track_conditionが2026-03-16以降4か月空(日次パイプラインに書込処理が無い)→enrich_results.py新設(欠損のみUPDATE・INSERTなし)で1,077レース補完・100%回復、②passing/last_3fが2026年9開催日欠損(ライブ経路は着順しか書かない)→13,547行補完・96.9%回復、③未精算5開催日(3/21,4/5,4/12,5/3,6/6=JRA403障害期に17:30失敗→再試行なしで恒久欠損・36レース分の予想が累計から抜け落ち)→check_resultsリプレイで精算。付随: 券種混在レースの精算バグ修正(旧構成の三連複+馬連併用で片方の的中未計上、3/28例4050→7570円)、監査に未精算日検知を追加、週次enrichcron(火曜7:30)新設。修復後の正直な累計=朝35日ROI85.2%(旧報告89.2%から下方修正)・ライブ80.6%。(3)馬場バイアス特徴量(ロードマップ③)実験: ラッパー方式5特徴量(bias_draw/front/fit×2/samples)、リーク機械検証合格、修復後データで無bias/bias両学習の単一変数比較→OOS1,103レースで全閾値劣化(C5b@0.92: 91.1%vs85.9%、@0.94: 87.1%vs62.0%)→【不採用・据え置き】(45日窓の開催バイアスは持続性なしと結論)。(4)副次発見: 7/5のFULL系OOS評価は壊れた馬場状態フラグでスコアリングしていた(品質0.86通過554→修復後108レースで本番挙動と初整合)。FULL@0.86のROI180.9%は上位3除外で74.9%の裾依存。ライブ現行維持は不変。(5)G1較正: 新モデルは中高確率帯で3-6pt系統的過小評価→isotonic較正に余地。G2(較正×EV選別)は組合せ確率設計が必要で次回課題【最有望】。(6)QC98点PASS。レポート=.company/projects/競馬予想AI/2026-07-08-データ修復とバイアス特徴量実験.md、実験コード同フォルダ実験コード/。git commit 1f09fed(修復コード)+レポートcommit。【監視】次の土曜=修復後初の本番稼働(新モデル×正常特徴量入力・3月以来初の正常状態)+サンタンシャドー初記録。"
 last_session_summary_v2026_07_08_geo_lp_deploy: "【GEO LP本番公開セッション（Windows・7/5セッションの続き）】(1)オーナーが `npx wrangler login` を実行（今回は正しいCloudflareアカウント、ynfactory-ai-lp プロジェクト確認）→ `npx wrangler pages deploy . --project-name ynfactory-ai-lp --branch main` で公開成功。(2)検証済: https://ai.yn-factory.com/geo/ がGEO版title『AI検索対策(GEO)無料ミニ診断』で配信、hero-seitai.jpg(159KB)配信OK。6/19から未反映だったトップページ(SNS導線版)も同時反映。※デプロイ前の /geo/ への200応答はPagesのルートフォールバックでありGEO版ではなかった（今後の公開確認はtitleで判定すること）。(3)残る承認待ち: ①GEO 30社送信の最終承認（全件未送信・LP公開済で送信可能、送信方法AI代行/手動の指定待ち）②codeximageキュー ai-product-photo-portfolio_20260705_1929 未処理（絵本キュー多数と同居）。7/6-7/8の他セッション（MV制作・楽天ROOM・Seedance・電子書籍スキル改良・投資戦略104件）は todos/2026-07-08.md 参照"
 last_updated: "2026-07-08"
 last_device: "Mac"
@@ -91,6 +93,17 @@ last_session_summary: "【Sales OS Phase 1 設計→実装→ローカル確認�
 > 次のセッション（別端末含む）で「続きから」と言えば、ここから再開できる。
 
 ## 現在進行中の作業
+
+### 000-PDF. [DONE 2026-07-08] PDF書き込みツール（pdf-annotator）新規作成 — 完成・QC全合格
+
+- **状態**: 完成。リポジトリルート `pdf-annotator/` に配置（ビルド不要静的Webアプリ）。起動は `pdf-annotator/` で `python -m http.server 8000` → http://localhost:8000
+- **機能**: PDF読込(ファイル選択/D&D)、ページ送り・ズーム、日本語テキスト書き込み(IME対応・編集/移動/削除/サイズ/色)、ペン、蛍光ペン、undo(Ctrl+Z)、日本語フォント(NotoSansCJKjp)サブセット埋め込み保存
+- **品質**: 3工程QC合格(100/97/100点)。保存PDFはpypdf/pikepdf/PyMuPDFの独立検証で文字化けなし・位置一致・未書込ページ無傷を確認
+- **技術メモ**: pdf.jsは表示専用（内蔵FreeText注釈はCJK表示崩れバグ#20117のため不使用）。保存はpdf-lib+fontkitのコンテンツストリーム焼き込み方式。@pdf-lib/fontkitのCJK subset破損バグ(pdf-lib#1232)を踏んだため修正フォークpdf-fontkitに差し替え済み
+- **要件定義書**: `.company/projects/PDF書き込みツール/要件定義書.md`
+- **次のアクション（任意・改修候補）**: ①回転ページ(/Rotate≠0)の実機検証 ②テキスト新規作成直後のフォーカス不具合修正 ③ストローク個別選択・削除
+
+---
 
 ### 000-ZA. [IN PROGRESS 2026-06-19] SNS導線の受け皿（営業）整備 — 文書化完了・フォーム反映/LP公開はアクセス待ち 🔥
 
