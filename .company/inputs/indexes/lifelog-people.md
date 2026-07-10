@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-09T07:00:08
+generated_at: 2026-07-10T07:00:06
 ---
 
 # Lifelog People and Contacts
