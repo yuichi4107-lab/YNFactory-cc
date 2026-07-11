@@ -107,6 +107,37 @@ def scrape_day_results(conn, date_str):
 
 
 from bet_constants import KNOWN_BET_TYPES
+from backtest_legacy import _normalize_combo
+
+
+def _counterfactual_eq_payout(conn, race_id, bets_by_type, bet_total):
+    """配当均等配分（掛け金∝1/推定オッズ）だった場合の払戻額を計算する。
+
+    フラット運用と並走比較するための反実仮想（2026-07-11オーナー依頼）。
+    est_odds未記録の買い目が1つでもあれば None（旧データは対象外）。
+    """
+    weights = []
+    for bt, bs in bets_by_type.items():
+        for b in bs:
+            eo = b.get("est_odds")
+            if not eo or eo <= 0:
+                return None
+            weights.append((bt, b["combination"], 1.0 / max(float(eo), 1.01)))
+    tw = sum(w for _, _, w in weights)
+    if tw <= 0:
+        return None
+    c = conn.cursor()
+    payout = 0.0
+    for bt, comb, w in weights:
+        stake = bet_total * w / tw
+        c.execute("SELECT combination, payout FROM payouts WHERE race_id = ? AND bet_type = ?",
+                  (race_id, bt))
+        target = _normalize_combo(comb)
+        for wc, po in c.fetchall():
+            if _normalize_combo(wc) == target:
+                payout += po * stake / 100.0
+                break
+    return int(round(payout))
 
 
 def _data_quality_warnings(conn, date_str):
@@ -216,6 +247,10 @@ def _check_source_results(conn, date_str, source):
     total_bet = 0
     total_payout = 0
     hits = 0
+    cf_races = 0          # 配当均等の反実仮想が計算できたレース数
+    cf_bet = 0
+    cf_eq_payout = 0
+    cf_flat_payout = 0
 
     for race_id, info in recommended.items():
         if race_id not in finished_ids:
@@ -224,18 +259,30 @@ def _check_source_results(conn, date_str, source):
         # 買い目を取得（amount > 0 のみ）。券種混在レースに対応するため
         # bet_typeごとに分けて精算し合算する（2026-07-08修正: 旧構成の
         # 三連複+馬連併用レースで片方の的中が未計上になっていた）
-        if has_source:
-            c.execute("""SELECT bet_type, combination, amount FROM predictions
-                         WHERE date = ? AND race_id = ? AND source = ? AND amount > 0""",
-                      (date_str, race_id, source))
-        else:
-            c.execute("""SELECT bet_type, combination, amount FROM predictions
-                         WHERE date = ? AND race_id = ? AND amount > 0""",
-                      (date_str, race_id))
+        try:
+            if has_source:
+                c.execute("""SELECT bet_type, combination, amount, est_odds FROM predictions
+                             WHERE date = ? AND race_id = ? AND source = ? AND amount > 0""",
+                          (date_str, race_id, source))
+            else:
+                c.execute("""SELECT bet_type, combination, amount, est_odds FROM predictions
+                             WHERE date = ? AND race_id = ? AND amount > 0""",
+                          (date_str, race_id))
+            rows_ = c.fetchall()
+        except Exception:  # est_odds列が無い旧スキーマ
+            if has_source:
+                c.execute("""SELECT bet_type, combination, amount, NULL FROM predictions
+                             WHERE date = ? AND race_id = ? AND source = ? AND amount > 0""",
+                          (date_str, race_id, source))
+            else:
+                c.execute("""SELECT bet_type, combination, amount, NULL FROM predictions
+                             WHERE date = ? AND race_id = ? AND amount > 0""",
+                          (date_str, race_id))
+            rows_ = c.fetchall()
         bets_by_type = {}
-        for bt_row, comb_row, amt_row in c.fetchall():
+        for bt_row, comb_row, amt_row, eo_row in rows_:
             bets_by_type.setdefault(bt_row, []).append(
-                {"combination": comb_row, "amount": amt_row})
+                {"combination": comb_row, "amount": amt_row, "est_odds": eo_row})
         if not bets_by_type:
             continue
 
@@ -263,6 +310,14 @@ def _check_source_results(conn, date_str, source):
 
         total_bet += bet_total
         total_payout += payout
+
+        # 配当均等の反実仮想（est_odds記録済みレースのみ・表示用）
+        cf = _counterfactual_eq_payout(conn, race_id, bets_by_type, bet_total)
+        if cf is not None:
+            cf_races += 1
+            cf_bet += bet_total
+            cf_eq_payout += cf
+            cf_flat_payout += payout
 
         # prediction_results に保存（source別に独立保存）
         c.execute("""INSERT OR REPLACE INTO prediction_results
@@ -314,6 +369,10 @@ def _check_source_results(conn, date_str, source):
         "total_payout": total_payout,
         "profit": total_payout - total_bet,
         "roi": roi,
+        "cf_races": cf_races,
+        "cf_bet": cf_bet,
+        "cf_eq_payout": cf_eq_payout,
+        "cf_flat_payout": cf_flat_payout,
         "hits": hits,
         "races": len(results),
     }
@@ -401,6 +460,13 @@ def _format_source_section(src, label, conn=None, date_str=None):
         csign = "+" if cum["profit"] >= 0 else ""
         lines.append(f"  └ 累計{cum['days']}日: {csign}{cum['profit']:,}円 "
                      f"(ROI {cum['roi']*100:.1f}% / {cum['hits']}/{cum['races']}的中)")
+
+    # 配当均等の反実仮想（同じ買い目・配分だけ変えた場合の比較。est_odds記録済みレースのみ）
+    if src.get("cf_races"):
+        diff = src["cf_eq_payout"] - src["cf_flat_payout"]
+        dsign = "+" if diff >= 0 else ""
+        lines.append(f"💱 配当均等なら: 回収{src['cf_eq_payout']:,}円 "
+                     f"(ROI {100*src['cf_eq_payout']/src['cf_bet']:.1f}% / フラット比{dsign}{diff:,}円 / 対象{src['cf_races']}R)")
 
     hit_races = [r for r in src["results"] if r["hit"]]
     miss_races = [r for r in src["results"] if not r["hit"]]
