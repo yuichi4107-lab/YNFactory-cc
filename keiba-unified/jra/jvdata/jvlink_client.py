@@ -55,8 +55,13 @@ class JVLinkClient:
             pass
 
     def open(self, dataspec, fromtime, option=1):
-        """JVOpen。戻り値 (readcount, downloadcount, lastfiletimestamp)"""
+        """JVOpen。戻り値 (readcount, downloadcount, lastfiletimestamp)
+
+        rc=-1 は「該当データなし」（差分取得で新着ゼロ）の正常系 → (0,0,fromtime) を返す
+        """
         rc, readcount, dlcount, lastts = self._jv.JVOpen(dataspec, fromtime, option, 0, 0)
+        if rc == -1:
+            return 0, 0, fromtime
         if rc != 0:
             raise JVLinkError(f"JVOpen({dataspec},{fromtime},{option}) failed: {rc}")
         return readcount, dlcount, lastts
