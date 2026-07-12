@@ -90,6 +90,7 @@ def main():
             WHERE excluded.data_date >= hanro.data_date""", batch)
         ins += len(batch)
     c.execute("CREATE INDEX IF NOT EXISTS idx_hanro_horse ON hanro(horse_id, train_date)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_hanro_tresen_date ON hanro(tresen, train_date)")
     conn.commit()
     rows = c.execute("SELECT COUNT(*) FROM hanro").fetchone()[0]
     dmin, dmax = c.execute("SELECT MIN(train_date), MAX(train_date) FROM hanro").fetchone()

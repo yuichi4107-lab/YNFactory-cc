@@ -58,6 +58,7 @@ def main():
     for spec in ("SLOP", "WOOD", "DIFN", "BLDN"):
         run([PY32, os.path.join(HERE, "jv_dump.py"), spec, "auto"])
     run([sys.executable, os.path.join(HERE, "parse_hc.py")])
+    run([sys.executable, os.path.join(HERE, "parse_wc.py")])
     run(["scp", "-o", "BatchMode=yes", DB, VPS], timeout=1800)
     print(f"[update] ALL DONE in {time.time()-t0:.0f}s", flush=True)
 

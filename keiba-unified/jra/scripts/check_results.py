@@ -385,14 +385,16 @@ def check_day_results(conn, date_str):
     live = _check_source_results(conn, date_str, "live")
     live_c3 = _check_source_results(conn, date_str, "live_c3")
     live_santan = _check_source_results(conn, date_str, "live_santan")
+    morning_jv = _check_source_results(conn, date_str, "morning_jv")
 
-    if not morning and not live and not morning_nv and not live_c3 and not live_santan:
+    if (not morning and not live and not morning_nv and not live_c3
+            and not live_santan and not morning_jv):
         print(f"予測データなし: {date_str}")
         return None
 
     # daily_summary に source別で独立保存（合算行は作らない）
     c = conn.cursor()
-    for src in (morning, morning_nv, live, live_c3, live_santan):
+    for src in (morning, morning_nv, live, live_c3, live_santan, morning_jv):
         if not src:
             continue
         races = len(src["results"])
@@ -413,6 +415,7 @@ def check_day_results(conn, date_str):
         "live": live,
         "live_c3": live_c3,
         "live_santan": live_santan,
+        "morning_jv": morning_jv,
     }
 
 
@@ -506,6 +509,11 @@ def format_result_message(day, conn=None):
         lines.extend(_format_source_section(day.get("live_santan"), "🎯 サンタンシャドー(新馬未勝利ダ短)", conn, d))
         lines.append("")
 
+    # JV調教モデルシャドー（デプロイ候補の並走記録・2026-07-26頃に差替判定）
+    if day.get("morning_jv"):
+        lines.extend(_format_source_section(day.get("morning_jv"), "🔬 朝JVモデル(調教特徴量・シャドー)", conn, d))
+        lines.append("")
+
     # A/Bテスト（バリューなし版）
     if day.get("morning_nv"):
         lines.extend(_format_source_section(day.get("morning_nv"), "🧪 朝予想B(バリューなし)", conn, d))
@@ -527,7 +535,8 @@ def format_result_message(day, conn=None):
 
 SRC_LABELS = {"morning": "🌅 朝予想", "live": "🔴 ライブ", "morning_nv": "🧪 朝予想B",
               "live_c3": "🟣 ライブC3(オッズ抜き)",
-              "live_santan": "🎯 サンタンシャドー(新馬未勝利ダ短)"}
+              "live_santan": "🎯 サンタンシャドー(新馬未勝利ダ短)",
+              "morning_jv": "🔬 朝JVモデル(調教特徴量・シャドー)"}
 
 
 def monthly_summary(conn, year=None, month=None):
