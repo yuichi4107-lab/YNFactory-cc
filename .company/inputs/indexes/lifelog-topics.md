@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-10T07:00:06
+generated_at: 2026-07-12T07:00:29
 ---
 
 # Lifelog Topics
@@ -10,6 +10,13 @@ generated_at: 2026-07-10T07:00:06
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-11
+
+- - **スポーツチームにおける選手やその家族へのギフト・インセンティブ文化とロイヤルティ向上施策** (09:49) | source:`.company/inputs/organized/lifelogs/2026-07-11-lifelog-insights.md`
+-   - 理由: 関係者（顧客、パートナー、チームメンバーなど）のエンゲージメント向上やモチベーション維持に活用できるヒントがないか検討するため。 | source:`.company/inputs/organized/lifelogs/2026-07-11-lifelog-insights.md`
+- 1. **自律的で質の高いチーム文化の醸成** [freelance|other] ★★★★☆ (05:25) | source:`.company/inputs/organized/lifelogs/2026-07-11-lifelog-insights.md`
+-    - メンバーが積極的に自ら行動し、手を抜かずに全力で業務に取り組む組織文化を構築する。これにより、コンテンツ制作や開発プロジェクトの品質と効率を高める。 | source:`.company/inputs/organized/lifelogs/2026-07-11-lifelog-insights.md`
 
 ## 2026-07-04
 
