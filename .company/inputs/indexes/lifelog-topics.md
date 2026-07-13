@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-12T07:00:29
+generated_at: 2026-07-13T07:01:10
 ---
 
 # Lifelog Topics
@@ -10,6 +10,65 @@ generated_at: 2026-07-12T07:00:29
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-12
+
+- - **既存システムの解析による要件定義の効率化方法** (02:40) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-   - 理由: 業務自動化開発において、顧客の既存システムを解析し、その仕組みや条件定義を効率的に把握するため。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 1. **哲学的な人生訓をコンテンツ化** [ebook] ★★☆☆☆ (23:49) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 「綺麗」という言葉から派生した人生訓（挑戦の重要性、迷いを断ち切ることなど）をコンテンツとしてまとめる。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 2. **日本史解説動画のコンテンツアイデア「朝鮮半島を巡る歴史的経緯」** [youtube] ★★★★☆ (23:45) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 朝鮮半島が中国の属国であった時代から、日本とロシアが介入し属国化するまでの歴史的経緯を解説する動画コンテンツ。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 3. **日本史解説動画のコンテンツアイデア「トルコの地理的・歴史的立ち位置」** [youtube] ★★★☆☆ (23:45) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - トルコがヨーロッパと中東のどちらに位置するかという議論から、その歴史的背景や国際関係を解説する動画コンテンツ。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 4. **AI/ツールを活用した業務自動化ロードマップの電子書籍化** [ebook] ★★★★★ (10:18) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 「一冊で伝えこなす側に出れるロードマップに五日分の手順を一気に出します」というコンセプトで、AI/ツールを用いた業務自動化の具体的な手順をまとめた電子書籍。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 5. **AI/ツールを活用したプロジェクト管理方法のコンテンツ化** [freelance] ★★★★☆ (10:19) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - AI/ツールに「仕事、学習、プライベート、アイデア」のプロジェクトを設定し、長期記憶として活用するノウハウをコンテンツ化。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 6. **AI/ツール活用における自己紹介・応答設定の効率化ノウハウのコンテンツ化** [freelance] ★★★★☆ (10:19) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - AI/ツールに自己紹介と応答方法のメモを設定することで、毎回1から説明する手間を省く方法をコンテンツ化。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 7. **AI/ツールのコワーク機能とスキルセットアップの解説コンテンツ** [freelance] ★★★★☆ (10:19) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - AI/ツールの「コワーク」機能を使って、AIを「自分の手」のように動かす方法や、スキル設定の具体的な手順を解説するコンテンツ。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 8. **元スポーツ選手のキャリアチェンジ事例を元にしたコンテンツ制作** [instagram] ★★★☆☆ (10:14) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 引退後に予想外の道を選んだ元スポーツ選手の事例を取り上げ、キャリア形成や転職に関するインスピレーションを与えるコンテンツ。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 9. **政治・社会問題（政治ポスター炎上騒動）をテーマにした解説コンテンツ** [youtube] ★★★☆☆ (10:15) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 時事問題である政治ポスター炎上騒動を題材に、背景や影響を解説する動画コンテンツ。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 10. **価格競争力のあるサービス提供（提供価値とコストのバランス最適化）** [freelance] ★★★★☆ (19:19) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 同じ時間接客しても倍の報酬が得られる業界がある中で、半額の値段で提供できるサービスの範囲と価値を検討し、差別化を図る。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 11. **過去の成功事例（電子書籍50-60万部、オンライン記事8000万PV、記事使用料で4億円）の分析と再現性追求** [ebook] ★★★★★ (13:15) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 過去に手掛けたコンテンツ（電子書籍、オンライン記事、切り抜き動画など）で大きな収益を上げた事例を分析し、現在の事業領域で再現性を追求する。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 12. **無料ドメインを活用したLP制作サービス（フリーランス案件として）** [freelance] ★★★★☆ (12:54) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 既存の企業ホームページに縛られず、独立したLPドメインを無料版で取得・運用するLP制作サービスをフリーランス案件として提供。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 13. **LPの申し込み数を増やすための改善策提案サービス** [freelance] ★★★★☆ (12:58) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 現在のLP申し込みが0人であるという課題に対し、分析と改善策の提案を行うサービス。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 14. **JRA-VANデータを用いた競馬予想モデルの開発** [freelance] ★★★★☆ (12:14) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - JRA-VANデータを利用して新しい競馬予想モデルを作成し、事業への採用を目指す。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 15. **政治・社会問題（中国の民族政策、国会審議）をテーマにした解説コンテンツ** [youtube] ★★★☆☆ (12:01) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 中国の法律や民族問題、日本の国会審議といった政治・社会問題を取り上げ、解説する動画コンテンツ。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 16. **AIを活用した人員配置・状況把握システムの開発** [freelance] ★★★★☆ (03:06) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 会議で言及された「状況把握」「人員配置」「レベルアップ報告」の課題に対し、AIを活用してリアルタイムで状況を把握し、最適な人員配置を自動化するシステムの開発。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 17. **プロジェクト管理におけるリアルタイムの状況把握と人材配置の自動化** [freelance] ★★★★☆ (03:07) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - プロジェクトのリアルタイムな状況を把握し、それに基づいて人材配置を最適化する自動化システムの開発。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 18. **自動化システムの設計において、堅牢性や回復力を持たせるアプローチ** [freelance] ★★★★☆ (02:58) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 自動化システムを「ある程度戻るように設計」し、不測の事態やエラーからの回復力を高める設計思想をサービスとして提供。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 19. **独自の業務管理システム構築を支援するコンサルティング/教育サービス** [freelance] ★★★★★ (02:10) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 汎用ソフトでは対応できない企業固有のニーズに対し、「自力で独自のシステムを作る方法」を教えるコンサルティングまたは教育サービス。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 20. **汎用ソフトでは対応できない企業固有のニーズに特化したカスタム業務自動化開発** [freelance] ★★★★★ (02:11) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 大手汎用ソフトでは対応できない細かい仕様や、会社ごとのカスタマイズが必要な業務に対し、オーダーメイドの自動化システムを開発・提供する。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 21. **受注・提案フェーズ管理システムの開発** [freelance] ★★★★☆ (02:11) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 受注から提案までの各フェーズの進捗を管理し、期日設定やアラート機能を含む「看板ボード」のようなシステムを開発。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 22. **既存システム（Excel等）の解析と条件定義の自動化サービス** [freelance] ★★★★☆ (02:19) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 顧客の既存システム（Excelなど）をAIで解析し、その仕組みや条件定義を言語化・自動化することで、業務プロセスの改善や新しいシステム開発に繋げる。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 23. **営業先情報自動収集から自動メール送信までの自動化サービス** [freelance] ★★★★★ (02:27) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 営業先の情報（ディスタップ？）を自動で収集し、その情報に基づいてパーソナライズされたメールを自動で作成・送信するシステムを開発。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 24. **企業ホームページからの情報に基づいたパーソナライズされたメール自動生成システム** [freelance] ★★★★★ (02:28) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 企業のホームページから事業内容、強み・弱みなどの情報を抽出し、それを踏まえた上で個社ごとに最適化されたメール文を自動生成するシステム。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 25. **定量的な判断を伴う業務の自動化ソリューション提供** [freelance] ★★★★★ (02:31) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 主観的判断を伴わない、数値や明確な条件に基づく定量的な業務（例：在庫閾値による自動発注）の自動化ソリューションを提供する。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 26. **自動発注システム開発（在庫閾値に基づく）** [freelance] ★★★★☆ (02:32) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - 在庫が特定の閾値（例：最大100に対し残20）を下回った際に、自動的に材料補充の発注を行うシステムを開発。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- 27. **IF関数で記述できるロジックに基づく業務自動化の開発** [freelance] ★★★★☆ (02:35) | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+-    - IF関数で表現可能な明確なロジックに基づいた業務プロセス（例：判断結果の丸バツで次の作業が決まるもの）の自動化システムを開発。 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
 
 ## 2026-07-11
 

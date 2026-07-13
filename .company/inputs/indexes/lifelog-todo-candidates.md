@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-12T07:00:29
+generated_at: 2026-07-13T07:01:09
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,21 @@ generated_at: 2026-07-12T07:00:29
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-12
+
+- [ ] 部長に動画企画（1ヶ月の動画投稿本数決定）を提案・報告 | time:23:47 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- [ ] 今月、既存案件以外の動画本数を増やす | time:23:47 | priority:normal | due:2026-08-12 | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- [ ] 事業活動において、失敗や問題が発生した際に、すぐに状況を改善し、会計処理を適切に行うための準備を徹底する | time:13:18 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- [ ] 独立したLPドメイン（無料版含む）の取得・設定を進める | time:12:54 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- [ ] LPの現在の進捗を把握し、必要な支援を提供する | time:12:56 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- [ ] LPからの申し込みが0人である現状の分析と改善策の検討 | time:12:58 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- [ ] 申請済みの13本の進捗を確認し、不備がある場合は対応する | time:12:35 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- [ ] 昔話シリーズの投稿状況を確認し、今後の計画を立てる | time:12:34 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- [ ] ダン作業をソフト5で進める | time:12:18 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- [ ] 1週間以上KDPに申請されていない絵本のKDP申請を進める | time:12:20 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- [ ] サービス提供における差別化要因と監査の仕組みを検討する | time:12:14 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
+- [ ] EDP公開に必要な情報を整理し、アンケート形式で表示する仕組みを検討・作成する | time:06:08 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-12-lifelog-insights.md`
 
 ## 2026-07-11
 
