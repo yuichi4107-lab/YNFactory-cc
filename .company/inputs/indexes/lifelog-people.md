@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-13T07:01:10
+generated_at: 2026-07-14T07:01:50
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,33 @@ generated_at: 2026-07-13T07:01:10
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-13
+
+- - **ササキ** — ポジションとその業務内容、監視下の状況について議論されている人物で、雑用が多い仕事への不満が示唆されている。 (17:30) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **小林さん** — ササキ氏の監視下と比較対象として名前が挙がった人物。新入社員受け入れに関して知識レベルが低く、問題が生じる可能性が指摘されており、堺からの請求書や派遣会社の運用についても許容していると見られている。 (17:33) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **中野さん** — 業務上の対応が必要な件について把握していなかった人物。 (17:15) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **中澤さん** — 日米のコーディネート業務（面談、オーダーシート掲載）を新たに担当し、業務増加に伴い給与査定で1.1ヶ月分多めに支給されることになった。堺からの請求書や派遣会社の運用について言及があり、面談業務の追加報酬の対象ともなっている。 (16:38) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **松さん** — オーダーシートのPDF化、ChatGPTでの文言生成、面談後のイレギュラー対応や問い合わせを担当する。業務改善や人員配置に関する最終決定のため、林さん、林田さんを含めて協議が必要。 (16:40) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **佐藤さん** — 新入社員受け入れに関して業務遂行に課題がある部署のメンバーとして名前が挙がった人物。 (16:51) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **近藤さん** — 新入社員受け入れに関して業務遂行に課題がある部署のメンバーとして名前が挙がった人物であり、以前は業務現場で顔を出していた人物。 (16:51) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **将棋** — 新入社員受け入れに関して未知数だが、期待されている人物。 (16:54) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **愛子さん** — PK（プロジェクト）の別業務を担当している人物。 (16:57) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **長森さん** — 週用のまま活動カットの部署に入る人物。 (16:59) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **バンド部長** — メール共有のCC対象として名前が挙がった人物。 (17:03) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **久保さん** — メール共有のCC対象として名前が挙がった人物。 (17:03) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **線** — 情報伝達を早くするためにメールCC対象とする人物。 (17:03) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **外野さん** — 承認印が滞留している人物。 (17:11) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **真野部長** — 外野さんからの業務引き継ぎが想定されている人物。 (17:11) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **林さん** — 新しい業務（オーダーシート掲載、登録面談）の指示を出した人物であり、業務改善や人員配置に関する最終決定のため、松さん、林田さんを含めて協議が必要。 (16:00) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **湯浅氏** — 将来的に会社に復帰する可能性があり、その際の人員計画や業務分担について社長との認識齟齬がある。週10時間分のパート業務について詳細の提示を求められている。 (16:27) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **野中さん** — 湯浅氏の業務を全て引き継ぐと社長が考えている人物。 (16:26) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **林田さん** — 業務改善や人員配置に関する最終決定のため、協議が必要な人物。 (16:30) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **フェイブル** — LP作成における難易度の高いタスクを担当するパートナー/ツール。 (14:44) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **ソネット** — LP作成における難易度の低いタスクを担当するパートナー/ツール。 (14:44) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **長越さん** — 書類の受け渡しが必要な人物。 (13:54) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **長谷川様** — 組戻し書類の手続きで約束している人物。 (12:08) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **中田** — 銀行印が必要な書類手続き、給与総進データの修正依頼とグループ会社への対応依頼をしている人物（オーナー自身を指すと思われる）。 (11:59) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
 
 ## 2026-07-04
 

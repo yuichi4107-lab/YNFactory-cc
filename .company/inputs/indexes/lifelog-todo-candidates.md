@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-13T07:01:09
+generated_at: 2026-07-14T07:01:50
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,29 @@ generated_at: 2026-07-13T07:01:09
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-13
+
+- [ ] 楽天ルームの投稿状況を確認する。 | time:19:42 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- [ ] 新しい仕事の対応について明日、担当者と話す。 | time:17:15 | priority:normal | due:2026-07-14 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- [ ] 中澤さんの新しい業務（面談、オーダーシート掲載）に関する詳細な調整を行う。 | time:16:42 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- [ ] 契約更新の給与反映時期（9月給与明細）について準備・調整を進める。 | time:16:42 | priority:high | due:2026-09-XX | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- [ ] 面談業務の報酬体系を検討し、月2万円程度の支給を視野に入れる。 | time:16:06 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- [ ] Googleビジネスアカウントの取得を検討し、Google Meetでの面談録画・録音機能を導入する。 | time:16:07 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- [ ] LP作成サービスの詳細な要件定義（マーケティング理論の選定、カスタマイズ範囲、機能仕様）を行う。 | time:14:44 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- [ ] 長越さんへ書類を渡し、手数料100万8000円の口座引き落とし手続きを進める。 | time:13:56 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- [ ] 住民税の書類処理について、適切な対応を判断する（閉じるかどうか）。 | time:13:31 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- [ ] 誤った引き落としに関する資金ショートのリスクを評価し、対応方針を決定する（資金準備、繰り戻し手続き等）。 | time:12:31 | priority:high | due:2026-07-14 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- [ ] 誤った引き落としの修正手続きに必要な書類を作成し、4件分の情報（件数、金額等）を正確に記載する。 | time:12:33 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- [ ] 組戻し書類の準備と提出。届け出印の持ち出し不可問題を解決する（一旦書類を受け取り、印鑑を押して戻す）。 | time:12:08 | priority:high | due:2026-07-13 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- [ ] 給与引き落とし後の口座残高を確認し、組戻しによる資金不足が発生しないか確認する。 | time:12:15 | priority:high | due:2026-07-13 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- [ ] 銀行印が必要な書類（繰り戻し関連）を午後3時までに銀行に提出する。 | time:12:00 | priority:high | due:2026-07-13 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- [ ] 書類取りに行く。 | time:12:00 | priority:high | due:2026-07-13 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- [ ] 15日付けの給与総進データの誤り（4件）について、全件組み戻しの手続きを行う。 | time:10:18 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- [ ] グループ会社（別会社）の給与総進データについても同様の修正対応を依頼するため、改めて連絡する。 | time:10:26 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- [ ] 新しい仕事の準備物（備兼、人事部用資料、水、冷蔵庫関連物品の4点）を確認・手配する。 | time:10:09 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- [ ] 月末の書類業務を進める。 | time:08:29 | priority:normal | due:2026-07-31 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- [ ] 林田さん、松さんを含め、業務効率化・人員配置・給与体系に関する最終協議を行う。 | time:16:30 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
 
 ## 2026-07-12
 

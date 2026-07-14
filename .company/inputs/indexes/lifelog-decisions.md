@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-13T07:01:10
+generated_at: 2026-07-14T07:01:50
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,15 @@ generated_at: 2026-07-13T07:01:10
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-13
+
+- - 中澤さんの業務増加を考慮し、給与査定で1.1ヶ月分多めに支給する。 | time:15:58 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - 業務が増えない場合、「給与半分、仕事半分」で交渉する可能性を示唆。営業業務の割り振りは拒否する方針。 | time:16:28 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - 誤った引き落としによる資金ショート回避のため、一時的に何もしないことを検討（一旦持ち帰って考える）。 | time:12:31 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - 時間的余裕を確保するため、全13件の繰り戻しを一旦行う方針。 | time:11:54 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - 面談業務を担当する者に対し、月2万円程度の追加報酬（賞与で上乗せ）を検討する方針。 | time:09:56 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - 面談業務は中澤さん以外でも対応可能とし、他のスタッフにも分担させる方針。 | time:09:56 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
 
 ## 2026-07-03
 

@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-13T07:01:10
+generated_at: 2026-07-14T07:01:50
 ---
 
 # Lifelog Topics
@@ -10,6 +10,63 @@ generated_at: 2026-07-13T07:01:10
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-13
+
+- - **作裁部門の売上減少要因** (16:56) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-   - 理由: 社長が作裁部門の売上減少を懸念しており、愛と2の予測以上に落ち込んでいるため、詳細な原因特定が必要。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **有給休暇付与規定と残日数管理** (17:13) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-   - 理由: 有給休暇が少ない、付与時期が遅いといった問題が提起されており、従業員の労働環境に影響を与えている可能性があるため、規定と実態の調査が必要。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **iPadでのラインツアー（ボイスレコーディング含む）の機能確認** (16:31) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-   - 理由: Googleサービスに頼らずiPadで同様の機能が実現可能か確認することで、業務効率化やコスト削減に繋がる可能性があるため。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **業務改善提案の組織文化とインセンティブ制度** (16:21) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-   - 理由: 業務効率化が労働者の負担増と評価の停滞に繋がる現状があり、改善提案を阻害している可能性があるため、組織文化やインセンティブ制度の調査・検討が必要。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **採用候補者の情報整理（年齢、性別、希望金額、応募状況）** (15:48) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-   - 理由: 新しい仕事の応募者の状況を確認し、採用プロセスを進める上で必要な情報であるため。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **FIMoon契約終了に伴う顧客離脱の状況と原因分析** (15:23) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-   - 理由: FIMoonの契約は解約したが、そこ経由の顧客からの解約が発生しているため、その影響度と原因を把握する必要がある。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **堺からの請求書内容と派遣会社の運用実態** (15:23) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-   - 理由: 堺からの請求書内容に懸念があり、中澤さんの業務に関連している可能性がある。派遣会社の運用問題や契約不履行の可能性について調査が必要。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **ウェルスナビ連携キャンペーンの利用規約・エラー解決策の詳細** (14:15) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-   - 理由: 顧客への説明やサポートのために、キャンペーンの詳細条件と登録時に発生しやすいエラー（QRコード読み込み問題など）の具体的な解決策を把握する必要があるため。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **繰り戻し処理における資金とデータの流れの確認** (12:47) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-   - 理由: 繰り戻し処理に関連する資金とデータの流れについて、誤りが発生しているため、正確な流れを把握する必要がある。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **Googleビジネスアカウントの法人契約詳細（費用、機能、手続き）** (09:57) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-   - 理由: 面談業務効率化のためにGoogle Meetの導入を検討しており、法人契約の費用や機能、手続きについて確認が必要。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- - **人件費と売上の乖離要因分析** (09:24) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-   - 理由: 人件費が前年比で増加している一方で売上が伸び悩んでおり、特定の部門で売上減少が見られるため、その原因を詳細に分析し、収益改善策を検討する必要がある。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- 1. **営業プロセス改善** [other] ★★★☆☆ (16:34) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-    - 営業の業務が雑であることによるストレス解消のため、プロセスの見直しが必要。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- 2. **AI活用によるオーダーシート自動転記・掲載プロセスの効率化** [freelance] ★★★★★ (16:40) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-    - オーダーシートがExcelから印刷され手渡し、それをPDF化してChatGPTでウェブ掲載用の文言に変換する現在のプロセスは非効率。PDFやExcelデータを直接読み込み、AIを活用してウェブサイト掲載用の文章に自動で転記するシステムを開発することで、手動でのPDF化やコピペ作業を排除し効率化を図る。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- 3. **事務職の評価制度改善と業務効率化インセンティブ** [other] ★★★★☆ (16:48) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-    - 事務職の評価が適切でなく、業務効率化が仕事量増加に繋がるため、適正な評価制度と効率化へのインセンティブ設計が必要。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- 4. **入社手続き・業務引き継ぎプロセスの標準化と教育** [other] ★★★☆☆ (16:52) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-    - 部署間の業務品質の差が大きく、特に小林さんの知識不足が問題。入社手続きなどの共通業務プロセスの標準化と教育体制の強化が必要。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- 5. **人員配置の最適化** [other] ★★★☆☆ (16:59) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-    - 業務が多岐にわたる中で、適切な人員配置が行われていないことへの不満がある。効率的な人員配置による業務改善の必要性。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- 6. **情報伝達プロセスの改善（電話内容のメール共有）** [other] ★★★★☆ (17:02) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-    - 電話でのやり取りが多いが情報共有が不十分なため、電話内容をメールで共有し、適切な関係者（線など）をCCに入れることで情報伝達の確実性とスピードを向上させる。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- 7. **承認プロセスの見直しと効率化** [freelance] ★★★☆☆ (17:11) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-    - 承認待ち（外野さんの印鑑）による納期遅延が発生している。承認プロセスのデジタル化や権限委譲を検討し、業務の停滞を解消する必要がある。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- 8. **iPadでのボイスレコーディング・ラインツアーの導入** [freelance] ★★★☆☆ (16:31) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-    - iPadでボイスレコーディングとラインツアーができればGoogleサービスが不要になる。可能性を探る。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- 9. **Google Meet導入とAI活用による面談記録の自動化・効率化** [freelance] ★★★★★ (16:07) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-    - LINEでの面談をGoogle Meetに切り替え、録画・録音を行い、音声データを文字起こしすることで、面談後の入力作業時間を大幅に削減する。Googleビジネスアカウントの活用により、面談記録作成ツールの開発も視野に入れる。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- 10. **資産運用キャンペーンの紹介・プロデュース** [ebook] ★★★☆☆ (14:05) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-    - ウェルスナビと銀行の連携キャンペーンを積極的に紹介し、AI運用サービスの利用を促すプロデュース案件。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- 11. **LP作成・カスタマイズサービスの開発** [freelance] ★★★★★ (14:43) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-    - 世界中のマーケティング理論を組み込み、顧客ごとにデザインや言葉遣いをカスタマイズできるLP作成サービスを開発する。離脱防止ポップアップ機能も搭載。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- 12. **派遣社員管理プロセスの見直しと人材確保戦略** [other] ★★★★☆ (15:26) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-    - 派遣会社の契約不履行（週5契約が週3など）が問題。人材確保において、給与だけでなく労働条件や環境を重視する層がいることを踏まえ、新たな採用戦略を検討する必要がある。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- 13. **収益改善戦略の策定** [other] ★★★★☆ (09:25) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-    - 人件費増に対する売上伸び悩み、特に作裁部門での売上減少が問題。請求単価以外の要因も探り、全体的な収益改善戦略を策定する必要がある。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- 14. **コンテンツ大量生産と多角的なアプローチ戦略** [ebook|manga|instagram|youtube] ★★★★☆ (03:21) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-    - メディアの特性として「投げたものを投げまくって残ったものが勝ち」という認識があり、コンテンツ制作において大量生産と多様なチャネルでの展開が重要であることを示唆。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- 15. **応募・面談プロセスの改善と効率化** [other] ★★★★☆ (09:45) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-    - 応募時の事前入力項目を充実させ、面談で聞くべき情報を明確化する。職務経歴書はPDF等での提出を受け付け、手動入力を減らすことで効率化を図る。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+- 16. **面談時の質問項目改善によるマッチング精度向上** [other] ★★★★☆ (09:50) | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
+-    - 現在の面談での質問項目が基本的なものに留まり、応募者の詳細な情報が不足しているため、質問項目を改善し、横振り（別案件への紹介）ができるようにする。 | source:`.company/inputs/organized/lifelogs/2026-07-13-lifelog-insights.md`
 
 ## 2026-07-12
 
