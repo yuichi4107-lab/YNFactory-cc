@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-14T07:01:50
+generated_at: 2026-07-15T07:00:46
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,15 @@ generated_at: 2026-07-14T07:01:50
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-14
+
+- [ ] 「新しい仕事の品」に関する技術的な問題（写真サイズ不一致）の調査および解決。 | time:17:31 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+- [ ] 参拝者数250人減の原因について、役員会で何か話が出たか調査し、社長に報告・提案する。 | time:15:55 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+- [ ] 中村さんに電話し、もし折り返しがあった場合は10時半の約束を時間変更してもらう。 | time:10:02 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+- [ ] 中澤さんに対し、採用候補者の運用方法（午前午後で分けず運用可否）と説明範囲（現場部署がやっていた部分で良いか）について確認してもらう。 | time:09:21 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+- [ ] （内部向けに）給与支払い規定について後で説明する。 | time:09:13 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+- [ ] 「何月分給与」と「支払い日」の違いについて、関係者間の認識を徹底する/共有する。 | time:09:12 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
 
 ## 2026-07-13
 

@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-14T07:01:50
+generated_at: 2026-07-15T07:00:46
 ---
 
 # Lifelog Topics
@@ -10,6 +10,13 @@ generated_at: 2026-07-14T07:01:50
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-14
+
+- - **参拝者数が上半期で250人減った原因調査** (15:55) | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+-   - 理由: 社長からの指示による事業課題の特定と解決策の検討のため。 | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+- 1. **既存業務の管理徹底と拡大営業** [other] ★★★★☆ (09:29) | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+-    - 既存の管理業務（年間契約の維持）を最優先とし、従業員が慣れてきたら既存顧客への拡大営業を促す方針。これにより安定した収益確保と事業成長を目指す。 | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
 
 ## 2026-07-13
 

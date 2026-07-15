@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-14T07:01:50
+generated_at: 2026-07-15T07:00:46
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,16 @@ generated_at: 2026-07-14T07:01:50
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-14
+
+- - （業務体制を）元の3人体制に戻す方針を決定。 | time:15:54 | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+- - 参拝者数減少の原因調査について、社長に説明・提案し、進め方を合意する。 | time:15:56 | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+- - 採用候補者に対し、長く勤めることは別にしても「うちで働いた経験は無駄にならない」という方針でアプローチする。 | time:09:21 | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+- - 採用後の業務は、既存の管理業務（年間契約の維持）を最優先とし、慣れたら既存顧客への拡大営業を促すという方針を決定。 | time:09:29 | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+- - 面談は「基本情報 → 本人の希望条件 → 今回の仕事の説明」の3段の流れで実施する。 | time:09:14 | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+- - 今日の面談は中澤さんが担当し、案件の計算は空いている人間が対応する。 | time:09:15 | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+- - 7月分の給与は翌月（8月）支払いという解釈で進めることを決定。 | time:09:11 | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
 
 ## 2026-07-13
 

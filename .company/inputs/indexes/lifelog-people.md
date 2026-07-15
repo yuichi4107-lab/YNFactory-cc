@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-14T07:01:50
+generated_at: 2026-07-15T07:00:46
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,16 @@ generated_at: 2026-07-14T07:01:50
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-14
+
+- - **Yuichi** — 新しい仕事の技術的な問題に関わる人物、将来的な人員配置の候補として言及。 (17:30) | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+- - **Nishi** — 現在の業務体制（元3人体制）に関わる人物の一人。 (15:54) | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+- - **水舞さん** — 以前の3人体制に関わっていたが退職した人物。 (15:54) | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+- - **社長** — 業務の進め方や意思決定に関わる人物。物忘れが多いとされる。面談の打ち合わせも実施。 (15:55) | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+- - **山本さん** — 日本での就職活動中の人物。キャリアについて言及。 (10:02) | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+- - **中村さん** — 電話で連絡を取る予定の人物。山本さんの件か、別の仕事の件か。 (10:02) | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
+- - **中澤さん** — 採用候補者への要望伝達、運用確認の依頼先。今日の面談を担当。 (09:21) | source:`.company/inputs/organized/lifelogs/2026-07-14-lifelog-insights.md`
 
 ## 2026-07-13
 
