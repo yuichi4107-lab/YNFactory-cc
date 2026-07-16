@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import signal
 import sys
 from datetime import datetime, timedelta
@@ -15,7 +14,8 @@ if str(APP_ROOT) not in sys.path:
     sys.path.insert(0, str(APP_ROOT))
 
 from src.config import CONFIG  # noqa: E402
-from src import notify, queue_lib  # noqa: E402
+from src import notify, queue_lib, post_lock  # noqa: E402
+from src import drive_guard  # noqa: E402
 from src.platforms import poster  # noqa: E402
 
 WORKER_TIMEOUT_SEC = 900
@@ -24,22 +24,6 @@ APPROVAL_POST_WINDOW = timedelta(minutes=30)
 
 def _now() -> str:
     return datetime.now().astimezone().isoformat(timespec="seconds")
-
-
-def _lock_path(item_id: str) -> Path:
-    lock_dir = CONFIG.runtime_dir / "post_locks"
-    lock_dir.mkdir(parents=True, exist_ok=True)
-    return lock_dir / f"{item_id}.lock"
-
-
-def _acquire_lock(item_id: str) -> tuple[int | None, Path]:
-    path = _lock_path(item_id)
-    try:
-        fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-    except FileExistsError:
-        return None, path
-    os.write(fd, str(os.getpid()).encode("utf-8"))
-    return fd, path
 
 
 def _finish_worker(item: dict, *, exit_code: int, error: str | None = None) -> None:
@@ -74,10 +58,14 @@ def _enabled_platform_statuses(item: dict) -> list[str]:
     ]
 
 
-def _posting_allowed(item: dict) -> tuple[bool, str]:
+def _posting_allowed(item: dict, *, retry_failed: bool = False) -> tuple[bool, str]:
     review = item.get("review") or {}
     if not review.get("owner_approved"):
         return False, "not_owner_approved"
+    if retry_failed:
+        if item.get("status") not in {"failed", "partial_failed"}:
+            return False, "not_retryable_status"
+        return True, "retry_failed"
     decided_at = _parse_iso(review.get("decided_at"))
     if not decided_at:
         return False, "missing_decided_at"
@@ -92,8 +80,8 @@ def _posting_allowed(item: dict) -> tuple[bool, str]:
     return True, "ok"
 
 
-def post_one(item_id: str) -> int:
-    fd, lock_path = _acquire_lock(item_id)
+def post_one(item_id: str, *, retry_failed: bool = False) -> int:
+    fd, lock_path = post_lock.acquire(item_id)
     if fd is None:
         print(json.dumps({"id": item_id, "skipped": "locked", "lock": str(lock_path)}, ensure_ascii=False))
         return 0
@@ -103,11 +91,11 @@ def post_one(item_id: str) -> int:
             signal.signal(signal.SIGALRM, _timeout_handler)
             signal.alarm(WORKER_TIMEOUT_SEC)
         item = queue_lib.load_item(item_id)
-        if item.get("status") != "approved":
+        if not retry_failed and item.get("status") != "approved":
             _finish_worker(item, exit_code=0)
             print(json.dumps({"id": item_id, "skipped": item.get("status")}, ensure_ascii=False))
             return 0
-        allowed, reason = _posting_allowed(item)
+        allowed, reason = _posting_allowed(item, retry_failed=retry_failed)
         if not allowed:
             item.setdefault("posting_guard", {})["worker_block_reason"] = reason
             item["posting_guard"]["worker_blocked_at"] = _now()
@@ -130,15 +118,17 @@ def post_one(item_id: str) -> int:
     finally:
         if hasattr(signal, "SIGALRM"):
             signal.alarm(0)
-        os.close(fd)
-        lock_path.unlink(missing_ok=True)
+        post_lock.release(fd, lock_path)
 
 
 def main() -> int:
+    drive_guard.install()
+    CONFIG.assert_runtime_ready()
     ap = argparse.ArgumentParser(description="承認済みショート動画を1件だけ投稿する")
     ap.add_argument("item_id")
+    ap.add_argument("--retry-failed", action="store_true")
     args = ap.parse_args()
-    return post_one(args.item_id)
+    return post_one(args.item_id, retry_failed=args.retry_failed)
 
 
 if __name__ == "__main__":

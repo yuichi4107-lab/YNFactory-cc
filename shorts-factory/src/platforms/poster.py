@@ -9,40 +9,49 @@ import json
 import os
 import re
 import shutil
-import tempfile
 import time
+import uuid
 from datetime import datetime, timedelta
 from pathlib import Path
 
 from ..config import CONFIG
+from .. import drive_guard
 from ..fs_retry import retry_io
 from ..logging_utils import redact_secrets
 from ..platform_copy import copy_for_platform
+from ..state_io import atomic_write_json, file_lock
 
 INSTAGRAM_EXISTING_LOOKBACK = timedelta(minutes=30)
 
 
+class PostingLedgerError(RuntimeError):
+    pass
+
+
 def posting_video_path(item: dict) -> Path:
-    """Prefer the runtime copy for uploads so Drive locks cannot break posting."""
+    """Resolve upload media from local runtime storage only."""
     upload_path = (item.get("video") or {}).get("upload_path")
     if upload_path:
         path = Path(upload_path)
+        drive_guard.assert_local(path, "video.upload_path")
         if path.exists():
             return path
-    video_path = Path(item["video"]["path"])
+    video_path = Path((item.get("video") or {}).get("local_path") or item["video"]["path"])
+    drive_guard.assert_local(video_path, "video.local_path")
     output_dir = item.get("output_dir")
     if output_dir:
         runtime_path = CONFIG.work_dir / Path(output_dir).name / video_path.name
         if runtime_path.exists():
             return runtime_path
+        archived_path = CONFIG.outputs_dir / Path(output_dir).name / video_path.name
+        if archived_path.exists():
+            return archived_path
     return video_path
 
 
 def _ensure_upload_cache(item: dict) -> Path:
     """Materialize a stable local upload file and store it on the queue item."""
     src = posting_video_path(item)
-    if not src.exists():
-        src = Path(item["video"]["path"])
     if not src.exists():
         raise FileNotFoundError(src)
 
@@ -74,43 +83,75 @@ def _load_posting_ledger(item_id: str) -> dict:
         return {"item_id": item_id, "platforms": {}}
     try:
         return json.loads(path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
-        return {"item_id": item_id, "platforms": {}}
+    except (json.JSONDecodeError, OSError) as exc:
+        raise PostingLedgerError(f"posting ledger unreadable: {path}") from exc
 
 
-def _save_posting_ledger(item_id: str, data: dict) -> None:
+def _update_posting_ledger(item_id: str, mutator) -> dict:
     path = _posting_ledger_path(item_id)
-    fd, tmp = tempfile.mkstemp(dir=str(path.parent), suffix=".tmp")
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-        os.replace(tmp, path)
-    except Exception:
-        Path(tmp).unlink(missing_ok=True)
-        raise
+    lock_path = CONFIG.runtime_dir / "posting_ledger" / "locks" / f"{item_id}.lock"
+    with file_lock(lock_path):
+        ledger = _load_posting_ledger(item_id)
+        ledger["item_id"] = item_id
+        mutator(ledger.setdefault("platforms", {}))
+        atomic_write_json(path, ledger)
+        return ledger
+
+
+def _ledger_platform_entry(item_id: str, platform: str) -> dict:
+    entry = (_load_posting_ledger(item_id).get("platforms") or {}).get(platform) or {}
+    return dict(entry)
 
 
 def _ledger_posted_url(item_id: str, platform: str) -> str | None:
-    entry = (_load_posting_ledger(item_id).get("platforms") or {}).get(platform) or {}
+    entry = _ledger_platform_entry(item_id, platform)
     if entry.get("status") == "posted" and entry.get("url"):
         return str(entry["url"])
     return None
 
 
 def _record_ledger_posted(item_id: str, platform: str, url: str) -> None:
-    ledger = _load_posting_ledger(item_id)
-    ledger["item_id"] = item_id
-    platforms = ledger.setdefault("platforms", {})
-    platforms[platform] = {
-        "status": "posted",
-        "url": url,
-        "posted_at": _now(),
-    }
-    _save_posting_ledger(item_id, ledger)
+    def mutate(platforms: dict) -> None:
+        platforms[platform] = {
+            "status": "posted",
+            "url": url,
+            "posted_at": _now(),
+        }
+
+    _update_posting_ledger(item_id, mutate)
+
+
+def _record_ledger_intent(item_id: str, platform: str) -> None:
+    def mutate(platforms: dict) -> None:
+        platforms[platform] = {
+            "status": "attempting",
+            "attempt_id": uuid.uuid4().hex,
+            "started_at": _now(),
+            "pid": os.getpid(),
+        }
+
+    _update_posting_ledger(item_id, mutate)
+
+
+def _record_ledger_failure(
+    item_id: str,
+    platform: str,
+    error: str,
+    *,
+    reconcile_required: bool,
+) -> None:
+    def mutate(platforms: dict) -> None:
+        platforms[platform] = {
+            "status": "reconcile_required" if reconcile_required else "failed",
+            "error": error[:500],
+            "failed_at": _now(),
+        }
+
+    _update_posting_ledger(item_id, mutate)
 
 
 def _sns_env_cache_path() -> Path:
-    return CONFIG.runtime_dir / "sns_credentials" / ".env"
+    return CONFIG.sns_env_path
 
 
 def _parse_env_text(text: str) -> dict[str, str]:
@@ -125,30 +166,19 @@ def _parse_env_text(text: str) -> dict[str, str]:
 
 
 def _ensure_sns_env_cache() -> Path:
-    """Copy SNS credentials to runtime storage and fall back to the last good copy."""
-    source = CONFIG.sns_env_path
-    cache_path = _sns_env_cache_path()
-    cache_path.parent.mkdir(parents=True, exist_ok=True)
-
-    def _copy_once() -> Path:
-        text = source.read_text(encoding="utf-8")
-        if not text.strip():
-            raise RuntimeError(f"SNS credential file is empty: {source}")
-        tmp = cache_path.with_name(".env.tmp")
-        tmp.write_text(text, encoding="utf-8")
-        os.replace(tmp, cache_path)
-        try:
-            cache_path.chmod(0o600)
-        except OSError:
-            pass
-        return cache_path
-
+    """Validate the local-only SNS credential snapshot used by posting workers."""
+    path = _sns_env_cache_path()
+    if not path.exists():
+        raise FileNotFoundError(
+            f"SNS credential snapshot is missing: {path}. Run sync_runtime_credentials.py."
+        )
+    if not path.read_text(encoding="utf-8").strip():
+        raise RuntimeError(f"SNS credential file is empty: {path}")
     try:
-        return retry_io(_copy_once, attempts=5, delay_sec=2.0)
-    except Exception:
-        if cache_path.exists() and cache_path.stat().st_size > 0:
-            return cache_path
-        raise
+        path.chmod(0o600)
+    except OSError:
+        pass
+    return path
 
 
 def _load_sns_env() -> dict[str, str]:
@@ -573,6 +603,32 @@ def diagnose_posting_error(platform: str, error: str | None) -> str:
     return "unknown"
 
 
+def _submission_result_is_uncertain(platform: str, error: str | None) -> bool:
+    """Return True when a failure may have happened after the public submit."""
+    return diagnose_posting_error(platform, error) in {
+        "network_transient",
+        "timeout",
+        "browser_ui_stuck",
+        "unknown",
+    }
+
+
+def _block_for_ledger_reconciliation(item: dict, queue_lib, platform: str, entry: dict) -> dict:
+    ledger_status = entry.get("status") or "unknown"
+    error = (
+        "投稿結果を安全に判定できないため自動再投稿を停止しました。"
+        f" posting_ledger={ledger_status}。公開状態を照合してください。"
+    )
+    item = queue_lib.mark_platform(item, platform, "failed", error=error)
+    info = item["platforms"][platform]
+    info["non_retryable"] = True
+    info["reconcile_required"] = True
+    info["ledger_status"] = ledger_status
+    if hasattr(queue_lib, "save_item"):
+        queue_lib.save_item(item)
+    return item
+
+
 def _check_browser_session(platform: str) -> tuple[bool, str]:
     try:
         if platform == "youtube":
@@ -781,25 +837,77 @@ def post_item(
             if retry_delay_sec:
                 time.sleep(retry_delay_sec)
         for platform in pending:
-            ledger_url = _ledger_posted_url(item["id"], platform)
-            if ledger_url:
+            ledger_entry = _ledger_platform_entry(item["id"], platform)
+            ledger_url = (
+                str(ledger_entry["url"])
+                if ledger_entry.get("status") == "posted" and ledger_entry.get("url")
+                else None
+            )
+            if ledger_url is not None:
                 item = queue_lib.mark_platform(item, platform, "posted", url=ledger_url)
                 results.append(f"↩️ {platform}: 既存投稿を台帳から復元 {ledger_url}")
                 continue
+            if ledger_entry.get("status") in {"attempting", "reconcile_required", "posted"}:
+                item = _block_for_ledger_reconciliation(
+                    item, queue_lib, platform, ledger_entry
+                )
+                results.append(f"⚠️ {platform}: 投稿結果の照合待ち（自動再投稿停止）")
+                continue
+            external_call_started = False
+            ledger_posted = False
             try:
                 _record_attempt(item, queue_lib, platform, retry_round)
+                # Persist intent before any external submit. If the worker dies after
+                # this point, the next worker must reconcile instead of posting twice.
+                _record_ledger_intent(item["id"], platform)
+                external_call_started = True
                 url = POSTERS[platform](item)
                 _record_ledger_posted(item["id"], platform, url)
+                ledger_posted = True
                 item = queue_lib.mark_platform(item, platform, "posted", url=url)
                 results.append(f"✅ {platform}: {url}")
             except Exception as e:  # 1媒体の失敗で他媒体を止めない
+                if ledger_posted:
+                    # The public post and durable ledger are already committed.
+                    # Abort so the next worker restores queue state from the ledger.
+                    raise
                 err = redact_secrets(e)
+                reconcile_required = external_call_started and _submission_result_is_uncertain(
+                    platform, err
+                )
+                try:
+                    _record_ledger_failure(
+                        item["id"],
+                        platform,
+                        err,
+                        reconcile_required=reconcile_required,
+                    )
+                except Exception as ledger_exc:  # keep the persisted intent fail-closed
+                    results.append(
+                        f"⚠️ {platform}: 台帳更新失敗 {redact_secrets(ledger_exc)[:120]}"
+                    )
                 item = queue_lib.mark_platform(item, platform, "failed", error=err)
-                if _non_retryable_error(platform, err):
+                if reconcile_required:
+                    info = item["platforms"][platform]
+                    info["non_retryable"] = True
+                    info["reconcile_required"] = True
+                    info["ledger_status"] = "reconcile_required"
+                    item.setdefault("history", []).append(
+                        {
+                            "ts": _now(),
+                            "event": f"{platform}: 投稿結果不明のため自動再投稿停止",
+                        }
+                    )
+                    if hasattr(queue_lib, "save_item"):
+                        queue_lib.save_item(item)
+                elif _non_retryable_error(platform, err):
                     item["platforms"][platform]["non_retryable"] = True
                     if hasattr(queue_lib, "save_item"):
                         queue_lib.save_item(item)
-                results.append(f"❌ {platform}: {err[:120]}")
+                if reconcile_required:
+                    results.append(f"⚠️ {platform}: 結果不明のため要照合 {err[:120]}")
+                else:
+                    results.append(f"❌ {platform}: {err[:120]}")
         _maybe_recover_failed(
             _pending_platforms(platforms, ordered_platforms),
             retry_round,
@@ -817,14 +925,25 @@ def post_item(
 
     extra = ""
     if item["status"] in {"failed", "partial_failed"}:
-        retry_note = ""
-        if retry_attempts:
-            retry_note = f"\n\n自動再投稿: 最大{retry_attempts}回まで実行済み"
-        extra = (
-            retry_note
-            + "\n\n手動再試行: "
-            + f"<code>python3 shorts-factory/scripts/retry_failed_posts.py {item['id']} --execute</code>"
-        )
+        reconcile_platforms = [
+            name
+            for name, info in item.get("platforms", {}).items()
+            if info.get("enabled") and info.get("reconcile_required")
+        ]
+        if reconcile_platforms:
+            extra = (
+                "\n\n⚠️ 自動再投稿停止: 公開状態の照合が必要です: "
+                + ", ".join(reconcile_platforms)
+            )
+        else:
+            retry_note = ""
+            if retry_attempts:
+                retry_note = f"\n\n自動再投稿: 最大{retry_attempts}回まで実行済み"
+            extra = (
+                retry_note
+                + "\n\n手動再試行: "
+                + f"<code>python3 shorts-factory/scripts/retry_failed_posts.py {item['id']} --execute</code>"
+            )
     notify.send_message(
         f"📤 <b>{item['title']}</b> 投稿結果\n" + "\n".join(results) + extra
     )

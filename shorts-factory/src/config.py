@@ -15,43 +15,29 @@ import yaml
 RUNTIME_DIR = Path(os.environ.get("SHORTS_RUNTIME_DIR", str(Path.home() / "shorts-factory")))
 
 
-def _candidate_repo_roots() -> list[Path]:
-    candidates: list[Path] = []
-    for key in ("SHORTS_REPO_ROOT", "YNFACTORY_ROOT"):
-        if os.environ.get(key):
-            candidates.append(Path(os.environ[key]))
-
-    here = Path(__file__).resolve()
-    candidates.extend(
-        [
-            here.parents[2] if len(here.parents) > 2 else here.parent,
-            Path.cwd(),
-            Path.home()
-            / "Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc",
-            Path.home()
-            / "Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc",
-            Path.home() / "YNFactory-cc",
-        ]
-    )
-    return candidates
+def _is_drive_path(path: Path) -> bool:
+    return "/Library/CloudStorage/" in str(path).replace("\\", "/")
 
 
 def _resolve_repo_root() -> Path:
-    for candidate in _candidate_repo_roots():
-        if (candidate / "shorts-factory" / "src").exists():
-            return candidate
-    return _candidate_repo_roots()[0]
+    # runtime import時に候補へexists()すると、それだけでDrive File Providerが
+    # 固まる。ミラー先は明示値を文字列として保持し、ここではstatしない。
+    for key in ("SHORTS_DRIVE_MIRROR_ROOT", "SHORTS_REPO_ROOT", "YNFACTORY_ROOT"):
+        if os.environ.get(key):
+            return Path(os.environ[key]).expanduser()
+    here = Path(__file__).resolve()
+    return here.parents[2] if len(here.parents) > 2 else here.parent
 
 
-# Drive上のリポジトリルート（デプロイ先から実行されても Drive を指す）
+# Drive上のリポジトリルート。runtimeのホットパスでは触らず、非同期ミラーのみで使う。
 DEFAULT_REPO_ROOT = _resolve_repo_root()
 
 
 def _resolve_factory_root(repo_root: Path) -> Path:
-    """Return the code/assets root, which can differ from the Drive data root."""
+    """Return local code/assets root without touching Drive during normal runs."""
     if os.environ.get("SHORTS_FACTORY_ROOT"):
-        return Path(os.environ["SHORTS_FACTORY_ROOT"])
-    return repo_root / "shorts-factory"
+        return Path(os.environ["SHORTS_FACTORY_ROOT"]).expanduser()
+    return Path(__file__).resolve().parents[1]
 
 DEFAULTS: dict = {
     "speaker_id": 3,  # ずんだもん（ノーマル）
@@ -205,25 +191,51 @@ def _load_yaml(path: Path) -> dict:
 class Config:
     def __init__(self) -> None:
         self.runtime_dir = RUNTIME_DIR
+        if _is_drive_path(self.runtime_dir):
+            raise RuntimeError(f"SHORTS_RUNTIME_DIR must be local: {self.runtime_dir}")
         self.repo_root = DEFAULT_REPO_ROOT
         self.cfg = _deep_merge(DEFAULTS, _load_yaml(RUNTIME_DIR / "config.yaml"))
         self.secrets = _load_yaml(RUNTIME_DIR / "secrets.yaml")
 
-        # ディレクトリ群
+        # コード/実行状態はローカルを正本にする。repo_root配下は非同期ミラー先。
         self.factory_dir = _resolve_factory_root(self.repo_root)
         self.assets_dir = self.factory_dir / "assets"
         self.fonts_dir = self.assets_dir / "fonts"
         self.prompts_dir = self.factory_dir / "prompts"
-        self.marketing_dir = self.repo_root / ".company" / "marketing" / "shorts-factory"
+
+        self.state_dir = self.runtime_dir / "state"
+        self.marketing_dir = self.state_dir
         self.queue_dir = self.marketing_dir / "queue"
         self.topics_path = self.marketing_dir / "topics.json"
-        self.outputs_dir = self.repo_root / ".company" / "outputs" / "shorts-factory"
+        self.outputs_dir = self.runtime_dir / "outputs"
         self.work_dir = self.runtime_dir / "work"
         self.logs_dir = self.runtime_dir / "logs"
-        self.sns_env_path = (
+
+        self.drive_marketing_dir = (
+            self.repo_root / ".company" / "marketing" / "shorts-factory"
+        )
+        self.drive_queue_dir = self.drive_marketing_dir / "queue"
+        self.drive_topics_path = self.drive_marketing_dir / "topics.json"
+        self.drive_outputs_dir = (
+            self.repo_root / ".company" / "outputs" / "shorts-factory"
+        )
+        self.drive_sns_env_path = (
             self.repo_root / ".company" / "engineering" / "sns-credentials" / ".env"
         )
-        for d in (self.work_dir, self.logs_dir):
+        self.sns_env_path = self.runtime_dir / "sns_credentials" / ".env"
+        self.mirror_dir = self.runtime_dir / "drive_mirror"
+        self.mirror_manifest_path = self.mirror_dir / "manifest.json"
+        self.runtime_ready_marker = self.state_dir / "migration-v2-local-control-plane.json"
+
+        for d in (
+            self.state_dir,
+            self.queue_dir,
+            self.outputs_dir,
+            self.work_dir,
+            self.logs_dir,
+            self.sns_env_path.parent,
+            self.mirror_dir,
+        ):
             d.mkdir(parents=True, exist_ok=True)
 
     # --- 取得ヘルパ ---
@@ -242,6 +254,35 @@ class Config:
                 return default
             cur = cur[k]
         return cur
+
+    def assert_runtime_ready(self) -> None:
+        hot_paths = {
+            "factory_dir": self.factory_dir,
+            "state_dir": self.state_dir,
+            "queue_dir": self.queue_dir,
+            "topics_path": self.topics_path,
+            "outputs_dir": self.outputs_dir,
+            "work_dir": self.work_dir,
+            "logs_dir": self.logs_dir,
+            "sns_env_path": self.sns_env_path,
+        }
+        invalid = [
+            name
+            for name, path in hot_paths.items()
+            if _is_drive_path(path)
+        ]
+        if invalid:
+            raise RuntimeError(
+                "Drive path configured in runtime hot path: " + ", ".join(invalid)
+            )
+        if os.environ.get("SHORTS_ALLOW_UNMIGRATED") == "1":
+            return
+        if not self.runtime_ready_marker.is_file():
+            raise RuntimeError(
+                "local runtime state is not migrated; run scripts/migrate_runtime_state.py"
+            )
+        if not self.topics_path.is_file() or not self.queue_dir.is_dir():
+            raise RuntimeError("local runtime state is incomplete")
 
     @property
     def openai_api_key(self) -> str | None:

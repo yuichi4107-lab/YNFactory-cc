@@ -16,7 +16,7 @@ if str(APP_ROOT) not in sys.path:
 
 from src.logging_utils import redact_secrets
 from src.fs_retry import retry_io
-from src import approval_bot, jp_text, pipeline, platform_copy, queue_lib, script_gen, topic_store
+from src import approval_bot, drive_guard, jp_text, notify, pipeline, platform_copy, queue_lib, script_gen, topic_store
 from src.pipeline import result_summary, scheduled_difficulty
 from src.platforms import poster
 
@@ -89,7 +89,7 @@ class PostingCoreTest(unittest.TestCase):
         relative = "/bot123456789:ABCdef_012345678901234567890/getUpdates"
         self.assertNotIn("ABCdef", redact_secrets(relative))
 
-    def test_partial_failure_stays_retryable(self):
+    def test_partial_unknown_failure_requires_reconciliation(self):
         item = make_item()
         posters = {
             "x": lambda item: "https://x.example/post/1",
@@ -103,6 +103,8 @@ class PostingCoreTest(unittest.TestCase):
         self.assertEqual(updated["status"], "partial_failed")
         self.assertEqual(updated["platforms"]["x"]["status"], "posted")
         self.assertEqual(updated["platforms"]["youtube"]["status"], "failed")
+        self.assertTrue(updated["platforms"]["youtube"]["non_retryable"])
+        self.assertTrue(updated["platforms"]["youtube"]["reconcile_required"])
         self.assertNotIn("ABCdef", updated["platforms"]["youtube"]["error"])
         self.assertNotIn("ABCdef", FakeNotify.messages[-1])
 
@@ -141,7 +143,7 @@ class PostingCoreTest(unittest.TestCase):
             calls.append("youtube")
             youtube_attempts["count"] += 1
             if youtube_attempts["count"] == 1:
-                raise RuntimeError("temporary upload error")
+                raise RuntimeError("local media file not found")
             return "https://youtube.example/short/1"
 
         with (
@@ -155,6 +157,89 @@ class PostingCoreTest(unittest.TestCase):
         self.assertEqual(updated["platforms"]["x"]["attempts"], 1)
         self.assertEqual(updated["platforms"]["youtube"]["attempts"], 2)
         self.assertIn("自動再投稿 1/2", FakeNotify.messages[-1])
+
+    def test_ledger_intent_exists_before_external_submit(self):
+        item = make_item()
+        item["platforms"]["youtube"]["enabled"] = False
+        seen: list[str] = []
+
+        def x_post(_item):
+            seen.append(poster._ledger_platform_entry(item["id"], "x").get("status"))
+            return "https://x.example/post/intent"
+
+        with (
+            patch.object(poster, "POSTERS", {"x": x_post}),
+            patch.object(poster, "_retry_settings", return_value=(0, 0.0)),
+        ):
+            updated = poster.post_item(item, FakeQueue, FakeNotify)
+
+        self.assertEqual(["attempting"], seen)
+        self.assertEqual("posted", poster._ledger_platform_entry(item["id"], "x")["status"])
+        self.assertEqual("posted", updated["status"])
+
+    def test_uncertain_submit_failure_stops_without_automatic_repost(self):
+        item = make_item()
+        item["platforms"]["youtube"]["enabled"] = False
+        calls: list[str] = []
+
+        def x_post(_item):
+            calls.append("x")
+            raise TimeoutError("timed out after submit")
+
+        with (
+            patch.object(poster, "POSTERS", {"x": x_post}),
+            patch.object(poster, "_retry_settings", return_value=(2, 0.0)),
+        ):
+            updated = poster.post_item(item, FakeQueue, FakeNotify)
+
+        self.assertEqual(["x"], calls)
+        self.assertTrue(updated["platforms"]["x"]["non_retryable"])
+        self.assertTrue(updated["platforms"]["x"]["reconcile_required"])
+        self.assertEqual(
+            "reconcile_required",
+            poster._ledger_platform_entry(item["id"], "x")["status"],
+        )
+        self.assertIn("自動再投稿停止", FakeNotify.messages[-1])
+
+    def test_attempting_ledger_blocks_blind_repost_after_worker_crash(self):
+        item = make_item()
+        item["platforms"]["youtube"]["enabled"] = False
+        calls: list[str] = []
+        poster._record_ledger_intent(item["id"], "x")
+
+        with (
+            patch.object(poster, "POSTERS", {"x": lambda _item: calls.append("x") or "duplicate"}),
+            patch.object(poster, "_retry_settings", return_value=(2, 0.0)),
+        ):
+            updated = poster.post_item(item, FakeQueue, FakeNotify)
+
+        self.assertEqual([], calls)
+        self.assertTrue(updated["platforms"]["x"]["reconcile_required"])
+        self.assertEqual("failed", updated["status"])
+
+    def test_corrupt_posting_ledger_fails_closed_before_external_submit(self):
+        item = make_item()
+        item["platforms"]["youtube"]["enabled"] = False
+        poster._posting_ledger_path(item["id"]).write_text("{", encoding="utf-8")
+        calls: list[str] = []
+        with (
+            patch.object(poster, "POSTERS", {"x": lambda _item: calls.append("x") or "duplicate"}),
+            self.assertRaises(poster.PostingLedgerError),
+        ):
+            poster.post_item(item, FakeQueue, FakeNotify, retry_attempts=0, retry_delay_sec=0)
+        self.assertEqual([], calls)
+
+    def test_posting_video_rejects_drive_path_before_stat(self):
+        item = make_item()
+        item["video"] = {
+            "path": "/Users/test/Library/CloudStorage/provider/final.mp4",
+            "upload_path": "/Users/test/Library/CloudStorage/provider/upload.mp4",
+        }
+        with (
+            patch.object(Path, "exists", side_effect=AssertionError("stat must not run")),
+            self.assertRaises(drive_guard.DriveHotPathError),
+        ):
+            poster.posting_video_path(item)
 
     def test_retry_override_disables_inner_retries(self):
         item = make_item()
@@ -1126,11 +1211,61 @@ class PostingCoreTest(unittest.TestCase):
     def test_posting_worker_active_when_lock_exists(self):
         with tempfile.TemporaryDirectory() as td:
             runtime = Path(td)
-            lock_dir = runtime / "post_locks"
-            lock_dir.mkdir()
-            (lock_dir / "item-1.lock").write_text("123", encoding="utf-8")
             with patch.object(approval_bot.CONFIG, "runtime_dir", runtime):
+                fd, path = approval_bot.post_lock.acquire("item-1")
                 self.assertTrue(approval_bot._posting_worker_active({"id": "item-1"}))
+                approval_bot.post_lock.release(fd, path)
+
+    def test_untracked_preview_receipt_suppresses_duplicate_preview(self):
+        item = make_item()
+        item["telegram"] = {
+            "message_id": None,
+            "preview_send_attempts": 1,
+            "preview_send_started_at": datetime.now().astimezone().isoformat(),
+            "preview_sent_untracked_at": datetime.now().astimezone().isoformat(),
+        }
+        self.assertFalse(approval_bot._preview_retry_allowed(item))
+
+    def test_started_preview_without_receipt_fails_closed(self):
+        item = make_item()
+        item["telegram"] = {
+            "message_id": None,
+            "preview_send_attempts": 1,
+            "preview_send_started_at": (
+                datetime.now().astimezone() - timedelta(hours=1)
+            ).isoformat(),
+        }
+        self.assertFalse(approval_bot._preview_retry_allowed(item))
+
+    def test_approval_button_message_is_not_replayed_from_outbox(self):
+        with tempfile.TemporaryDirectory() as td:
+            with (
+                patch.object(notify.CONFIG, "marketing_dir", Path(td)),
+                patch.object(notify, "enabled", return_value=True),
+                patch.object(notify, "_send_message_payload", return_value=None),
+            ):
+                self.assertIsNone(
+                    notify.send_message("approval", reply_markup={"inline_keyboard": []})
+                )
+                self.assertEqual([], list((Path(td) / "notification_outbox").glob("*.json")))
+
+    def test_ambiguous_video_request_does_not_send_text_fallback(self):
+        with tempfile.TemporaryDirectory() as td:
+            video = Path(td) / "final.mp4"
+            video.write_bytes(b"video")
+            with (
+                patch.object(notify, "enabled", return_value=True),
+                patch.object(
+                    notify.requests,
+                    "post",
+                    side_effect=notify.requests.ConnectionError("ambiguous"),
+                ),
+                patch.object(notify, "send_message") as fallback,
+            ):
+                self.assertIsNone(
+                    notify.send_video(video, "preview", {"inline_keyboard": []})
+                )
+            fallback.assert_not_called()
 
     def test_expired_callback_with_current_message_is_applied(self):
         item = make_item()

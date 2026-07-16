@@ -25,9 +25,10 @@ from pathlib import Path
 import requests
 
 from .config import CONFIG
-from . import notify, queue_lib, topic_store
+from . import notify, post_lock, queue_lib, topic_store
 from .logging_utils import redact_secrets
-from .platforms import poster
+from .state_io import atomic_write_json
+from . import drive_guard
 
 LOCK_FILE = CONFIG.runtime_dir / "approval_bot.pid"
 QUEUE_SCAN_INTERVAL = 30
@@ -95,14 +96,22 @@ def _start_watchdog() -> None:
 
 
 def _acquire_lock() -> None:
-    if LOCK_FILE.exists():
+    LOCK_FILE.parent.mkdir(parents=True, exist_ok=True)
+    while True:
         try:
-            pid = int(LOCK_FILE.read_text().strip())
-            os.kill(pid, 0)
-            raise SystemExit(f"approval_bot は既に稼働中です (pid={pid})")
-        except (ValueError, ProcessLookupError, PermissionError):
-            pass  # 死んだロック
-    LOCK_FILE.write_text(str(os.getpid()))
+            fd = os.open(LOCK_FILE, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+        except FileExistsError:
+            try:
+                pid = int(LOCK_FILE.read_text().strip())
+                os.kill(pid, 0)
+                raise SystemExit(f"approval_bot は既に稼働中です (pid={pid})")
+            except (ValueError, ProcessLookupError, PermissionError, OSError):
+                LOCK_FILE.unlink(missing_ok=True)
+                continue
+        else:
+            os.write(fd, str(os.getpid()).encode("utf-8"))
+            os.close(fd)
+            break
     atexit.register(lambda: LOCK_FILE.unlink(missing_ok=True))
 
 
@@ -194,13 +203,9 @@ def _pending_rejection_path(chat_id: str | int) -> Path:
 
 
 def _set_pending_rejection(chat_id: str | int, item_id: str) -> None:
-    _pending_rejection_path(chat_id).write_text(
-        json.dumps(
-            {"item_id": item_id, "created_at": datetime.now().isoformat()},
-            ensure_ascii=False,
-            indent=2,
-        ),
-        encoding="utf-8",
+    atomic_write_json(
+        _pending_rejection_path(chat_id),
+        {"item_id": item_id, "created_at": datetime.now().isoformat()},
     )
 
 
@@ -210,7 +215,6 @@ def _spawn_replacement(item: dict) -> None:
     script = CONFIG.runtime_dir / "app" / "scripts" / "run_generate.sh"
     log_path = CONFIG.logs_dir / "replacement_generate.log"
     env = os.environ.copy()
-    env["SHORTS_REPO_ROOT"] = str(CONFIG.repo_root)
     with open(log_path, "a", encoding="utf-8") as log_file:
         log_file.write(
             f"\n[{datetime.now().isoformat()}] replacement_for={item['id']} difficulty={difficulty}\n"
@@ -230,14 +234,24 @@ def _spawn_replacement(item: dict) -> None:
 
 
 def _preview_video_path(item: dict) -> Path:
-    """Prefer the runtime copy for Telegram previews to avoid Drive read locks."""
-    video_path = Path(item["video"]["path"])
+    """Resolve preview media from local runtime storage only."""
+    video = item.get("video") or {}
+    raw_video_path = video.get("local_path") or video.get("path")
+    video_path = Path(raw_video_path) if raw_video_path else None
+    if video_path is not None:
+        drive_guard.assert_local(video_path, "preview video")
     output_dir = item.get("output_dir")
     if output_dir:
-        runtime_path = CONFIG.work_dir / Path(output_dir).name / video_path.name
+        video_name = video_path.name if video_path is not None else "final.mp4"
+        runtime_path = CONFIG.work_dir / Path(output_dir).name / video_name
         if runtime_path.exists():
             return runtime_path
-    return video_path
+        archived_path = CONFIG.outputs_dir / Path(output_dir).name / video_name
+        if archived_path.exists():
+            return archived_path
+    if video_path is not None and video_path.exists():
+        return video_path
+    raise FileNotFoundError(f"local preview video missing for {item.get('id')}")
 
 
 def _now_iso() -> str:
@@ -255,9 +269,15 @@ def _parse_iso(value: str | None) -> datetime | None:
 
 def _preview_retry_allowed(item: dict) -> bool:
     telegram = item.setdefault("telegram", {})
+    if telegram.get("preview_sent_untracked_at"):
+        return False
     started_at = _parse_iso(telegram.get("preview_send_started_at"))
     if not started_at:
         return True
+    # A started attempt without an explicit failure may already be visible in
+    # Telegram. Fail closed instead of creating a duplicate preview/button.
+    if not telegram.get("preview_send_failed_at"):
+        return False
     return datetime.now().astimezone() - started_at >= PREVIEW_RETRY_DELAY
 
 
@@ -428,12 +448,8 @@ def _process_alive(pid: int | None) -> bool:
         return False
 
 
-def _post_lock_path(item_id: str) -> Path:
-    return CONFIG.runtime_dir / "post_locks" / f"{item_id}.lock"
-
-
 def _posting_worker_active(item: dict, now: datetime | None = None) -> bool:
-    if _post_lock_path(item["id"]).exists():
+    if post_lock.active(item["id"]):
         return True
     worker = item.get("posting_worker") or {}
     if _process_alive(worker.get("pid")):
@@ -484,7 +500,7 @@ def _record_posting_guard_skip(item: dict, reason: str) -> None:
     log(f"承認済み自動再開を停止: {item['id']} reason={reason}")
 
 
-def _spawn_post_worker(item: dict, reason: str) -> bool:
+def _spawn_post_worker(item: dict, reason: str, *, retry_failed: bool = False) -> bool:
     if _posting_worker_active(item):
         return False
 
@@ -497,17 +513,20 @@ def _spawn_post_worker(item: dict, reason: str) -> bool:
     worker.pop("exit_code", None)
     worker.pop("error", None)
     queue_lib.save_item(item)
+    worker = item.setdefault("posting_worker", {})
 
     script = CONFIG.runtime_dir / "app" / "scripts" / "post_approved_item.py"
     log_path = CONFIG.logs_dir / "post_worker.log"
     env = os.environ.copy()
-    env["SHORTS_REPO_ROOT"] = str(CONFIG.repo_root)
     env["SHORTS_FACTORY_ROOT"] = str(CONFIG.runtime_dir / "app")
+    command = [sys.executable, str(script), item["id"]]
+    if retry_failed:
+        command.append("--retry-failed")
     with open(log_path, "a", encoding="utf-8") as log_file:
         log_file.write(f"\n[{datetime.now().isoformat()}] item={item['id']} reason={reason}\n")
         try:
             proc = subprocess.Popen(
-                [sys.executable, str(script), item["id"]],
+                command,
                 cwd=str(CONFIG.runtime_dir / "app"),
                 env=env,
                 stdin=subprocess.DEVNULL,
@@ -626,9 +645,8 @@ def _scan_deferred_retries() -> None:
                 }
             )
             queue_lib.save_item(item)
-            log(f"遅延自動再投稿: {item['id']} platforms={','.join(platforms)}")
-            updated = poster.post_item(item, queue_lib, notify, retry_attempts=0, retry_delay_sec=0)
-            log(f"遅延自動再投稿完了: {item['id']} → {updated['status']}")
+            log(f"遅延自動再投稿worker: {item['id']} platforms={','.join(platforms)}")
+            _spawn_post_worker(item, "deferred_retry", retry_failed=True)
 
 
 def _retry_deferred_topic_consumes() -> None:
@@ -706,6 +724,9 @@ def scan_queue() -> None:
             telegram["preview_send_started_at"] = _now_iso()
             telegram["preview_send_attempts"] = int(telegram.get("preview_send_attempts") or 0) + 1
             queue_lib.save_item(item)
+            # save_item may merge a concurrent revision and replace nested mappings.
+            # Reacquire the live nested object before recording the send result.
+            telegram = item.setdefault("telegram", {})
             _mark_progress()
             mid = notify.send_video(
                 _preview_video_path(item),
@@ -720,17 +741,15 @@ def scan_queue() -> None:
                 queue_lib.save_item(item)
                 log(f"プレビュー送信: {item['id']}")
             else:
-                telegram["preview_send_failed_at"] = _now_iso()
+                telegram["preview_delivery_uncertain_at"] = _now_iso()
+                telegram.pop("preview_send_failed_at", None)
                 queue_lib.save_item(item)
-                log(f"プレビュー送信未確認（短時間の自動再送を抑止）: {item['id']}")
+                log(f"プレビュー送信未確認（自動再送を停止）: {item['id']}")
         finally:
             _release_preview_lock(item["id"])
 
-    if ready_items:
-        # 承認待ちがある間はボタン応答を優先し、Drive系の復旧処理は次回以降へ回す。
-        return
-
-    # Driveロック復旧や失敗投稿リトライが詰まっても、承認通知を遅らせない。
+    # ローカル状態なので、承認待ちが残っていてもdeferred処理を飢餓させない。
+    # プレビューを先に処理した後、毎scanで整合処理まで完了させる。
     _retry_deferred_topic_consumes()
     _scan_deferred_retries()
 
@@ -897,6 +916,8 @@ def handle_message(msg: dict) -> None:
 
 
 def main() -> None:
+    drive_guard.install()
+    CONFIG.assert_runtime_ready()
     if not notify.enabled():
         raise SystemExit("Telegram設定がありません（secrets.yaml を確認）")
     _acquire_lock()

@@ -3,25 +3,26 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.ynfactory.shorts-approval</string>
+    <string>com.ynfactory.shorts-drive-mirror</string>
     <key>ProgramArguments</key>
     <array>
         <string>/Users/yuichi/shorts-factory/.venv/bin/python</string>
-        <string>-m</string>
-        <string>src.approval_bot</string>
+        <string>/Users/yuichi/shorts-factory/app/scripts/mirror_to_drive.py</string>
+        <string>--timeout</string>
+        <string>90</string>
     </array>
     <key>WorkingDirectory</key>
     <string>/Users/yuichi/shorts-factory/app</string>
     <key>RunAtLoad</key>
     <true/>
-    <key>KeepAlive</key>
-    <true/>
-    <key>ThrottleInterval</key>
-    <integer>30</integer>
+    <key>StartInterval</key>
+    <integer>300</integer>
+    <key>ProcessType</key>
+    <string>Background</string>
     <key>StandardOutPath</key>
-    <string>/Users/yuichi/Library/Logs/shorts-approval.log</string>
+    <string>/Users/yuichi/Library/Logs/shorts-drive-mirror.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/yuichi/Library/Logs/shorts-approval.log</string>
+    <string>/Users/yuichi/Library/Logs/shorts-drive-mirror.log</string>
     <key>EnvironmentVariables</key>
     <dict>
         <key>PATH</key>
@@ -34,6 +35,8 @@
         <string>/Users/yuichi/shorts-factory</string>
         <key>SHORTS_FACTORY_ROOT</key>
         <string>/Users/yuichi/shorts-factory/app</string>
+        <key>SHORTS_DRIVE_MIRROR_ROOT</key>
+        <string>/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc</string>
     </dict>
 </dict>
 </plist>

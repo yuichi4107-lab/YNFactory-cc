@@ -2,13 +2,14 @@
 from __future__ import annotations
 
 import json
-import time
+import uuid
 from pathlib import Path
 
 import requests
 
 from .config import CONFIG
 from .logging_utils import redact_secrets
+from .state_io import atomic_write_json
 
 
 def _api(method: str) -> str:
@@ -29,8 +30,8 @@ def _outbox_dir() -> Path:
 
 
 def _save_pending_message(payload: dict) -> None:
-    path = _outbox_dir() / f"{int(time.time())}_{len(payload.get('text', ''))}.json"
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    path = _outbox_dir() / f"{uuid.uuid4().hex}.json"
+    atomic_write_json(path, payload)
 
 
 def _send_message_payload(payload: dict) -> int | None:
@@ -62,6 +63,10 @@ def send_message(text: str, reply_markup: dict | None = None) -> int | None:
     mid = _send_message_payload(payload)
     if mid:
         return mid
+    # Approval buttons must not be replayed from the outbox after an ambiguous
+    # network failure; Telegram may already have accepted the first request.
+    if reply_markup:
+        return None
     _save_pending_message(payload)
     return None
 
@@ -86,14 +91,16 @@ def send_video(
         # The request may have reached Telegram even when the response timed out.
         # Do not send a text fallback immediately; that creates duplicate buttons.
         return None
-    except OSError:
-        return send_message(caption + "\n（動画ファイルの読み取りに失敗。Driveで確認してください）", reply_markup)
     except requests.RequestException:
-        r = None
+        # Connection errors can occur after Telegram accepted the upload.
+        # Avoid a fallback with a second set of approval buttons.
+        return None
+    except OSError:
+        return send_message(caption + "\n（ローカル動画の読み取りに失敗。運用ログを確認してください）", reply_markup)
     if r and r.ok:
         return r.json().get("result", {}).get("message_id")
-    # 動画が大きい等で失敗したらテキストにフォールバック
-    return send_message(caption + "\n（動画の送信に失敗。Driveで確認してください）", reply_markup)
+    # An explicit non-2xx response is a confirmed failure, so text fallback is safe.
+    return send_message(caption + "\n（動画の送信に失敗。運用ログを確認してください）", reply_markup)
 
 
 def approval_keyboard(item_id: str) -> dict:

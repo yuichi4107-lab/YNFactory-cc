@@ -9,9 +9,7 @@
 from __future__ import annotations
 
 import json
-import os
 import re
-import tempfile
 import unicodedata
 from datetime import date
 from difflib import SequenceMatcher
@@ -19,10 +17,12 @@ from pathlib import Path
 
 from .config import CONFIG
 from .fs_retry import is_transient_io_error, retry_io, run_with_timeout
+from .state_io import atomic_write_json, file_lock
 
 LOW_STOCK_THRESHOLD = 7
 VALID_DIFFICULTIES = {"beginner", "intermediate"}
 TOPICS_CACHE_PATH = CONFIG.runtime_dir / "cache" / "topics.json"
+TOPICS_LOCK_PATH = CONFIG.state_dir / "locks" / "topics.lock"
 TOPIC_SIMILARITY_THRESHOLD = 0.82
 TOPIC_JACCARD_THRESHOLD = 0.74
 QUEUE_RESERVED_RECENT_FILES = 120
@@ -330,9 +330,7 @@ def _load_once() -> dict:
 
 def _write_cache(data: dict) -> None:
     try:
-        TOPICS_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
-        with open(TOPICS_CACHE_PATH, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
+        atomic_write_json(TOPICS_CACHE_PATH, data)
     except OSError:
         pass
 
@@ -362,18 +360,7 @@ def _load(allow_cache: bool = True) -> dict:
 
 
 def _save_once(data: dict) -> None:
-    CONFIG.topics_path.parent.mkdir(parents=True, exist_ok=True)
-    # Drive同期との競合を避けるため atomic rename で書き込む
-    tmp_path: Path | None = None
-    fd, tmp = tempfile.mkstemp(dir=str(CONFIG.topics_path.parent), suffix=".tmp")
-    tmp_path = Path(tmp)
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-        os.replace(tmp, CONFIG.topics_path)
-    except Exception:
-        tmp_path.unlink(missing_ok=True)
-        raise
+    atomic_write_json(CONFIG.topics_path, data)
 
 
 def _save(data: dict) -> None:
@@ -431,6 +418,11 @@ def next_topic(
 
 
 def consume_topic(topic: str, slug: str, title: str, difficulty: str | None = None) -> int:
+    with file_lock(TOPICS_LOCK_PATH):
+        return _consume_topic_locked(topic, slug, title, difficulty)
+
+
+def _consume_topic_locked(topic: str, slug: str, title: str, difficulty: str | None = None) -> int:
     """トピックを used へ移動し、残数を返す。"""
     data = _load(allow_cache=False)
     used = data.setdefault("used", [])
@@ -476,6 +468,11 @@ def recent_titles(n: int = 30) -> list[str]:
 
 
 def add_topics(topics: list[str | dict]) -> int:
+    with file_lock(TOPICS_LOCK_PATH):
+        return _add_topics_locked(topics)
+
+
+def _add_topics_locked(topics: list[str | dict]) -> int:
     data = _load()
     existing = [t.get("topic") for t in data.get("backlog", [])] + _reserved_topics(data)
     for item in topics:
@@ -502,6 +499,11 @@ def _usable_backlog_count(data: dict, difficulty: str, reserved: list[str]) -> i
 
 
 def replenish_topics(difficulty: str | None = None, *, force: bool = False) -> dict:
+    with file_lock(TOPICS_LOCK_PATH):
+        return _replenish_topics_locked(difficulty, force=force)
+
+
+def _replenish_topics_locked(difficulty: str | None = None, *, force: bool = False) -> dict:
     """不足したネタを内蔵候補から補充する。
 
     既存backlog・used・直近queueと類似する候補は追加しない。

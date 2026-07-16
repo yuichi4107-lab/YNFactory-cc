@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -12,6 +14,7 @@ if str(APP_ROOT) not in sys.path:
     sys.path.insert(0, str(APP_ROOT))
 
 from src import queue_lib  # noqa: E402
+from src import drive_guard  # noqa: E402
 
 
 RETRYABLE_STATUSES = {"failed", "partial_failed"}
@@ -38,6 +41,7 @@ def load_targets(item_ids: list[str], include_all: bool) -> list[dict]:
 
 
 def main() -> int:
+    drive_guard.install()
     ap = argparse.ArgumentParser(description="失敗した投稿先だけを再試行する")
     ap.add_argument("item_ids", nargs="*", help="再試行するqueue item id")
     ap.add_argument("--all", action="store_true", help="failed/partial_failed を全件対象にする")
@@ -54,16 +58,31 @@ def main() -> int:
     if not args.execute:
         return 0
 
-    from src import notify  # noqa: WPS433
-    from src.platforms import poster  # noqa: WPS433
-
+    exit_code = 0
     for item in targets:
         if not pending_platforms(item):
             continue
-        queue_lib.transition(item, "approved", "失敗媒体の手動再試行")
-        updated = poster.post_item(item, queue_lib, notify)
-        print(json.dumps({"id": updated["id"], "status": updated["status"]}, ensure_ascii=False))
-    return 0
+        env = os.environ.copy()
+        env["SHORTS_FACTORY_ROOT"] = str(APP_ROOT)
+        proc = subprocess.run(
+            [
+                sys.executable,
+                str(APP_ROOT / "scripts" / "post_approved_item.py"),
+                item["id"],
+                "--retry-failed",
+            ],
+            cwd=str(APP_ROOT),
+            env=env,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if proc.stdout.strip():
+            print(proc.stdout.strip())
+        if proc.returncode:
+            exit_code = proc.returncode
+            print(proc.stderr.strip(), file=sys.stderr)
+    return exit_code
 
 
 if __name__ == "__main__":

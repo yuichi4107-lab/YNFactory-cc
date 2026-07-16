@@ -12,10 +12,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import traceback
 import unicodedata
 from datetime import date, datetime
@@ -35,6 +37,8 @@ from . import (
 )
 from .fs_retry import is_transient_io_error, retry_io
 from .logging_utils import redact_secrets
+from .state_io import file_lock
+from . import drive_guard
 
 
 def log(msg: str) -> None:
@@ -72,27 +76,46 @@ def save_outputs(
     script: dict,
     credit: str | None = None,
 ) -> Path:
-    """Copy generated artifacts to Drive, retrying transient Drive I/O errors."""
+    """Commit generated artifacts atomically to the local runtime archive."""
 
     def _save_once() -> Path:
+        CONFIG.outputs_dir.mkdir(parents=True, exist_ok=True)
         out_dir = CONFIG.outputs_dir / item_id
-        out_dir.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(final, out_dir / "final.mp4")
-        shutil.copy2(work / "script.json", out_dir / "script.json")
-        shutil.copy2(ass, out_dir / "subtitles.ass")
-        shutil.copy2(work / "quality_report.json", out_dir / "quality_report.json")
-        (out_dir / "images").mkdir(exist_ok=True)
-        for p in images:
-            shutil.copy2(p, out_dir / "images" / p.name)
-        for p in previews:
-            shutil.copy2(p, out_dir / p.name)
-        captions = (
-            f"# {title}\n\n## キャプション\n{script['caption']}\n\n"
-            f"## ハッシュタグ\n{' '.join(script['hashtags'])}\n\n"
-            f"## クレジット（概要欄に含めること）\n"
-            f"{credit or (str(CONFIG.get('speaker_credit')) + '／音声・映像はAIで自動生成しています')}\n"
-        )
-        (out_dir / "captions.md").write_text(captions, encoding="utf-8")
+        stage = Path(tempfile.mkdtemp(dir=str(CONFIG.outputs_dir), prefix=f".{item_id}."))
+        try:
+            shutil.copy2(final, stage / "final.mp4")
+            shutil.copy2(work / "script.json", stage / "script.json")
+            shutil.copy2(ass, stage / "subtitles.ass")
+            shutil.copy2(work / "quality_report.json", stage / "quality_report.json")
+            (stage / "images").mkdir(exist_ok=True)
+            for p in images:
+                shutil.copy2(p, stage / "images" / p.name)
+            for p in previews:
+                shutil.copy2(p, stage / p.name)
+            captions = (
+                f"# {title}\n\n## キャプション\n{script['caption']}\n\n"
+                f"## ハッシュタグ\n{' '.join(script['hashtags'])}\n\n"
+                f"## クレジット（概要欄に含めること）\n"
+                f"{credit or (str(CONFIG.get('speaker_credit')) + '／音声・映像はAIで自動生成しています')}\n"
+            )
+            (stage / "captions.md").write_text(captions, encoding="utf-8")
+            (stage / ".complete.json").write_text(
+                json.dumps(
+                    {
+                        "item_id": item_id,
+                        "completed_at": datetime.now().astimezone().isoformat(timespec="seconds"),
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
+            if out_dir.exists():
+                shutil.rmtree(out_dir)
+            os.replace(stage, out_dir)
+        except Exception:
+            shutil.rmtree(stage, ignore_errors=True)
+            raise
         return out_dir
 
     return retry_io(_save_once, attempts=5, delay_sec=5.0)
@@ -298,7 +321,7 @@ def _build_candidate(
     finally:
         tts_voicevox.shutdown_engine()
 
-    # --- 6. 成果物をDriveへ保存 ---
+    # --- 6. 成果物をローカルへ保存（Drive反映は別プロセス） ---
     out_dir = save_outputs(item_id, final, ass, work, images, previews, title, script)
     log(f"成果物保存: {out_dir}")
     return {
@@ -626,9 +649,12 @@ def _select_topic_entry(topic: str | None, selected_difficulty: str) -> dict:
             raise
         log(f"ネタ帳自動補充を一時スキップ: {exc}")
 
-    topic_entry, remaining = topic_store.next_topic_entry(selected_difficulty)
+    # 未消費deferred itemを含むqueue内topicも予約済みとして扱い、再利用しない。
+    topic_entry, remaining = topic_store.next_topic_entry(
+        selected_difficulty, include_queue=True
+    )
     if not topic_entry:
-        fallback_entry, fallback_remaining = topic_store.next_topic_entry()
+        fallback_entry, fallback_remaining = topic_store.next_topic_entry(include_queue=True)
         if fallback_entry:
             notify.send_message(
                 f"⚠️ shorts-factory: {selected_difficulty} のネタが空です。"
@@ -1044,6 +1070,8 @@ def result_summary(result: dict) -> dict:
 
 
 def main() -> None:
+    drive_guard.install()
+    CONFIG.assert_runtime_ready()
     ap = argparse.ArgumentParser(description="ショート動画全自動生成")
     ap.add_argument("--topic", help="テーマ（省略時はネタ帳から）")
     ap.add_argument("--no-queue", action="store_true", help="キュー登録・Telegram送信をしない")
@@ -1065,25 +1093,27 @@ def main() -> None:
     )
     args = ap.parse_args()
     try:
-        use_platform_variants = (
-            not args.no_queue
-            and not args.single_video
-            and args.target_platform == "common"
-            and bool(CONFIG.get("content", "platform_variant_videos", default=True))
-        )
-        if use_platform_variants:
-            result = produce_platform_variants(
-                topic=args.topic,
-                send_queue=not args.no_queue,
-                difficulty=args.difficulty,
+        # replacement生成と定刻生成が重なっても、topic選択から消費までを直列化する。
+        with file_lock(CONFIG.state_dir / "locks" / "generator.lock"):
+            use_platform_variants = (
+                not args.no_queue
+                and not args.single_video
+                and args.target_platform == "common"
+                and bool(CONFIG.get("content", "platform_variant_videos", default=True))
             )
-        else:
-            result = produce(
-                topic=args.topic,
-                send_queue=not args.no_queue,
-                difficulty=args.difficulty,
-                target_platform=args.target_platform,
-            )
+            if use_platform_variants:
+                result = produce_platform_variants(
+                    topic=args.topic,
+                    send_queue=not args.no_queue,
+                    difficulty=args.difficulty,
+                )
+            else:
+                result = produce(
+                    topic=args.topic,
+                    send_queue=not args.no_queue,
+                    difficulty=args.difficulty,
+                    target_platform=args.target_platform,
+                )
         print(json.dumps(result_summary(result), ensure_ascii=False))
     except Exception as e:
         log(f"❌ パイプライン失敗: {e}")
