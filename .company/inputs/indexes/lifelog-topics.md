@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-15T07:00:46
+generated_at: 2026-07-16T07:01:11
 ---
 
 # Lifelog Topics
@@ -10,6 +10,25 @@ generated_at: 2026-07-15T07:00:46
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-15
+
+- - **AIによる求人広告作成におけるヒット率向上施策** (09:24) | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+-   - 理由: AIが生成する文章のヒット率が不明確なため、効果的な活用方法（見出しなど）をトライアンドエラーで検証し、確立する必要がある。 | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- - **複数プラットフォームでの求人広告コンテンツ差別化戦略** (09:26) | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+-   - 理由: Barkle、AirWork、自社HPなど異なるプラットフォームで同じ内容と判断されないためのコンテンツ差別化（文言、写真）のノウハウを調査する。 | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- - **新規顧客獲得のための営業戦略** (10:28) | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+-   - 理由: 新規営業が難しい業界特性の中で、拡大営業や積極的なアプローチ方法、偉い人材の活用方法を模索する必要がある。 | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- - **金融機関の融資戦略と自社の預金戦略の連携** (11:50) | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+-   - 理由: 銀行が貸し出しを増やすために預金を集めており、預金残高が融資審査に影響するため、融資を有利に進めるための戦略を検討する。 | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- 1. **AIによる求人広告作成の効率化と改善** [freelance] ★★★★☆ (09:23) | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+-    - AIを活用して求人広告を作成し、過去データを利用しつつ、プラットフォームごとの内容差別化や効果測定（トライアンドエラー）を行い、より効果的な広告作成フローを構築する。 | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- 2. **業務プロセスのデジタル化推進** [freelance] ★★★★☆ (10:48) | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+-    - アナログな引き継ぎや紙ベースの管理が多い現状をデジタル化し、業務効率を向上させるソリューションを開発・導入する。 | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- 3. **システムサポートの効率化ソリューション開発** [freelance] ★★★★☆ (11:29) | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+-    - 外部システムサポートの課題（地域性、対応の難しさ、研修だけでは対応不可）を解決するようなシステムやツールをAI活用で開発・提供する。 | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- 4. **労働環境改善ソリューションの検討** [freelance] ★★★★☆ (11:34) | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+-    - 劣悪な労働環境（冷房なし、電子機器持ち込み不可）や、それによる健康管理の課題を解決するためのソリューション（AI活用による環境モニタリング、作業効率化など）を検討する。 | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
 
 ## 2026-07-14
 

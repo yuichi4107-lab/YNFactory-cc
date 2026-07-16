@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-15T07:00:46
+generated_at: 2026-07-16T07:01:11
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,17 @@ generated_at: 2026-07-15T07:00:46
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-15
+
+- [ ] 既存契約の1ヶ月延長修正 | time:17:21 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- [ ] 9月中に契約内容の修正 | time:17:20 | priority:high | due:2026-09-XX | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- [ ] 銀行にご計算書を提出 | time:11:54 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- [ ] ChatGPT利用ポリシーのデバイス間適用設定 | time:06:57 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- [ ] プロジェクト方針のagent.mdへの登録 | time:06:48 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- [ ] Fable5の運用中止とAI作業のChatGPTへの一本化 | time:06:38 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- [ ] ChatGPTモデルの自動切り替え機能の実現可能性検討 | time:06:39 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- [ ] AIツールの役割分担と運用方法の検討（wa-pebble 5, ChatGPT 5.6, Claude Sonnet） | time:06:35 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
 
 ## 2026-07-14
 

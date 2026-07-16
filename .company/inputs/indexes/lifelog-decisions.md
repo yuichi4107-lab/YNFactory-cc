@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-15T07:00:46
+generated_at: 2026-07-16T07:01:11
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,10 @@ generated_at: 2026-07-15T07:00:46
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-15
+
+- - Fable5の運用を中止し、AI関連の作業をChatGPTに一本化する。 | time:06:38 | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
 
 ## 2026-07-14
 

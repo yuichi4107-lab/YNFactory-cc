@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-15T07:00:46
+generated_at: 2026-07-16T07:01:11
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,18 @@ generated_at: 2026-07-15T07:00:46
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-15
+
+- - **yuichi** — 契約延長に関する議論の相手方。 (18:18) | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- - **ひでさん** — 採用候補者に関する言及あり。 (17:41) | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- - **川本** — 過去の役員で、社長との考え方の違いで辞任した可能性のある人物。 (11:40) | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- - **高橋さん** — 会話の中で名前が言及された人物。 (11:41) | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- - **熊谷あかり** — 採用面談を行った候補者。元々は青果卸会社勤務、その後半導体製造や自動車部品製造工程で工程管理者、副責任者の経験あり。健康面を考慮して転職を検討中。 (09:58) | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- - **清水夏実** — 確認待ちの採用候補者。 (09:54) | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- - **榊原彩** — 確認待ちの採用候補者。 (09:54) | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- - **栗田かなこ** — 確認待ちの採用候補者。 (09:54) | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
+- - **中澤さん** — スケジュール調整の議論で言及された人物。 (09:07) | source:`.company/inputs/organized/lifelogs/2026-07-15-lifelog-insights.md`
 
 ## 2026-07-14
 
