@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-16T07:01:11
+generated_at: 2026-07-17T07:01:16
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,31 @@ generated_at: 2026-07-16T07:01:11
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-16
+
+- [ ] 明日の2時からの面接対応。 | time:20:09 | priority:high | due:2026-07-17 | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 本日の面接対応。 | time:17:30 | priority:high | due:2026-07-16 | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 本日15:30-16:30の会議参加。 | time:08:29 | priority:high | due:2026-07-16 | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 本日17:30-18:30の会議参加。 | time:08:30 | priority:high | due:2026-07-16 | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 当日直前に宮崎さんとの打ち合わせ内容を確認。 | time:16:32 | priority:high | due:2026-07-16 | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] タニラさんの特別徴収の確認、Yuichiの納税額を確認。 | time:15:55 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 「セブン」と「リックス」との契約内容確認、オーナーと自社の役割分担を明確化。 | time:12:14 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 支払い構造（固定額/日割り）を明確化。 | time:11:31 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 支払いサイクルを確認し、7月末および9月末までの支払い額を確定する。 | time:11:33 | priority:high | due:2026-07-31 | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 来週月火に番頭長との面接を設定し、選考結果を連絡する。 | time:10:40 | priority:high | due:2026-07-20 | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 採用候補者へ、具体的な業務内容（特にトイレ掃除など）を詳細に説明する。 | time:10:14 | priority:high | due:来週の面接時 | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 採用候補者と給与条件（420万/年とボーナスなど）について詳細に擦り合わせる。 | time:10:14 | priority:high | due:来週の面接時 | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 顧客との共同作業（補足・協力）を進行する。 | time:19:39 | priority:normal | due:2026-07-16 | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 駐車場の情報表示に関する確認と整備。 | time:17:04 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 印刷方法の検討（全体量確認後）。 | time:17:06 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 請求書/給与明細の発注・在庫管理の確認。 | time:15:46 | priority:normal | due:今月～来月 | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 電話回線（固定、FAX、フリーダイヤル）の利用状況を確認し、契約を見直す。 | time:14:12 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 資料の配布方法と部数を確認。 | time:14:10 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 駐車場利用者情報の管理体制を構築する。 | time:11:32 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 契約管理の見直し、預かり物の対応を検討する。 | time:11:32 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 新しい編集者の出勤状況を確認する。 | time:08:48 | priority:normal | due:来週 | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- [ ] 明日連絡事項ができてから改めて連絡する。 | time:21:38 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
 
 ## 2026-07-15
 

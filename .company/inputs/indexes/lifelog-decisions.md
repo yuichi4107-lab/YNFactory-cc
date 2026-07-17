@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-16T07:01:11
+generated_at: 2026-07-17T07:01:16
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,13 @@ generated_at: 2026-07-16T07:01:11
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-16
+
+- - 請求書/給与明細管理の一元化と、在庫がなくなったタイミングでの発注。 | time:15:46 | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- - 利益度外視でのプロジェクト進行判断の可能性。 | time:12:55 | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- - 契約に基づく前払い形式での支払い管理を継続。 | time:11:35 | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- - 採用候補者の1名を見送り、2名を採用する方針。 | time:10:12 | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
 
 ## 2026-07-15
 

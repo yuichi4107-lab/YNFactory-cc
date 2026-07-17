@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-16T07:01:11
+generated_at: 2026-07-17T07:01:16
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,21 @@ generated_at: 2026-07-16T07:01:11
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-16
+
+- - **Yuichi** — 納税額や新しい仕事について言及された人物。複数回登場。 (21:11) | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- - **ショウさん** — 飲み会などのお誘いをくれる人物。 (19:58) | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- - **宮崎さん** — 打ち合わせのために来訪する相手。 (16:31) | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- - **タニラさん** — 特別徴収に関する人物。 (15:55) | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- - **コンサンの人** — ウェブ会議に参加するコンサルタント。 (13:08) | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- - **藤田** — 業務フローにおける担当者。 (13:16) | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- - **ササキ** — 人材として必要性が言及された人物または組織名。 (12:41) | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- - **コルベックス** — 人材として必要性が言及された人物または組織名。 (12:41) | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- - **佐藤さん** — 有給消化に関する話で登場した人物。 (12:21) | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- - **近藤さん** — 有給消化に関する話で登場した人物。 (12:21) | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- - **番頭長** — 採用面接を担当する人物。 (10:40) | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
+- - **オーナー** — キャリアコンサルタント資格を保有している。 (19:21) | source:`.company/inputs/organized/lifelogs/2026-07-16-lifelog-insights.md`
 
 ## 2026-07-15
 
