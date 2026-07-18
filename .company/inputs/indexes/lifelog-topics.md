@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-17T07:01:16
+generated_at: 2026-07-18T07:01:29
 ---
 
 # Lifelog Topics
@@ -10,6 +10,31 @@ generated_at: 2026-07-17T07:01:16
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-17
+
+- - **ネットワークビジネスの法人登録と税金対策** (20:38) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+-   - 理由: 個人収入の確保と法人化のタイミングについて、税金の問題（個人だと半分近く持っていかれる）を考慮し、最適な戦略を検討するため。 | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- - **ネットワークビジネスにおけるコンプライアンス試験の取得** (19:47) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+-   - 理由: 営業活動を行う上で必須となる資格であり、事業を適切に推進するために必要となるため。 | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- - **全国振り子構成共済会の詳細サービス内容** (19:11) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+-   - 理由: プロパンガス割引、生活応援フェアプラスの活用方法、オーダースーツ割引、ガソリン割引、NTTドコモ提携のレミノ（動画配信サービス）など、提供サービスを深く理解し、自身の事業展開や顧客への提案に活用するため。 | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- - **ネットワークビジネスの法人登録の要件** (19:26) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+-   - 理由: 株式保有状況など、特定の条件を満たせば年齢に関係なく法人で参加できる可能性について確認するため。 | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- 1. **ネットワークビジネスへの参加と拡大** [other] ★★★★★ (20:23) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+-    - 少額の初期投資で月収500万円の「完全な利益」を目指せる事業モデル。既存事業とは別に、将来的なメイン事業として、また福利厚生としての活用も検討。 | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- 2. **ネットワークビジネスにおける三口登録制度の活用** [other] ★★★★★ (20:01) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+-    - 自身と家族（三親等以内、16歳以上）を登録することで、紹介扱いによる登録料免除、支払い不履行時の収入確保、早期の収入獲得（100人で200ポイント達成）を図る。 | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- 3. **AI導入支援ビジネスの展開** [freelance] ★★★★☆ (20:12) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+-    - 企業向けにAI導入支援、研修、システム構築支援を提供し、顧客が自身でAIを活用できるようになることでコスト削減に貢献するサービス。 | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- 4. **電子書籍制作へのAI活用** [ebook] ★★★★☆ (18:18) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+-    - 自身の経歴を書籍に落とし込み、タブレット等の活用を経てAmazonで収益化する。AIを活用したコンテンツ制作の効率化。 | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- 5. **AI活用アドバイザー** [freelance] ★★★★☆ (18:18) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+-    - 書籍作成や写真加工、YouTubeコンテンツ制作など、具体的な事例を基にAI活用に関するアドバイスを提供するサービス。 | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- 6. **子供の成長記録動画サービス** [other] ★★★☆☆ (17:27) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+-    - 動画を活用した子供の成長記録サービス。容量によるプラン分け、無料/有料フォーマット、個別カスタマイズオプションを提供。新規顧客層（直近1〜2年の出産）と過去の未利用層（5歳程度までの子供を持つ家庭）をターゲットにする。 | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- 7. **YouTubeコンテンツ制作へのAI活用** [youtube] ★★★☆☆ (18:19) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+-    - YouTubeでの表現力向上にAIを活用する可能性を検討。「いい感じにして」といったざっくりした指示で欲しいものが得られるAIの能力に注目。 | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
 
 ## 2026-07-16
 

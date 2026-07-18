@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-17T07:01:16
+generated_at: 2026-07-18T07:01:29
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,23 @@ generated_at: 2026-07-17T07:01:16
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-17
+
+- - **兄** — ネットワークビジネスの登録者として（自身の会社P登録の上位者）。 (20:35) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- - **母** — ネットワークビジネスの登録者として（自身の会社P登録の上位者）。 (20:35) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- - **近藤真世** — ネットワークビジネスの参加者。娘の教育と子供食堂への貢献が動機。エメラルドランクまで昇格間近。 (19:56) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- - **小川まちこ** — ネットワークビジネスのスーパーリーダー（7桁収入のダイアモンドクラウンメンバー）。64歳で事業を開始し、継承性を重視している。 (19:57) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- - **吉田知也** — ネットワークビジネスの愛知での活動者。3ヶ月前から本格的に事業を開始。 (18:30) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- - **谷田寿美** — ネットワークビジネスの大阪での活動者。保険業・介護事業のコンサル。梶田氏と内木氏との出会いを経て事業に真剣に取り組む。 (18:32) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- - **上田優子** — 谷田寿美氏の友人であり仕事仲間。谷田氏にネットワークビジネスを紹介。訪問介護事業を立ち上げたばかり。 (18:32) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- - **梶田さん** — 谷田寿美氏がネットワークビジネスを真剣に取り組むきっかけとなった人物。内木氏に事業を伝えた20年来の信頼関係を持つ人物。 (18:33) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- - **内木淳子** — ネットワークビジネス事業説明会のメイン講師。滋賀県在住の認定講師。大手企業勤務から転身し、この事業で人生を変えた経験を持つ。 (18:35) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- - **高井さん** — 一般財団法人全国振り子構成共済会の理事長。共同組合事業のプロで、個人向けの共済事業を立ち上げた人物。団体から利益を求めない理念を持つ。 (19:02) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- - **石上さん** — ネットワークビジネスの概要について、さらに詳しく話を聞くべき人物として言及されている。 (19:05) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- - **高級ヘッドスパのオーナー** — ネットワークビジネスに真剣にチャレンジしている人物。その顧客にトヨタ明雄氏がいる。 (19:41) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- - **トヨタ明雄氏** — 高級ヘッドスパのオーナーの顧客。ネットワークビジネスの参加者ではないが、間接的な人脈として言及。 (19:41) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
+- - **道端アンジェリカ氏** — 会話ログに登場する人物。ネットワークビジネスの参加者ではないが、間接的な人脈として言及。 (19:41) | source:`.company/inputs/organized/lifelogs/2026-07-17-lifelog-insights.md`
 
 ## 2026-07-16
 
