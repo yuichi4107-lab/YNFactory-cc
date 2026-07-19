@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-18T07:01:29
+generated_at: 2026-07-19T07:01:20
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,15 @@ generated_at: 2026-07-18T07:01:29
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-18
+
+- - **Yuichi** — 新しい仕事について言及された名前、情報収集タイプと示唆された人物。 (22:35) | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
+- - **リラクゼーションサロンのオーナー** — 予約システムの課題とアナログ運営について話したことがある人物。 (22:53) | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
+- - **メンゼスサロンのオーナー** — 予約システムの課題とアナログ運営について話したことがある人物。 (22:53) | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
+- - **佐久間さん** — MCを務める番組で出演を約束していた人物。 (19:32) | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
+- - **前川D** — オーディション参加者がファンであると述べた人物。 (19:34) | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
+- - **Maikun** — 仕事と個人的な感情について話していた相手、文脈から親しい関係と推測。 (02:03) | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
 
 ## 2026-07-17
 

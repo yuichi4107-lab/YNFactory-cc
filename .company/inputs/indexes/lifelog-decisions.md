@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-18T07:01:29
+generated_at: 2026-07-19T07:01:20
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,14 @@ generated_at: 2026-07-18T07:01:29
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-18
+
+- - 顧客に安心感を提供するため、納品時の支払いを受け入れることを基本とする。 | time:23:21 | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
+- - サービス提供において、発注者とサービス提供者を直接繋ぐのではなく、間にコミュニティを介在させる戦略を採用する。 | time:21:09 | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
+- - 企業相手の取引では契約書を、それ以外では請求書を基本として使い分ける。 | time:20:30 | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
+- - 取引上の必要性から、インボイス制度への登録を維持する。 | time:20:31 | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
+- - 法人登記を行う際に、今後の事業展開を見越して事業内容を網羅的に記載する。 | time:20:33 | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
 
 ## 2026-07-16
 

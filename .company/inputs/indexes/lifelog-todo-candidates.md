@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-18T07:01:29
+generated_at: 2026-07-19T07:01:20
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,18 @@ generated_at: 2026-07-18T07:01:29
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-18
+
+- [ ] AI検索のSEO対策サービスを提供できる専門家やパートナーを探す。 | time:23:04 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
+- [ ] 未回収部分の補填計画を立てる。 | time:22:23 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
+- [ ] 企業が顧客の写真データを活用するためのシステム開発ニーズについて、企業側の担当者にヒアリングを行う。 | time:22:07 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
+- [ ] コミュニティ運営のサーバー容量やコストについて詳細を確認する。 | time:21:05 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
+- [ ] YouTubeの麻辣湯食べ比べ企画を具体的に進める（店選定、自作準備、撮影準備）。 | time:20:20 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
+- [ ] クロードとキャンバの連携設定と画像生成・編集の習熟。 | time:08:11 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
+- [ ] 使用しているAIツールの設定（学習設定オフ、メモリ参照オン）を確認し、最適化する。 | time:04:29 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
+- [ ] 日本語学習の時間を確保する（顧客対応のため）。 | time:01:40 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
+- [ ] 新しいiPadへの買い替えを検討する（電波状況改善のため）。 | time:01:51 | priority:low | due:- | source:`.company/inputs/organized/lifelogs/2026-07-18-lifelog-insights.md`
 
 ## 2026-07-16
 
