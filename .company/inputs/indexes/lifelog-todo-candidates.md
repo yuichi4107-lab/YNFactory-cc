@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-19T07:01:20
+generated_at: 2026-07-20T07:00:47
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,15 @@ generated_at: 2026-07-19T07:01:20
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-19
+
+- [ ] 新規仕事に関連する資料の探索と作成 | time:00:00 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-19-lifelog-insights.md`
+- [ ] 登録されているスキル情報をHTML形式で見やすくまとめる | time:18:55 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-19-lifelog-insights.md`
+- [ ] s.jpへのアクセス可能状況の確認 | time:09:58 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-19-lifelog-insights.md`
+- [ ] 今月中に新規システムの導入関連作業を完了させる | time:01:13 | priority:high | due:2026-07-31 | source:`.company/inputs/organized/lifelogs/2026-07-19-lifelog-insights.md`
+- [ ] 新規システム導入により2ヶ月で目標達成を目指す | time:01:13 | priority:high | due:2026-09-19 | source:`.company/inputs/organized/lifelogs/2026-07-19-lifelog-insights.md`
+- [ ] 指定された情報のシステムへの登録 | time:00:30 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-19-lifelog-insights.md`
 
 ## 2026-07-18
 

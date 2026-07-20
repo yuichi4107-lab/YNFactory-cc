@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-19T07:01:20
+generated_at: 2026-07-20T07:00:47
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,12 @@ generated_at: 2026-07-19T07:01:20
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-19
+
+- - 受注案件の報酬分配において、受注金額の半分を渡す方針を検討。 | time:01:41 | source:`.company/inputs/organized/lifelogs/2026-07-19-lifelog-insights.md`
+- - グループ全体の成長のため、新規案件を積極的に獲得しつつ、メンバー間のバランスを考慮した配分戦略をとる。 | time:01:44 | source:`.company/inputs/organized/lifelogs/2026-07-19-lifelog-insights.md`
+- - システム導入において、汎用的な機能に限定し、導入スピードを優先する。 | time:01:07 | source:`.company/inputs/organized/lifelogs/2026-07-19-lifelog-insights.md`
 
 ## 2026-07-18
 
