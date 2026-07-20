@@ -54,6 +54,20 @@ Google Meet の会議メモ・文字起こし・議事録は、`.company/inputs/
 - 横断索引は `indexes/google-meet-meetings.md`, `indexes/google-meet-next-steps.md`, `indexes/google-meet-topics.md` に生成する
 - Google Docs ネイティブの `.gdoc` は本文を含まないショートカットなので、URLと `needs_export` 状態を保存し、本文が必要な場合は Google Docs から `.docx`, `.txt`, `.pdf` で保存する
 
+## Notion 自動蓄積
+
+`organized/` 配下の整理済みインプットは、`sync_notion.py` で Notion の単一データベース「インプットDB」へ自動蓄積する。
+
+- 対象: `organized/{lifelogs,zoom,google-meet,external}/*.md`（README・`_template` 除外）
+- 認証: `.company/inputs/.env.notion` の `NOTION_TOKEN` / `NOTION_PARENT_PAGE_ID`（**git にコミットしない**。Drive 側のみ）
+- 初回実行時に親ページ配下へ「インプットDB」を自動作成し、DB ID を state に保存する
+- 冪等性: `intake/state/notion_synced.json` に相対パス→`{page_id, sha256, synced_at}` を記録。内容変更時は旧ページを archive して再作成する
+- プロパティ: タイトル / 日付 / ソース(select) / タグ(multi_select) / 関連プロジェクト / 優先度 / TODO候補 / input_id / 元ファイル / 取込日時
+- 定期実行: Windows Task Scheduler「YNFactory Notion Sync」（毎日 07:30、`setup_notion_sync_windows.bat` で登録）
+- ログ: `logs/notion_sync_YYYY-MM-DD.log`
+- お試し: `python sync_notion.py --dry-run` / `python sync_notion.py --limit 5`
+- 要件定義: `.company/requirements/notion-input-sync-2026-07-21.md`
+
 ## 日次レビュー（Phase 1）
 
 `.company/inputs/process_daily_inputs.py` は、既存の raw / organized / indexes を読み、`.company/inputs/reviews/YYYY-MM-DD-input-review.md` を生成する。
