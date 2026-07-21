@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-20T07:00:47
+generated_at: 2026-07-21T07:00:53
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,10 @@ generated_at: 2026-07-20T07:00:47
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-20
+
+- - **Yuichi** — 新しいフリーランス案件における主要な協力者またはクライアント。販売管理システムの議論、送金相手、Google Driveでの資料共有が確認されている。 (20:01) | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
 
 ## 2026-07-18
 

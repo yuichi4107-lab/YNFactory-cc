@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-20T07:00:47
+generated_at: 2026-07-21T07:00:53
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,12 @@ generated_at: 2026-07-20T07:00:47
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-20
+
+- [ ] 販売管理システムの要件定義を検討する | time:13:50 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
+- [ ] Yuichiへの送金手続きを行う | time:19:46 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
+- [ ] SEO対策の強化を検討する | time:15:56 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
 
 ## 2026-07-19
 

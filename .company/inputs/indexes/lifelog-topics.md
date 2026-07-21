@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-20T07:00:47
+generated_at: 2026-07-21T07:00:53
 ---
 
 # Lifelog Topics
@@ -10,6 +10,23 @@ generated_at: 2026-07-20T07:00:47
 Limitless由来の調査トピックと事業アイデア。企画化する前に原本と既存プロジェクトを確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-20
+
+- - **海外の金融商品・スポーツ系オンラインカジノにおけるビジネスモデルと日本の規制** (00:36) | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
+-   - 理由: 予測システムの販売可能性や事業展開の法規制、特に日本での実現可能性を探るため。 | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
+- - **類似のシステム開発案件における競合や成功事例** (15:28) | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
+-   - 理由: 販売戦略やプロダクト開発の参考に、他社の状況やアプローチを学ぶため。 | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
+- - **オプション機能の定義に関する具体的な事例や方法論** (15:47) | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
+-   - 理由: 販売管理システムの提供モデルを具体化し、顧客にとって魅力的なオプション設定を行うため。 | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
+- 1. **販売管理システムのベース機能開発と横展開** [freelance] ★★★★☆ (16:17) | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
+-    - 販売管理システムのベース部分を30万円程度で提供し、横展開可能なモデルとする。オプション機能でカスタマイズや付加価値を提供する戦略。 | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
+- 2. **データ分析に基づく予測モデルの構築と販売** [freelance|other] ★★★★★ (00:44) | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
+-    - 過去のデータを分析して予測モデルを構築し、その予測自体を商品として販売する。競馬などの競技を例に挙げている。 | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
+- 3. **有料ブログでのコンテンツ販売** [ebook|other] ★★★☆☆ (00:43) | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
+-    - 有料ブログのような形式で、自身のコンテンツを販売する可能性。 | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
+- 4. **プロダクト開発におけるMVP（Minimum Viable Product）戦略の採用** [freelance|other] ★★★★☆ (15:20) | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
+-    - 製品を100%の完成度でなく、まずは50%程度のレベルでリリースし、その後のアップデートで保守運用していくアプローチ。 | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
 
 ## 2026-07-19
 

@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-20T07:00:47
+generated_at: 2026-07-21T07:00:53
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,13 @@ generated_at: 2026-07-20T07:00:47
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-20
+
+- - 自身の独立の可能性を前向きに検討する。 | time:20:36 | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
+- - 販売管理システムのベース機能（ミニマム機能）の価格設定を20-30万円とする。 | time:16:17 | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
+- - 新しい事業やプロダクト開発において、可能性を信じてまずはチャレンジする方針を採る。 | time:15:25 | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
+- - 過去のデータ分析に基づいた予測モデル構築に着手する。 | time:00:55 | source:`.company/inputs/organized/lifelogs/2026-07-20-lifelog-insights.md`
 
 ## 2026-07-19
 
