@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
-"""organized/ 配下の整理済みインプットを Notion の単一データベースへ同期する。
+"""organized/ 配下の整理済みインプットを Notion の単一データベースへ登録する。
+
+【Notion原本ポリシー(2026-07-21改定)】
+Notion「インプットDB」が原本。本スクリプトは**新規ページの追加のみ**を行い、
+Notion側の既存ページは一切上書き・再作成・archiveしない。
+Notion上での編集・削除が常に正。ローカルへの反映は mirror_notion.py が担う。
 
 - 対象: organized/{lifelogs,zoom,google-meet,external}/*.md (README等は除外)
         + conversations/*-lifelogs.md (Limitless原文。count:0 の空マーカーは除外)
 - 冪等性: intake/state/notion_synced.json に相対パス→{page_id, sha256} を記録
-- 内容変更時: 旧ページを archive して新規ページを作成する
+- ローカル側で内容が変わってもNotionには反映しない(stateにlocal_changed_atを記録するのみ)
 - 認証: .env.notion の NOTION_TOKEN / NOTION_PARENT_PAGE_ID (環境変数優先)
 
 使い方:
@@ -281,9 +286,6 @@ class NotionClient:
             rest = rest[100:]
         return page_id
 
-    def archive_page(self, page_id: str):
-        self.request("PATCH", f"/pages/{page_id}", {"archived": True})
-
 
 # ---------------------------------------------------------------------------
 # 同期ロジック
@@ -394,8 +396,9 @@ def main() -> int:
     targets = collect_targets()
     log(f"sync_notion start: {len(targets)} target files (dry_run={args.dry_run}, limit={args.limit or 'none'})")
 
-    # 差分判定
+    # 差分判定(Notion原本: 新規のみ登録、ローカル変更はNotionへ反映しない)
     plan = []  # (path, source, rel_path, sha256, action)
+    local_changed = []  # (rel_path, sha) 登録済みだがローカル側だけ変わったもの
     for path, source, rel_path in targets:
         content = path.read_text(encoding="utf-8", errors="replace")
         sha = hashlib.sha256(content.encode("utf-8")).hexdigest()
@@ -403,7 +406,7 @@ def main() -> int:
         if rec is None:
             plan.append((path, source, rel_path, sha, "create"))
         elif rec.get("sha256") != sha:
-            plan.append((path, source, rel_path, sha, "update"))
+            local_changed.append((rel_path, sha))
 
     skipped = len(targets) - len(plan)
     if args.limit > 0:
@@ -412,7 +415,9 @@ def main() -> int:
     if args.dry_run:
         for _, source, rel_path, _, action in plan:
             log(f"  [{action}] ({source}) {rel_path}")
-        log(f"dry-run done: create/update={len(plan)}, skipped={skipped}")
+        for rel_path, _ in local_changed:
+            log(f"  [local-changed] {rel_path} (Notion原本のため上書きしない)")
+        log(f"dry-run done: create={len(plan)}, local_changed={len(local_changed)}, skipped={skipped}")
         return 0
 
     if not token or not parent_page_id:
@@ -430,20 +435,22 @@ def main() -> int:
         log(f"database created: {db['id']}")
     database_id = state["database_id"]
 
-    created = updated = failed = 0
+    # ローカル側だけ変わったものはstateのsha更新のみ(Notionは触らない)
+    for rel_path, sha in local_changed:
+        rec = state["files"][rel_path]
+        rec["sha256"] = sha
+        rec["local_changed_at"] = datetime.now().isoformat(timespec="seconds")
+        log(f"  [local-changed] {rel_path} (Notion原本のため上書きしない)")
+    if local_changed:
+        save_state(state)
+
+    created = failed = 0
     for path, source, rel_path, sha, action in plan:
         try:
             content = path.read_text(encoding="utf-8", errors="replace")
             meta, body = parse_frontmatter(content)
             props = build_properties(meta, body, path, source, rel_path)
             blocks = markdown_to_blocks(body)
-            if action == "update":
-                old_id = state["files"][rel_path].get("page_id")
-                if old_id:
-                    try:
-                        client.archive_page(old_id)
-                    except RuntimeError as e:
-                        log(f"  warn: archive failed for {rel_path}: {e}")
             page_id = client.create_page(database_id, props, blocks)
             state["files"][rel_path] = {
                 "page_id": page_id,
@@ -451,16 +458,13 @@ def main() -> int:
                 "synced_at": datetime.now().isoformat(timespec="seconds"),
             }
             save_state(state)  # 途中終了に備えて逐次保存
-            if action == "create":
-                created += 1
-            else:
-                updated += 1
-            log(f"  [{action}] ok ({source}) {rel_path}")
+            created += 1
+            log(f"  [create] ok ({source}) {rel_path}")
         except Exception as e:
             failed += 1
-            log(f"  [{action}] FAILED {rel_path}: {e}")
+            log(f"  [create] FAILED {rel_path}: {e}")
 
-    log(f"sync_notion done: created={created}, updated={updated}, skipped={skipped}, failed={failed}")
+    log(f"sync_notion done: created={created}, local_changed={len(local_changed)}, skipped={skipped}, failed={failed}")
     return 1 if failed else 0
 
 

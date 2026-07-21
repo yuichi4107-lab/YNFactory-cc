@@ -54,20 +54,27 @@ Google Meet の会議メモ・文字起こし・議事録は、`.company/inputs/
 - 横断索引は `indexes/google-meet-meetings.md`, `indexes/google-meet-next-steps.md`, `indexes/google-meet-topics.md` に生成する
 - Google Docs ネイティブの `.gdoc` は本文を含まないショートカットなので、URLと `needs_export` 状態を保存し、本文が必要な場合は Google Docs から `.docx`, `.txt`, `.pdf` で保存する
 
-## Notion 自動蓄積
+## Notion 自動蓄積（Notion原本ポリシー・2026-07-21改定）
 
-`organized/` 配下の整理済みインプットは、`sync_notion.py` で Notion の単一データベース「インプットDB」へ自動蓄積する。
+**Notion の「インプットDB」がインプットデータの原本**。整理・加筆・削除は Notion 上で行い、それが常に正となる。ローカルはバックアップミラー＋原資料アーカイブ。
 
-- 対象: `organized/{lifelogs,zoom,google-meet,external}/*.md`（README・`_template` 除外）
-  ＋ `conversations/*-lifelogs.md`（Limitless原文全文。ソース=`lifelog原文`。`count: 0` の空マーカーは除外）
-- 定期実行時は Notion 同期の前に `sync_limitless.py --range 3` で直近3日分の lifelog を取得する（`notion_sync.bat` 内。Limitless API 失敗時も Notion 同期は継続）
+```
+Limitless/Zoom/Meet/INPUT_BOX → 取り込み(原資料をローカル保存) → sync_notion.py(新規登録のみ)
+                                                                      ↓
+                                Notion「インプットDB」= 原本
+                                                                      ↓ 毎日
+                                mirror_notion.py → notion_mirror/(ローカルミラー)
+```
+
+- **上り**(`sync_notion.py`): 新規ページの**追加のみ**。Notion の既存ページは絶対に上書き・archive しない。ローカル側だけ変わった場合は state に `local_changed_at` を記録してスキップ
+  - 対象: `organized/{lifelogs,zoom,google-meet,external}/*.md`（README・`_template` 除外）＋ `conversations/*-lifelogs.md`（ソース=`lifelog原文`。`count: 0` は除外）
+  - state: `intake/state/notion_synced.json`（相対パス→page_id/sha256）
+- **下り**(`mirror_notion.py`): Notion→`notion_mirror/<ソース>/<日付>-<タイトル>-<pageid8>.md` の一方向ミラー。`last_edited_time` 差分のみ取得、Notion側で削除されたページはミラーからも削除。**ミラーの手編集は次回実行で消える**（編集はNotionで行う）
+  - state: `intake/state/notion_mirror.json`。強制全再取得は `--full`
+- 定期実行: Task Scheduler「YNFactory Notion Sync」毎日 07:30（`notion_sync.bat` = Limitless直近3日取得 → 新規登録 → ミラー。登録は `setup_notion_sync_windows.bat`）
 - 認証: `.company/inputs/.env.notion` の `NOTION_TOKEN` / `NOTION_PARENT_PAGE_ID`（**git にコミットしない**。Drive 側のみ）
-- 初回実行時に親ページ配下へ「インプットDB」を自動作成し、DB ID を state に保存する
-- 冪等性: `intake/state/notion_synced.json` に相対パス→`{page_id, sha256, synced_at}` を記録。内容変更時は旧ページを archive して再作成する
 - プロパティ: タイトル / 日付 / ソース(select) / タグ(multi_select) / 関連プロジェクト / 優先度 / TODO候補 / input_id / 元ファイル / 取込日時
-- 定期実行: Windows Task Scheduler「YNFactory Notion Sync」（毎日 07:30、`setup_notion_sync_windows.bat` で登録）
-- ログ: `logs/notion_sync_YYYY-MM-DD.log`
-- お試し: `python sync_notion.py --dry-run` / `python sync_notion.py --limit 5`
+- ログ: `logs/notion_sync_*.log` / `logs/notion_mirror_*.log`
 - 要件定義: `.company/requirements/notion-input-sync-2026-07-21.md`
 
 ## 日次レビュー（Phase 1）

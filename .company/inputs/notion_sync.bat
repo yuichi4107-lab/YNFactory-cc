@@ -13,9 +13,16 @@ if exist ".venv\Scripts\python.exe" (
 )
 popd
 
-rem Step 2: sync organized inputs + raw lifelogs to Notion.
+rem Step 2: register new inputs into Notion (create-only; Notion is the master).
 if exist "..\..\biz_idea_generator\.venv\Scripts\python.exe" (
   "..\..\biz_idea_generator\.venv\Scripts\python.exe" "sync_notion.py" %*
 ) else (
   py -3 "sync_notion.py" %*
+)
+
+rem Step 3: mirror Notion (master) back to local files for backup and pipelines.
+if exist "..\..\biz_idea_generator\.venv\Scripts\python.exe" (
+  "..\..\biz_idea_generator\.venv\Scripts\python.exe" "mirror_notion.py"
+) else (
+  py -3 "mirror_notion.py"
 )

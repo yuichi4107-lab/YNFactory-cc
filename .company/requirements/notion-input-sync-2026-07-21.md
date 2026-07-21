@@ -58,3 +58,21 @@ status: approved
 1. https://www.notion.so/my-integrations で内部インテグレーション作成 → トークン取得
 2. Notion に親ページ(例: YNFactory インプット)を作成し、インテグレーションを接続
 3. `.company/inputs/.env.notion` にトークンと親ページ ID を記入
+
+---
+
+## 改定 v2: Notion原本化(2026-07-21 オーナー決定)
+
+同日中にオーナー決定により方針変更。**Notion「インプットDB」を全ソースの原本とする**。
+
+- 範囲: 全ソース(lifelog / lifelog原文 / zoom / google-meet / external)
+- ローカル: バックアップミラー(`notion_mirror/`)＋原資料アーカイブとして残す
+- 編集の正: Notion。システムは新規追加のみ行い、既存ページを上書き・archiveしない
+
+### 追加要件
+
+1. `sync_notion.py` は create-only 化(ローカル変更でNotionを上書きしない)
+2. `conversations/*-lifelogs.md`(Limitless原文)も同期対象(ソース=`lifelog原文`、count:0除外)
+3. 日次実行は「`sync_limitless.py --range 3` → `sync_notion.py` → `mirror_notion.py`」の順
+4. `mirror_notion.py`(新規): Notion→`notion_mirror/` 一方向ミラー。last_edited_time差分、Notion側削除の反映、タイトル変更時の旧ファイル削除
+5. ミラーは既存パイプライン・ZSlimバックアップの入力として利用可能な markdown + frontmatter 形式
