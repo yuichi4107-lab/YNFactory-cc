@@ -59,6 +59,8 @@ Google Meet の会議メモ・文字起こし・議事録は、`.company/inputs/
 `organized/` 配下の整理済みインプットは、`sync_notion.py` で Notion の単一データベース「インプットDB」へ自動蓄積する。
 
 - 対象: `organized/{lifelogs,zoom,google-meet,external}/*.md`（README・`_template` 除外）
+  ＋ `conversations/*-lifelogs.md`（Limitless原文全文。ソース=`lifelog原文`。`count: 0` の空マーカーは除外）
+- 定期実行時は Notion 同期の前に `sync_limitless.py --range 3` で直近3日分の lifelog を取得する（`notion_sync.bat` 内。Limitless API 失敗時も Notion 同期は継続）
 - 認証: `.company/inputs/.env.notion` の `NOTION_TOKEN` / `NOTION_PARENT_PAGE_ID`（**git にコミットしない**。Drive 側のみ）
 - 初回実行時に親ページ配下へ「インプットDB」を自動作成し、DB ID を state に保存する
 - 冪等性: `intake/state/notion_synced.json` に相対パス→`{page_id, sha256, synced_at}` を記録。内容変更時は旧ページを archive して再作成する

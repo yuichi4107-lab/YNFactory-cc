@@ -2,6 +2,7 @@
 """organized/ 配下の整理済みインプットを Notion の単一データベースへ同期する。
 
 - 対象: organized/{lifelogs,zoom,google-meet,external}/*.md (README等は除外)
+        + conversations/*-lifelogs.md (Limitless原文。count:0 の空マーカーは除外)
 - 冪等性: intake/state/notion_synced.json に相対パス→{page_id, sha256} を記録
 - 内容変更時: 旧ページを archive して新規ページを作成する
 - 認証: .env.notion の NOTION_TOKEN / NOTION_PARENT_PAGE_ID (環境変数優先)
@@ -26,6 +27,7 @@ import requests
 
 BASE_DIR = Path(__file__).resolve().parent
 ORGANIZED_DIR = BASE_DIR / "organized"
+CONVERSATIONS_DIR = BASE_DIR / "conversations"
 STATE_PATH = BASE_DIR / "intake" / "state" / "notion_synced.json"
 ENV_PATH = BASE_DIR / ".env.notion"
 LOG_DIR = BASE_DIR / "logs"
@@ -249,6 +251,7 @@ class NotionClient:
                 "日付": {"date": {}},
                 "ソース": {"select": {"options": [
                     {"name": "lifelog", "color": "blue"},
+                    {"name": "lifelog原文", "color": "default"},
                     {"name": "zoom", "color": "purple"},
                     {"name": "google-meet", "color": "green"},
                     {"name": "external", "color": "orange"},
@@ -299,7 +302,7 @@ def save_state(state):
 
 
 def collect_targets():
-    """organized/ 配下の同期対象 md を (相対パス, ソース名) で列挙する。"""
+    """同期対象 md を (パス, ソース名, state用相対キー) で列挙する。"""
     targets = []
     for dirname, source in SOURCE_DIRS.items():
         folder = ORGANIZED_DIR / dirname
@@ -308,7 +311,15 @@ def collect_targets():
         for path in sorted(folder.glob("*.md")):
             if path.name in EXCLUDE_NAMES or path.name.startswith("_"):
                 continue
-            targets.append((path, source))
+            targets.append((path, source, path.relative_to(ORGANIZED_DIR).as_posix()))
+    # Limitless lifelog 原文(会話ログ全文)。count: 0 の空マーカーは除外する
+    if CONVERSATIONS_DIR.exists():
+        for path in sorted(CONVERSATIONS_DIR.glob("*-lifelogs.md")):
+            head = path.read_text(encoding="utf-8", errors="replace")[:500]
+            m = re.search(r"^count:\s*(\d+)", head, re.MULTILINE)
+            if m and int(m.group(1)) == 0:
+                continue
+            targets.append((path, "lifelog原文", path.relative_to(BASE_DIR).as_posix()))
     return targets
 
 
@@ -385,10 +396,9 @@ def main() -> int:
 
     # 差分判定
     plan = []  # (path, source, rel_path, sha256, action)
-    for path, source in targets:
+    for path, source, rel_path in targets:
         content = path.read_text(encoding="utf-8", errors="replace")
         sha = hashlib.sha256(content.encode("utf-8")).hexdigest()
-        rel_path = path.relative_to(ORGANIZED_DIR).as_posix()
         rec = state["files"].get(rel_path)
         if rec is None:
             plan.append((path, source, rel_path, sha, "create"))
