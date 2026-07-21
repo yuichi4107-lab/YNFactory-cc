@@ -15,6 +15,9 @@ $RECYCLE.BIN/
 .env.local
 .env.*.local
 .env.notion
+
+# Notionミラー(原本はNotion側。ミラーはDrive+ZSlimで保全、GitHubへは送らない)
+.company/inputs/notion_mirror/
 *.pem
 *.key
 secrets/
