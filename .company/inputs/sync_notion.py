@@ -233,7 +233,16 @@ class NotionClient:
         url = f"{NOTION_API}{path}"
         for attempt in range(MAX_RETRIES + 1):
             time.sleep(REQUEST_INTERVAL)
-            resp = self.session.request(method, url, json=payload, timeout=60)
+            try:
+                resp = self.session.request(method, url, json=payload, timeout=120)
+            except requests.RequestException as e:
+                # GETは冪等なのでリトライ。書き込み系は二重作成防止のため即時失敗させ、
+                # 次回実行時の存在確認(元ファイル検索)で回復する
+                if method == "GET" and attempt < MAX_RETRIES:
+                    log(f"  network error (retrying): {e}")
+                    time.sleep(2 * (attempt + 1))
+                    continue
+                raise
             if resp.status_code == 429:
                 wait = float(resp.headers.get("Retry-After", "2"))
                 log(f"  rate limited, retry after {wait}s")
@@ -451,6 +460,16 @@ def main() -> int:
             meta, body = parse_frontmatter(content)
             props = build_properties(meta, body, path, source, rel_path)
             blocks = markdown_to_blocks(body)
+            # 二重作成防止: 過去の失敗がサーバー側では成功していた場合に備え存在確認。
+            # 既存ページが見つかったら本文完全性のため作り直す(未同期扱いの残骸のみが対象)
+            existing = client.request("POST", f"/databases/{database_id}/query", {
+                "filter": {"property": "元ファイル", "rich_text": {"equals": rel_path}},
+                "page_size": 1,
+            })
+            if existing.get("results"):
+                orphan_id = existing["results"][0]["id"]
+                log(f"  [recover] found orphan page for {rel_path}, archiving and recreating")
+                client.request("PATCH", f"/pages/{orphan_id}", {"archived": True})
             page_id = client.create_page(database_id, props, blocks)
             state["files"][rel_path] = {
                 "page_id": page_id,
