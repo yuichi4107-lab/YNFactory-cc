@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-21T07:00:53
+generated_at: 2026-07-30T07:00:53
 ---
 
 # Lifelog TODO Candidates
@@ -10,6 +10,150 @@ generated_at: 2026-07-21T07:00:53
 Limitless由来のTODO候補。日別TODOへ反映する前に重複、完了済み、優先度を確認する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-29
+
+- [ ] 中国のAI技術の現状と応用事例に関する情報収集 | time:20:23 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+- [ ] DocuWorksがAIで読み込めるようになるか、およびAIでのDocuWorks機能代替の可能性を調査する | time:11:09 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+- [ ] マンパワーからのメール送信エラー問題のPC設定起因かサーバー起因かの切り分け調査と解決策の検討 | time:09:52 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+- [ ] 新規案件の提出フォーマットに必要な企業情報（正式名称、住所、番号、インボイス番号、従業員数、資本金）を調査し埋める | time:09:21 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+- [ ] 既存のフリーダイヤルがどこに紐付いているかを再確認する | time:10:51 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+- [ ] リース等の契約期間満了（特に再リース）について、通知が来ていないか確認する | time:11:05 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+
+## 2026-07-28
+
+- [ ] テストの手伝いを依頼/実施済み？ | time:21:52 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- [ ] 複数のプロジェクトを運用する場合、それぞれ別々のGitHubレポジトリで運用する方針を徹底する | time:21:09 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- [ ] 新しいGitHubリポジトリに接続する | time:18:02 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- [ ] 派遣契約を更新しない旨を当事者に伝える（本人の意思表示も確認し、書面で残すこと）。 | time:17:28 | priority:high | due:2026-10-01より前 | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- [ ] 社長に確認事項（挨拶など）を連絡する | time:17:06 | priority:normal | due:2026-07-29 | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- [ ] 書類（ヨーカさん関連）の準備を進める | time:17:08 | priority:normal | due:2026-07-29 | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- [ ] 期限が過ぎた提出書類（「調査」や「取引記録」に関するもの）について、先方への連絡と状況確認を行う | time:12:18 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- [ ] 雇用保険の訂正処理と控除項目での税調整を行う | time:11:57 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- [ ] 食い違いのある勤怠記録（残業時間、打刻時間と実労働時間）について本人に再度確認し、意図を把握する | time:11:57 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- [ ] 残業代の過払いが生じている可能性について最終確認し、過払い分を引いた金額で精算する方針を関係者に伝える | time:12:07 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- [ ] 現状報告を関係者に随時行い、進捗を共有する | time:12:13 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- [ ] ペイジーでの納付金支払いについて確認・実施する | time:11:14 | priority:high | due:今週末 | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- [ ] 採用候補者への選考結果連絡（一週間以内に結論、来週頭に連絡） | time:10:16 | priority:high | due:2026-08-04頃 | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- [ ] 東京での面接（午前中1件）に臨む | time:08:30 | priority:high | due:2026-07-28 | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- [ ] 東京での打ち合わせ（午後に一緒の人とお茶）に臨む | time:08:30 | priority:normal | due:2026-07-28 | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+
+## 2026-07-27
+
+- [ ] 熊谷さんに17日月曜日14時に診断書を持参するよう依頼する。 | time:16:13 | priority:high | due:2026-08-17 | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- [ ] 社内で社会保険料の請求、退職に関する判断について話し合うよう依頼する。 | time:15:06 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- [ ] 2ヶ月分の社会保険料の助手の案内をテンプレートにつける。 | time:15:13 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- [ ] 新しい仕事の製品をまず確認する。 | time:14:45 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- [ ] 受注票と年度変更に関するファイルを確認する。 | time:13:07 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- [ ] 社内で盆休み中の店舗運営について話し合う。 | time:09:50 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- [ ] 受注票の住所を変更する。 | time:09:58 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- [ ] 長澤さんの金額（3万円）を確認し、支払い対応を行う。 | time:10:30 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- [ ] 早さんに「それは全部」という指示を伝える。（具体内容は不明） | time:10:34 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- [ ] 岩川さんを日尾の人数増加に合わせて動かすか、より上位の仕事を振ることを検討する。 | time:09:27 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- [ ] 中澤さんの業務調整のやり方について話し合い、仕切り直しを行う。 | time:09:21 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- [ ] お盆明けに、あたさんに入社書類を渡し、診断書提出を依頼する。 | time:08:45 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- [ ] ファイルをドライブに保存する。 | time:07:05 | priority:low | due:- | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- [ ] 房総半島、鴨川、南房総半島を示す地図の形を実際の配置、位置関係に合わせて修正する。 | time:06:53 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- [ ] 電子書籍（下町工場のAIに関するもの）の目次・奥付修正、図解・挿絵追加、表紙デザイン修正を行う。 | time:06:41 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- [ ] パスワードリセットを依頼する。 | time:15:23 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+
+## 2026-07-25
+
+- [ ] 特定のテーマを選び、電子書籍を作成する。 | time:19:22 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-25-lifelog-insights.md`
+- [ ] 調査結果の保存場所を確認し、「コテックス」への共有方法を検討する。 | time:18:56 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-25-lifelog-insights.md`
+- [ ] WDKプロジェクトの進捗状況を確認する。 | time:16:04 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-25-lifelog-insights.md`
+- [ ] ゲート（作業開始部分）の遅さを改善するため、テール部分を活用するなどして効率化を図る。 | time:12:07 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-25-lifelog-insights.md`
+- [ ] 他の担当者の作業進捗を確認し、次の作業指示を出す。 | time:10:46 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-25-lifelog-insights.md`
+- [ ] コンテンツ制作において、個人名は出さず、政治団体は国政政党に限定して言及するポリシーを適用する。 | time:07:14 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-25-lifelog-insights.md`
+
+## 2026-07-24
+
+- [ ] サンプルフォルダ1に「けとAI & Webチャンネルについて」の自己紹介用ウェブサイトを作成（デプロイ不要） | time:20:01 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] Chat GPT Voice × Codexに関するNotionスライド資料を作成し、Vercelにデプロイ（Codexを閉じても使える利点、赤字強調、図解、参照URL含む） | time:20:02 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] Chat GPT Voice × Codexに関するX（スレッド形式、画像付き）、スレッド投稿、記事の作成 | time:20:05 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 作成したX投稿文、スレッド、記事の原稿をテストフォルダのサンプルフォルダ2に保存 | time:20:08 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 月曜日の朝一で業務ルール、面談の対応方針について話す | time:17:56 | priority:high | due:2026-07-27 | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 林さんへのメッセージ伝達が正しく行われているか確認する | time:17:58 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 保冷剤を1つ購入し試用する | time:17:28 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 試用結果が良ければ保冷剤を最大5つ購入する | time:17:36 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 土地の所有者が土地処分についてどう思っているか確認する | time:16:41 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 蘭越町の土地のゼロ円売却が業績に影響しないタイミングを見計らう | time:16:47 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 社内関係者（「彼」）の土地処分に対する意向を確認する | time:16:49 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] （社長に）土地処分について話す | time:16:50 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 「森田」の苗字でひらがな検索し、人物情報を確認する | time:16:11 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 発注者に契約内容（「紹介だけではない」範囲）を確認する | time:16:13 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 平田の販売手数料（4,5,6月分および7月分）を来月まとめて計上する | time:16:14 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 紹介料の計上タイミングを確認し、適切に処理する | time:16:15 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 定職日3年の契約について、本人の退職意向確認を行う | time:16:19 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 眉間の納税手続き、土地の所有名義に関する書類を確認する | time:14:05 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 法人市民税（15万円）の納付状況を確認する | time:14:11 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 特別徴収（17万円）の現金領収手続きを行う | time:14:15 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 来週火曜日28日に面談を実施する | time:12:56 | priority:high | due:2026-07-28 | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] Excelデータで出力する | time:11:49 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] データの完成形（出力形式や整形ルール）を提供する | time:11:50 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 録画設定（画面共有、マイク、音声のみ）を適切に行う | time:11:43 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] パソコンで音声入力の準備を行う | time:11:36 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 5724件のメールを移行し、古いメールを削除する | time:11:18 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 移行したメールの重複を整理する | time:11:18 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 長澤さんの業務負荷とストレス状況をヒアリングし、解決策を検討する | time:10:04 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 社長に業務上の不具合と従業員のストレス状況について報告し、改善を提案する | time:10:05 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 掲載業務のオーダーシートの品質向上策を検討し、実施する | time:10:12 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 面談業務の対応可能時間帯を設定し、面談のみを受け入れる運用を検討する | time:10:47 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 「円」に関する業務の認識齟齬を確認し、適切な担当者と業務範囲を再定義する | time:10:07 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 業務予定の決定に関する認識齟齬（毎朝か都度調整か）について、関係者間で話し合いの場を設ける | time:11:02 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 線路に関する特定の業務を月曜日まで延期し、月曜日に対応時間を設けないように調整する | time:10:53 | priority:high | due:2026-07-27 | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 松田氏の業務プロセスと自己認識についてフィードバックを行い、改善を促す | time:10:59 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 登録情報を検索で絞り込んでからCSVダウンロードする手順を習得・実施 | time:09:43 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 入社手続きの際に、契約書や同意書が登録前に確認できることを確認する | time:09:49 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] マイナンバー保険証に関する必要な書類の正式名称を確認し、相手に伝える | time:09:06 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 相手にマイナンバー保険証を利用していることを明確に伝える | time:09:06 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 採用候補者と会い、まずは下位ポジションを想定して話を聞く | time:08:51 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 銀行と税務署へ納税証明書を取りに行く | time:08:29 | priority:high | due:2026-07-24 | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 面接結果を確認する | time:08:29 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] ログインできない問題に対応する | time:07:12 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 電子書籍のピング画像をJPEGに変換し、再度EPUB化する | time:07:01 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] EPUBのページサイズを画像サイズに合わせて設定を調整する | time:07:02 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] Room Eでの掲載がされていない原因を調査し、修正する | time:06:59 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 「パイロットさん」を使ってサイトを1巻と2巻の二パターンで作成する | time:06:04 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- [ ] 「パイロットさん」で作成したサイトに対し、出版用のメタデータファイルをそれぞれ作成する | time:06:04 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+
+## 2026-07-23
+
+- [ ] iPadでの面談録画可否を検証する | time:16:25 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+- [ ] 4種類の入力画面（ホームページ、クルー、エアワーク、縁）のスクリーンショットを全て取得する | time:16:33 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+- [ ] 面談・登録業務のスケジュール決定ルール（当日・前日どちらにするか）を明確にするよう関係者に依頼する | time:17:07 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+- [ ] 明日10時-13時の面談に対応する | time:17:32 | priority:high | due:2026-07-24 | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+- [ ] 林さんへ折り返し連絡をする | time:17:51 | priority:high | due:2026-07-24 | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+- [ ] 業務時間固定（真ん中4時間）の提案を関係者に伝える | time:17:28 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+
+## 2026-07-22
+
+- [ ] 復職予定者の医師の診察に同行し、今後の8月からの計画を医師と立てる。 | time:18:34 | priority:high | due:2026-07-25 | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] オーダーシートのチェックと掲載判断を松さんに経由させるよう業務フローを変更し、ハエさんに伝える。 | time:18:15 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] 面談の頻度について、社長が「長すぎる」と感じないよう注意し、社長がいる際は面談を控える。 | time:18:16 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] コロナ融資の事前調査（無料）を実施する。 | time:16:39 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] 社内の融資に関する温度感（方針）を確認する。 | time:16:40 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] 現在の業務フロー（仕事の応募、既存派遣スタッフ、既存顧客、その他）の分類方法を検討する。 | time:15:33 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] 「県再生」の購入を今年行うかどうかの検討を行う。 | time:15:39 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] 求人掲載の媒体と共有方法について、情報共有の場を設ける。 | time:13:11 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] 今週と来週は銀行処理をメインに行う。 | time:13:01 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] 8月10日はオフィスに人がいない状態にならないよう調整する。 | time:13:02 | priority:high | due:2026-08-10 | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] 採用候補者から医師の診断書（フルタイム勤務が可能か否か）を確認する。 | time:09:55 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] 復職予定者が慣らし期間を必要とする場合、9月1日の正式入社前に実施する計画を立てる。 | time:09:43 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] 面接の回数を決定し、候補者に伝える。 | time:09:44 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] 面接官の育成のため、バンド部長から駒さんへの面接業務の引き継ぎを進める。 | time:09:48 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] 打ち合わせ時間を午後4時から4時半頃に調整する。 | time:09:13 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] 代表社員の丸印が必要な書類を発行できるか確認する。 | time:09:12 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] バンド部長のユニフォーム（Lサイズのワンサイズ上/XL）を1枚発注する。 | time:09:15 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] 午後1時からの打ち合わせに参加する。 | time:08:29 | priority:high | due:2026-07-22 | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] 「テンポの内容」を元に20ページのマガジンを作成する。 | time:03:36 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] CSVでデータを吐き出せるダウンロードボタンを作成する。 | time:03:36 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- [ ] 冊子単位で請求を行える請求書まとめ発行機能を開発する。 | time:03:37 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+
+## 2026-07-21
+
+- [ ] 受注管理システムへの「受注データの一覧表示」「期間選択」「CSV出力」機能追加を検討 | time:09:52 | priority:high | due:- | source:`.company/inputs/organized/lifelogs/2026-07-21-lifelog-insights.md`
+- [ ] 3人のキャラクター画像のバランス調整、特に「中田さん」の身長を他のキャラクターと同程度にする | time:09:13 | priority:normal | due:- | source:`.company/inputs/organized/lifelogs/2026-07-21-lifelog-insights.md`
 
 ## 2026-07-20
 

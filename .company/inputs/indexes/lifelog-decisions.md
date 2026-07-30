@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-21T07:00:53
+generated_at: 2026-07-30T07:00:53
 ---
 
 # Lifelog Decisions
@@ -10,6 +10,63 @@ generated_at: 2026-07-21T07:00:53
 Limitless由来の決定事項。継続的に重要なものは該当プロジェクトの状態ファイルへ反映する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-29
+
+- - Chat GPTやClaudeの最上位モデル（月約3万円）を個人アカウントで利用し、本格的にAIを活用する。 | time:11:23 | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+- - 外部委託費を削減し、自社でAIを活用してシステム開発や業務自動化を進めることで利益率向上を目指す。 | time:13:52 | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+- - メールの共有方法を見直し、メインアカウントを置き、必要な分だけ同期する形式に変更する。 | time:09:54 | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+
+## 2026-07-28
+
+- - 複数のプロジェクトはそれぞれ別のGitHubレポジトリで運用する。 | time:21:09 | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- - 派遣契約の更新はとりあえず無しにする（直行になるという約束があるため）。 | time:17:28 | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- - 労使協定ではなく契約書に（特定の条項を）含める方向で検討する。 | time:14:05 | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+
+## 2026-07-27
+
+- - 社員の処遇について、影響がなければ処分を進めるという意見を伝える。 | time:16:03 | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - 復帰意思のない社員は退職として扱うという認識。 | time:15:25 | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - 山下さんのケースは金額が少ないため単月での調整とする。 | time:14:01 | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - コーディプロジェクトを白紙撤回/中止とし、再依頼は不可とする。 | time:10:02 | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - 現場作業に営業担当者が関与することについて、「なんとでもなる」という見解を示す。 | time:11:04 | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - パートスタッフの補充はせず、松田さんが一人で業務を行う。 | time:09:09 | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - 中澤さんの業務を別の仕事へ移行するか、責任のある立場を振ることを検討する。 | time:09:27 | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - 期間限定のパート雇用は同様の問題を避けるため見送る。 | time:09:27 | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - 中澤さんの業務調整において、朝の予定決定ルールを遵守すべきであるという認識。 | time:09:00 | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+
+## 2026-07-25
+
+- - コンテンツ制作において、具体的な個人名は出さず、政治団体の中でも国政政党に限定して言及する。 | time:07:14 | source:`.company/inputs/organized/lifelogs/2026-07-25-lifelog-insights.md`
+
+## 2026-07-24
+
+- - 面談業務は時間限定で対応する可能性が高い（社長の判断を仰ぐ） | time:17:54 | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - 月曜日の業務（林さんの件）は一旦白紙に戻し、ノータッチで進める | time:17:57 | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - 面談業務を継続する方向で検討 | time:17:40 | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - 業務は「一社版」で進める | time:13:30 | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+
+## 2026-07-23
+
+- - 従業員の業務時間を日中の4時間（例: 10時〜14時）に固定する提案がなされた。これにより、朝一や夕方の急な対応を避け、業務に集中できる環境を目指す。 | time:17:26 | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+- - 過去にアプリ公開を試みたが、申請の複雑さや時間の制約により断念した経験がある。 | time:11:07 | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+- - 採用ターゲットを再設定し、35歳以上の層からの応募が少ないため、25歳以下の層に絞り、現場管理メインの営業職（第二新卒レベルまたは作業可能なタイプ）を探す方針。 | time:08:51 | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+- - 新規開拓は業界知識や経験が必要なため、入社後しばらくは既存顧客の拡大営業を中心に進める方針。 | time:13:10 | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+- - 現在の採用活動では、まず1名の採用を目標としている。 | time:13:55 | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+- - 転職理由が「きつい」など後ろ向きな場合でも、数字をしっかり残した上で「やり切った」かどうかを重視して判断する方針。 | time:13:38 | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+
+## 2026-07-22
+
+- - 復職予定者の医師の意見を聞いた上で、8月からの具体的な復職計画を決定する。 | time:18:34 | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- - オーダーシートの作成を一旦停止し、稟議の判断プロセスに入れる。 | time:18:12 | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- - コロナ融資申請のための事前調査を早めに行う。 | time:16:39 | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- - 融資に関する社内の温度感（方針）を一度確認する。 | time:16:40 | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- - 採用面接の体制を、一次面接はバンド部長、二次面接はオーナーが行う形に決定する。 | time:09:26 | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- - 求人掲載の判断は松さんを経由させるようにする。 | time:13:15 | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+
+## 2026-07-21
+
+- - サービスの価値を正しく評価するには初期の投資（課金）が重要であるという認識。 | time:10:31 | source:`.company/inputs/organized/lifelogs/2026-07-21-lifelog-insights.md`
 
 ## 2026-07-20
 

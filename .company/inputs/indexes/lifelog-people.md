@@ -2,7 +2,7 @@
 source: organize_inputs.py
 type: input-index
 scope: lifelog-insights
-generated_at: 2026-07-21T07:00:53
+generated_at: 2026-07-30T07:00:53
 ---
 
 # Lifelog People and Contacts
@@ -10,6 +10,116 @@ generated_at: 2026-07-21T07:00:53
 Limitless由来の人物・会社・連絡先候補。関係性が継続する場合は個別メモへ昇格する。
 
 > 自動生成ファイル。必要な修正は元の organized input または organizer に反映する。
+
+## 2026-07-29
+
+- - **義手** — 日本と中国の技術比較に関心がある太客。フリーランス事業の潜在顧客。 (20:15) | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+- - **佐々木** — 新しい仕事の関連人物。管理寄りの作業ポジション。 (13:45) | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+- - **中田** — メール問題や新しい仕事の提出物に関連する人物。 (09:44) | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+- - **田中** — メール問題に関連する人物。 (15:04) | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+- - **岩川** — 体調不良で会議を欠席。 (08:29) | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+- - **長谷** — 朝の挨拶と確認の相手。 (08:13) | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+- - **Yuichi** — 複数回名前が登場するが、具体的な役割や業務内容は不明。 (20:23) | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+- - **マサ** — Yuichiとの会話ログに登場。 (07:43) | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+- - **日比さん** — 請求書を分けたい相手。 (10:45) | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+- - **眉間さん** — 請求書を分けたい相手。 (10:45) | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+- - **Effin (イーフィン)** — 社外システム。ISDN回線が必要。 (10:58) | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+- - **Happiness Spread Holdings** — 親会社。代表番号を使用。 (10:53) | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+- - **マンパワー** — メール送信に問題がある相手。 (09:43) | source:`.company/inputs/organized/lifelogs/2026-07-29-lifelog-insights.md`
+
+## 2026-07-28
+
+- - **橋本さん** — 長野の関係者 (23:46) | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- - **ゆういち** — 過去にAV作品に登場した人物。マネージャーがキャリアプランを立てていた。 (23:40) | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- - **林さん** — 休職・労務提供に関する問題が発生している人物。対応の難しさについて言及。 (15:26) | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- - **T Y** — 傷病手当の申請に関する連絡先。 (15:35) | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- - **トミヨシさん** — 午後に会う予定の人物 (12:17) | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- - **セトさん** — 夜に会う予定の人物 (12:17) | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- - **きつぎさん** — 今年11月に65歳になる人物。定年退職に関する話。 (10:27) | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+- - **やばさん** — 過去に定年退職に関する話があった人物。 (10:28) | source:`.company/inputs/organized/lifelogs/2026-07-28-lifelog-insights.md`
+
+## 2026-07-27
+
+- - **yuichi** — 新しい仕事や退職者の紹介案件に関連する人物として複数回言及 (21:29) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - **熊谷さん** — 診断書持参を依頼された人物 (16:12) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - **ふかさん** — 豊田県関連のメンバー、雇用状況確認 (13:01) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - **可愛いさん** — 受注票の確認で名前が挙がった人物 (13:07) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - **上野さん** — 退職時期が言及された人物 (11:47) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - **小森さん** — 障害者雇用として名前が挙がった人物 (11:51) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - **中野さん** — 障害者雇用、今後の採用に関する懸念で名前が挙がった人物 (11:52) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - **山下さん** — 金額が少ないため単月で調整されたケース (14:01) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - **草鹿さん** — 8月から始まる新しいプロジェクトの担当者 (09:52) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - **長澤さん** — 業務調整、社会保険料、ビケン業務担当、ストレスを抱える人物 (10:30) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - **早さん** — 指示の対象、緊急依頼への対応、運用ルール共有者 (10:34) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - **あたさん** — 4月復帰予定だが保育園問題がある人物 (09:23) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - **モモイさん** — 保育士免許所有者、社内保育施設アイデアで言及 (09:27) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - **クレヨンさん** — 保育士免許所有者、社内保育施設アイデアで言及 (09:27) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - **林さん** — 長澤さんの業務調整に関する議論で登場 (09:10) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - **松田さん** — 中澤さんとの業務調整でストレスを抱え、一人での業務を希望 (09:16) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - **社長** — 業務割り振り、プロジェクト中止の決定に関わる人物 (10:25) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - **岩川さん** — 業務割り振り再検討の対象人物 (09:27) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - **永井さん** — 過去の採用状況に関する話で登場 (10:09) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+- - **田中さん** — 過去の採用状況に関する話で登場 (10:09) | source:`.company/inputs/organized/lifelogs/2026-07-27-lifelog-insights.md`
+
+## 2026-07-26
+
+- - **Yuichi** — オーナーが複数回呼びかけており、何らかのやり取りがある人物。 (15:20) | source:`.company/inputs/organized/lifelogs/2026-07-26-lifelog-insights.md`
+
+## 2026-07-25
+
+- - **コテックス** — 調査結果を渡したい相手 (18:57) | source:`.company/inputs/organized/lifelogs/2026-07-25-lifelog-insights.md`
+- - **ユウイチさん** — 当て逃げ事件のネット特定で情報提供者として名前が挙がった人物 (13:26) | source:`.company/inputs/organized/lifelogs/2026-07-25-lifelog-insights.md`
+
+## 2026-07-24
+
+- - **Yuichi** — 新しい仕事に関する話題で頻繁に登場する人物 (21:42) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **けと** — 生成AIに関するYouTubeチャンネル運営者 (19:59) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **Bigan** — 業務連絡の相手 (18:01) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **久保さん (大器稲沢)** — 本日中に見つめたいと言っていた件の担当者 (18:01) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **林さん** — 業務ルールや担当業務に関する調整相手 (17:47) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **田中さん** — 業務に関する話題で登場 (17:47) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **社長** — 業務判断を仰ぐ相手 (17:47) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **松さん** — 業務ルール解釈の相違、業務割り当てに関する人物 (17:51) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **中澤さん** — 業務過多とストレスを抱えている従業員、面談・掲載業務担当 (17:55) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **中田さん** — 保冷剤の購入計画に関する報告相手 (17:36) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **毘県** — 鈴蘭高原の土地を所有する会社 (16:42) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **日火** — 蘭越町の土地を所有する会社 (16:42) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **大阪** — 土地処分に関する協力者 (16:39) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **森田さん** — 人物確認、業務関連 (16:11) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **平田** — 販売手数料に関する人物/案件 (16:14) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **西さん** — 納税手続きに関する連絡相手 (14:05) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **専務** — 社長への報告を促している (10:06) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **バンド部長** — 従業員の不満の捌け口になっている、社長へ伝達せず (10:30) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **近藤さん** — 長期離脱により現場の業務負荷が増加 (10:30) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **佐藤さん** — 長期離脱により現場の業務負荷が増加 (10:30) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **古馬さん** — 社長と話がしやすい人物、情報経路 (10:30) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+- - **かけ畑さん** — 登録情報、保冷剤に関する人物 (09:45) | source:`.company/inputs/organized/lifelogs/2026-07-24-lifelog-insights.md`
+
+## 2026-07-23
+
+- - **友人** — 清掃会社を経営しており、業務委託の可能性を打診してきた。 (13:56) | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+- - **Hondaさん** — 業務の引き継ぎに関わる人物として言及された。 (17:42) | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+- - **吉野** — 業務の指示を出す対象となっている人物。 (17:42) | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+- - **小川さん** — 新しい採用候補者の一人。 (08:48) | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+- - **佐々木** — 社内の「現場実機」ポジションのモデルとして言及された。 (08:51) | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+- - **熊谷さん** — 電話で連絡を取る必要がある相手。 (08:59) | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+- - **ミイダス** — 応募者が来た媒体の一つ。 (08:59) | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+- - **林さん** — 折り返し連絡が必要な相手。 (17:51) | source:`.company/inputs/organized/lifelogs/2026-07-23-lifelog-insights.md`
+
+## 2026-07-22
+
+- - **松さん** — オーダーシートのチェックと掲載判断、求人掲載の判断を依頼する人物。 (18:15) | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- - **バンド部長** — 面接の一次担当、ユニフォーム発注の依頼者、面接官育成の引き継ぎ対象。 (18:41) | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- - **秀さん** — 営業事務の募集要項作成に関して関与している人物。 (18:41) | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- - **小林さん** — 営業事務のアシスタントポジションに関連する人物。 (18:41) | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- - **熊谷さん** — 新しく入った社員。 (18:41) | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- - **森さん** — 退職に関する会話の中で言及された人物。 (18:01) | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- - **伊藤** — 過去の3000万円の融資案件を担当した人物。 (16:41) | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- - **日米さん/日経さん** — 融資関連の事業計画書や市場分析で比較対象として挙げられた会社。 (16:13) | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- - **名古屋銀行** — コロナ融資の実行件数が突出していると認識されている銀行。 (16:38) | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- - **ハエさん** — 松さんへの業務変更指示を伝える人物。 (13:15) | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- - **佐藤さん** — ユニフォーム発注に関する担当者または依頼を受けた人物。 (09:14) | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
+- - **駒さん** — 面接官としての育成対象、バンド部長からの引き継ぎ先。 (09:48) | source:`.company/inputs/organized/lifelogs/2026-07-22-lifelog-insights.md`
 
 ## 2026-07-20
 
