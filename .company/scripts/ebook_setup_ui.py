@@ -15,7 +15,7 @@ from datetime import datetime
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, urlencode, urlparse
+from urllib.parse import urlencode, urlparse
 from zoneinfo import ZoneInfo
 
 
@@ -31,19 +31,24 @@ QUESTIONS = [
         "options": [
             {
                 "value": "use_input",
-                "label": "テーマ中心",
-                "description": "入力されたテーマを中心に据えて、広げすぎずに整理します。",
+                "label": "入力内容のテーマで進める (Recommended)",
+                "description": "入力されたテーマを中心に据えて進めます。",
                 "recommended": True,
             },
             {
                 "value": "expand",
-                "label": "少し広げる",
-                "description": "周辺テーマ、歴史、社会的背景、関連する議論まで含めます。",
+                "label": "入力内容を少し広げて進める",
+                "description": "周辺テーマや背景も含めて扱います。",
             },
             {
                 "value": "narrow",
-                "label": "絞り込む",
-                "description": "健康、美容、検証など特定の切り口に寄せます。",
+                "label": "入力内容を絞り込んで進める",
+                "description": "対象や論点を絞り、焦点を明確にします。",
+            },
+            {
+                "value": "other_theme",
+                "label": "別テーマを指定する",
+                "description": "自由記述欄に新しいテーマを入力します。",
             },
         ],
     },
@@ -53,19 +58,24 @@ QUESTIONS = [
         "options": [
             {
                 "value": "beginner",
-                "label": "初心者",
+                "label": "初心者・これから始める人 (Recommended)",
                 "description": "初めて知る人にもわかる、やさしい導入にします。",
                 "recommended": True,
             },
             {
-                "value": "health_interest",
-                "label": "健康関心層",
-                "description": "自然療法や身体への関心がある読者向けにします。",
+                "value": "business_manager",
+                "label": "中小企業の経営者・管理職",
+                "description": "経営や組織運営の判断に役立つ内容にします。",
             },
             {
-                "value": "verification",
-                "label": "検証派",
-                "description": "真偽や根拠の強さを冷静に見たい読者向けにします。",
+                "value": "practitioner",
+                "label": "実務担当者・現場リーダー",
+                "description": "現場で実践しやすい内容にします。",
+            },
+            {
+                "value": "expert",
+                "label": "専門家・上級者",
+                "description": "基礎知識がある読者にも読み応えのある内容にします。",
             },
         ],
     },
@@ -74,20 +84,25 @@ QUESTIONS = [
         "title": "本の型",
         "options": [
             {
-                "value": "intro",
-                "label": "やさしい入門書",
-                "description": "全体像、歴史、主張、注意点を順番に整理します。",
+                "value": "practical",
+                "label": "実践書・手順書 (Recommended)",
+                "description": "読者が行動に移せる手順と実例を中心にします。",
                 "recommended": True,
             },
             {
-                "value": "verification",
-                "label": "検証型",
-                "description": "肯定・否定の主張を並べ、根拠の強さを評価します。",
+                "value": "intro",
+                "label": "やさしい入門書",
+                "description": "基礎から順番に全体像を整理します。",
             },
             {
                 "value": "case_story",
-                "label": "事例中心",
-                "description": "ケースや体験談を読み物として配置します。",
+                "label": "ストーリー・事例中心",
+                "description": "ストーリーや事例を軸に読みやすく構成します。",
+            },
+            {
+                "value": "ideas",
+                "label": "考え方・思想を伝える本",
+                "description": "主張や考え方の背景を掘り下げて伝えます。",
             },
         ],
     },
@@ -97,19 +112,24 @@ QUESTIONS = [
         "options": [
             {
                 "value": "gentle",
-                "label": "やさしい",
+                "label": "やさしいです・ます調 (Recommended)",
                 "description": "です・ます調で、専門用語をかみ砕きます。",
                 "recommended": True,
             },
             {
-                "value": "calm_expert",
-                "label": "落ち着いた専門書風",
-                "description": "少し硬めに、信頼感を優先して書きます。",
+                "value": "business",
+                "label": "端的でビジネス寄り",
+                "description": "要点を簡潔に、実務的な表現で書きます。",
             },
             {
                 "value": "conversational",
-                "label": "会話調",
+                "label": "親しみやすい会話調",
                 "description": "読みやすさと親しみやすさを優先します。",
+            },
+            {
+                "value": "calm_expert",
+                "label": "専門家らしい落ち着いた文体",
+                "description": "落ち着きと信頼感を重視して書きます。",
             },
         ],
     },
@@ -118,10 +138,15 @@ QUESTIONS = [
         "title": "文字量",
         "options": [
             {
+                "value": "100000",
+                "label": "約100,000字 (Recommended)",
+                "description": "本格的に掘り下げる長編にします。",
+                "recommended": True,
+            },
+            {
                 "value": "50000",
                 "label": "約50,000字",
-                "description": "標準的な電子書籍として、深さと制作速度のバランスを取ります。",
-                "recommended": True,
+                "description": "深さと制作速度のバランスを取ります。",
             },
             {
                 "value": "25000",
@@ -129,9 +154,9 @@ QUESTIONS = [
                 "description": "短めにまとめ、早く出版できる形にします。",
             },
             {
-                "value": "100000",
-                "label": "約100,000字",
-                "description": "本格的に掘り下げる長編にします。",
+                "value": "custom",
+                "label": "自由記述で指定",
+                "description": "自由記述欄に希望する文字量を入力します。",
             },
         ],
     },
@@ -140,24 +165,31 @@ QUESTIONS = [
         "title": "画像密度",
         "options": [
             {
-                "value": "diagram_rich",
-                "label": "図解多め",
-                "description": "仕組み、比較、注意点を図解で理解しやすくします。",
-                "recommended": True,
-            },
-            {
                 "value": "standard",
-                "label": "標準",
-                "description": "章ごとに数点、本文を邪魔しない程度に入れます。",
+                "label": "標準（章ごとに数点） (Recommended)",
+                "description": "章ごとに数点、本文を補う画像を入れます。",
+                "recommended": True,
             },
             {
                 "value": "few",
                 "label": "少なめ",
                 "description": "文字中心で、必要な箇所だけ画像を入れます。",
             },
+            {
+                "value": "many",
+                "label": "多め",
+                "description": "挿絵や図解を多めに配置します。",
+            },
+            {
+                "value": "diagram_rich",
+                "label": "図解中心",
+                "description": "概念や手順を図解で理解しやすくします。",
+            },
         ],
     },
 ]
+
+SAFETY_POLICY = "医療・健康・投資・法律などの該当ジャンルでは、断定を避け、根拠を確認して表現する"
 
 
 def slugify(text: str) -> str:
@@ -178,7 +210,7 @@ def pick_port(host: str, preferred: int) -> int:
             except OSError:
                 continue
             return port
-    raise RuntimeError(f"No free port found from {preferred} to {preferred + 49}")
+    raise RuntimeError(f"ポート {preferred}〜{preferred + 49} に空きがありません。ほかのアプリを終了してから、もう一度お試しください。")
 
 
 def html_escape(value: str) -> str:
@@ -190,10 +222,76 @@ def html_escape(value: str) -> str:
     )
 
 
+def json_for_inline_script(value: object) -> str:
+    """Serialize JSON without allowing data to terminate the script element."""
+    return (
+        json.dumps(value, ensure_ascii=False)
+        .replace("&", "\\u0026")
+        .replace("<", "\\u003c")
+        .replace(">", "\\u003e")
+        .replace("\u2028", "\\u2028")
+        .replace("\u2029", "\\u2029")
+    )
+
+
+def validate_submission(payload: object, expected_theme: str, expected_mode: str) -> dict:
+    """Validate and normalize a submitted setup document.
+
+    Labels are checked as well as values so stored ``{value, label}`` pairs are
+    always canonical and cannot contain injected markup.
+    """
+    if not isinstance(payload, dict):
+        raise ValueError("入力データはJSONオブジェクトで送信してください。")
+    if payload.get("theme") != expected_theme or payload.get("mode") != expected_mode:
+        raise ValueError("テーマまたは制作モードが起動画面と一致しません。")
+
+    answers = payload.get("answers")
+    if not isinstance(answers, dict):
+        raise ValueError("すべての質問に回答してください。")
+
+    expected_ids = {question["id"] for question in QUESTIONS}
+    if set(answers) != expected_ids:
+        missing = [question["title"] for question in QUESTIONS if question["id"] not in answers]
+        if missing:
+            raise ValueError(f"未回答の質問があります: {', '.join(missing)}")
+        raise ValueError("定義されていない質問が含まれています。")
+
+    normalized_answers: dict[str, dict[str, str]] = {}
+    for question in QUESTIONS:
+        answer = answers[question["id"]]
+        if not isinstance(answer, dict):
+            raise ValueError(f"{question['title']}の回答形式が正しくありません。")
+        value = answer.get("value")
+        label = answer.get("label")
+        option = next((item for item in question["options"] if item["value"] == value), None)
+        if option is None:
+            raise ValueError(f"{question['title']}に定義されていない選択肢が含まれています。")
+        if label != option["label"]:
+            raise ValueError(f"{question['title']}の選択肢ラベルが正しくありません。")
+        normalized_answers[question["id"]] = {"value": value, "label": label}
+
+    free_text = payload.get("free_text", "")
+    if not isinstance(free_text, str):
+        raise ValueError("自由記述は文字列で入力してください。")
+    free_text = free_text.strip()
+    if normalized_answers["theme_handling"]["value"] == "other_theme" and not free_text:
+        raise ValueError("別テーマを指定する場合は、自由記述欄にテーマを入力してください。")
+    if normalized_answers["length"]["value"] == "custom" and not free_text:
+        raise ValueError("文字量を自由指定する場合は、自由記述欄に希望文字量を入力してください。")
+
+    return {
+        "theme": expected_theme,
+        "mode": expected_mode,
+        "answers": normalized_answers,
+        "free_text": free_text,
+        "safety_policy": SAFETY_POLICY,
+    }
+
+
 def render_page(theme: str, mode: str) -> bytes:
-    questions_json = json.dumps(QUESTIONS, ensure_ascii=False)
-    theme_json = json.dumps(theme, ensure_ascii=False)
-    mode_json = json.dumps(mode, ensure_ascii=False)
+    questions_json = json_for_inline_script(QUESTIONS)
+    theme_json = json_for_inline_script(theme)
+    mode_json = json_for_inline_script(mode)
     safe_theme = html_escape(theme)
     safe_mode = html_escape(mode)
     html = f"""<!doctype html>
@@ -379,7 +477,7 @@ def render_page(theme: str, mode: str) -> bytes:
     <header>
       <h1>電子書籍 初回設定</h1>
       <div class="meta">テーマ: <strong>{safe_theme}</strong> / モード: {safe_mode}</div>
-      <div class="note">健康・医療に関わる表現は、効果を断定せず、根拠の強さと未検証部分を分けて扱います。</div>
+      <div class="note">医療・健康・投資・法律などの該当ジャンルでは、断定を避け、根拠を確認して表現します。</div>
     </header>
 
     <form id="setup-form">
@@ -388,7 +486,7 @@ def render_page(theme: str, mode: str) -> bytes:
       <section class="free">
         <label for="free_text"><strong>自由記述</strong></label>
         <p class="meta">入れたい論点、避けたい表現、タイトル案、著者名などがあれば書いてください。</p>
-        <textarea id="free_text" name="free_text" placeholder="例: 医療効果は断定せず、読み物として面白く。歴史と科学的検証を分けてほしい。"></textarea>
+        <textarea id="free_text" name="free_text" placeholder="例: 入れたい事例、避けたい表現、希望する著者名など"></textarea>
       </section>
 
       <div class="actions">
@@ -414,7 +512,6 @@ def render_page(theme: str, mode: str) -> bytes:
                 <span>
                   <span class="choice-title">
                     ${{opt.label}}
-                    ${{opt.recommended ? '<span class="badge">おすすめ</span>' : ""}}
                   </span>
                   <span class="desc">${{opt.description}}</span>
                 </span>
@@ -449,7 +546,7 @@ def render_page(theme: str, mode: str) -> bytes:
         mode: {mode_json},
         answers,
         free_text: document.getElementById("free_text").value.trim(),
-        safety_policy: "健康・医療効果は断定せず、根拠の強さと未検証部分を分けて表現する",
+        safety_policy: {json_for_inline_script(SAFETY_POLICY)},
       }};
       document.getElementById("status").textContent = "保存中です...";
       const response = await fetch("/submit", {{
@@ -497,10 +594,7 @@ class SetupHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
         if parsed.path == "/":
-            params = parse_qs(parsed.query)
-            theme = params.get("theme", [self.app.theme])[0] or self.app.theme
-            mode = params.get("mode", [self.app.mode])[0] or self.app.mode
-            body = render_page(theme=theme, mode=mode)
+            body = render_page(theme=self.app.theme, mode=self.app.mode)
             self.send_response(HTTPStatus.OK)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Content-Length", str(len(body)))
@@ -517,24 +611,37 @@ class SetupHandler(BaseHTTPRequestHandler):
                     },
                 )
                 return
-            self.send_json(HTTPStatus.NOT_FOUND, {"error": "No saved setup yet."})
+            self.send_json(HTTPStatus.NOT_FOUND, {"error": "まだ保存済みの初回設定がありません。フォームで選択して保存してください。"})
             return
-        self.send_json(HTTPStatus.NOT_FOUND, {"error": "Not found."})
+        self.send_json(HTTPStatus.NOT_FOUND, {"error": "指定されたページは見つかりません。"})
 
     def do_POST(self) -> None:
         if urlparse(self.path).path != "/submit":
-            self.send_json(HTTPStatus.NOT_FOUND, {"error": "Not found."})
+            self.send_json(HTTPStatus.NOT_FOUND, {"error": "指定されたページは見つかりません。"})
             return
-        length = int(self.headers.get("Content-Length", "0"))
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+        except ValueError:
+            self.send_json(HTTPStatus.BAD_REQUEST, {"error": "入力データの長さが正しくありません。"})
+            return
+        if length <= 0 or length > 1_000_000:
+            self.send_json(HTTPStatus.BAD_REQUEST, {"error": "入力データの長さが正しくありません。"})
+            return
         raw = self.rfile.read(length)
         try:
             payload = json.loads(raw.decode("utf-8"))
-        except json.JSONDecodeError:
-            self.send_json(HTTPStatus.BAD_REQUEST, {"error": "Invalid JSON."})
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            self.send_json(HTTPStatus.BAD_REQUEST, {"error": "入力データの形式が正しくありません。画面を再読み込みしてから、もう一度保存してください。"})
+            return
+
+        try:
+            payload = validate_submission(payload, self.app.theme, self.app.mode)
+        except ValueError as exc:
+            self.send_json(HTTPStatus.BAD_REQUEST, {"error": str(exc)})
             return
 
         now = datetime.now(JST)
-        theme = str(payload.get("theme") or self.app.theme)
+        theme = payload["theme"]
         payload["created_at"] = now.isoformat()
         payload["source"] = "local_ebook_setup_ui"
 
@@ -561,16 +668,16 @@ class SetupServer(ThreadingHTTPServer):
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run a localhost ebook setup selection UI.")
-    parser.add_argument("--theme", default="ソマチッド", help="Theme shown in the setup UI.")
-    parser.add_argument("--mode", default="theme-to-ebook", help="Workflow mode label.")
-    parser.add_argument("--host", default="127.0.0.1", help="Host to bind. Default: 127.0.0.1")
-    parser.add_argument("--port", type=int, default=8765, help="Preferred port. Default: 8765")
+    parser = argparse.ArgumentParser(description="電子書籍制作の初回設定を選ぶローカル画面を起動します。")
+    parser.add_argument("--theme", default="", help="初回設定画面に表示するテーマです。")
+    parser.add_argument("--mode", default="theme-to-ebook", help="制作フローの表示名です。")
+    parser.add_argument("--host", default="127.0.0.1", help="待受先ホスト（既定: 127.0.0.1）")
+    parser.add_argument("--port", type=int, default=8765, help="優先して使うポート番号（既定: 8765）")
     parser.add_argument(
         "--output-dir",
         type=Path,
         default=DEFAULT_OUTPUT_DIR,
-        help="Directory for saved setup JSON.",
+        help="設定JSONの保存先ディレクトリです。",
     )
     return parser.parse_args()
 
