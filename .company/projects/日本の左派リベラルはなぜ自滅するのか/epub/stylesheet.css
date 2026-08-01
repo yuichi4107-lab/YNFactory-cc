@@ -1,0 +1,149 @@
+@charset "UTF-8";
+
+html {
+  -epub-writing-mode: horizontal-tb;
+  writing-mode: horizontal-tb;
+}
+
+body {
+  color: #17191d;
+  background: #fffdf8;
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
+  line-height: 1.85;
+  margin: 0 5%;
+  padding: 0;
+  text-align: justify;
+  text-justify: inter-ideograph;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+h1,
+h2 {
+  color: #172f4f;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans CJK JP", sans-serif;
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: left;
+  text-indent: 0;
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+h1 {
+  border-bottom: 0.16em solid #8b2e36;
+  font-size: 1.55em;
+  margin: 2.8em 0 1.6em;
+  padding: 0 0 0.45em;
+}
+
+h2 {
+  border-left: 0.32em solid #477b78;
+  font-size: 1.2em;
+  margin: 2.4em 0 1.2em;
+  padding-left: 0.65em;
+}
+
+p {
+  margin: 0.75em 0;
+  orphans: 2;
+  widows: 2;
+}
+
+strong {
+  font-weight: 700;
+}
+
+blockquote {
+  border-left: 0.25em solid #c5aa64;
+  color: #3c4148;
+  margin: 1.5em 0.5em;
+  padding: 0.25em 1em;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #b8b1a5;
+  margin: 2.5em 20%;
+}
+
+a {
+  color: #245d76;
+  text-decoration: underline;
+}
+
+figure.illustration {
+  break-inside: avoid;
+  margin: 1.8em auto 2.1em;
+  page-break-inside: avoid;
+  text-align: center;
+}
+
+figure.illustration img {
+  display: block;
+  height: auto;
+  margin: 0 auto;
+  max-height: 75vh;
+  max-width: 100%;
+}
+
+figcaption {
+  color: #555b62;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans CJK JP", sans-serif;
+  font-size: 0.82em;
+  line-height: 1.55;
+  margin-top: 0.65em;
+  text-align: left;
+}
+
+table {
+  border-collapse: collapse;
+  font-size: 0.72em;
+  line-height: 1.45;
+  margin: 1.25em 0;
+  table-layout: auto;
+  width: 100%;
+}
+
+th,
+td {
+  border: 1px solid #aaa69d;
+  padding: 0.45em;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: #e8edf0;
+  color: #172f4f;
+}
+
+.cover-page {
+  background: #ffffff;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.cover-image {
+  display: block;
+  height: auto;
+  margin: 0 auto;
+  max-height: 100vh;
+  max-width: 100%;
+}
+
+.title-page h1 {
+  border: 0;
+  font-size: 1.8em;
+  margin-top: 22%;
+  text-align: center;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: transparent;
+    color: inherit;
+  }
+}
+
