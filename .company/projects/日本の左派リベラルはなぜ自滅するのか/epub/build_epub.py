@@ -128,13 +128,17 @@ def png_dimensions(path: Path) -> tuple[int, int]:
 
 
 def expected_publication_bytes(source: bytes) -> bytes:
-    """Apply the publication-only removal of S001/S002 source-table rows."""
-    marker = "**出典一覧**".encode("utf-8")
-    row_pattern = re.compile(rb"^\|\s*S00[12]\s*\|")
+    """Apply the publication-only removal of S001/S002 citations and rows."""
+    source_text = source.decode("utf-8")
+    marker = "**出典一覧**"
+    row_pattern = re.compile(r"^\|\s*S00[12]\s*\|")
+    citation_pattern = re.compile(
+        r"(?P<open>\[|［)(?P<body>\s*S\d{3}(?:\s*[,，、]\s*S\d{3})*\s*)(?P<close>\]|］)"
+    )
     in_source_list = False
     removed = 0
-    output: list[bytes] = []
-    for line in source.splitlines(keepends=True):
+    output: list[str] = []
+    for line in source_text.splitlines(keepends=True):
         if marker in line:
             in_source_list = True
         if in_source_list and row_pattern.match(line):
@@ -143,7 +147,23 @@ def expected_publication_bytes(source: bytes) -> bytes:
         output.append(line)
     if removed != 2:
         raise ValueError(f"正本から除外できた出典行が2件ではありません: {removed}")
-    return b"".join(output)
+
+    def replace_citation(match: re.Match[str]) -> str:
+        opening = match.group("open")
+        closing = match.group("close")
+        if (opening, closing) not in {("[", "]"), ("［", "］")}:
+            return match.group(0)
+        remaining = [
+            source_id
+            for source_id in re.findall(r"S\d{3}", match.group("body"))
+            if source_id not in {"S001", "S002"}
+        ]
+        if not remaining:
+            return ""
+        return f"{opening}{', '.join(remaining)}{closing}"
+
+    derived_text = citation_pattern.sub(replace_citation, "".join(output))
+    return derived_text.encode("utf-8")
 
 
 def validate_inputs() -> dict[str, object]:
@@ -161,7 +181,7 @@ def validate_inputs() -> dict[str, object]:
         raise ValueError("epub/manuscript.md と publication/出版用原稿.md が一致しません。")
     expected = expected_publication_bytes(ORIGINAL_SOURCE.read_bytes())
     if SOURCE.read_bytes() != expected:
-        raise ValueError("EPUB用原稿が、正本からS001/S002の一覧行だけを除外した内容と一致しません。")
+        raise ValueError("EPUB用原稿が、正本からS001/S002の本文引用と一覧行を除外した内容と一致しません。")
 
     text = SOURCE.read_text(encoding="utf-8")
     h1 = [line[2:] for line in text.splitlines() if line.startswith("# ")]
@@ -175,8 +195,8 @@ def validate_inputs() -> dict[str, object]:
     expected_ids = [f"S{number:03d}" for number in range(3, 71)]
     if source_ids != expected_ids:
         raise ValueError("出版用の出典一覧がS003〜S070の68件ではありません。")
-    if "S001" not in text or "S002" not in text:
-        raise ValueError("本文中のS001/S002参照が保持されていません。")
+    if "S001" in text or "S002" in text:
+        raise ValueError("EPUB用原稿にS001/S002が残っています。")
     stylesheet = STYLESHEET.read_text(encoding="utf-8")
     if "break-before: page" not in stylesheet or "page-break-before: always" not in stylesheet:
         raise ValueError("全節の改ページ指定がstylesheet.cssにありません。")
