@@ -2,7 +2,7 @@
 
 - 状態: KDP入稿前パッケージ完成（公開・販売は未実施）
 - 完了日: 2026-08-01
-- 最終修正: 2026-08-02（公開出典の連番化、ポップ版KDP表紙へ正式サブタイトルを追加）
+- 最終修正: 2026-08-02（公開出典の連番化、ポップ版KDP表紙へ正式サブタイトルを追加、JPEG納品版を追加）
 - 最終品質: 97/100（合格）
 - 出版用追加修正QC: 100/100（合格）
 - 本文相当文字数: 125,794字
@@ -28,7 +28,9 @@
 - `requirements-publication-renumber-source-ids.md`: 公開出典68件をS001〜S068へ再採番する追加要件
 - `requirements-kdp-cover-redesign-pop.md`: ポップなKDP表紙リデザインの追加要件
 - `requirements-kdp-cover-add-subtitle.md`: ポップ版表紙へ正式サブタイトルを追加する要件
+- `requirements-kdp-cover-jpeg-delivery.md`: 現行表紙を高品質JPEGへ変換する要件
 - `KDP出版用/cover.png`: サブタイトル入りポップ版表紙（1024×1536 PNG）
+- `KDP出版用/cover.jpg`: KDP提出用のサブタイトル入り高品質JPEG表紙（1024×1536、RGB）
 - `KDP出版用/cover-v1-dark.png`: 旧表紙の復元用バックアップ
 - `KDP出版用/cover-v2-pop.png`: サブタイトル追加前のポップ版
 - `KDP出版用/cover-v3-pop-subtitle.png`: 現行表紙の版管理用コピー
