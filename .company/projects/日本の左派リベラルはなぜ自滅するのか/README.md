@@ -2,7 +2,7 @@
 
 - 状態: KDP入稿前パッケージ完成（公開・販売は未実施）
 - 完了日: 2026-08-01
-- 最終修正: 2026-08-02（全78節を節頭改ページ、内部2資料を除外し、公開出典をS001〜S068へ連番化）
+- 最終修正: 2026-08-02（公開出典の連番化、KDP表紙をポップな高彩度デザインへ刷新）
 - 最終品質: 97/100（合格）
 - 出版用追加修正QC: 100/100（合格）
 - 本文相当文字数: 125,794字
@@ -26,6 +26,10 @@
 - `requirements-publication-revision-2026-08-02.md`: 節頭改ページ・公開出典一覧修正の追加要件
 - `requirements-publication-remove-s001-s002.md`: 出版用本文からS001/S002を完全除外する追加要件
 - `requirements-publication-renumber-source-ids.md`: 公開出典68件をS001〜S068へ再採番する追加要件
+- `requirements-kdp-cover-redesign-pop.md`: ポップなKDP表紙リデザインの追加要件
+- `KDP出版用/cover.png`: 新しいポップ版表紙（1024×1536 PNG）
+- `KDP出版用/cover-v1-dark.png`: 旧表紙の復元用バックアップ
+- `KDP出版用/cover-v2-pop.png`: 新表紙の版管理用コピー
 
 ## 未実施
 
