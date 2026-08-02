@@ -44,6 +44,11 @@ h2 {
   padding-left: 0.65em;
 }
 
+h2.section-start {
+  break-before: page;
+  page-break-before: always;
+}
+
 p {
   margin: 0.75em 0;
   orphans: 2;
@@ -146,4 +151,3 @@ th {
     color: inherit;
   }
 }
-

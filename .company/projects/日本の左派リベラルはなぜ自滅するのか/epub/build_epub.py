@@ -23,6 +23,7 @@ PROJECT_DIR = Path(__file__).resolve().parents[1]
 EPUB_DIR = PROJECT_DIR / "epub"
 SOURCE = EPUB_DIR / "manuscript.md"
 PUBLICATION_SOURCE = PROJECT_DIR / "publication" / "出版用原稿.md"
+ORIGINAL_SOURCE = PROJECT_DIR / "manuscript" / "日本の左派リベラルはなぜ自滅するのか.md"
 METADATA_FILE = EPUB_DIR / "metadata.yaml"
 STYLESHEET = EPUB_DIR / "stylesheet.css"
 COVER = PROJECT_DIR / "KDP出版用" / "cover.png"
@@ -126,8 +127,27 @@ def png_dimensions(path: Path) -> tuple[int, int]:
     return struct.unpack(">II", signature[16:24])
 
 
+def expected_publication_bytes(source: bytes) -> bytes:
+    """Apply the publication-only removal of S001/S002 source-table rows."""
+    marker = "**出典一覧**".encode("utf-8")
+    row_pattern = re.compile(rb"^\|\s*S00[12]\s*\|")
+    in_source_list = False
+    removed = 0
+    output: list[bytes] = []
+    for line in source.splitlines(keepends=True):
+        if marker in line:
+            in_source_list = True
+        if in_source_list and row_pattern.match(line):
+            removed += 1
+            continue
+        output.append(line)
+    if removed != 2:
+        raise ValueError(f"正本から除外できた出典行が2件ではありません: {removed}")
+    return b"".join(output)
+
+
 def validate_inputs() -> dict[str, object]:
-    required_files = (SOURCE, PUBLICATION_SOURCE, METADATA_FILE, STYLESHEET, COVER)
+    required_files = (SOURCE, PUBLICATION_SOURCE, ORIGINAL_SOURCE, METADATA_FILE, STYLESHEET, COVER)
     missing = [str(path.relative_to(PROJECT_DIR)) for path in required_files if not path.is_file()]
     missing.extend(
         str((ILLUSTRATION_DIR / item.filename).relative_to(PROJECT_DIR))
@@ -139,6 +159,9 @@ def validate_inputs() -> dict[str, object]:
 
     if sha256(SOURCE) != sha256(PUBLICATION_SOURCE):
         raise ValueError("epub/manuscript.md と publication/出版用原稿.md が一致しません。")
+    expected = expected_publication_bytes(ORIGINAL_SOURCE.read_bytes())
+    if SOURCE.read_bytes() != expected:
+        raise ValueError("EPUB用原稿が、正本からS001/S002の一覧行だけを除外した内容と一致しません。")
 
     text = SOURCE.read_text(encoding="utf-8")
     h1 = [line[2:] for line in text.splitlines() if line.startswith("# ")]
@@ -148,6 +171,15 @@ def validate_inputs() -> dict[str, object]:
     for item in ILLUSTRATIONS:
         if item.heading not in h1:
             raise ValueError(f"挿絵配置見出しが原稿にありません: {item.heading}")
+    source_ids = re.findall(r"^\| (S\d{3}) \|", text, flags=re.MULTILINE)
+    expected_ids = [f"S{number:03d}" for number in range(3, 71)]
+    if source_ids != expected_ids:
+        raise ValueError("出版用の出典一覧がS003〜S070の68件ではありません。")
+    if "S001" not in text or "S002" not in text:
+        raise ValueError("本文中のS001/S002参照が保持されていません。")
+    stylesheet = STYLESHEET.read_text(encoding="utf-8")
+    if "break-before: page" not in stylesheet or "page-break-before: always" not in stylesheet:
+        raise ValueError("全節の改ページ指定がstylesheet.cssにありません。")
 
     cover_size = png_dimensions(COVER)
     if cover_size != (1024, 1536):
@@ -161,9 +193,12 @@ def validate_inputs() -> dict[str, object]:
 
     return {
         "source_sha256": sha256(SOURCE),
+        "original_source_sha256": sha256(ORIGINAL_SOURCE),
         "top_level_headings": len(h1),
         "fixed_parts_excluding_title_page": len(h1) - 1,
         "second_level_headings": h2_count,
+        "source_table_entries": len(source_ids),
+        "source_table_range": "S003-S070",
         "cover": f"{cover_size[0]}x{cover_size[1]}",
         "illustrations": illustration_sizes,
     }
@@ -250,7 +285,7 @@ def render_markdown(lines: list[str], illustration: Illustration | None) -> str:
                 inserted = True
         elif line.startswith("## "):
             flush_paragraph()
-            output.append(f"<h2>{inline_markdown(line[3:].strip())}</h2>")
+            output.append(f'<h2 class="section-start">{inline_markdown(line[3:].strip())}</h2>')
         elif line.strip() == "---":
             flush_paragraph()
             output.append("<hr/>")
@@ -443,8 +478,11 @@ def validate_epub(path: Path) -> dict[str, object]:
 
         part_count = sum(1 for name in names if re.fullmatch(r"OEBPS/text/part-\d{3}\.xhtml", name))
         image_count = sum(1 for name in names if name.startswith("OEBPS/images/") and name.endswith(".png"))
+        section_start_count = decoded_text.count('<h2 class="section-start">')
         if part_count != 17 or image_count != 9:
             raise ValueError(f"コンテンツ数が不正です: parts={part_count}, images={image_count}")
+        if section_start_count != 78:
+            raise ValueError(f"改ページ対象の節見出し数が78ではありません: {section_start_count}")
 
     return {
         "epub": path.name,
@@ -452,6 +490,7 @@ def validate_epub(path: Path) -> dict[str, object]:
         "content_parts": part_count,
         "fixed_parts_excluding_title_page": part_count - 1,
         "second_level_headings": 78,
+        "section_page_breaks": section_start_count,
         "embedded_png_images": image_count,
         "xml_documents_parsed": len(xml_names),
         "internal_validation": "PASS",

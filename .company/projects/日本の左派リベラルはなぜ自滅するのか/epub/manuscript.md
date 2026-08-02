@@ -1972,8 +1972,6 @@ SNSでは、短い時間で大きな反応を確認できる。投稿への「�
 
 | ID | 出典名 | 発行主体 | 公開日 | URL／資料名 |
 |---|---|---|---|---|
-| S001 | Codex・Claude Code向け書籍執筆指示書 | 左派リベラル再点検室／プロジェクトオーナー | 表示なし（取得時点表示2026-07-31T13:29:29Z） | [https://app.notion.com/p/3ae204bd6a1081f8a842fd804d386576](https://app.notion.com/p/3ae204bd6a1081f8a842fd804d386576) |
-| S002 | 書籍構成設計書 | 左派リベラル再点検室／プロジェクトオーナー | 表示なし（取得時点表示2026-07-31T13:29:29Z） | [https://app.notion.com/p/3ae204bd6a10815ba4befe15c6f97c22](https://app.notion.com/p/3ae204bd6a10815ba4befe15c6f97c22) |
 | S003 | 立憲民主党 綱領 | 立憲民主党 | 2020-09-15制定 | [https://cdp-japan.jp/files/download/assets/pdf/principles_20200915.pdf](https://cdp-japan.jp/files/download/assets/pdf/principles_20200915.pdf) |
 | S004 | 日本共産党規約 | 日本共産党中央委員会 | 2000-11-24改定（掲載ページ日付なし） | [https://www.jcp.or.jp/activity/kiyaku/](https://www.jcp.or.jp/activity/kiyaku/) |
 | S005 | れいわ新選組 基本政策 | れいわ新選組 | 表示なし | [https://reiwa-shinsengumi.com/policy/](https://reiwa-shinsengumi.com/policy/) |
