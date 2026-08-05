@@ -39,7 +39,7 @@ publish_at: "2026-04-15 12:00"
 # note記事公開: 電子書籍表紙デザイン
 
 ## 原稿ファイル
-`.company/outputs/tech-articles/note-series/2026-04-15-ebook-cover-design.md`
+`03_成果物/outputs/tech-articles/note-series/2026-04-15-ebook-cover-design.md`
 
 ## 投稿時の注意事項
 - 記事タイトル: AIで電子書籍の表紙を作ったら、デザイナー代3万円が浮いた

@@ -50,7 +50,7 @@ KDP版は単体で満足できる汎用絵本として完成させ、巻末で�
 プロジェクトフォルダ:
 
 ```text
-.company/outputs/picture-books/chiisana-ippo-no-mahou/
+03_成果物/outputs/picture-books/chiisana-ippo-no-mahou/
 ```
 
 主要出力:

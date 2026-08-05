@@ -29,8 +29,8 @@
 
 ## 生成プレビュー
 
-- `.company/outputs/lp/jibunshi-ebook-manga/preview-desktop.png`
-- `.company/outputs/lp/jibunshi-ebook-manga/preview-mobile.png`
+- `03_成果物/outputs/lp/jibunshi-ebook-manga/preview-desktop.png`
+- `03_成果物/outputs/lp/jibunshi-ebook-manga/preview-mobile.png`
 
 ## 残リスク
 

@@ -34,7 +34,7 @@
 - `.company/services/jibunshi-ebook-manga/` にサービス運用ドキュメント一式がある
 - `.agents/skills/jibunshi-ebook-manga-service/SKILL.md` があり、次回から自分史案件で使える
 - 受注ごとの注文フォルダを作るスクリプトがある
-- `.company/outputs/lp/jibunshi-ebook-manga/` にLP雛形がある
+- `03_成果物/outputs/lp/jibunshi-ebook-manga/` にLP雛形がある
 - `theme-to-ebook` と `theme-to-ebook-to-manga` に「完全文字版」ルールが反映されている
 - quality-checker視点で85点以上の品質確認が記録されている
 
@@ -100,11 +100,11 @@
 
 成果物:
 
-- `.company/outputs/lp/jibunshi-ebook-manga/index.html`
-- `.company/outputs/lp/jibunshi-ebook-manga/styles.css`
-- `.company/outputs/lp/jibunshi-ebook-manga/lp-copy.md`
-- `.company/outputs/lp/jibunshi-ebook-manga/QR_LP_URL.txt`
-- `.company/outputs/lp/jibunshi-ebook-manga/qr_lp.png`
+- `03_成果物/outputs/lp/jibunshi-ebook-manga/index.html`
+- `03_成果物/outputs/lp/jibunshi-ebook-manga/styles.css`
+- `03_成果物/outputs/lp/jibunshi-ebook-manga/lp-copy.md`
+- `03_成果物/outputs/lp/jibunshi-ebook-manga/QR_LP_URL.txt`
+- `03_成果物/outputs/lp/jibunshi-ebook-manga/qr_lp.png`
 
 合格基準:
 

@@ -13,7 +13,7 @@ vol2 コミクル用CSV（`comicle_output.csv`）を1コマ30文字以内ルー�
 
 ### 1. バックアップ
 旧CSVを以下のパスにリネーム保存:
-- **バックアップ**: `.company/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output_pre_30char_redesign.csv`
+- **バックアップ**: `03_成果物/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output_pre_30char_redesign.csv`
 - 旧ファイルサイズ: 202,510 bytes（1137行・78ページ相当）
 
 ### 2. 素材読み込み
@@ -39,7 +39,7 @@ Pythonスクリプトで自動セルフチェックを実施。
 
 | 項目 | 値 |
 |---|---|
-| 出力パス | `.company/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output.csv` |
+| 出力パス | `03_成果物/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output.csv` |
 | ファイルサイズ | 100,327 bytes |
 | 総行数 | 57行（57ページ） |
 

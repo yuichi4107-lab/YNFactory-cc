@@ -24,7 +24,7 @@ shorts-factory の投稿は `shorts-factory/src/platforms/poster.py` による�
 3. `~/Library/Logs/shorts-generate.log`
 4. `~/Library/Logs/shorts-approval.log`
 5. `.company/marketing/shorts-factory/queue/<queue_id>.json`
-6. `.company/outputs/shorts-factory/<queue_id>/`
+6. `03_成果物/outputs/shorts-factory/<queue_id>/`
 7. runtime側の `~/shorts-factory/work/<queue_id>/` と `~/shorts-factory/posting_ledger/<queue_id>.json`
 
 Drive上のoutputsを広く走査するとGoogle Drive File Providerのロックで生成が止まりやすい。生成時の重複検知や復旧判断は、原則としてruntimeローカルの `~/shorts-factory/work/` と queue item を正にする。

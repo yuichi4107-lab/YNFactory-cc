@@ -39,7 +39,7 @@
 補足:
 - 要件定義書: [`.company/requirements/sales-system-2026-06/REQUIREMENTS.md`](../requirements/sales-system-2026-06/REQUIREMENTS.md)
 - 既存の集客自動化（軸C DM生成）: `sales-ops/`（ローカル）＋ VPS `/opt/sales-ops/`（参照元・リポジトリ外）
-- 既存の商談コンテンツ（流用元）: `.company/outputs/sales-content/`（30分台本・PPTX・オファーL1-L3・契約書）
+- 既存の商談コンテンツ（流用元）: `03_成果物/outputs/sales-content/`（30分台本・PPTX・オファーL1-L3・契約書）
 
 ---
 

@@ -90,7 +90,7 @@ python3 .company/scripts/ebook_setup_ui.py --theme "{テーマ}" --mode theme-to
 
 - サーバーは `127.0.0.1` の空きポートで起動する
 - 表示された `ebook_setup_ui_url=...` をユーザーへ案内する
-- ユーザーが保存すると `.company/outputs/ebook-setup-inputs/latest.json` に回答が保存される
+- ユーザーが保存すると `03_成果物/outputs/ebook-setup-inputs/latest.json` に回答が保存される
 - 回答を読み取り、`progress.json` の `initial_questions` に `ui: "local_clickable_form"` として保存する
 
 **質問セット（内容は従来どおり）:**
@@ -164,7 +164,7 @@ python3 .company/scripts/ebook_setup_ui.py --theme "{テーマ}" --mode theme-to
 ## 標準出力
 
 ```
-.company/outputs/ebooks/{book-name}/
+03_成果物/outputs/ebooks/{book-name}/
 ├── project.md
 ├── progress.json
 ├── _research/
@@ -263,7 +263,7 @@ Phase 0の回答で確定したテーマについて、Step 1の企画決定前�
 
 **出力:**
 
-`.company/outputs/ebooks/{book-name}/_research/theme_research.md`
+`03_成果物/outputs/ebooks/{book-name}/_research/theme_research.md`
 
 ```markdown
 # テーマリサーチ: {テーマ}
@@ -483,7 +483,7 @@ sips -s format jpeg -s formatOptions 95 KDP出版用/cover.png --out KDP出版�
 このスキルの出力フォルダは、`ebook-to-manga` のソースフォルダとして使う。
 
 ```
-ebook-to-manga source = .company/outputs/ebooks/{book-name}/
+ebook-to-manga source = 03_成果物/outputs/ebooks/{book-name}/
 ```
 
 マンガ化前提の場合は、本文中の重要な会話・事例・心理変化を多めに入れると、後工程のシナリオ化がしやすい。

@@ -11,10 +11,10 @@ description: 既存のKindle電子書籍（Markdown原稿。project.md + manuscr
 
 ## 入力
 
-- **ソースフォルダ**（必須）: ebookフォルダのパス（例: `.company/outputs/ebooks/01-worker-positive/`）。`project.md` と `manuscript/` ディレクトリを含むこと。
+- **ソースフォルダ**（必須）: ebookフォルダのパス（例: `03_成果物/outputs/ebooks/01-worker-positive/`）。`project.md` と `manuscript/` ディレクトリを含むこと。
 - **目標ページ数**（任意）: デフォルト100。範囲40-120。
 - **ジャンル指定**（任意）: 作画設定の20ジャンルから指定。未指定時は書籍テーマから自動判定。
-- **出力フォルダ名**（任意）: `.company/outputs/ebooks-manga/` 配下。デフォルトはソースフォルダ名。
+- **出力フォルダ名**（任意）: `03_成果物/outputs/ebooks-manga/` 配下。デフォルトはソースフォルダ名。
 
 ## 前提条件
 
@@ -54,7 +54,7 @@ description: 既存のKindle電子書籍（Markdown原稿。project.md + manuscr
 ### 分冊時の出力ディレクトリ構成
 
 ```
-.company/outputs/ebooks-manga/{book-name}/
+03_成果物/outputs/ebooks-manga/{book-name}/
 ├── manuscript/                     # 共通素材（全巻共有）
 │   ├── シナリオ.txt
 │   ├── character_defs.json
@@ -75,7 +75,7 @@ description: 既存のKindle電子書籍（Markdown原稿。project.md + manuscr
 ### 単巻の出力ディレクトリ構成
 
 ```
-.company/outputs/ebooks-manga/{book-name}/
+03_成果物/outputs/ebooks-manga/{book-name}/
 ├── project.md
 ├── KDP出版用/
 │   ├── {タイトル}.epub
@@ -160,9 +160,9 @@ Step 1（ソース分析）→ Step 2（シナリオ）→ Step 3（キャラデ
 
 4. 出力ディレクトリを作成する:
    ```bash
-   mkdir -p ".company/outputs/ebooks-manga/{book-name}/KDP出版用"
-   mkdir -p ".company/outputs/ebooks-manga/{book-name}/manuscript/characters"
-   mkdir -p ".company/outputs/ebooks-manga/{book-name}/panels/pages"
+   mkdir -p "03_成果物/outputs/ebooks-manga/{book-name}/KDP出版用"
+   mkdir -p "03_成果物/outputs/ebooks-manga/{book-name}/manuscript/characters"
+   mkdir -p "03_成果物/outputs/ebooks-manga/{book-name}/panels/pages"
    ```
 
 5. `progress.json` を作成して進捗管理を開始する:
@@ -384,7 +384,7 @@ Step 5.5 の Pillow 合成フォールバックは廃止済み。現在の ebook
 
 ### Step 8: 電子出版用メタデータ
 
-KDP出版に必要なメタデータを生成する。既存の `.company/outputs/ebooks/` 内のKDPメタデータ形式に準拠する。
+KDP出版に必要なメタデータを生成する。既存の `03_成果物/outputs/ebooks/` 内のKDPメタデータ形式に準拠する。
 
 #### 8-1. 書籍情報.md
 
@@ -444,7 +444,7 @@ KDP商品説明欄にそのまま貼り付けられるHTML形式で作成する�
 ```json
 {
   "book_name": "01-worker-positive",
-  "source_path": ".company/outputs/ebooks/01-worker-positive/",
+  "source_path": "03_成果物/outputs/ebooks/01-worker-positive/",
   "target_pages": 100,
   "genre": "ビジネス",
   "steps": {

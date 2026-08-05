@@ -21,10 +21,10 @@ description: 既存のKindle電子書籍（Markdown原稿）をマンガ形式�
 
 ## 入力
 
-- **ソースフォルダ**（必須）: ebookフォルダのパス（例: `.company/outputs/ebooks/01-worker-positive/`）。`project.md` と `manuscript/` ディレクトリを含むこと。
+- **ソースフォルダ**（必須）: ebookフォルダのパス（例: `03_成果物/outputs/ebooks/01-worker-positive/`）。`project.md` と `manuscript/` ディレクトリを含むこと。
 - **目標ページ数**（任意）: デフォルト100。範囲40-120。
 - **ジャンル指定**（任意）: 作画設定の20ジャンルから指定。未指定時は書籍テーマから自動判定。
-- **出力フォルダ名**（任意）: `.company/outputs/ebooks-manga/` 配下。デフォルトはソースフォルダ名。
+- **出力フォルダ名**（任意）: `03_成果物/outputs/ebooks-manga/` 配下。デフォルトはソースフォルダ名。
 
 ## 前提条件
 
@@ -72,7 +72,7 @@ Step 3（キャラデザイン）も ChatGPT Images 2.0 経路で生成する。
 ### 分冊時の出力ディレクトリ構成
 
 ```
-.company/outputs/ebooks-manga/{book-name}/
+03_成果物/outputs/ebooks-manga/{book-name}/
 ├── manuscript/                     # 共通素材（全巻共有）
 │   ├── シナリオ.txt
 │   ├── character_defs.json
@@ -103,7 +103,7 @@ Step 3（キャラデザイン）も ChatGPT Images 2.0 経路で生成する。
 ### 単巻の出力ディレクトリ構成
 
 ```
-.company/outputs/ebooks-manga/{book-name}/
+03_成果物/outputs/ebooks-manga/{book-name}/
 ├── project.md
 ├── KDP出版用/
 │   ├── {タイトル}.epub
@@ -214,9 +214,9 @@ Step 1（ソース分析）→ Step 2（シナリオ）→ Step 3（キャラデ
 
 4. 出力ディレクトリを作成する:
    ```bash
-   mkdir -p ".company/outputs/ebooks-manga/{book-name}/KDP出版用"
-   mkdir -p ".company/outputs/ebooks-manga/{book-name}/manuscript/characters"
-   mkdir -p ".company/outputs/ebooks-manga/{book-name}/panels/pages"
+   mkdir -p "03_成果物/outputs/ebooks-manga/{book-name}/KDP出版用"
+   mkdir -p "03_成果物/outputs/ebooks-manga/{book-name}/manuscript/characters"
+   mkdir -p "03_成果物/outputs/ebooks-manga/{book-name}/panels/pages"
    ```
 
 5. `progress.json` を作成して進捗管理を開始する:
@@ -627,7 +627,7 @@ Blind-OCR 判定と Vision-check を組み合わせた QC ループで全ペー�
 - **A路線**: 画像生成 → Blind-OCR → プログラム比較 → PASS なら完了
 - **max_iter 超過時**: 最終プロンプトを `prompts/page_{NNN}_blocked_prompt.txt` に保存し、`progress.json` の `blocked_pages` / `blocked_reasons` に記録する。該当ページを最終成果物にせず、`blocked_pages` が空になるまで Step 7（EPUB製本）に進まない。
 
-リファレンス実装: `.company/outputs/ebooks-manga/manga-career-restart/_prototype/hybrid_loop.py`（465行）
+リファレンス実装: `03_成果物/outputs/ebooks-manga/manga-career-restart/_prototype/hybrid_loop.py`（465行）
 
 > **モード別フロー概要**
 >
@@ -1669,7 +1669,7 @@ Step 5 の QC ループは `pages/page_{NNN}.png` を原本として出力し、
 
 ### Step 8: 電子出版用メタデータ
 
-KDP出版に必要なメタデータを生成する。既存の `.company/outputs/ebooks/` 内のKDPメタデータ形式に準拠する。
+KDP出版に必要なメタデータを生成する。既存の `03_成果物/outputs/ebooks/` 内のKDPメタデータ形式に準拠する。
 
 #### 8-1. 書籍情報.md
 
@@ -1870,7 +1870,7 @@ KDP商品説明欄にそのまま貼り付けられるHTML形式で作成する�
 ```json
 {
   "book_name": "01-worker-positive",
-  "source_path": ".company/outputs/ebooks/01-worker-positive/",
+  "source_path": "03_成果物/outputs/ebooks/01-worker-positive/",
   "target_pages": 100,
   "genre": "ビジネス",
   "steps": {

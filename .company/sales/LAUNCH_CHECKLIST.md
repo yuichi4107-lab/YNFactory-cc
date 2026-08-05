@@ -167,7 +167,7 @@ VPSのコード（`run_send_approved.py`）は `gmail_oauth_token_json` のtoken
 
 ```bash
 # ローカルPC（Macターミナル）で実行
-cd "/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc/sales-ops"
+cd "/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc/05_プロジェクト/sales-ops"
 python scripts/gmail_oauth_setup.py
 ```
 
@@ -179,7 +179,7 @@ python scripts/gmail_oauth_setup.py
 **STEP 3: tokenをVPSに転送**
 
 ```bash
-scp "/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc/sales-ops/secrets/gmail_token.json" yn-vps:/opt/sales-ops/secrets/
+scp "/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc/05_プロジェクト/sales-ops/secrets/gmail_token.json" yn-vps:/opt/sales-ops/secrets/
 ```
 
 **STEP 4: VPS .env の GMAIL_SENDER_ADDRESS を更新**
@@ -523,7 +523,7 @@ ssh yn-vps "grep DAILY_SEND_LIMIT /opt/sales-ops/.env"
 ## Part 4. 工程4b: ウェビナー実セットアップ（Peatix）
 
 **所要時間**: 約20分
-**参照元**: `.company/outputs/sales-content/webinar-platform/signup-form.md`
+**参照元**: `03_成果物/outputs/sales-content/webinar-platform/signup-form.md`
 
 ### 開催日の逆算スケジュール
 
@@ -572,7 +572,7 @@ Peatix管理画面 `https://peatix.com/organizer/event` → 「イベントを�
 |---|---|---|
 | 一般参加（無料） | 0円 | 30名 |
 
-**イベント本文**: `.company/outputs/sales-content/webinar-platform/signup-form.md` の
+**イベント本文**: `03_成果物/outputs/sales-content/webinar-platform/signup-form.md` の
 「イベント本文（コピー用）」セクションをそのままコピー＆ペースト。
 
 ---
@@ -594,7 +594,7 @@ Peatix管理画面 `https://peatix.com/organizer/event` → 「イベントを�
 ### STEP 4: 申込完了メールを設定（約3分）
 
 「参加者へのメール」→「申込完了メール」の本文を
-`.company/outputs/sales-content/webinar-platform/auto-emails/registration-confirmation.md`
+`03_成果物/outputs/sales-content/webinar-platform/auto-emails/registration-confirmation.md`
 からコピーして貼り付ける。
 
 > ZoomミーティングURLは開催3日前までに作成し、前日リマインダーメールに含める。
@@ -637,7 +637,7 @@ Peatix URL = https://peatix.com/event/（発行されたイベントID）
 ## Part 5. 工程5b: Calendly実セットアップ
 
 **所要時間**: 約15分
-**参照元**: `.company/outputs/sales-content/calendly-setup/README.md`
+**参照元**: `03_成果物/outputs/sales-content/calendly-setup/README.md`
 
 ---
 

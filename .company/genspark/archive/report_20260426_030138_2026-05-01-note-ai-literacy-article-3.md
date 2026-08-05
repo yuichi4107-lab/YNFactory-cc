@@ -60,13 +60,13 @@ AIリテラシー全5回シリーズの3本目を公開する。B層（副業・
 ## 画像ファイル（アップロード順）
 
 1. **カバー画像**（見出し画像）:
-   `.company/outputs/note-article-3/manga_cover_20260423_133459.png`
+   `03_成果物/outputs/note-article-3/manga_cover_20260423_133459.png`
 2. **本文中 図1**（「プロンプトを磨いても解決しない問題がある」節の冒頭）:
-   `.company/outputs/note-article-3/manga_fig1_20260423_133417.png`
+   `03_成果物/outputs/note-article-3/manga_fig1_20260423_133417.png`
 3. **本文中 図2**（「境界線設計とは何か — 3つの切り分け」節の冒頭）:
-   `.company/outputs/note-article-3/manga_fig2_20260423_133426.png`
+   `03_成果物/outputs/note-article-3/manga_fig2_20260423_133426.png`
 4. **本文中 図3**（「境界線がなかったときに何が起きるか」節の冒頭）:
-   `.company/outputs/note-article-3/manga_fig3_20260423_133430.png`
+   `03_成果物/outputs/note-article-3/manga_fig3_20260423_133430.png`
 
 ## タイトル・タグ
 

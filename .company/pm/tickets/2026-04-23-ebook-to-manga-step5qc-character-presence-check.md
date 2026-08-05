@@ -30,7 +30,7 @@ vol1検証（manga-career-restart-validation）で `page_002.png`（登場人物
 
 ### 関連ドキュメント
 - 要件定義書: `g:\マイドライブ\YNFactory-cc\.company\engineering\docs\ebook-to-manga-vol1-validation-requirements.md`
-- 検証出力先: `g:\マイドライブ\YNFactory-cc\.company\outputs\ebooks-manga\manga-career-restart-validation\`
+- 検証出力先: `g:\マイドライブ\YNFactory-cc\03_成果物\outputs\ebooks-manga\manga-career-restart-validation\`
 
 ## 担当部署
 - **部署**: engineering
@@ -111,7 +111,7 @@ vol1検証（manga-career-restart-validation）で `page_002.png`（登場人物
 - テスト2: 修正版 page_002.png → 4キャラ全員 YES、vision_check_pass=True
 - テスト3: page_005.png で Blind-OCR が 4エントリ全て一字一句完全一致 → 回帰なし
 - コスト実績: 約 $0.06（想定内）
-- 成果物: `g:\マイドライブ\YNFactory-cc\.company\outputs\ebooks-manga\manga-career-restart-validation\vol1\validate_vision_check.py` / `validate_vision_check_results.md`
+- 成果物: `g:\マイドライブ\YNFactory-cc\03_成果物\outputs\ebooks-manga\manga-career-restart-validation\vol1\validate_vision_check.py` / `validate_vision_check_results.md`
 
 ### 品質ループ採点
 - 工程1（Vision-check 仕様設計）: 98/100 合格

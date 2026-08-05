@@ -11,8 +11,8 @@
 ### 1-1. 契約書の送付・締結確認
 
 - [ ] 契約書テンプレートを開いた
-  - L1/L2の場合: `.company/outputs/sales-content/offer-materials/contracts/contract-L1-L2-monthly.md`
-  - L3の場合: `.company/outputs/sales-content/offer-materials/contracts/contract-L3-project.md`
+  - L1/L2の場合: `03_成果物/outputs/sales-content/offer-materials/contracts/contract-L1-L2-monthly.md`
+  - L3の場合: `03_成果物/outputs/sales-content/offer-materials/contracts/contract-L3-project.md`
 - [ ] 以下のプレースホルダーを実際の情報に差し替えた
   - `{{contract_number}}` → 契約番号（例: `2026-001`）
   - `{{contract_date}}` → 締結日（例: `2026年7月15日`）

@@ -22,7 +22,7 @@
 ## 標準フォルダ
 
 ```text
-.company/outputs/jibunshi-orders/{order-id}/
+03_成果物/outputs/jibunshi-orders/{order-id}/
 ├── project.md
 ├── input/
 ├── production/

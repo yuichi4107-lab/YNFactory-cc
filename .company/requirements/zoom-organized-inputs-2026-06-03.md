@@ -12,9 +12,9 @@ Zoom から取り込んだ meeting summaries を raw 原本として保持しつ
 
 ## スコープ
 
-- `.company/inputs/conversations/*-zoom.md` の raw Zoom 議事録はそのまま保持する
-- `.company/inputs/organized/zoom/` に日次の整理済み Zoom インプットを生成する
-- `.company/inputs/indexes/` に Zoom 系の横断索引を生成する
+- `04_インプット/inputs/conversations/*-zoom.md` の raw Zoom 議事録はそのまま保持する
+- `04_インプット/inputs/organized/zoom/` に日次の整理済み Zoom インプットを生成する
+- `04_インプット/inputs/indexes/` に Zoom 系の横断索引を生成する
 - 毎朝の inputs 同期フローに Zoom 同期と organized 化を組み込む
 - Limitless / lifelog の organized 化とは別系統として扱う
 

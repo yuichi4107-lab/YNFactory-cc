@@ -195,7 +195,7 @@ https://yn-factory.com
 |---|---|
 | 集客・告知 | 士業の先生（ご顧問先へのお知らせメール・ニュースレター）＋ オーナーのSNS告知 |
 | Zoom設定・ホスト | オーナー |
-| スライド・資料 | 既存ウェビナーコンテンツ（`.company/outputs/sales-content/webinar-v1-jinzai-busoku/`）を流用 |
+| スライド・資料 | 既存ウェビナーコンテンツ（`03_成果物/outputs/sales-content/webinar-v1-jinzai-busoku/`）を流用 |
 | 開催冒頭のご挨拶（5分） | 士業の先生（信頼の橋渡し） |
 | 講義・進行（60〜90分） | オーナー |
 | 商談案内・Calendly誘導 | オーナー（ウェビナー末尾で案内） |
@@ -428,7 +428,7 @@ Step 7: CPL 5,000円以下で安定したら日額を2,000〜3,000円に引き�
 
 - **内容**: YouTube限定公開 or メール配信型。「ChatGPTで見積書を自動下書き」「採用求人票をAIで書く」「日報をAIでまとめる」など業種横断で使える実践動画
 - **形式**: Zoom録画 or スライドキャプチャ。登録フォームでメールアドレス取得 → URLを自動送信
-- **既存資産流用**: ウェビナーコンテンツ（`.company/outputs/sales-content/webinar-v1-jinzai-busoku/`）から抜粋・再構成
+- **既存資産流用**: ウェビナーコンテンツ（`03_成果物/outputs/sales-content/webinar-v1-jinzai-busoku/`）から抜粋・再構成
 - **制作所要時間**: 4〜8時間（動画録画・編集・配信設定）
 
 ### 着手推奨順と手順
@@ -631,10 +631,10 @@ W24〜W25（6/16〜6/29）: 案Bを並走制作（ebook-from-theme スキル活�
 |---|---|---|
 | Sales OS コールドDM自動化 | VPS `/opt/sales-ops/` | 打ち手1（業種フィルタ差し替えで士業勧誘に転用）・打ち手2（継続活用） |
 | DMテンプレート（3バリエーション） | `.company/sales/templates/ai-advisor-dm/` | 打ち手2（dm_v4を追加して継続）|
-| ウェビナーコンテンツ（完成済み） | `.company/outputs/sales-content/webinar-v1-jinzai-busoku/` | 打ち手1（共催ウェビナーの中身）・打ち手4（案C 動画コース素材）|
-| 個別Zoom 30分台本 | `.company/outputs/sales-content/individual-zoom-30min/script.md` | 打ち手2（無料診断Zoomの進行）・booking-ops 商談導線 |
-| オファーL1-L3説明書 | `.company/outputs/sales-content/offer-materials/plans/` | 打ち手3（LP文章の原案）・全商談後の提案書 |
-| Calendly セットアップ | `.company/outputs/sales-content/calendly-setup/` | 打ち手1（共催後の商談予約）・打ち手2（診断申込）・打ち手3（広告LP） |
+| ウェビナーコンテンツ（完成済み） | `03_成果物/outputs/sales-content/webinar-v1-jinzai-busoku/` | 打ち手1（共催ウェビナーの中身）・打ち手4（案C 動画コース素材）|
+| 個別Zoom 30分台本 | `03_成果物/outputs/sales-content/individual-zoom-30min/script.md` | 打ち手2（無料診断Zoomの進行）・booking-ops 商談導線 |
+| オファーL1-L3説明書 | `03_成果物/outputs/sales-content/offer-materials/plans/` | 打ち手3（LP文章の原案）・全商談後の提案書 |
+| Calendly セットアップ | `03_成果物/outputs/sales-content/calendly-setup/` | 打ち手1（共催後の商談予約）・打ち手2（診断申込）・打ち手3（広告LP） |
 | sales-briefing スキル | `.agents/skills/sales-briefing/SKILL.md` | 打ち手2（DM送信の毎朝承認フロー・継続活用） |
 | yn-tools 36ツール | （リポジトリ別途） | 打ち手4（リードマグネットの「ツールそのものをLM化」という活用も検討可） |
 

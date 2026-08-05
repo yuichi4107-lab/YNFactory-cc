@@ -8,7 +8,7 @@
 
 ## スコープ
 
-- 対象: `.company/outputs/ebooks-manga/chatgpt55-now-only-manga/`
+- 対象: `03_成果物/outputs/ebooks-manga/chatgpt55-now-only-manga/`
 - 入力:
   - `manuscript/シナリオ_v2.txt`
   - `manuscript/章構成サマリ.md`

@@ -26,7 +26,7 @@ gpt-image-2 全面移行済みの `ebook-to-manga` スキル（skill.md）が、
   - Step 6: 表紙生成（1枚）
   - Step 7: EPUB製本（5ページ + 表紙でミニEPUBを生成）
   - Step 8: メタデータ生成（書籍情報.md / ジャンル・キーワード.md / 書籍紹介文_HTML.html）
-- **出力先**: 新規ディレクトリ `.company/outputs/ebooks-manga/manga-career-restart-validation/` に出力する（既存 vol1 データへの上書きは禁止）
+- **出力先**: 新規ディレクトリ `03_成果物/outputs/ebooks-manga/manga-career-restart-validation/` に出力する（既存 vol1 データへの上書きは禁止）
 - 旧版（NanoBanana2 出力）の `page_001〜005` と新規出力を並列で目視比較する
 - 各工程完了後に工程単位で品質チェックを実施する
 
@@ -99,7 +99,7 @@ vol1 の CSV（`comicle_output.csv`）の構成:
 ## 完了条件（全体）
 
 - [ ] 全8工程がエラーなく完走していること（Step 1〜8）
-- [ ] 出力先が `.company/outputs/ebooks-manga/manga-career-restart-validation/` であり、既存 vol1 データが一切変更されていないこと
+- [ ] 出力先が `03_成果物/outputs/ebooks-manga/manga-career-restart-validation/` であり、既存 vol1 データが一切変更されていないこと
 - [ ] `pages/page_001.png`〜`pages/page_005.png` が存在すること（テキストページはスキップ可）
 - [ ] `KDP出版用/cover.jpg` が存在すること
 - [ ] `KDP出版用/*.epub` が存在すること
@@ -281,5 +281,5 @@ vol1 の CSV（`comicle_output.csv`）の構成:
 - **キャラクター画像の方針**: 既存の `manga-career-restart/manuscript/characters/` の PNG（ミサキ.png / ケンタ.png / タクヤ.png 等）を流用可。再生成する場合は gpt-image-2 を使用すること
 - **テキストページ（page_001 = 目次）**: 画像生成スキップ対象。EPUBにはテキストとして直接レンダリングされる
 - **page_001 は旧版に存在しない**: 旧版の pages ディレクトリは page_002 から始まる（page_001 はテキストページのため生成なし）。この差異は正常
-- **スキル実行の起点**: `manga-career-restart` のソースフォルダ（`.company/outputs/ebooks/manga-career-restart/`）と出力フォルダ（`.company/outputs/ebooks-manga/manga-career-restart-validation/`）を明示してスキルを起動する
+- **スキル実行の起点**: `manga-career-restart` のソースフォルダ（`03_成果物/outputs/ebooks/manga-career-restart/`）と出力フォルダ（`03_成果物/outputs/ebooks-manga/manga-career-restart-validation/`）を明示してスキルを起動する
 - **ページ数上限の指示**: スキル起動時に「目標ページ数=5」を明示し、工程D のCSVが5ページで止まるよう指示する

@@ -27,7 +27,7 @@ LP/QR
 受注ごとに以下を作る。
 
 ```text
-.company/outputs/jibunshi-orders/{order-id}/
+03_成果物/outputs/jibunshi-orders/{order-id}/
 ├── project.md
 ├── input/
 │   ├── intake_answers.md
@@ -105,7 +105,7 @@ LP/QR
 出力先:
 
 ```text
-.company/outputs/ebooks/{order-id}-text/
+03_成果物/outputs/ebooks/{order-id}-text/
 ```
 
 注文フォルダには `outputs/text-edition/source_path.txt` で実体パスを記録する。
@@ -140,7 +140,7 @@ LP/QR
 出力先:
 
 ```text
-.company/outputs/ebooks-manga/{order-id}-manga/
+03_成果物/outputs/ebooks-manga/{order-id}-manga/
 ```
 
 注文フォルダには `outputs/manga-edition/source_path.txt` で実体パスを記録する。

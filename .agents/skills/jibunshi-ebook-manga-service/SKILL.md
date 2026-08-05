@@ -33,25 +33,25 @@ description: 祖父母・両親・シニアの自分史を、完全文字版電�
 注文ごとの作業場所:
 
 ```text
-.company/outputs/jibunshi-orders/{order-id}/
+03_成果物/outputs/jibunshi-orders/{order-id}/
 ```
 
 完全文字版:
 
 ```text
-.company/outputs/ebooks/{order-id}-text/
+03_成果物/outputs/ebooks/{order-id}-text/
 ```
 
 完全漫画版:
 
 ```text
-.company/outputs/ebooks-manga/{order-id}-manga/
+03_成果物/outputs/ebooks-manga/{order-id}-manga/
 ```
 
 LP:
 
 ```text
-.company/outputs/lp/jibunshi-ebook-manga/
+03_成果物/outputs/lp/jibunshi-ebook-manga/
 ```
 
 ## 受注フォルダ作成

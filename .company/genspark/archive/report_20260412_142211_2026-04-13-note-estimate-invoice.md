@@ -54,18 +54,18 @@ YN Tools の見積書ツール（estimate）と請求書ツール（invoice）�
 
 ## 原稿ファイル
 
-`.company/outputs/tech-articles/note-series/2026-04-13-estimate-invoice.md`
+`03_成果物/outputs/tech-articles/note-series/2026-04-13-estimate-invoice.md`
 
 ## カバー画像ファイル
 
-`.company/outputs/note-series-covers/01-estimate-invoice_20260412_132439_001.png`
+`03_成果物/outputs/note-series-covers/01-estimate-invoice_20260412_132439_001.png`
 
 ## 本文画像ファイル
 
 原稿Markdown内に `![alt text](../note-series-bodies/ファイル名.png)` の形式で2枚の画像参照が埋め込まれています。該当位置にアップロードしてください。
 
-- **画像A**（記事前半・問題シーン）: `.company/outputs/note-series-bodies/01-estimate-a_20260412_134150_001.png`
-- **画像B**（記事中盤・解決シーン）: `.company/outputs/note-series-bodies/01-estimate-b_20260412_134253_001.png`
+- **画像A**（記事前半・問題シーン）: `03_成果物/outputs/note-series-bodies/01-estimate-a_20260412_134150_001.png`
+- **画像B**（記事中盤・解決シーン）: `03_成果物/outputs/note-series-bodies/01-estimate-b_20260412_134253_001.png`
 
 原稿内の画像参照位置をそのままnoteエディタで再現（画像をアップロードして同じ位置に配置）してください。
 

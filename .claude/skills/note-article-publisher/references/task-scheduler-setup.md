@@ -43,7 +43,7 @@ Start-ScheduledTask -TaskName "YNFactory-NoteWeeklyBatch"
 Get-ScheduledTask -TaskName "YNFactory-NoteWeeklyBatch" | Get-ScheduledTaskInfo
 
 # ログ確認
-Get-Content "G:\マイドライブ\YNFactory-cc\.company\outputs\note-articles\weekly\latest-batch.log" -Tail 50
+Get-Content "G:\マイドライブ\YNFactory-cc\03_成果物\outputs\note-articles\weekly\latest-batch.log" -Tail 50
 ```
 
 ## 注意

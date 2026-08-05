@@ -9,7 +9,7 @@ vol2 コミクル用CSV生成スクリプト v2
 import csv
 import json
 
-OUTPUT_PATH = r"G:\マイドライブ\YNFactory-cc\.company\outputs\ebooks-manga\manga-career-restart\vol2\panels\comicle_output.csv"
+OUTPUT_PATH = r"G:\マイドライブ\YNFactory-cc\03_成果物\outputs\ebooks-manga\manga-career-restart\vol2\panels\comicle_output.csv"
 
 # ============================================================
 # ヘルパー

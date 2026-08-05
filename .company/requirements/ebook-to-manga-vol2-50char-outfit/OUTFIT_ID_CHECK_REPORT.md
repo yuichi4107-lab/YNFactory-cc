@@ -1,8 +1,8 @@
 # outfit_id 整合性チェックレポート（工程4）
 
 作成日: 2026-05-02
-対象CSV: `.company/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output.csv`
-character_defs: `.company/outputs/ebooks-manga/manga-career-restart/manuscript/character_defs.json`
+対象CSV: `03_成果物/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output.csv`
+character_defs: `03_成果物/outputs/ebooks-manga/manga-career-restart/manuscript/character_defs.json`
 設計書: `.company/requirements/ebook-to-manga-vol2-50char-outfit/SCENE_REDESIGN_PLAN.md`
 
 ---

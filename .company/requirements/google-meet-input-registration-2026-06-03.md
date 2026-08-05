@@ -12,13 +12,13 @@ Google Meet の議事録、文字起こし、会議メモを Zoom と同じよ�
 
 ## スコープ
 
-- `.company/inputs/00_GOOGLE_MEET_BOX/` を Google Meet 専用投入口として使う
+- `04_インプット/inputs/00_GOOGLE_MEET_BOX/` を Google Meet 専用投入口として使う
 - `.txt`, `.md`, `.docx`, `.pdf`, 会議フォルダを取り込む
-- raw コピーを `.company/inputs/intake/google_meet/raw/YYYY-MM-DD/<input-id>/` に保存する
+- raw コピーを `04_インプット/inputs/intake/google_meet/raw/YYYY-MM-DD/<input-id>/` に保存する
 - AIが読みやすい正規化テキストを `normalized/all-normalized-content.md` に保存する
-- 日別conversationを `.company/inputs/conversations/YYYY-MM-DD-google-meet.md` に生成する
-- 活用版を `.company/inputs/organized/google-meet/YYYY-MM-DD-google-meet-meetings.md` に生成する
-- 横断索引を `.company/inputs/indexes/google-meet-*.md` に生成する
+- 日別conversationを `04_インプット/inputs/conversations/YYYY-MM-DD-google-meet.md` に生成する
+- 活用版を `04_インプット/inputs/organized/google-meet/YYYY-MM-DD-google-meet-meetings.md` に生成する
+- 横断索引を `04_インプット/inputs/indexes/google-meet-*.md` に生成する
 - daily sync / Windows sync に Google Meet 取り込みを組み込む
 - Google Drive ネイティブの `.gdoc` は本文が入っていないため、URLと `needs_export` 状態を残す
 
@@ -44,14 +44,14 @@ Google Meet の議事録、文字起こし、会議メモを Zoom と同じよ�
 
 検証:
 
-- `python3 -m py_compile .company/inputs/import_drive_inbox.py .company/inputs/sync_google_meet.py .company/inputs/organize_google_meet_inputs.py`
+- `python3 -m py_compile 04_インプット/inputs/import_drive_inbox.py 04_インプット/inputs/sync_google_meet.py 04_インプット/inputs/organize_google_meet_inputs.py`
 - `bash -n /Users/yuichi/scripts/run_limitless_sync.sh`
-- `bash -n .company/inputs/run_daily.sh`
+- `bash -n 04_インプット/inputs/run_daily.sh`
 - 一時ディレクトリのサンプル会議で `sync_google_meet.py` と `organize_google_meet_inputs.py --all --force` を実行し、raw / normalized / conversation / organized / indexes の生成を確認
 - 実投入口では対象ファイル0件で、空の Google Meet index 生成まで確認
 
 残リスク:
 
-- Google Meet の標準保存先フォルダは現時点でローカルDrive内に確認できていないため、Phase 1 は `.company/inputs/00_GOOGLE_MEET_BOX/` への投入方式
+- Google Meet の標準保存先フォルダは現時点でローカルDrive内に確認できていないため、Phase 1 は `04_インプット/inputs/00_GOOGLE_MEET_BOX/` への投入方式
 - Google Docs ネイティブ本文の自動取得には Google Drive API / Apps Script / OAuth 承認が必要
 - `.gdoc` だけでは本文が取得できないため、本文利用が必要な場合は `.docx`, `.txt`, `.pdf` で保存する

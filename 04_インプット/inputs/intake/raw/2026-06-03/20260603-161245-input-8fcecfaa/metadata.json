@@ -1,0 +1,46 @@
+{
+  "input_id": "20260603-161245-input-8fcecfaa",
+  "imported_at": "2026-06-03T16:12:45+09:00",
+  "source_path": "04_インプット/inputs/00_INPUT_BOX/20260603-153552-テスト",
+  "source_is_directory": true,
+  "signature": "8fcecfaa577c2b2eb7b8685edf0a817aeff257c728e7640179009acbd55c3e7e",
+  "title": "テスト",
+  "input_type": "folder",
+  "metadata": {
+    "title": "テスト",
+    "timestamp": "2026-06-03T06:35:52.993Z",
+    "note": "テスト",
+    "fileCount": 0,
+    "tags": []
+  },
+  "files": [
+    {
+      "original_path": "04_インプット/inputs/00_INPUT_BOX/20260603-153552-テスト/note.md",
+      "raw_copy": "04_インプット/inputs/intake/raw/2026-06-03/20260603-161245-input-8fcecfaa/files/note.md",
+      "size": 9,
+      "sha256": "8a535a3f4dcd2c396db11b7c1e54221d04375c9f9be96bce47dc2fdb237e86c9",
+      "mime_type": "text/markdown",
+      "kind": "text",
+      "extraction_status": "ok",
+      "extraction_method": "text",
+      "extraction_notes": "",
+      "urls": []
+    }
+  ],
+  "normalized_files": [
+    {
+      "original_path": "04_インプット/inputs/00_INPUT_BOX/20260603-153552-テスト/note.md",
+      "normalized_path": "04_インプット/inputs/intake/raw/2026-06-03/20260603-161245-input-8fcecfaa/normalized/note-8a535a3f.md",
+      "extraction_status": "ok",
+      "extraction_method": "text",
+      "extraction_notes": ""
+    },
+    {
+      "original_path": "04_インプット/inputs/00_INPUT_BOX/20260603-153552-テスト",
+      "normalized_path": "04_インプット/inputs/intake/raw/2026-06-03/20260603-161245-input-8fcecfaa/normalized/all-normalized-content.md",
+      "extraction_status": "combined",
+      "extraction_method": "import_drive_inbox.py",
+      "extraction_notes": "全ファイルの正規化テキストを結合した入口です。"
+    }
+  ]
+}

@@ -208,7 +208,7 @@ Zoom個別相談予約: [CalendlyのURL]
 ```
 
 > `[CalendlyのURL]` は Calendlyセットアップ完了後に実URLを入れる。
-> 参照: `.company/outputs/sales-content/calendly-setup/README.md`
+> 参照: `03_成果物/outputs/sales-content/calendly-setup/README.md`
 
 ---
 

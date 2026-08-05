@@ -52,17 +52,17 @@
 
 | 資産 | パス | 用途 |
 |---|---|---|
-| 30分商談台本（完成） | `.company/outputs/sales-content/individual-zoom-30min/script.md` | 商談当日の進行（工程10成果物） |
-| ヒアリング質問リスト | `.company/outputs/sales-content/individual-zoom-30min/hearing-questions.md` | 商談前ブリーフ・当日用 |
-| クロージングフロー | `.company/outputs/sales-content/individual-zoom-30min/closing-flow.md` | 商談クロージング |
-| 商談用スライド | `.company/outputs/sales-content/individual-zoom-30min/slides.pptx` | 商談当日提示（提案書ベース） |
-| L1オファー説明書 | `.company/outputs/sales-content/offer-materials/plans/L1-light-advisor.md` | 提案書生成の入力 |
-| L2オファー説明書 | `.company/outputs/sales-content/offer-materials/plans/L2-standard-advisor.md` | 提案書生成の入力 |
-| L3オファー説明書 | `.company/outputs/sales-content/offer-materials/plans/L3-3month-implementation.md` | 提案書生成の入力 |
-| オファー比較表 | `.company/outputs/sales-content/offer-materials/plans/comparison-table.md` | 提案書に差し込む |
-| 契約書テンプレ（L1/L2） | `.company/outputs/sales-content/offer-materials/contracts/contract-L1-L2-monthly.md` | 成約後の契約書送付 |
-| 契約書テンプレ（L3） | `.company/outputs/sales-content/offer-materials/contracts/contract-L3-project.md` | 成約後の契約書送付 |
-| Calendlyセットアップ | `.company/outputs/sales-content/calendly-setup/` | 予約フロー前提 |
+| 30分商談台本（完成） | `03_成果物/outputs/sales-content/individual-zoom-30min/script.md` | 商談当日の進行（工程10成果物） |
+| ヒアリング質問リスト | `03_成果物/outputs/sales-content/individual-zoom-30min/hearing-questions.md` | 商談前ブリーフ・当日用 |
+| クロージングフロー | `03_成果物/outputs/sales-content/individual-zoom-30min/closing-flow.md` | 商談クロージング |
+| 商談用スライド | `03_成果物/outputs/sales-content/individual-zoom-30min/slides.pptx` | 商談当日提示（提案書ベース） |
+| L1オファー説明書 | `03_成果物/outputs/sales-content/offer-materials/plans/L1-light-advisor.md` | 提案書生成の入力 |
+| L2オファー説明書 | `03_成果物/outputs/sales-content/offer-materials/plans/L2-standard-advisor.md` | 提案書生成の入力 |
+| L3オファー説明書 | `03_成果物/outputs/sales-content/offer-materials/plans/L3-3month-implementation.md` | 提案書生成の入力 |
+| オファー比較表 | `03_成果物/outputs/sales-content/offer-materials/plans/comparison-table.md` | 提案書に差し込む |
+| 契約書テンプレ（L1/L2） | `03_成果物/outputs/sales-content/offer-materials/contracts/contract-L1-L2-monthly.md` | 成約後の契約書送付 |
+| 契約書テンプレ（L3） | `03_成果物/outputs/sales-content/offer-materials/contracts/contract-L3-project.md` | 成約後の契約書送付 |
+| Calendlyセットアップ | `03_成果物/outputs/sales-content/calendly-setup/` | 予約フロー前提 |
 
 ---
 

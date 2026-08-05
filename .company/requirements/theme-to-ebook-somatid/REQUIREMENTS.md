@@ -9,7 +9,7 @@
 
 ## 出力先
 
-`.company/outputs/ebooks/somatid-introduction/`
+`03_成果物/outputs/ebooks/somatid-introduction/`
 
 ## 標準成果物
 
@@ -483,7 +483,7 @@
 期待出力:
 
 - 33点のPNG画像
-- 保存先: `.company/outputs/ebooks/somatid-introduction/images/`
+- 保存先: `03_成果物/outputs/ebooks/somatid-introduction/images/`
 
 品質基準:
 

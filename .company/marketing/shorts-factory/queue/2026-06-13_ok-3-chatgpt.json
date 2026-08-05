@@ -12,15 +12,15 @@
     "#時短"
   ],
   "video": {
-    "path": "/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc/.company/outputs/shorts-factory/2026-06-13_ok-3-chatgpt/final.mp4",
+    "path": "/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc/03_成果物/outputs/shorts-factory/2026-06-13_ok-3-chatgpt/final.mp4",
     "duration": 51.03,
     "size_mb": 5.18
   },
-  "output_dir": "/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc/.company/outputs/shorts-factory/2026-06-13_ok-3-chatgpt",
+  "output_dir": "/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc/03_成果物/outputs/shorts-factory/2026-06-13_ok-3-chatgpt",
   "quality": {
     "pass": true,
     "avg_cer": 0.0365,
-    "report_path": "/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc/.company/outputs/shorts-factory/2026-06-13_ok-3-chatgpt/quality_report.json"
+    "report_path": "/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc/03_成果物/outputs/shorts-factory/2026-06-13_ok-3-chatgpt/quality_report.json"
   },
   "status": "posted",
   "review": {

@@ -17,7 +17,7 @@ $RECYCLE.BIN/
 .env.notion
 
 # Notionミラー(原本はNotion側。ミラーはDrive+ZSlimで保全、GitHubへは送らない)
-.company/inputs/notion_mirror/
+04_インプット/inputs/notion_mirror/
 *.pem
 *.key
 secrets/
@@ -104,14 +104,14 @@ ai-trade-system/results/**/*.parquet
 # 電子書籍マンガ（大容量バイナリ）
 *.epub
 *.mobi
-.company/outputs/ebooks-manga/**/pages_backup_*/
-.company/outputs/ebooks-manga/**/_regen_test/
+03_成果物/outputs/ebooks-manga/**/pages_backup_*/
+03_成果物/outputs/ebooks-manga/**/_regen_test/
 
 # NanoBanana2生成物の中間キャッシュ
-.company/outputs/ebooks-manga/**/_cache/
+03_成果物/outputs/ebooks-manga/**/_cache/
 
 # Local-only manga rebuild archive (2026-05-12, 688MB)
-.company/outputs/ebooks-manga/chatgpt55-now-only-manga/archive_20260512_pre-redo/
+03_成果物/outputs/ebooks-manga/chatgpt55-now-only-manga/archive_20260512_pre-redo/
 AYC/
 .company/codex/
 
@@ -150,12 +150,14 @@ settings.local.json
 
 # Playwright MCP snapshots (debug artifacts)
 .playwright-mcp/
+.wrangler/
+test-results/
 
 # Local virtual environments and generated company outputs
 .company/.venvs/
-.company/outputs/
+03_成果物/outputs/
 
 # ─── アーカイブ済み大容量成果物（svg/xhtml/pdf/ini 等も含むためディレクトリごと除外）2026-06-06 マルチPC移行 ───
 # 画像本体は上の *.png/*.jpg 等で除外済みだが、付随する svg/xhtml/pdf 等を取り込まないようディレクトリ単位で除外しDrive専用にする
-.company/outputs/picture-books/
-.company/outputs/ai-stock-investment/_archives/
+03_成果物/outputs/picture-books/
+03_成果物/outputs/ai-stock-investment/_archives/

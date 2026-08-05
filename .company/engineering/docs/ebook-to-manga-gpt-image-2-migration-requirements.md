@@ -475,8 +475,8 @@ img.save(cover_path, "JPEG", quality=92)
 
 ```bash
 # Step 5 相当の呼び出しを単体実行
-python .company/outputs/openai-image-gen/vol1-sample/generate_v2_vertical.py
-# 出力: .company/outputs/openai-image-gen/vol1-sample/v2/p045_*.png
+python 03_成果物/outputs/openai-image-gen/vol1-sample/generate_v2_vertical.py
+# 出力: 03_成果物/outputs/openai-image-gen/vol1-sample/v2/p045_*.png
 # 目視確認: テキスト描画・コマ構成が正常であること
 ```
 
@@ -517,4 +517,4 @@ Step 3 → Step 5（10ページ分）→ Step 5-QC の一連フローを新規�
 - **openai-image-gen スキル（`.claude/skills/openai-image-gen/SKILL.md`）との関係**: 現行は `gpt-image-1.5` を使用。ebook-to-manga は独立して `gpt-image-2` を使用する（スキル間の依存なし）
 - **Google AI Studio API 残存の正当性**: vol1/vol2 の既存成果物はすべて NanoBanana2 で生成されており、再生成タイミングまでは `GOOGLE_AI_STUDIO_API_KEY` が .env に残る必要がある。即時削除はデータ依存性の観点でリスクがある
 - **Organization Verification**: gpt-image-2（および `chatgpt-image-latest`）の使用には OpenAI Organization Verification が必要。2026-04-22 に認証済み（HANDOFF.md 参照）
-- **参照実装**: `.company/outputs/openai-image-gen/vol1-sample/generate_v2_vertical.py` が本 skill.md 変更の実装参考として使用可能（API 呼び出しパターン・b64_json デコード処理確認済み）。ただし追加プロンプトルール（縦書き・枠配置）はこのファイルに含まれているが、2026-04-23 の方針決定により skill.md への反映は行わない
+- **参照実装**: `03_成果物/outputs/openai-image-gen/vol1-sample/generate_v2_vertical.py` が本 skill.md 変更の実装参考として使用可能（API 呼び出しパターン・b64_json デコード処理確認済み）。ただし追加プロンプトルール（縦書き・枠配置）はこのファイルに含まれているが、2026-04-23 の方針決定により skill.md への反映は行わない

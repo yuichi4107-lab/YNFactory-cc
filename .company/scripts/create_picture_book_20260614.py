@@ -257,7 +257,7 @@ def project_md() -> str:
 - タイトル: {TITLE}
 - サブタイトル: {SUBTITLE}
 - slug: `{SLUG}`
-- 作成フォルダ: `.company/outputs/picture-books/{FOLDER}/`
+- 作成フォルダ: `03_成果物/outputs/picture-books/{FOLDER}/`
 - 作成日: {DATE} ({WEEKDAY}, Asia/Tokyo)
 - 対象年齢: 3〜5歳
 - 仕様: 32ページ / 8.25 x 8.25 inch / フルカラー・プレミアムカラー / Kindle固定レイアウト / KDPペーパーバック
@@ -292,7 +292,7 @@ def pipeline_report(status: str = "pending_gpt_image2_final_art") -> str:
 ## Status
 
 - status: `{status}`
-- project: `.company/outputs/picture-books/{FOLDER}/`
+- project: `03_成果物/outputs/picture-books/{FOLDER}/`
 - title: {TITLE}
 - protagonist_gender: {GENDER}
 - created_at: {datetime.now(JST).isoformat(timespec='seconds')}
@@ -516,7 +516,7 @@ Planned names:
 def queue_files(pages: list[dict[str, str]]) -> None:
     manifest = {
         "job_id": QUEUE_ID,
-        "project_dir": f".company/outputs/picture-books/{FOLDER}",
+        "project_dir": f"03_成果物/outputs/picture-books/{FOLDER}",
         "title": TITLE,
         "subtitle": SUBTITLE,
         "protagonist_gender": GENDER,
@@ -547,7 +547,7 @@ Expected outputs:
 1. Read `manifest.json`.
 2. Generate `cover.png` and all 32 page images with no readable text inside the images.
 3. Save outputs under `.company/codex/done/{QUEUE_ID}/`.
-4. Copy final pages into `.company/outputs/picture-books/{FOLDER}/images/pages_gpt_image2/`.
+4. Copy final pages into `03_成果物/outputs/picture-books/{FOLDER}/images/pages_gpt_image2/`.
 5. Archive this queue input after successful output verification.
 """)
 

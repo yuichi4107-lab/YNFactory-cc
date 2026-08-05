@@ -4,8 +4,8 @@
 文字版『AI株に投資すべきか？』は維持し、マンガ版のみを `ebook-to-manga` スキルのStep 1-8に沿って作り直す。
 
 ## スコープ
-- 対象: `.company/outputs/ai-stock-investment/マンガ版/`
-- 入力: `.company/outputs/ai-stock-investment/文字本/` の `project.md` と `manuscript/`
+- 対象: `03_成果物/outputs/ai-stock-investment/マンガ版/`
+- 入力: `03_成果物/outputs/ai-stock-investment/文字本/` の `project.md` と `manuscript/`
 - 既存の不採用マンガ版は削除せずアーカイブへ退避する
 - 表紙は `ebook-to-manga` Step 6 の表紙プロンプト構成を流用する
 - 画像生成は ChatGPT/Codex 側の画像生成のみ。OpenAI API、openai-image-gen、キュー引き渡しは使わない

@@ -36,9 +36,9 @@
     ]
   },
   "output_contract": {
-    "order_root": ".company/outputs/jibunshi-orders/{order_id}/",
-    "text_edition": ".company/outputs/ebooks/{order_id}-text/",
-    "manga_edition": ".company/outputs/ebooks-manga/{order_id}-manga/",
-    "delivery": ".company/outputs/jibunshi-orders/{order_id}/delivery/"
+    "order_root": "03_成果物/outputs/jibunshi-orders/{order_id}/",
+    "text_edition": "03_成果物/outputs/ebooks/{order_id}-text/",
+    "manga_edition": "03_成果物/outputs/ebooks-manga/{order_id}-manga/",
+    "delivery": "03_成果物/outputs/jibunshi-orders/{order_id}/delivery/"
   }
 }

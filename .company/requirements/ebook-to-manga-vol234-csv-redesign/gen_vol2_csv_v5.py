@@ -7,8 +7,8 @@ vol2 CSV再構築 v5 - 30字分割・全文保持版
 import csv, json, sys, re
 sys.stdout.reconfigure(encoding='utf-8')
 
-OUTPUT_PATH = 'G:/マイドライブ/YNFactory-cc/.company/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output.csv'
-OLD_PATH = 'G:/マイドライブ/YNFactory-cc/.company/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output_pre_30char_redesign.csv'
+OUTPUT_PATH = 'G:/マイドライブ/YNFactory-cc/03_成果物/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output.csv'
+OLD_PATH = 'G:/マイドライブ/YNFactory-cc/03_成果物/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output_pre_30char_redesign.csv'
 
 # 共通プロンプトヘッダ（テンプレ番号と作画指示を含む）
 COMMON_HEADER = """◆【注意】【】で囲まれた単語は感情や状況の指示であり、画像内に文字として描画しないでください

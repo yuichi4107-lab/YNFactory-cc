@@ -25,9 +25,9 @@ manga_quality_score: 87
 - `theme-to-ebook-to-manga` スキルで制作する
 - Phase 0の選択式回答を保存する
 - 最新情報のWebリサーチを行い、根拠と現在性を明記する
-- 文字中心電子書籍を `.company/outputs/{book-name}/文字本/` に作成する
+- 文字中心電子書籍を `03_成果物/outputs/{book-name}/文字本/` に作成する
 - 文字本からマンガ版への接続前チェックを記録する
-- マンガ版を `.company/outputs/{book-name}/マンガ版/` に作成する
+- マンガ版を `03_成果物/outputs/{book-name}/マンガ版/` に作成する
 - マンガ版タイトルは `マンガでわかる！{文字中心電子書籍のタイトル}` にする
 - KDP用の表紙、EPUB、書籍情報、ジャンル・キーワード、HTML紹介文を作成する
 - 画像生成はAPIを使わず、ChatGPT Images 2.0（Codex/ChatGPT側）で行う
@@ -107,7 +107,7 @@ manga_quality_score: 87
 ### 工程5: 統合品質チェック
 
 中間成果物:
-- `.company/outputs/{book-name}/PIPELINE_REPORT.md`
+- `03_成果物/outputs/{book-name}/PIPELINE_REPORT.md`
 
 品質基準:
 - 文字本とマンガ版の成果物パス、品質スコア、画像数、API不使用確認、残課題が記録されている
@@ -123,11 +123,11 @@ manga_quality_score: 87
 
 ## 成果物
 
-- 統合フォルダ: `.company/outputs/ai-stock-investment/`
-- 文字本: `.company/outputs/ai-stock-investment/文字本/`
-- マンガ版: `.company/outputs/ai-stock-investment/マンガ版/`
-- 文字本EPUB: `.company/outputs/ai-stock-investment/文字本/KDP出版用/AI株に投資すべきか？.epub`
-- マンガ版EPUB: `.company/outputs/ai-stock-investment/マンガ版/KDP出版用/マンガでわかる！AI株に投資すべきか？.epub`
+- 統合フォルダ: `03_成果物/outputs/ai-stock-investment/`
+- 文字本: `03_成果物/outputs/ai-stock-investment/文字本/`
+- マンガ版: `03_成果物/outputs/ai-stock-investment/マンガ版/`
+- 文字本EPUB: `03_成果物/outputs/ai-stock-investment/文字本/KDP出版用/AI株に投資すべきか？.epub`
+- マンガ版EPUB: `03_成果物/outputs/ai-stock-investment/マンガ版/KDP出版用/マンガでわかる！AI株に投資すべきか？.epub`
 
 ## 残課題
 

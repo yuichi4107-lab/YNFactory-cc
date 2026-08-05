@@ -432,7 +432,7 @@ docker compose logs --tail=50
 
 ```
 ローカルパス:
-.company/outputs/ebooks-manga/manga-career-restart/vol1/KDP出版用/
+03_成果物/outputs/ebooks-manga/manga-career-restart/vol1/KDP出版用/
 manga-career-restart-vol1-manga_text1_5x_v3.epub
 （197MB / 固定レイアウト / 画像多数 / フォント埋め込みあり）
 ```

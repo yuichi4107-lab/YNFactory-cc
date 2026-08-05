@@ -39,7 +39,7 @@ publish_at: "2026-04-17 12:00"
 # note記事公開: クラウドワークス初受注
 
 ## 原稿ファイル
-`.company/outputs/tech-articles/note-series/2026-04-17-crowdworks-start.md`
+`03_成果物/outputs/tech-articles/note-series/2026-04-17-crowdworks-start.md`
 
 ## 投稿時の注意事項
 - 記事タイトル: クラウドワークスで1件も取れなかった私が、2週間で初受注できた3つの変化

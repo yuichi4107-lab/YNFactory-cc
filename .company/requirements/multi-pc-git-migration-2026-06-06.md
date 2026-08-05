@@ -115,11 +115,11 @@ git --git-dir="C:\dev\YNFactory-git\.git" --work-tree="G:\マイドライブ\YNF
 #### A-2: 今日分の新しいファイルをoriginへ取り込み
 
 保全対象ファイル（originにない可能性があるもの）:
-- `.company/inputs/conversations/2026-06-05-lifelogs.md`
-- `.company/inputs/indexes/lifelog-decisions.md`（更新分）
-- `.company/inputs/indexes/lifelog-people.md`（更新分）
-- `.company/inputs/indexes/lifelog-todo-candidates.md`（更新分）
-- `.company/inputs/indexes/lifelog-topics.md`（更新分）
+- `04_インプット/inputs/conversations/2026-06-05-lifelogs.md`
+- `04_インプット/inputs/indexes/lifelog-decisions.md`（更新分）
+- `04_インプット/inputs/indexes/lifelog-people.md`（更新分）
+- `04_インプット/inputs/indexes/lifelog-todo-candidates.md`（更新分）
+- `04_インプット/inputs/indexes/lifelog-topics.md`（更新分）
 - `.company/secretary/inbox/2026-06-06.md`
 - `.company/secretary/todos/2026-06-06 (1).md`（Drive競合コピー。内容確認後にリネームorマージ）
 - `.company/requirements/notebooklm-sync-mac-migration-2026-06-06.md`（更新分）
@@ -212,9 +212,9 @@ git rev-parse HEAD # origin/main と一致すること
 
 | ディレクトリ | 現git追跡数 | 概算容量 | 備考 |
 |---|---|---|---|
-| `.company/outputs/ebooks-manga/` | 1816ファイル | 7.88GB | xhtml/csv/md/py混在。EPUB本体は.gitignore済みだが付随ファイルがgit追跡中 |
-| `.company/outputs/ai-stock-investment/` | 233ファイル（_archives=141） | 1.14GB | _archivesは.gitignore済みだが本体部分が追跡中 |
-| `.company/outputs/picture-books/` | 0（.gitignore済み） | 不明 | .gitignoreに記載済みだがDriveに存在する場合は移動対象 |
+| `03_成果物/outputs/ebooks-manga/` | 1816ファイル | 7.88GB | xhtml/csv/md/py混在。EPUB本体は.gitignore済みだが付随ファイルがgit追跡中 |
+| `03_成果物/outputs/ai-stock-investment/` | 233ファイル（_archives=141） | 1.14GB | _archivesは.gitignore済みだが本体部分が追跡中 |
+| `03_成果物/outputs/picture-books/` | 0（.gitignore済み） | 不明 | .gitignoreに記載済みだがDriveに存在する場合は移動対象 |
 
 #### B群: .gitignoreで既に除外済みだが移動が必要な大物
 
@@ -223,10 +223,10 @@ git rev-parse HEAD # origin/main と一致すること
 | `AYC/` | ルート直下。.gitignore済み。物理的にはDrive上に存在する可能性あり |
 | `.company/codex/` | .gitignore済み。Codex画像キューのキャッシュ等 |
 | `keiba-unified/jra/data/` | .gitignore済み。本番VPS用データの旧コピー |
-| `.company/outputs/ai-stock-investment/_archives/` | .gitignore済み |
-| `.company/outputs/ebooks-manga/**/pages_backup_*/` | .gitignore済み |
-| `.company/outputs/ebooks-manga/**/_cache/` | .gitignore済み |
-| `.company/outputs/ebooks-manga/**/archive_20260512_pre-redo/` | .gitignore済み（688MB） |
+| `03_成果物/outputs/ai-stock-investment/_archives/` | .gitignore済み |
+| `03_成果物/outputs/ebooks-manga/**/pages_backup_*/` | .gitignore済み |
+| `03_成果物/outputs/ebooks-manga/**/_cache/` | .gitignore済み |
+| `03_成果物/outputs/ebooks-manga/**/archive_20260512_pre-redo/` | .gitignore済み（688MB） |
 | `.git_drivebackup/` | .gitignore済み（4.7GB）。git復元コピー。そのままDriveに残す（移動不要） |
 
 #### C群: 全バイナリ（*.png/*.jpg/*.jpeg/*.webp/*.gif/*.mp4/*.mov 等）
@@ -253,18 +253,18 @@ git rev-parse HEAD # origin/main と一致すること
 
 ```
 cd C:\YNFactory-cc
-git rm -r --cached .company/outputs/ebooks-manga/
-git rm -r --cached .company/outputs/ai-stock-investment/
-git rm -r --cached .company/outputs/picture-books/   # 追跡ファイルがあれば
+git rm -r --cached 03_成果物/outputs/ebooks-manga/
+git rm -r --cached 03_成果物/outputs/ai-stock-investment/
+git rm -r --cached 03_成果物/outputs/picture-books/   # 追跡ファイルがあれば
 ```
 
 #### 2-2: .gitignoreに丸ごと除外エントリを追加
 
 ```
 # .gitignore に追記
-.company/outputs/ebooks-manga/
-.company/outputs/ai-stock-investment/
-.company/outputs/picture-books/
+03_成果物/outputs/ebooks-manga/
+03_成果物/outputs/ai-stock-investment/
+03_成果物/outputs/picture-books/
 ```
 
 現在の .gitignore はパターン単位（`*.epub` 等）で除外しているが、これをディレクトリ丸ごと除外に格上げする。
@@ -286,9 +286,9 @@ mkdir "G:\マイドライブ\YNFactory-cc-data"
 元パス構造をミラーして格納:
 ```
 G:\マイドライブ\YNFactory-cc-data\
-  .company\outputs\ebooks-manga\
-  .company\outputs\ai-stock-investment\
-  .company\outputs\picture-books\
+  03_成果物\outputs\ebooks-manga\
+  03_成果物\outputs\ai-stock-investment\
+  03_成果物\outputs\picture-books\
   AYC\
   .company\codex\
   keiba-unified\jra\data\
@@ -298,8 +298,8 @@ G:\マイドライブ\YNFactory-cc-data\
 
 ```powershell
 # PowerShellで実行
-$src = "G:\マイドライブ\YNFactory-cc\.company\outputs\ebooks-manga"
-$dst = "G:\マイドライブ\YNFactory-cc-data\.company\outputs\ebooks-manga"
+$src = "G:\マイドライブ\YNFactory-cc\03_成果物\outputs\ebooks-manga"
+$dst = "G:\マイドライブ\YNFactory-cc-data\03_成果物\outputs\ebooks-manga"
 Move-Item -Path $src -Destination $dst
 # 同様に ai-stock-investment、picture-books、AYC、.company\codex、keiba-unified\jra\data も移動
 ```
@@ -308,9 +308,9 @@ Move-Item -Path $src -Destination $dst
 
 ### 完了条件
 
-- [ ] `git ls-files .company/outputs/ebooks-manga/` の出力が空であること
-- [ ] `git ls-files .company/outputs/ai-stock-investment/` の出力が空であること
-- [ ] `.company/outputs/picture-books/`・`AYC/`・`.company/codex/`・`keiba-unified/jra/data/` の追跡ファイルが0であること
+- [ ] `git ls-files 03_成果物/outputs/ebooks-manga/` の出力が空であること
+- [ ] `git ls-files 03_成果物/outputs/ai-stock-investment/` の出力が空であること
+- [ ] `03_成果物/outputs/picture-books/`・`AYC/`・`.company/codex/`・`keiba-unified/jra/data/` の追跡ファイルが0であること
 - [ ] `G:\マイドライブ\YNFactory-cc-data` が作成されており、移動対象のディレクトリが元パス構造で格納されていること
 - [ ] 総移動容量が事前見積もりと±10%以内であること
 - [ ] `git status` がclean（大物ディレクトリが消えた状態でdirtyにならない）であること
@@ -330,7 +330,7 @@ Move-Item -Path $src -Destination $dst
 ### ロールバック手順
 
 - 移動中に失敗した場合: `Move-Item` は移動先にデータが残るため、移動先から元パスに `Move-Item -Path $dst -Destination $src` で戻せる
-- `git rm --cached` の取り消し: `git reset HEAD .company/outputs/ebooks-manga/` でunstageに戻せる（ファイルは消えていない）
+- `git rm --cached` の取り消し: `git reset HEAD 03_成果物/outputs/ebooks-manga/` でunstageに戻せる（ファイルは消えていない）
 - コミット取り消し: `git revert HEAD` でrevertコミットを作成
 
 ### リスク
@@ -340,7 +340,7 @@ Move-Item -Path $src -Destination $dst
 | Drive空き容量不足 | 移動途中でエラー・ファイル破損 | 移動前にDrive空き容量を確認（移動対象の2倍以上の空き必要） |
 | 他端末が同期再開して競合コピー発生 | ファイルが重複・破損 | Phase 0で他端末同期停止を徹底 |
 | picture-books / AYC / codex の実サイズ未確認 | 想定外の大容量 | 実施前に `Get-ChildItem -Recurse | Measure-Object -Sum Length` で実測 |
-| スクリプトがhardcodeで `.company/outputs/ebooks-manga/` を参照している場合 | スクリプト実行エラー | 工程3で修正（工程2後すぐに工程3に進む） |
+| スクリプトがhardcodeで `03_成果物/outputs/ebooks-manga/` を参照している場合 | スクリプト実行エラー | 工程3で修正（工程2後すぐに工程3に進む） |
 
 ---
 
@@ -355,12 +355,12 @@ Move-Item -Path $src -Destination $dst
 クローン `C:\YNFactory-cc` に対して以下のジャンクションを作成する（`mklink /J`）:
 
 ```cmd
-mklink /J "C:\YNFactory-cc\.company\outputs\ebooks-manga" "G:\マイドライブ\YNFactory-cc-data\.company\outputs\ebooks-manga"
-mklink /J "C:\YNFactory-cc\.company\outputs\ai-stock-investment" "G:\マイドライブ\YNFactory-cc-data\.company\outputs\ai-stock-investment"
-mklink /J "C:\YNFactory-cc\.company\outputs\picture-books" "G:\マイドライブ\YNFactory-cc-data\.company\outputs\picture-books"
+mklink /J "C:\YNFactory-cc\03_成果物\outputs\ebooks-manga" "G:\マイドライブ\YNFactory-cc-data\03_成果物\outputs\ebooks-manga"
+mklink /J "C:\YNFactory-cc\03_成果物\outputs\ai-stock-investment" "G:\マイドライブ\YNFactory-cc-data\03_成果物\outputs\ai-stock-investment"
+mklink /J "C:\YNFactory-cc\03_成果物\outputs\picture-books" "G:\マイドライブ\YNFactory-cc-data\03_成果物\outputs\picture-books"
 mklink /J "C:\YNFactory-cc\AYC" "G:\マイドライブ\YNFactory-cc-data\AYC"
 mklink /J "C:\YNFactory-cc\.company\codex" "G:\マイドライブ\YNFactory-cc-data\.company\codex"
-mklink /J "C:\YNFactory-cc\keiba-unified\jra\data" "G:\マイドライブ\YNFactory-cc-data\keiba-unified\jra\data"
+mklink /J "C:\YNFactory-cc\05_プロジェクト\keiba-unified\jra\data" "G:\マイドライブ\YNFactory-cc-data\keiba-unified\jra\data"
 ```
 
 **注意**: `mklink /J` は管理者権限が必要。実行前に管理者PowerShellを起動すること。
@@ -409,17 +409,17 @@ $scriptPath = 'C:\YNFactory-cc\.company\secretary\scripts\morning-briefing.ps1'
 ```bat
 # 修正前
 cd /d "G:\マイドライブ\YNFactory-cc"
-"C:\Users\fcmdt\AppData\Local\Programs\Python\Python312\python.exe" -X utf8 ".company\inputs\sync_limitless.py" ...
+"C:\Users\fcmdt\AppData\Local\Programs\Python\Python312\python.exe" -X utf8 "04_インプット\inputs\sync_limitless.py" ...
 # (全行がG:\マイドライブ\YNFactory-ccを作業ディレクトリとして使用)
 
 # 修正後
 cd /d "C:\YNFactory-cc"
-"C:\Users\fcmdt\AppData\Local\Programs\Python\Python312\python.exe" -X utf8 ".company\inputs\sync_limitless.py" ...
+"C:\Users\fcmdt\AppData\Local\Programs\Python\Python312\python.exe" -X utf8 "04_インプット\inputs\sync_limitless.py" ...
 ```
 
 **Pythonパス** `C:\Users\fcmdt\AppData\Local\Programs\Python\Python312\python.exe` はユーザー固有パス。他PCへの展開時は変更が必要だが、このPCではそのまま使用可能。
 
-**修正ファイル**: `C:\YNFactory-cc\.company\inputs\sync_all.bat`
+**修正ファイル**: `C:\YNFactory-cc\04_インプット\inputs\sync_all.bat`
 
 #### sync_limitless.bat の修正箇所
 
@@ -435,7 +435,7 @@ cd /d "C:\YNFactory-cc"
 "C:\Users\fcmdt\AppData\Local\Programs\Python\Python312\python.exe" ...
 ```
 
-**修正ファイル**: `C:\YNFactory-cc\.company\inputs\sync_limitless.bat`
+**修正ファイル**: `C:\YNFactory-cc\04_インプット\inputs\sync_limitless.bat`
 
 #### .bat ファイルの文字コード注意事項
 
@@ -468,15 +468,15 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\YNFactory-cc\.compan
 cd C:\YNFactory-cc
 git add .company\secretary\scripts\morning-briefing.ps1
 git add .company\secretary\scripts\register-task.ps1
-git add .company\inputs\sync_all.bat
-git add .company\inputs\sync_limitless.bat
+git add 04_インプット\inputs\sync_all.bat
+git add 04_インプット\inputs\sync_limitless.bat
 git commit -m "chore(scripts): 自動化スクリプトのパスをクローン参照に修正（マルチPC移行 工程3）"
 git push origin main
 ```
 
 ### 完了条件
 
-- [ ] 6本のジャンクションがクローン内に作成されており、`dir /AL C:\YNFactory-cc\.company\outputs\` でJUNCTIONと表示されること
+- [ ] 6本のジャンクションがクローン内に作成されており、`dir /AL C:\YNFactory-cc\03_成果物\outputs\` でJUNCTIONと表示されること
 - [ ] ジャンクション経由でYNFactory-cc-data内のファイルが参照できること（テストread）
 - [ ] morning-briefing.ps1 の `$TodosDir` と `$LogDir` がクローンパスに修正されていること
 - [ ] register-task.ps1 の `$scriptPath` がクローンパスに修正されていること
@@ -498,7 +498,7 @@ git push origin main
 
 ### ロールバック手順
 
-- ジャンクション削除: `rmdir "C:\YNFactory-cc\.company\outputs\ebooks-manga"` （ジャンクション自体のみ削除、実体は消えない）
+- ジャンクション削除: `rmdir "C:\YNFactory-cc\03_成果物\outputs\ebooks-manga"` （ジャンクション自体のみ削除、実体は消えない）
 - スクリプト修正の取り消し: `git revert HEAD` でrevertコミット
 - Task Scheduler戻し: パスを `G:\マイドライブ\YNFactory-cc\...` に戻して `register-task.ps1` を実行
 
@@ -508,7 +508,7 @@ git push origin main
 |---|---|---|
 | mklink /J に管理者権限が必要 | 実行エラー | 管理者PowerShellで実行 |
 | DriveがオフラインのときジャンクションでI/Oエラー | スクリプト失敗 | Drive同期状態を確認してから実行。スクリプトはTry-Catchでエラーハンドリング済み |
-| Python scripts が内部で G:\マイドライブ\YNFactory-cc をhardcodeしている場合 | sync_all実行エラー | `.company/inputs/` 配下のPythonファイルでパス検索して確認（工程3実施前に調査） |
+| Python scripts が内部で G:\マイドライブ\YNFactory-cc をhardcodeしている場合 | sync_all実行エラー | `04_インプット/inputs/` 配下のPythonファイルでパス検索して確認（工程3実施前に調査） |
 
 ---
 
@@ -516,7 +516,7 @@ git push origin main
 
 ### 概要
 
-新規PCでこの構成を再現するための手順書 `C:\YNFactory-cc\docs\setup-multi-pc.md` を作成する。
+新規PCでこの構成を再現するための手順書 `C:\YNFactory-cc\02_設定\docs\setup-multi-pc.md` を作成する。
 
 ### 必須記載項目
 
@@ -568,7 +568,7 @@ sync_all.bat / sync_limitless.bat 内のPythonパスがこのPCと一致する�
 
 ### 完了条件
 
-- [ ] `C:\YNFactory-cc\docs\setup-multi-pc.md` が存在すること
+- [ ] `C:\YNFactory-cc\02_設定\docs\setup-multi-pc.md` が存在すること
 - [ ] 4-1〜4-7 の全セクションが記載されていること
 - [ ] 手順がMacやWindowsで再現可能な具体的コマンドを含むこと
 - [ ] originにpushされていること
@@ -593,7 +593,7 @@ sync_all.bat / sync_limitless.bat 内のPythonパスがこのPCと一致する�
 
 ### 概要
 
-複数PCが同じリポジトリを同時に使用するための書き込みルール `C:\YNFactory-cc\docs\multi-pc-rules.md` を作成する。ファイル競合・gitコンフリクト・Drive競合コピーを防ぐ運用指針。
+複数PCが同じリポジトリを同時に使用するための書き込みルール `C:\YNFactory-cc\02_設定\docs\multi-pc-rules.md` を作成する。ファイル競合・gitコンフリクト・Drive競合コピーを防ぐ運用指針。
 
 ### 必須記載項目
 
@@ -638,7 +638,7 @@ sync_all.bat / sync_limitless.bat 内のPythonパスがこのPCと一致する�
 
 ### 完了条件
 
-- [ ] `C:\YNFactory-cc\docs\multi-pc-rules.md` が存在すること
+- [ ] `C:\YNFactory-cc\02_設定\docs\multi-pc-rules.md` が存在すること
 - [ ] 5-1〜5-6 の全セクションが記載されていること
 - [ ] 禁止事項一覧が明確に記載されていること
 - [ ] originにpushされていること

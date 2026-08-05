@@ -18,8 +18,8 @@ X / Instagram / TikTok / YouTubeショートから来た視聴者を、AI導入�
 
 - LP: https://ai.yn-factory.com/
 - 申込フォーム: https://docs.google.com/forms/d/e/1FAIpQLScFeFulq-ol1DzeUADBFdORNOFtZYlc4Ap-7j9OqJ8Hcb5W0Q/viewform
-- ローカルLP原稿: `.company/outputs/lp/ai-introduction-consult-publish/lp-copy.md`
-- ローカルLPファイル: `.company/outputs/lp/ai-introduction-consult-publish/index.html`
+- ローカルLP原稿: `03_成果物/outputs/lp/ai-introduction-consult-publish/lp-copy.md`
+- ローカルLPファイル: `03_成果物/outputs/lp/ai-introduction-consult-publish/index.html`
 
 注意: 2026-06-19時点ではローカルLP文面をSNS導線向けに更新済み。公開反映はCloudflare Pagesへのデプロイ承認後に行う。
 

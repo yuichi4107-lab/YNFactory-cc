@@ -39,7 +39,7 @@ publish_at: "2026-04-24 12:00"
 # note記事公開: 副業確定申告
 
 ## 原稿ファイル
-`.company/outputs/tech-articles/note-series/2026-04-24-side-business-tax.md`
+`03_成果物/outputs/tech-articles/note-series/2026-04-24-side-business-tax.md`
 
 ## 投稿時の注意事項
 - 記事タイトル: 副業の確定申告、1年目で15時間かかった作業が3時間になるまでにやったこと

@@ -396,7 +396,7 @@ A（Blind-OCR判定）+ B（Pillowフォールバック）のハイブリッド�
 
 ### 参照ファイル
 
-- プロトタイプ実装: `.company/outputs/ebooks-manga/manga-career-restart/_prototype/`
+- プロトタイプ実装: `03_成果物/outputs/ebooks-manga/manga-career-restart/_prototype/`
   - `hybrid_loop.py` — A+B ハイブリッドの主実装（465行）
   - `composite_page5.py` — Pillow 縦書き合成（テンプレ6, 249行）
   - `blind_ocr_check.py` — Blind-OCR 単体ツール（51行）

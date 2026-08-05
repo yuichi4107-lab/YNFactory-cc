@@ -48,7 +48,7 @@
 ### 完全文字版
 
 - 使用スキル: `theme-to-ebook`
-- 出力先: `.company/outputs/ebooks/{order-id}-text/`
+- 出力先: `03_成果物/outputs/ebooks/{order-id}-text/`
 - edition_policy: `complete_text_only`
 - 漫画パート: なし
 
@@ -56,7 +56,7 @@
 
 - 使用スキル: `theme-to-ebook-to-manga` / `ebook-to-manga`
 - 入力: 承認済み文字版フォルダ
-- 出力先: `.company/outputs/ebooks-manga/{order-id}-manga/`
+- 出力先: `03_成果物/outputs/ebooks-manga/{order-id}-manga/`
 - タイトル規則: `マンガでわかる！{文字版タイトル}`
 
 ## 承認ゲート

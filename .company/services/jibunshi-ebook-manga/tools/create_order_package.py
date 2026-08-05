@@ -146,8 +146,8 @@ def main() -> None:
 
 ## 既存スキル接続
 
-- 完全文字版出力先: `.company/outputs/ebooks/{order_id}-text/`
-- 完全漫画版出力先: `.company/outputs/ebooks-manga/{order_id}-manga/`
+- 完全文字版出力先: `03_成果物/outputs/ebooks/{order_id}-text/`
+- 完全漫画版出力先: `03_成果物/outputs/ebooks-manga/{order_id}-manga/`
 """
 
     pipeline = f"""# パイプラインマップ
@@ -161,7 +161,7 @@ def main() -> None:
 ## 2. 完全文字版
 
 - 使用スキル: `theme-to-ebook`
-- 出力先: `.company/outputs/ebooks/{order_id}-text/`
+- 出力先: `03_成果物/outputs/ebooks/{order_id}-text/`
 - 文字版ポリシー: `complete_text_only`
 
 ## 3. 確認
@@ -173,7 +173,7 @@ def main() -> None:
 
 - 使用スキル: `theme-to-ebook-to-manga`
 - 入力: 承認済み文字版
-- 出力先: `.company/outputs/ebooks-manga/{order_id}-manga/`
+- 出力先: `03_成果物/outputs/ebooks-manga/{order_id}-manga/`
 
 ## 5. 納品
 

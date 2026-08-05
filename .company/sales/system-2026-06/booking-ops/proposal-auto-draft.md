@@ -2,7 +2,7 @@
 
 - **担当**: Claude支援（オーナーが起動）
 - **目標時間**: 商談後24時間以内にドラフト完成
-- **ベース**: 既存PPTX（`.company/outputs/sales-content/individual-zoom-30min/slides.pptx`）を流用
+- **ベース**: 既存PPTX（`03_成果物/outputs/sales-content/individual-zoom-30min/slides.pptx`）を流用
 - **スキル活用**: `anthropic-skills:pptx` スキルで生成・差し替え
 
 ---
@@ -101,7 +101,7 @@ Claude Code 上で以下のコマンドを実行する。
 スキル起動後、以下のテキストをそのままClaude Codeのチャットに貼り付けて送信する（`{{}}` 内は実際の値に置き換える）。
 
 ```
-.company/outputs/sales-content/individual-zoom-30min/slides.pptx を読み込んでください。
+03_成果物/outputs/sales-content/individual-zoom-30min/slides.pptx を読み込んでください。
 次に、以下の差し替え内容を対応するスライドに適用してください。
 
 【表紙】タイトルを「{{company_name}} 様 AI活用顧問サービス ご提案」に、サブタイトルを「{{proposal_date}} / YN Factory 中田雄一」に変更する。
@@ -154,12 +154,12 @@ Claude Code 上で以下のコマンドを実行する。
 
 | 資産 | パス | 用途 |
 |---|---|---|
-| 商談用スライド（ベース） | `.company/outputs/sales-content/individual-zoom-30min/slides.pptx` | 差し替えのベーステンプレート |
-| L1説明書 | `.company/outputs/sales-content/offer-materials/plans/L1-light-advisor.md` | L1提案時のプラン詳細テキスト |
-| L2説明書 | `.company/outputs/sales-content/offer-materials/plans/L2-standard-advisor.md` | L2提案時のプラン詳細テキスト |
-| L3説明書 | `.company/outputs/sales-content/offer-materials/plans/L3-3month-implementation.md` | L3提案時のプラン詳細テキスト |
-| オファー比較表 | `.company/outputs/sales-content/offer-materials/plans/comparison-table.md` | 比較表スライドの差し替えテキスト |
-| 補助金資料 | `.company/outputs/sales-content/offer-materials/subsidy/subsidy-guide.md` | 補助金スライドの参照 |
+| 商談用スライド（ベース） | `03_成果物/outputs/sales-content/individual-zoom-30min/slides.pptx` | 差し替えのベーステンプレート |
+| L1説明書 | `03_成果物/outputs/sales-content/offer-materials/plans/L1-light-advisor.md` | L1提案時のプラン詳細テキスト |
+| L2説明書 | `03_成果物/outputs/sales-content/offer-materials/plans/L2-standard-advisor.md` | L2提案時のプラン詳細テキスト |
+| L3説明書 | `03_成果物/outputs/sales-content/offer-materials/plans/L3-3month-implementation.md` | L3提案時のプラン詳細テキスト |
+| オファー比較表 | `03_成果物/outputs/sales-content/offer-materials/plans/comparison-table.md` | 比較表スライドの差し替えテキスト |
+| 補助金資料 | `03_成果物/outputs/sales-content/offer-materials/subsidy/subsidy-guide.md` | 補助金スライドの参照 |
 
 ---
 

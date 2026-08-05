@@ -236,7 +236,7 @@ KDP 出版に即使用できる EPUB・表紙・メタデータ一式を `vol3/`
 ### 出力パス一覧（最終確認用）
 
 ```
-.company/outputs/ebooks-manga/manga-career-restart/
+03_成果物/outputs/ebooks-manga/manga-career-restart/
 ├── manuscript/
 │   └── シナリオ_vol3_redo.txt              ← 工程1成果物
 ├── vol3/
