@@ -1,7 +1,7 @@
 ---
 title: マルチPC共有ルール
 status: active
-last_updated: "2026-06-15"
+last_updated: "2026-08-06"
 applies_to: "YNFactory-cc を複数PCと ClaudeCode / Codex で共有する全作業"
 ---
 
@@ -18,6 +18,13 @@ applies_to: "YNFactory-cc を複数PCと ClaudeCode / Codex で共有する全�
 | ZSlim | Drive削除・上書き・破損から戻す世代バックアップ | `/Volumes/ZSlim/YNFactory-backups/restic` |
 
 Drive側ではGit操作しない。Git操作は各PCのローカルGit作業ディレクトリで行う。
+
+Drive上に `.git` を置くと、残留ロック・0バイトオブジェクト・競合コピーによりGitは必ず壊れる。原因と復旧手順は `docs/git-drive-safety.md` を読む。各PCで初回に1回、ガードフックを入れる。
+
+```bash
+cd /Users/yuichi/YNFactory-cc
+python3 01_コード/scripts/company/git_drive_guard.py install-hooks
+```
 
 ## 1. 作業場所
 
@@ -117,7 +124,21 @@ python3 01_コード/scripts/company/sync_drive_git.py pull-sync
 - 自動化は1つのPCまたはVPSだけで動かす。同じタスクを複数PCに登録しない。
 - Drive競合コピーを見つけたら、片方を即削除せず、本体へ内容を統合してから削除する。
 
-## 7. バックアップ
+## 7. Git破損の点検
+
+Git操作でエラーが出たとき、およびバックアップ前に点検する。
+
+```bash
+cd /Users/yuichi/YNFactory-cc
+python3 01_コード/scripts/company/git_drive_guard.py check
+python3 01_コード/scripts/company/git_drive_guard.py fix   # 安全に直せるものだけ隔離
+```
+
+`fix` は削除せず `_archive/git-drive-quarantine/` へ移動する。実行前に、他PC・他ターミナルでgitが動いていないことを確認する。
+
+詳細は `docs/git-drive-safety.md` を読む。
+
+## 8. バックアップ
 
 Google Drive同期はバックアップではない。削除や破損も同期される。
 
@@ -136,7 +157,7 @@ python3 01_コード/scripts/company/backup_zslim_restic.py run
 
 詳細は `docs/backup-zslim.md` を読む。
 
-## 8. 実行直前に承認が必要な操作
+## 9. 実行直前に承認が必要な操作
 
 以下は、方針が決まっていても直前承認を取る。
 
@@ -146,16 +167,17 @@ python3 01_コード/scripts/company/backup_zslim_restic.py run
 - 外部サービスへの投稿、送信、公開
 - 本番環境への不可逆反映
 
-## 9. 禁止事項
+## 10. 禁止事項
 
 - Drive側で `git commit` / `git pull` / `git push` しない。
 - Drive側に `.git` 本体を置かない。
+- Drive同期中（Driveアイコンが回転中）にGit操作しない。
 - `.env` や実トークンをGitに入れない。
 - 大容量成果物をGitに入れない。
 - `git push --force` を使わない。
 - 手作業でDrive側とローカルGit側を丸ごと上書き同期しない。
 
-## 10. 迷ったとき
+## 11. 迷ったとき
 
 - 制作物か、履歴管理したいコードかを先に分ける。
 - 制作物ならDrive側に置く。

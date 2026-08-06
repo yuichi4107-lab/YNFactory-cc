@@ -9,6 +9,24 @@ $RECYCLE.BIN/
 *.gsheet
 *.gslides
 .DS_Store
+Icon?
+*.gdraw
+*.gform
+*.gjam
+*.glink
+*.gmap
+*.gnote
+*.gsite
+*.gtable
+
+# ─── Drive 競合コピー（Git事故の主因。絶対にコミットしない）───
+# 詳細と復旧手順: 02_設定/docs/git-drive-safety.md
+*競合コピー*
+*conflicted copy*
+*conflicted-copy*
+
+# git-drive-guard が退避した破損ファイルの隔離先（_archive 配下・Drive専用）
+_archive/git-drive-quarantine/
 
 # ─── 環境変数・シークレット ───
 .env

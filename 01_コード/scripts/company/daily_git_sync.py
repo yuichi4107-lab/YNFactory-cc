@@ -137,6 +137,22 @@ def lock_or_exit(root: Path, log: Logger):
     return lock_fh
 
 
+def ensure_no_drive_damage(root: Path, log: Logger) -> None:
+    """Stop before touching a repository that Google Drive has corrupted."""
+    guard = root / "01_コード" / "scripts" / "company" / "git_drive_guard.py"
+    if not guard.is_file():
+        log.line("git_drive_guard.py not found; skipped Drive damage preflight")
+        return
+
+    result = run(["python3", str(guard), "check", "--hook"], cwd=root, log=log, check=False)
+    if result.returncode != 0:
+        raise CommandError(
+            "Google Drive 由来の破損を検出したため中止しました。"
+            "`python3 01_コード/scripts/company/git_drive_guard.py fix` と "
+            "02_設定/docs/git-drive-safety.md を確認してください。"
+        )
+
+
 def ensure_clean_git_state(root: Path, log: Logger) -> None:
     branch = git_output(["rev-parse", "--abbrev-ref", "HEAD"], cwd=root, log=log)
     if branch != "main":
@@ -315,6 +331,7 @@ def run_once(args: argparse.Namespace, log: Logger) -> None:
         log.line("=" * 72)
         log.line(f"YNFactory daily Git sync: {now:%Y-%m-%d %A %H:%M:%S %Z}")
         log.line(f"root: {root}")
+        ensure_no_drive_damage(root, log)
         ensure_clean_git_state(root, log)
 
         if args.dry_run:
