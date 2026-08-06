@@ -913,7 +913,7 @@ rows.append(["80", "テキストページ",
 # =====================================
 # CSV出力
 # =====================================
-outpath = r"G:\マイドライブ\YNFactory-cc\.company\outputs\ebooks-manga\manga-career-restart\vol4\panels\comicle_output.csv"
+outpath = r"G:\マイドライブ\YNFactory-cc\03_成果物\outputs\ebooks-manga\manga-career-restart\vol4\panels\comicle_output.csv"
 
 with open(outpath, "w", encoding="utf-8", newline="") as f:
     writer = csv.writer(f, quoting=csv.QUOTE_ALL)

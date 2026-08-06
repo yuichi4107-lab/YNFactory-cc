@@ -85,7 +85,7 @@ ZSlim への初回フルバックアップは完了済み。
 
 | 分類 | 件数 | ローカルGit側サイズ | 推奨 |
 |---|---:|---:|---|
-| `.company/outputs/` | 3,783 | 98.4 MiB | 追跡解除済み |
+| `03_成果物/outputs/` | 3,783 | 98.4 MiB | 追跡解除済み |
 | `.company/.venvs/` | 779 | 18.5 MiB | 追跡解除済み |
 | `keiba-unified/win5/data/cache/` | 97 | 8.0 MiB | 追跡解除済み |
 | `.playwright-mcp/` | 72 | 0.4 MiB | 追跡解除済み |

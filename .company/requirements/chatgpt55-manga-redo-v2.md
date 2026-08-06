@@ -2,7 +2,7 @@
 # マンガ版「ChatGPT 5.5時代の結論」シナリオ書き直し v2
 
 作成日: 2026-05-12
-対象プロジェクト: `.company/outputs/ebooks-manga/chatgpt55-now-only-manga/`
+対象プロジェクト: `03_成果物/outputs/ebooks-manga/chatgpt55-now-only-manga/`
 
 ---
 
@@ -261,7 +261,7 @@ PXX 原書論点: ○○
 - `manuscript/作画テイスト_コミカル版.md` — 絵柄・演出ルール（コミカル表現・吹き出し形式）
 
 ### 原書参照先
-- `g:/マイドライブ/YNFactory-cc/.company/outputs/ebooks/chatgpt55-now-only/manuscript/` 配下
+- `g:/マイドライブ/YNFactory-cc/03_成果物/outputs/ebooks/chatgpt55-now-only/manuscript/` 配下
 
 ### 制作スキル
 - `.agents/skills/ebook-to-manga/skill.md` — 全体パイプライン確認用

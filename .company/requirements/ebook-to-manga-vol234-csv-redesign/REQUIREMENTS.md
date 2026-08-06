@@ -1,7 +1,7 @@
 # 要件定義書: manga-career-restart vol2-4 CSV全面見直し + 全画像再生成
 
 作成日: 2026-04-25（2026-04-26 改訂: 2:3サイズ統一を追加）
-対象: `.company/outputs/ebooks-manga/manga-career-restart/vol2/`, `vol3/`, `vol4/`
+対象: `03_成果物/outputs/ebooks-manga/manga-career-restart/vol2/`, `vol3/`, `vol4/`
 
 ---
 
@@ -38,7 +38,7 @@ manga-career-restart vol2〜vol4 について、1コマあたりの文字数を3
 **正規パス（manuscript 配下、全巻共有）:**
 
 ```
-.company/outputs/ebooks-manga/manga-career-restart/manuscript/characters/
+03_成果物/outputs/ebooks-manga/manga-career-restart/manuscript/characters/
     ミサキ.png
     ケンタ.png
     山田課長.png
@@ -72,7 +72,7 @@ vol1 `panels/comicle_output.csv`（1170行、gpt-image-2対応済み）と同一
 
 既存 pages/ の移動先:
 ```
-.company/outputs/ebooks-manga/manga-career-restart/_archive/2026-04-26/
+03_成果物/outputs/ebooks-manga/manga-career-restart/_archive/2026-04-26/
     vol2/pages/  ← vol2/pages/ の全ファイルを移動
     vol3/pages/  ← vol3/pages/ の全ファイルを移動
     vol4/pages/  ← vol4/pages/ の全ファイルを移動

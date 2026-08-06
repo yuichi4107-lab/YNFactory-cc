@@ -102,7 +102,7 @@ CW / ランサーズ → 提案・受注
 - 経理: 価格・売上管理
 
 ## 成果物の配置
-- `.company/outputs/ai-side-business/` — 記事・ポートフォリオ等
+- `03_成果物/outputs/ai-side-business/` — 記事・ポートフォリオ等
   - `coconala/` — ココナラ出品サービスの資料
   - `note-articles/` — note記事の原稿（01〜09 作成済み）
   - `portfolio/` — 技術ポートフォリオ・実績

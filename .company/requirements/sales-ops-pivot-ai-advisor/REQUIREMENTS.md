@@ -280,14 +280,14 @@ Week 4: 工程4（ウェビナー基盤）+ 工程5（Calendly）+ 工程10（�
 
 | ファイル | 内容 |
 |---|---|
-| `.company/outputs/sales-content/webinar-platform/landing-page.html` | ウェビナー告知LP（HTML） |
-| `.company/outputs/sales-content/webinar-platform/signup-form.md` | 申込フォーム設定例 |
-| `.company/outputs/sales-content/webinar-platform/auto-emails/registration-confirmation.md` | 自動メール: 申込確認 |
-| `.company/outputs/sales-content/webinar-platform/auto-emails/reminder-1day-before.md` | 自動メール: 前日リマインダー |
-| `.company/outputs/sales-content/webinar-platform/auto-emails/reminder-1hour-before.md` | 自動メール: 1時間前リマインダー |
-| `.company/outputs/sales-content/webinar-platform/auto-emails/post-webinar-followup.md` | 自動メール: 終了後フォローアップ |
-| `.company/outputs/sales-content/webinar-platform/peatix-vs-self-hosted.md` | Peatix vs 自社ホスト比較メモ |
-| `.company/outputs/sales-content/webinar-platform/README.md` | 運用ガイド |
+| `03_成果物/outputs/sales-content/webinar-platform/landing-page.html` | ウェビナー告知LP（HTML） |
+| `03_成果物/outputs/sales-content/webinar-platform/signup-form.md` | 申込フォーム設定例 |
+| `03_成果物/outputs/sales-content/webinar-platform/auto-emails/registration-confirmation.md` | 自動メール: 申込確認 |
+| `03_成果物/outputs/sales-content/webinar-platform/auto-emails/reminder-1day-before.md` | 自動メール: 前日リマインダー |
+| `03_成果物/outputs/sales-content/webinar-platform/auto-emails/reminder-1hour-before.md` | 自動メール: 1時間前リマインダー |
+| `03_成果物/outputs/sales-content/webinar-platform/auto-emails/post-webinar-followup.md` | 自動メール: 終了後フォローアップ |
+| `03_成果物/outputs/sales-content/webinar-platform/peatix-vs-self-hosted.md` | Peatix vs 自社ホスト比較メモ |
+| `03_成果物/outputs/sales-content/webinar-platform/README.md` | 運用ガイド |
 
 ### 完了条件
 - [x] LP がターゲット訴求力（地方中小30-100名）として即運用可能な品質であること
@@ -337,7 +337,7 @@ Week 4: 工程4（ウェビナー基盤）+ 工程5（Calendly）+ 工程10（�
 > 旧工程5（スコア71点）は「実環境セットアップ・テスト実施」が完了条件に含まれていたため FAIL となったが、
 > 工程4と同じ構造的問題（オーナー手動セットアップが executor では達成不可）のため工程分割により解決。
 
-### 中間成果物（既存ファイル、`.company/outputs/sales-content/calendly-setup/` 配下）
+### 中間成果物（既存ファイル、`03_成果物/outputs/sales-content/calendly-setup/` 配下）
 
 | ファイル | 内容 |
 |---|---|
@@ -528,7 +528,7 @@ Week 4: 工程4（ウェビナー基盤）+ 工程5（Calendly）+ 工程10（�
 **構成:**
 イントロ → 課題提起（人手不足・採用難の現実）→ AI必須論 → 具体5選 → キャリアコンサル目線の差別化トーク → 個別相談CTA → 質疑応答
 
-**保存先:** `.company/outputs/webinar-content/ai-advisor-webinar-main/`
+**保存先:** `03_成果物/outputs/webinar-content/ai-advisor-webinar-main/`
 
 ### 完了条件
 - [ ] メインテーマ1本のPPTX（完成版・即発表可）が存在すること
@@ -573,7 +573,7 @@ Week 4: 工程4（ウェビナー基盤）+ 工程5（Calendly）+ 工程10（�
    - 補助金パンフレット（小規模事業者持続化補助金・IT導入補助金、申請保証なし免責込み）
    - 補助金パンフには「申請は保証しない旨」「活用できる可能性がある」という訴求にとどめる免責文を明記
 
-**保存先:** `.company/outputs/webinar-content/ai-advisor-zoom-proposal/`
+**保存先:** `03_成果物/outputs/webinar-content/ai-advisor-zoom-proposal/`
 
 ### 完了条件
 - [ ] 30分内に完結するトーク台本が存在すること

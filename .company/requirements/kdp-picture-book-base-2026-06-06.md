@@ -83,7 +83,7 @@ KDP版は単体で読者満足がある完成品にしつつ、巻末の控え�
 標準出力先:
 
 ```text
-.company/outputs/picture-books/oyasumi-kyou-no-kimochi/
+03_成果物/outputs/picture-books/oyasumi-kyou-no-kimochi/
 ├── project.md
 ├── progress.json
 ├── research/

@@ -2,7 +2,7 @@
 
 **作成日**: 2026-05-02
 **工程**: 工程5 — 50字超過行の最終確認
-**対象CSV**: `.company/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output.csv`
+**対象CSV**: `03_成果物/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output.csv`
 
 ---
 

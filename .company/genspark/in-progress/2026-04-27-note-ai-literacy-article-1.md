@@ -30,13 +30,13 @@ AIリテラシー全5回シリーズの1本目を公開する。シリーズ全�
 ## 画像ファイル（アップロード順）
 
 1. **カバー画像**（最初にアップロード／見出し画像に設定）:
-   `.company/outputs/note-article-1/manga_cover_20260423_123845.png`
+   `03_成果物/outputs/note-article-1/manga_cover_20260423_123845.png`
 2. **本文中 図1**（「観測者バイアス」節、料理のアナロジー段落の直後）:
-   `.company/outputs/note-article-1/manga_fig1_chef_20260423_123757.png`
+   `03_成果物/outputs/note-article-1/manga_fig1_chef_20260423_123757.png`
 3. **本文中 図2**（「使う≠引き出す」節、対比説明の前）:
-   `.company/outputs/note-article-1/manga_fig2_contrast_20260423_123816.png`
+   `03_成果物/outputs/note-article-1/manga_fig2_contrast_20260423_123816.png`
 4. **本文中 図3**（「3つの場所」節、3箇所紹介の冒頭）:
-   `.company/outputs/note-article-1/manga_fig3_gears_20260423_123815.png`
+   `03_成果物/outputs/note-article-1/manga_fig3_gears_20260423_123815.png`
 
 ※ 原稿Markdown内に ![...](相対パス) で既に挿入位置を示してある。該当位置に画像を配置する。
 
@@ -100,4 +100,4 @@ AIリテラシー全5回シリーズの1本目を公開する。シリーズ全�
 ## 注意事項
 
 - このシリーズは全5回で、同じフォルダに #2〜#5 の指示書も置いてある。各記事の publish_at を厳守すること。
-- 原稿中の画像 Markdown リンク（`![...](../../.company/outputs/note-article-1/...)`）はnoteに直接貼り付けても表示されない。指定位置で画像をアップロードし直す方式で対応する。
+- 原稿中の画像 Markdown リンク（`![...](../../03_成果物/outputs/note-article-1/...)`）はnoteに直接貼り付けても表示されない。指定位置で画像をアップロードし直す方式で対応する。

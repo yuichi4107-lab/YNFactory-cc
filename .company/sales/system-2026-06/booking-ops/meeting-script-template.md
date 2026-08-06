@@ -2,7 +2,7 @@
 
 - **担当**: オーナー（商談本体）
 - **所要時間**: 30分
-- **台本本体**: `.company/outputs/sales-content/individual-zoom-30min/script.md`（工程10成果物・完成済み）
+- **台本本体**: `03_成果物/outputs/sales-content/individual-zoom-30min/script.md`（工程10成果物・完成済み）
 - **本ファイルの用途**: 予約直後〜当日の進行チェックリスト。台本の補完と運用のガイド。
 
 > **重要**: 詳細なトーク内容・セリフ・ノートはすべて `script.md` に記載済み。本ファイルは「それを運用に組み込む」ための進行チェックです。商談当日は `script.md` を読んで臨んでください。
@@ -131,13 +131,13 @@ next_action_date: "{{YYYY-MM-DD}}"
 
 | ファイル名 | パス |
 |---|---|
-| 30分商談台本（本体） | `.company/outputs/sales-content/individual-zoom-30min/script.md` |
-| ヒアリング質問リスト | `.company/outputs/sales-content/individual-zoom-30min/hearing-questions.md` |
-| クロージングフロー | `.company/outputs/sales-content/individual-zoom-30min/closing-flow.md` |
-| 商談用スライド | `.company/outputs/sales-content/individual-zoom-30min/slides.pptx` |
-| L1オファー説明書 | `.company/outputs/sales-content/offer-materials/plans/L1-light-advisor.md` |
-| L2オファー説明書 | `.company/outputs/sales-content/offer-materials/plans/L2-standard-advisor.md` |
-| L3オファー説明書 | `.company/outputs/sales-content/offer-materials/plans/L3-3month-implementation.md` |
+| 30分商談台本（本体） | `03_成果物/outputs/sales-content/individual-zoom-30min/script.md` |
+| ヒアリング質問リスト | `03_成果物/outputs/sales-content/individual-zoom-30min/hearing-questions.md` |
+| クロージングフロー | `03_成果物/outputs/sales-content/individual-zoom-30min/closing-flow.md` |
+| 商談用スライド | `03_成果物/outputs/sales-content/individual-zoom-30min/slides.pptx` |
+| L1オファー説明書 | `03_成果物/outputs/sales-content/offer-materials/plans/L1-light-advisor.md` |
+| L2オファー説明書 | `03_成果物/outputs/sales-content/offer-materials/plans/L2-standard-advisor.md` |
+| L3オファー説明書 | `03_成果物/outputs/sales-content/offer-materials/plans/L3-3month-implementation.md` |
 
 ---
 

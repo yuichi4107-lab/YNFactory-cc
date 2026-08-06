@@ -54,7 +54,7 @@ publish_at: "2026-04-23 12:00"
 
 ## 原稿ファイル
 
-`.company/outputs/tech-articles/note-series/2026-04-23-coconala-ai-skills.md`
+`03_成果物/outputs/tech-articles/note-series/2026-04-23-coconala-ai-skills.md`
 
 ## 投稿時の注意事項
 

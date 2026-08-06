@@ -39,7 +39,7 @@ publish_at: "2026-04-13 12:00"
 # note記事公開: 見積書・請求書自動化
 
 ## 原稿ファイル
-`.company/outputs/tech-articles/note-series/2026-04-13-estimate-invoice.md`
+`03_成果物/outputs/tech-articles/note-series/2026-04-13-estimate-invoice.md`
 
 ## 投稿時の注意事項
 - 記事タイトル: 見積書と請求書の作成、AIツールに任せたら月末の地獄が消えた

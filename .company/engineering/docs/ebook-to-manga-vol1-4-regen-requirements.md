@@ -52,13 +52,13 @@ manga-career-restart vol1〜vol4（計342ページ）を最新 ebook-to-manga �
 |---|---|
 | スキル仕様 | `G:\マイドライブ\YNFactory-cc\.claude\skills\ebook-to-manga\skill.md` |
 | panel_regions.json | `G:\マイドライブ\YNFactory-cc\.claude\skills\ebook-to-manga\panel_regions.json` |
-| character_defs.json（全巻共用） | `G:\マイドライブ\YNFactory-cc\.company\outputs\ebooks-manga\manga-career-restart\manuscript\character_defs.json` |
-| キャラ参照画像（全巻共用） | `G:\マイドライブ\YNFactory-cc\.company\outputs\ebooks-manga\manga-career-restart\manuscript\characters\*.png` |
-| vol1 CSV | `G:\マイドライブ\YNFactory-cc\.company\outputs\ebooks-manga\manga-career-restart\vol1\panels\comicle_output.csv` |
-| vol2 CSV | `G:\マイドライブ\YNFactory-cc\.company\outputs\ebooks-manga\manga-career-restart\vol2\panels\comicle_output.csv` |
-| vol3 CSV | `G:\マイドライブ\YNFactory-cc\.company\outputs\ebooks-manga\manga-career-restart\vol3\panels\comicle_output.csv` |
-| vol4 CSV | `G:\マイドライブ\YNFactory-cc\.company\outputs\ebooks-manga\manga-career-restart\vol4\panels\comicle_output.csv` |
-| ハイブリッドループ参照実装 | `G:\マイドライブ\YNFactory-cc\.company\outputs\ebooks-manga\manga-career-restart\_prototype\hybrid_loop.py` |
+| character_defs.json（全巻共用） | `G:\マイドライブ\YNFactory-cc\03_成果物\outputs\ebooks-manga\manga-career-restart\manuscript\character_defs.json` |
+| キャラ参照画像（全巻共用） | `G:\マイドライブ\YNFactory-cc\03_成果物\outputs\ebooks-manga\manga-career-restart\manuscript\characters\*.png` |
+| vol1 CSV | `G:\マイドライブ\YNFactory-cc\03_成果物\outputs\ebooks-manga\manga-career-restart\vol1\panels\comicle_output.csv` |
+| vol2 CSV | `G:\マイドライブ\YNFactory-cc\03_成果物\outputs\ebooks-manga\manga-career-restart\vol2\panels\comicle_output.csv` |
+| vol3 CSV | `G:\マイドライブ\YNFactory-cc\03_成果物\outputs\ebooks-manga\manga-career-restart\vol3\panels\comicle_output.csv` |
+| vol4 CSV | `G:\マイドライブ\YNFactory-cc\03_成果物\outputs\ebooks-manga\manga-career-restart\vol4\panels\comicle_output.csv` |
+| ハイブリッドループ参照実装 | `G:\マイドライブ\YNFactory-cc\03_成果物\outputs\ebooks-manga\manga-career-restart\_prototype\hybrid_loop.py` |
 
 ---
 

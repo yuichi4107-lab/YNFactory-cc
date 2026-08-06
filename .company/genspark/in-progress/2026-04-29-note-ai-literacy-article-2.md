@@ -30,13 +30,13 @@ AIリテラシー全5回シリーズの2本目を公開する。B層（副業・
 ## 画像ファイル（アップロード順）
 
 1. **カバー画像**（見出し画像に設定）:
-   `.company/outputs/note-article-2/manga_cover_20260423_133434.png`
+   `03_成果物/outputs/note-article-2/manga_cover_20260423_133434.png`
 2. **本文中 図1**（「投げ方を変えても変わらない理由」節の冒頭）:
-   `.company/outputs/note-article-2/manga_fig1_20260423_133358.png`
+   `03_成果物/outputs/note-article-2/manga_fig1_20260423_133358.png`
 3. **本文中 図2**（「AIに渡す前に決める3つのこと」節の冒頭）:
-   `.company/outputs/note-article-2/manga_fig2_20260423_133357.png`
+   `03_成果物/outputs/note-article-2/manga_fig2_20260423_133357.png`
 4. **本文中 図3**（「この3問を習慣にするだけで変わること」節の冒頭）:
-   `.company/outputs/note-article-2/manga_fig3_20260423_133403.png`
+   `03_成果物/outputs/note-article-2/manga_fig3_20260423_133403.png`
 
 ## タイトル・タグ
 

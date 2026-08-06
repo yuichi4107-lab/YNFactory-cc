@@ -12,14 +12,14 @@ Mac、Windows、Android、iPhone、iPad のどの端末からでも、Google Dri
 
 ## スコープ
 
-- `.company/inputs/00_INPUT_BOX/` を投入口として使う
-- `.company/inputs/00_INPUT_BOX/` に置かれたテキスト、URLメモ、画像、PDF、Officeファイル、フォルダを取り込む
+- `04_インプット/inputs/00_INPUT_BOX/` を投入口として使う
+- `04_インプット/inputs/00_INPUT_BOX/` に置かれたテキスト、URLメモ、画像、PDF、Officeファイル、フォルダを取り込む
 - 一発アップロード画面からテキスト、URL、画像、ファイルを登録できる
 - 外出先向けに Google Apps Script Web アプリ雛形を用意し、Drive投入口フォルダIDを設定する
-- raw コピーを `.company/inputs/intake/raw/` に保存する
-- AIが読みやすい正規化テキストを `.company/inputs/intake/raw/YYYY-MM-DD/<input-id>/normalized/` に保存する
-- 活用版を `.company/inputs/organized/external/` に生成する
-- 横断索引を `.company/inputs/indexes/external-*.md` に生成する
+- raw コピーを `04_インプット/inputs/intake/raw/` に保存する
+- AIが読みやすい正規化テキストを `04_インプット/inputs/intake/raw/YYYY-MM-DD/<input-id>/normalized/` に保存する
+- 活用版を `04_インプット/inputs/organized/external/` に生成する
+- 横断索引を `04_インプット/inputs/indexes/external-*.md` に生成する
 - daily inputs sync に取り込みを組み込む
 - 同一パス・同一内容の重複取り込みを防ぐ
 
@@ -32,7 +32,7 @@ Mac、Windows、Android、iPhone、iPad のどの端末からでも、Google Dri
 - `external-inputs.md`、`external-urls.md`、`external-files.md`、`external-todo-candidates.md` が自動生成される
 - Mac / Windows 用の手動取り込み手段がある
 - Mac / Windows で起動できるアップロード画面がある
-- Google Apps Script版は `.company/inputs/uploader/google_apps_script/` に配置され、`00_INPUT_BOX` のDriveフォルダIDが反映済み
+- Google Apps Script版は `04_インプット/inputs/uploader/google_apps_script/` に配置され、`00_INPUT_BOX` のDriveフォルダIDが反映済み
 - daily sync 実行時に `import_drive_inbox.py` が呼ばれる
 - Windows / Mac で5分おきの自動取り込みを設定できる
 

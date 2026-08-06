@@ -19,7 +19,7 @@ Calendlyからの予約確認メールを開き、以下を確認する。
 - [ ] **商談日時**
 - [ ] **Calendlyの事前質問への回答**（設定済みの場合）
 
-> Calendlyの事前質問設定については `.company/outputs/sales-content/calendly-setup/pre-meeting-questions.md` を参照。
+> Calendlyの事前質問設定については `03_成果物/outputs/sales-content/calendly-setup/pre-meeting-questions.md` を参照。
 > 設定済みの場合、「現在の課題」「従業員規模」「AI活用状況」がすでに取得できている。
 
 ---
@@ -174,10 +174,10 @@ WHERE company_name LIKE '%{{会社名キーワード}}%'
 
 | ファイル | パス | 用途 |
 |---|---|---|
-| 30分商談台本 | `.company/outputs/sales-content/individual-zoom-30min/script.md` | 全体の流れ・トーク例 |
-| ヒアリング質問リスト | `.company/outputs/sales-content/individual-zoom-30min/hearing-questions.md` | 5〜15分パート |
-| クロージングフロー | `.company/outputs/sales-content/individual-zoom-30min/closing-flow.md` | 25〜30分パート |
-| 商談用スライド | `.company/outputs/sales-content/individual-zoom-30min/slides.pptx` | 当日画面共有 |
+| 30分商談台本 | `03_成果物/outputs/sales-content/individual-zoom-30min/script.md` | 全体の流れ・トーク例 |
+| ヒアリング質問リスト | `03_成果物/outputs/sales-content/individual-zoom-30min/hearing-questions.md` | 5〜15分パート |
+| クロージングフロー | `03_成果物/outputs/sales-content/individual-zoom-30min/closing-flow.md` | 25〜30分パート |
+| 商談用スライド | `03_成果物/outputs/sales-content/individual-zoom-30min/slides.pptx` | 当日画面共有 |
 
 ---
 

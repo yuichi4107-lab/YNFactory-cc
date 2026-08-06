@@ -177,7 +177,7 @@ clean regen が必要な場合のみ、対象ページを `step5_regen/` とし�
 
 ### サンプルデータ流用方針
 
-既存出力 `.company/outputs/ebooks-manga/manga-career-restart/vol1/` を使用する。
+既存出力 `03_成果物/outputs/ebooks-manga/manga-career-restart/vol1/` を使用する。
 
 - `manuscript/characters/` に既存のキャラリファレンス PNG が存在する場合 → Step 3 ハンドオフのドライランに使用
 - `panels/comicle_output.csv` が存在する場合 → Step 5 ハンドオフのドライランに使用
@@ -196,7 +196,7 @@ clean regen が必要な場合のみ、対象ページを `step5_regen/` とし�
 
 ### 完了条件
 
-- [ ] `.company/outputs/ebooks-manga/manga-career-restart/vol1/` の現状ファイル一覧が確認済みであること
+- [ ] `03_成果物/outputs/ebooks-manga/manga-career-restart/vol1/` の現状ファイル一覧が確認済みであること
 - [ ] ドライラン A〜C の実施手順が明文化されていること
 - [ ] サンプル実行に必要な環境変数・依存ライブラリ（openai, pillow, pytesseract 等）がリストアップされていること
 - [ ] ドライランが既存の vol1 出力ファイルを破壊しないことが保証されていること（出力先の分離）
@@ -268,7 +268,7 @@ clean regen が必要な場合のみ、対象ページを `step5_regen/` とし�
   "vol": 1,
   "step": "step5",
   "created_at": "2026-04-24T14:30:00+09:00",
-  "source_dir": ".company/outputs/ebooks-manga/manga-career-restart/vol1",
+  "source_dir": "03_成果物/outputs/ebooks-manga/manga-career-restart/vol1",
   "total_pages": 100,
   "status": "pending"
 }
@@ -414,6 +414,6 @@ Codex は「API を叩いて PNG を書く」純粋な実行役に徹する。
 
 ### 既存プロトタイプの活用
 
-`.company/outputs/ebooks-manga/manga-career-restart/_prototype/hybrid_loop.py`（465 行）の
+`03_成果物/outputs/ebooks-manga/manga-career-restart/_prototype/hybrid_loop.py`（465 行）の
 画像生成コードは `gen_pages.py` のベースとして流用可能。
 `main()` から API 呼び出し部分のみを抜き出し、OCR/Vision-check ループを除去したものが `gen_pages.py` となる。

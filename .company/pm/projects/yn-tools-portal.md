@@ -36,6 +36,6 @@ tags: [saas, fastapi, google-auth, stripe, portal]
 
 ## メモ
 - 既存の `sales-automation/` (FastAPI) と `mail-system/` (Flask) のコードを活用
-- GEMS/GPTコンテンツは `.company/outputs/ai-business-content-100/` に100件完成済み
+- GEMS/GPTコンテンツは `03_成果物/outputs/ai-business-content-100/` に100件完成済み
 - Renderデプロイは実績あり（sales-automation で経験済み）
 - mail-system は Flask → FastAPI への移植が必要

@@ -20,7 +20,7 @@ Move recurring scheduled-task execution away from Google Drive paths so startup 
   - indirect `com.ynfactory.daily-handoff` dependency via `tg-bot`
 - Windows scheduled-task wrappers that still referenced `G:\マイドライブ\YNFactory-cc`.
 - Local runtime support:
-  - local Python venv under `/Users/yuichi/YNFactory-cc/biz_idea_generator/.venv`
+  - local Python venv under `/Users/yuichi/YNFactory-cc/05_プロジェクト/biz_idea_generator/.venv`
   - local `.env` copy, kept ignored by git
 
 ## Non-Scope

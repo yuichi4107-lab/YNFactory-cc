@@ -119,4 +119,4 @@
 - セキュアコンテキスト（localhost または https）でのみ動作する制約はスコープ内の既知制約として扱い、
   README.md への明記をもって対処済みとする
 - 実行環境ターゲット: Chrome 最新版 / Firefox 最新版 / Safari 最新版（Edge も含む）
-- 保存先ディレクトリ: `g:\マイドライブ\YNFactory-cc\voice-recorder\`
+- 保存先ディレクトリ: `g:\マイドライブ\YNFactory-cc\05_プロジェクト\voice-recorder\`

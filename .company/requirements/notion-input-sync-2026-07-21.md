@@ -9,7 +9,7 @@ status: approved
 
 ## 背景
 
-- `.company/inputs/` に raw→intake→organized→indexes のインプット取り込みパイプラインが稼働中(Limitless / Zoom / Google Meet / Drive INPUT_BOX の4系統)
+- `04_インプット/inputs/` に raw→intake→organized→indexes のインプット取り込みパイプラインが稼働中(Limitless / Zoom / Google Meet / Drive INPUT_BOX の4系統)
 - 2026-07-15 の音声メモで「蓄積したインプットデータを Notion に移して整理・管理したい」との指示
 - 2026-07-21 にオーナー確認済み: Notion 公式 API + トークン方式 / organized 全部 / 単一DB+ビュー / 1日1回実行
 
@@ -42,12 +42,12 @@ status: approved
 
 | ファイル | 役割 |
 |---|---|
-| `.company/inputs/sync_notion.py` | 同期本体 |
-| `.company/inputs/notion_sync.bat` | 実行ラッパー |
-| `.company/inputs/setup_notion_sync_windows.bat` | タスク登録(DAILY 07:30) |
-| `.company/inputs/remove_notion_sync_windows.bat` | タスク解除 |
-| `.company/inputs/.env.notion` | NOTION_TOKEN / NOTION_PARENT_PAGE_ID(git 非対象) |
-| `.company/inputs/intake/state/notion_synced.json` | 同期 state(DB ID・ページ ID・sha256) |
+| `04_インプット/inputs/sync_notion.py` | 同期本体 |
+| `04_インプット/inputs/notion_sync.bat` | 実行ラッパー |
+| `04_インプット/inputs/setup_notion_sync_windows.bat` | タスク登録(DAILY 07:30) |
+| `04_インプット/inputs/remove_notion_sync_windows.bat` | タスク解除 |
+| `04_インプット/inputs/.env.notion` | NOTION_TOKEN / NOTION_PARENT_PAGE_ID(git 非対象) |
+| `04_インプット/inputs/intake/state/notion_synced.json` | 同期 state(DB ID・ページ ID・sha256) |
 
 ## Notion DB プロパティ
 
@@ -57,7 +57,7 @@ status: approved
 
 1. https://www.notion.so/my-integrations で内部インテグレーション作成 → トークン取得
 2. Notion に親ページ(例: YNFactory インプット)を作成し、インテグレーションを接続
-3. `.company/inputs/.env.notion` にトークンと親ページ ID を記入
+3. `04_インプット/inputs/.env.notion` にトークンと親ページ ID を記入
 
 ---
 

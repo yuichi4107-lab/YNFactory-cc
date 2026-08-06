@@ -30,13 +30,13 @@ AIリテラシー全5回シリーズの4本目を公開する。C層（小規模
 ## 画像ファイル（アップロード順）
 
 1. **カバー画像**（見出し画像）:
-   `.company/outputs/note-article-4/manga_cover_20260423_133540.png`
+   `03_成果物/outputs/note-article-4/manga_cover_20260423_133540.png`
 2. **本文中 図1**（「『AI社員』という比喩がなぜ機能しないか」節の冒頭）:
-   `.company/outputs/note-article-4/manga_fig1_20260423_133448.png`
+   `03_成果物/outputs/note-article-4/manga_fig1_20260423_133448.png`
 3. **本文中 図2**（「小さな組織でも機能する"AI部署"の最小構成」節の冒頭）:
-   `.company/outputs/note-article-4/manga_fig2_20260423_133448.png`
+   `03_成果物/outputs/note-article-4/manga_fig2_20260423_133448.png`
 4. **本文中 図3**（「経営者が手放してよい判断と、手放してはいけない判断」節の冒頭）:
-   `.company/outputs/note-article-4/manga_fig3_20260423_133502.png`
+   `03_成果物/outputs/note-article-4/manga_fig3_20260423_133502.png`
 
 ## タイトル・タグ
 

@@ -25,25 +25,8 @@
 ## 組織構成
 
 ```
-.company/
+.company/                        # 会社運営データ専用（2026-08-05〜）
 ├── CLAUDE.md
-├── context/                     # 外部インプット（会話記録・参考資料等）
-│   ├── CLAUDE.md
-│   ├── conversations/
-│   ├── references/
-│   ├── competitors/
-│   ├── clients/
-│   └── misc/
-├── outputs/                     # 全プロジェクトの最終成果物
-│   ├── ebooks/
-│   ├── instagram-reel/
-│   ├── instagram-stories/
-│   ├── ai-business-content-100/
-│   ├── ai-side-business/
-│   ├── tech-articles/
-│   ├── creative-guides/
-│   ├── flyers/
-│   └── video-auto-editor/
 ├── secretary/
 │   ├── CLAUDE.md
 │   ├── _template.md
@@ -120,6 +103,11 @@
 │   └── done/                    # 完了済み
 └── manus/                       # [旧] Manus連携（archiveのみ残存）
 ```
+
+> **2026-08-05のフォルダ構成変更**: 成果物・インプットは `.company/` の外に出た。
+> `.company/outputs/` → `03_成果物/outputs/`、`.company/inputs/` → `04_インプット/inputs/`、
+> `.company/context/` → `04_インプット/context/`。`.company/` には会社運営データのみを置く。
+> 全体構成は ルートの `CLAUDE.md` 「フォルダ構成」を参照。
 
 ## 組織図
 
@@ -284,7 +272,7 @@ open → in-progress → done
 
 | 区分 | 置き場 | 例 |
 |------|--------|-----|
-| **最終成果物・納品物** | `.company/outputs/{project}/` | 台本、記事、書籍原稿、ガイド、プロンプト集 |
+| **最終成果物・納品物** | `03_成果物/outputs/{project}/` | 台本、記事、書籍原稿、ガイド、プロンプト集 |
 | **作業中ドキュメント（WIP）** | `.company/{department}/` | 設計書、調査メモ、ブリーフ、要件定義 |
 | **運用・管理系** | `.company/{department}/` | クライアント情報、提案書、意思決定ログ |
 | **開発コード（実行可能）** | プロジェクトルート直下 | `mail-system/`, `biz_idea_generator/` 等 |

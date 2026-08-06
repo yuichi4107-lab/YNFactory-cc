@@ -17,7 +17,7 @@
 
 | # | 条件 | 判定 | 備考 |
 |---|---|---|---|
-| 1 | `.company/outputs/ebooks-manga/manga-career-restart/vol1/` の現状ファイル一覧が確認済みであること | OK | VERIFICATION.md §3 で git status を実行し、vol1 の変更が本工程起因でないことを確認・記録している |
+| 1 | `03_成果物/outputs/ebooks-manga/manga-career-restart/vol1/` の現状ファイル一覧が確認済みであること | OK | VERIFICATION.md §3 で git status を実行し、vol1 の変更が本工程起因でないことを確認・記録している |
 | 2 | ドライラン A〜C の実施手順が明文化されていること | OK | README.md に手順が具体的に記載されている。ただしドライラン B・C は「手順記載のみ・未実施」であり要件定義書の「サンプル実行に必要な…手順」の観点では記載として充足 |
 | 3 | サンプル実行に必要な環境変数・依存ライブラリがリストアップされていること | OK | README で `python 3.8+`・`pip install openai pillow`・`OPENAI_API_KEY` が明示されている |
 | 4 | ドライランが既存 vol1 出力ファイルを破壊しないことが保証されていること（出力先の分離） | NG | 成果物の分離自体は担保できているが、`_sample-run/` 配下に Windows の `desktop.ini` が4件混入しており、「このフォルダ内のファイルのみ」という保証が厳密には崩れている |

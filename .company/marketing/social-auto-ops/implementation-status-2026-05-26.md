@@ -75,19 +75,19 @@ AIテーマのnote記事
 
 作成済み:
 
-- LP原稿: `.company/outputs/lp/ai-introduction-consult/lp-copy.md`
-- 静的LP: `.company/outputs/lp/ai-introduction-consult/index.html`
-- LP CSS: `.company/outputs/lp/ai-introduction-consult/styles.css`
-- デスクトップ確認画像: `.company/outputs/lp/ai-introduction-consult/desktop-preview.png`
-- スマホ確認画像: `.company/outputs/lp/ai-introduction-consult/mobile-preview.png`
-- 親しみやすさ改善後のデスクトップ確認画像: `.company/outputs/lp/ai-introduction-consult/desktop-preview-friendly.png`
-- 親しみやすさ改善後のスマホ確認画像: `.company/outputs/lp/ai-introduction-consult/mobile-preview-friendly.png`
-- 画像強化後のデスクトップ確認画像: `.company/outputs/lp/ai-introduction-consult/desktop-preview-visual.png`
-- 画像強化後のスマホ確認画像: `.company/outputs/lp/ai-introduction-consult/mobile-preview-visual.png`
+- LP原稿: `03_成果物/outputs/lp/ai-introduction-consult/lp-copy.md`
+- 静的LP: `03_成果物/outputs/lp/ai-introduction-consult/index.html`
+- LP CSS: `03_成果物/outputs/lp/ai-introduction-consult/styles.css`
+- デスクトップ確認画像: `03_成果物/outputs/lp/ai-introduction-consult/desktop-preview.png`
+- スマホ確認画像: `03_成果物/outputs/lp/ai-introduction-consult/mobile-preview.png`
+- 親しみやすさ改善後のデスクトップ確認画像: `03_成果物/outputs/lp/ai-introduction-consult/desktop-preview-friendly.png`
+- 親しみやすさ改善後のスマホ確認画像: `03_成果物/outputs/lp/ai-introduction-consult/mobile-preview-friendly.png`
+- 画像強化後のデスクトップ確認画像: `03_成果物/outputs/lp/ai-introduction-consult/desktop-preview-visual.png`
+- 画像強化後のスマホ確認画像: `03_成果物/outputs/lp/ai-introduction-consult/mobile-preview-visual.png`
 - LP用画像素材:
-  - `.company/outputs/lp/ai-introduction-consult/assets/hero-consultation.png`
-  - `.company/outputs/lp/ai-introduction-consult/assets/workflow-simplify.png`
-  - `.company/outputs/lp/ai-introduction-consult/assets/first-task-workshop.png`
+  - `03_成果物/outputs/lp/ai-introduction-consult/assets/hero-consultation.png`
+  - `03_成果物/outputs/lp/ai-introduction-consult/assets/workflow-simplify.png`
+  - `03_成果物/outputs/lp/ai-introduction-consult/assets/first-task-workshop.png`
 - CTAライブラリ: `.company/marketing/social-auto-ops/cta/ai-introduction-cta-library.md`
 - Googleフォーム: `.company/marketing/social-auto-ops/forms/free-ai-diagnosis-google-form-spec.md`
 

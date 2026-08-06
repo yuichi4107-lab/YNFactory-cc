@@ -7,7 +7,7 @@
 
 ## ソース
 
-- ソースフォルダ: `.company/outputs/ebooks/somatid-introduction/`
+- ソースフォルダ: `03_成果物/outputs/ebooks/somatid-introduction/`
 - タイトル: ソマチッドとは何か
 - サブタイトル: 未確立な生命観を、歴史・主張・科学的視点から読み解く
 - 著者名: ソマチッド研究所
@@ -17,7 +17,7 @@
 
 ## 出力先
 
-`.company/outputs/ebooks-manga/somatid-introduction-manga/`
+`03_成果物/outputs/ebooks-manga/somatid-introduction-manga/`
 
 ## 漫画版の基本方針
 

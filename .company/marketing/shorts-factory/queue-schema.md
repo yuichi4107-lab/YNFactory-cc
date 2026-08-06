@@ -23,7 +23,7 @@ draft → ready_for_review → approved → posted
 |---|---|
 | `id` | `YYYY-MM-DD_slug` |
 | `topic` / `title` / `caption` / `hashtags` | 台本由来のメタ |
-| `video.path` / `video.duration` / `video.size_mb` | 完成動画（`.company/outputs/shorts-factory/{id}/final.mp4`） |
+| `video.path` / `video.duration` / `video.size_mb` | 完成動画（`03_成果物/outputs/shorts-factory/{id}/final.mp4`） |
 | `quality.pass` / `quality.avg_cer` / `quality.report_path` | 機械検証の結果 |
 | `review.owner_approved` / `decided_at` / `via` | 承認記録（telegram / auto_post） |
 | `telegram.message_id` | プレビュー送信済みメッセージ |
@@ -34,4 +34,4 @@ draft → ready_for_review → approved → posted
 ## 関連ファイル
 
 - ネタ帳: `topics.json`（backlog から1日1本消費。残り7本以下でTelegram補充アラート）
-- 成果物: `.company/outputs/shorts-factory/{id}/`（final.mp4, script.json, subtitles.ass, quality_report.json, captions.md, images/, preview_*.jpg）
+- 成果物: `03_成果物/outputs/shorts-factory/{id}/`（final.mp4, script.json, subtitles.ass, quality_report.json, captions.md, images/, preview_*.jpg）

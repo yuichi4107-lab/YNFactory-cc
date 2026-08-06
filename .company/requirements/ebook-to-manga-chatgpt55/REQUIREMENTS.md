@@ -10,7 +10,7 @@
 
 ## ゴール
 
-既存電子書籍 `.company/outputs/ebooks/chatgpt-5-5-impact/` を、KDP出版可能なマンガ形式の電子書籍へ変換する。
+既存電子書籍 `03_成果物/outputs/ebooks/chatgpt-5-5-impact/` を、KDP出版可能なマンガ形式の電子書籍へ変換する。
 
 ## スコープ
 

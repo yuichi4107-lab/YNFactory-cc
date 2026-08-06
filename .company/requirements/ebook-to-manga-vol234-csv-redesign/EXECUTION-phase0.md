@@ -31,7 +31,7 @@
 
 ## B. キャラ参照画像の存在確認
 
-対象パス: `.company/outputs/ebooks-manga/manga-career-restart/manuscript/characters/`
+対象パス: `03_成果物/outputs/ebooks-manga/manga-career-restart/manuscript/characters/`
 
 | ファイル名 | 存在確認 |
 |---|---|

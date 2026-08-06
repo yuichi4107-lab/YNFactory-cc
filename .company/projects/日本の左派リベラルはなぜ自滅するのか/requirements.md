@@ -13,7 +13,7 @@
 - 正本: 下記Notion 2ページ。ローカル設定と矛盾する場合はNotionを優先する
   - [Codex・Claude Code向け書籍執筆指示書](https://app.notion.com/p/3ae204bd6a1081f8a842fd804d386576)
   - [書籍構成設計書](https://app.notion.com/p/3ae204bd6a10815ba4befe15c6f97c22)
-- 補助入力: `.company/outputs/ebook-setup-inputs/latest.json`
+- 補助入力: `03_成果物/outputs/ebook-setup-inputs/latest.json`
 
 ## ゴール
 
@@ -342,7 +342,7 @@
 
 1. Notionの2つの正本
 2. 本要件定義書
-3. `.company/outputs/ebook-setup-inputs/latest.json` の選択内容
+3. `03_成果物/outputs/ebook-setup-inputs/latest.json` の選択内容
 4. 執筆時の裁量
 
 補助入力にある「約100,000字」は正本の12万〜16万字と矛盾するため採用しない。画像密度「少なめ」は後続の画像制作工程にのみ引き継ぎ、本原稿制作の完了条件には含めない。

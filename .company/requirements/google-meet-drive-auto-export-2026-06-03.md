@@ -30,10 +30,10 @@ Google Apps Script方式を採用する。
 
 ## 成果物
 
-- `.company/inputs/uploader/google_meet_apps_script/Code.gs`
-- `.company/inputs/uploader/google_meet_apps_script/appsscript.json`
-- `.company/inputs/uploader/google_meet_apps_script/README.md`
-- `.company/inputs/uploader/README.md` のGoogle Meet自動巡回セクション
+- `04_インプット/inputs/uploader/google_meet_apps_script/Code.gs`
+- `04_インプット/inputs/uploader/google_meet_apps_script/appsscript.json`
+- `04_インプット/inputs/uploader/google_meet_apps_script/README.md`
+- `04_インプット/inputs/uploader/README.md` のGoogle Meet自動巡回セクション
 
 ## 現在の権限状態
 

@@ -1,7 +1,7 @@
 # 要件定義書: manga-career-restart vol2 CSV再構築（50字目安 + outfit_id 列追加）
 
 作成日: 2026-05-02
-対象: `.company/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output.csv`
+対象: `03_成果物/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output.csv`
 ステータス: **ユーザー承認待ち**
 
 ---
@@ -18,7 +18,7 @@ vol2 の現行 CSV（4列・30字 hard limit・181ページ）を、vol3/vol4 �
 
 | 項目 | vol2 現状 |
 |---|---|
-| CSVパス | `.company/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output.csv` |
+| CSVパス | `03_成果物/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output.csv` |
 | 行数（CSV行） | 2507行 |
 | ページ数 | 181ページ（マンガ175 + テキスト6） |
 | 列数 | 4列（ページ番号・テンプレ・プロンプト・コマ別テキストJSON） |
@@ -126,8 +126,8 @@ vol2（第3章・第4章）に登場するシーンと対応プリセットの�
 
 ## 工程1: 現行 CSV バックアップ退避
 
-**入力**: `.company/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output.csv`
-**出力**: `.company/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output_pre_50char_redesign.csv`
+**入力**: `03_成果物/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output.csv`
+**出力**: `03_成果物/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output_pre_50char_redesign.csv`
 
 ### やること
 
@@ -157,7 +157,7 @@ vol2（第3章・第4章）に登場するシーンと対応プリセットの�
 
 ## 工程2: シナリオ再分析・コマ統合設計
 
-**入力**: vol2 原稿（シナリオ.txt の第3章・第4章相当部分） + `.company/outputs/ebooks-manga/manga-career-restart/manuscript/character_defs.json`
+**入力**: vol2 原稿（シナリオ.txt の第3章・第4章相当部分） + `03_成果物/outputs/ebooks-manga/manga-career-restart/manuscript/character_defs.json`
 **出力**: 設計メモ（ページ構成案・各ページの outfit_id 割り当て指針）
 
 ### やること
@@ -192,7 +192,7 @@ vol2（第3章・第4章）に登場するシーンと対応プリセットの�
 ## 工程3: 新 CSV 生成（50字目安 + outfit_id）
 
 **入力**: 工程2の設計メモ + `manuscript/character_defs.json`（outfit_presets 確定済み）
-**出力**: `.company/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output.csv`（新版・5列）
+**出力**: `03_成果物/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output.csv`（新版・5列）
 
 ### やること
 
@@ -305,9 +305,9 @@ vol2（第3章・第4章）に登場するシーンと対応プリセットの�
 
 | ファイル | パス | 説明 |
 |---|---|---|
-| バックアップ | `.company/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output_pre_50char_redesign.csv` | 工程1で退避する現行CSV（4列・181P） |
-| 新 CSV | `.company/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output.csv` | 工程3で上書きする新版CSV（5列・120〜140P） |
-| character_defs | `.company/outputs/ebooks-manga/manga-career-restart/manuscript/character_defs.json` | outfit_presets 確定済み（変更不要） |
+| バックアップ | `03_成果物/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output_pre_50char_redesign.csv` | 工程1で退避する現行CSV（4列・181P） |
+| 新 CSV | `03_成果物/outputs/ebooks-manga/manga-career-restart/vol2/panels/comicle_output.csv` | 工程3で上書きする新版CSV（5列・120〜140P） |
+| character_defs | `03_成果物/outputs/ebooks-manga/manga-career-restart/manuscript/character_defs.json` | outfit_presets 確定済み（変更不要） |
 
 ---
 

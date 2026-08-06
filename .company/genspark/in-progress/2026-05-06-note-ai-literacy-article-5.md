@@ -30,13 +30,13 @@ AIリテラシー全5回シリーズの最終回。シリーズ全体の出口�
 ## 画像ファイル（アップロード順）
 
 1. **カバー画像**（見出し画像）:
-   `.company/outputs/note-article-5/manga_cover_20260423_133608.png`
+   `03_成果物/outputs/note-article-5/manga_cover_20260423_133608.png`
 2. **本文中 図1**（「この4本の記事で扱ってきたこと — 伏線回収」節の冒頭）:
-   `.company/outputs/note-article-5/manga_fig1_20260423_133503.png`
+   `03_成果物/outputs/note-article-5/manga_fig1_20260423_133503.png`
 3. **本文中 図2**（「使いこなせる人・組織の5年後シナリオ」節の冒頭）:
-   `.company/outputs/note-article-5/manga_fig2_20260423_133522.png`
+   `03_成果物/outputs/note-article-5/manga_fig2_20260423_133522.png`
 4. **本文中 図3**（「学ぶ手段は4つある」節の冒頭）:
-   `.company/outputs/note-article-5/manga_fig3_20260423_133519.png`
+   `03_成果物/outputs/note-article-5/manga_fig3_20260423_133519.png`
 
 ## タイトル・タグ
 

@@ -168,7 +168,7 @@ AIを使いこなすだけなら、世の中にコンサルタントは無数に
 - **役割**: 認知→信頼→商談化の加速装置。ウェビナー参加者は高温度リード。
 - **頻度目標**: 月1〜2回（初回は2026-07-15までに1回開催がKGI）
 - **テーマ**: 「人手不足対策×AIでできること（キャリアコンサルタント目線）」
-- **成果物パス**: `.company/outputs/sales-content/webinar-v1-jinzai-busoku/`
+- **成果物パス**: `03_成果物/outputs/sales-content/webinar-v1-jinzai-busoku/`
 
 ### 補完チャネル2: SNS・note（軸B連携）
 
@@ -293,14 +293,14 @@ AIを使いこなすだけなら、世の中にコンサルタントは無数に
 | 種別 | ファイルパス | ステータス |
 |---|---|---|
 | DMテンプレート（3バリエーション） | `.company/sales/templates/ai-advisor-dm/` | 完成・未公開 |
-| オファー資料（L1説明書） | `.company/outputs/sales-content/offer-materials/plans/L1-light-advisor.md` | 完成・未公開 |
-| オファー資料（L2説明書） | `.company/outputs/sales-content/offer-materials/plans/L2-standard-advisor.md` | 完成・未公開 |
-| オファー資料（L3説明書） | `.company/outputs/sales-content/offer-materials/plans/L3-3month-implementation.md` | 完成・未公開 |
-| オファー比較表 | `.company/outputs/sales-content/offer-materials/plans/comparison-table.md` | 完成・未公開 |
-| ウェビナーコンテンツ | `.company/outputs/sales-content/webinar-v1-jinzai-busoku/` | 完成・未公開 |
-| 個別Zoomコンテンツ | `.company/outputs/sales-content/individual-zoom-30min/` | 完成・未公開 |
-| Calendlyセットアップ手順 | `.company/outputs/sales-content/calendly-setup/` | 完成・未公開（オーナーによる実環境設定待ち） |
-| ウェビナー基盤（LP・自動メール） | `.company/outputs/sales-content/webinar-platform/` | 完成・未公開（Peatix公開待ち） |
+| オファー資料（L1説明書） | `03_成果物/outputs/sales-content/offer-materials/plans/L1-light-advisor.md` | 完成・未公開 |
+| オファー資料（L2説明書） | `03_成果物/outputs/sales-content/offer-materials/plans/L2-standard-advisor.md` | 完成・未公開 |
+| オファー資料（L3説明書） | `03_成果物/outputs/sales-content/offer-materials/plans/L3-3month-implementation.md` | 完成・未公開 |
+| オファー比較表 | `03_成果物/outputs/sales-content/offer-materials/plans/comparison-table.md` | 完成・未公開 |
+| ウェビナーコンテンツ | `03_成果物/outputs/sales-content/webinar-v1-jinzai-busoku/` | 完成・未公開 |
+| 個別Zoomコンテンツ | `03_成果物/outputs/sales-content/individual-zoom-30min/` | 完成・未公開 |
+| Calendlyセットアップ手順 | `03_成果物/outputs/sales-content/calendly-setup/` | 完成・未公開（オーナーによる実環境設定待ち） |
+| ウェビナー基盤（LP・自動メール） | `03_成果物/outputs/sales-content/webinar-platform/` | 完成・未公開（Peatix公開待ち） |
 | VPSパイプライン（list_builder・personalizer） | `/opt/sales-ops/`（VPS上） | 参照元（リポジトリ外）・公開GO待ち（DRY_RUN=true→false切替待ち） |
 | システム設計書 | `.company/engineering/docs/sales-ops-design.md` | 参照元（設計ドキュメント） |
 | dryrun完了記録 | `.company/research/step8-dryrun-result.md` | 稼働中（記録済み） |

@@ -10,7 +10,7 @@ import re
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
 
-OUTPUT_PATH = "G:/マイドライブ/YNFactory-cc/.company/outputs/ebooks-manga/manga-career-restart/vol3/panels/comicle_output.csv"
+OUTPUT_PATH = "G:/マイドライブ/YNFactory-cc/03_成果物/outputs/ebooks-manga/manga-career-restart/vol3/panels/comicle_output.csv"
 
 # ============================================================
 # 共通プロンプト部品

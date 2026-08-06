@@ -54,7 +54,7 @@ KDP版は単体で満足できる汎用絵本として完成させ、巻末で�
 プロジェクトフォルダ:
 
 ```text
-.company/outputs/picture-books/arigatou-no-tane/
+03_成果物/outputs/picture-books/arigatou-no-tane/
 ```
 
 主要出力:

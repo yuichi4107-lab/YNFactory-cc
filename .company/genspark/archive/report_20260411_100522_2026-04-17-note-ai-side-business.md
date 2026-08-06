@@ -54,7 +54,7 @@ AI副業の始め方を3ステップで解説し、読者の行動を促す
 
 ## 原稿ファイル
 
-`.company/outputs/tech-articles/note-series/2026-04-17-ai-side-business.md`
+`03_成果物/outputs/tech-articles/note-series/2026-04-17-ai-side-business.md`
 
 ## 投稿時の注意事項
 

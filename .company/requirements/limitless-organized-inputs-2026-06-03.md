@@ -12,10 +12,10 @@ Limitless AI から取り込んだ raw lifelog と抽出済み insights を、�
 
 ## スコープ
 
-- `.company/inputs/conversations/` の raw lifelog はそのまま保持する
+- `04_インプット/inputs/conversations/` の raw lifelog はそのまま保持する
 - `.company/secretary/inbox/*-lifelog-insights.md` を入力にする
-- `.company/inputs/organized/lifelogs/` に日次の整理済みインプットを生成する
-- `.company/inputs/indexes/` に lifelog 系の横断索引を生成する
+- `04_インプット/inputs/organized/lifelogs/` に日次の整理済みインプットを生成する
+- `04_インプット/inputs/indexes/` に lifelog 系の横断索引を生成する
 - 毎朝の Limitless 同期フローに organized 化を組み込む
 
 ## 完了条件

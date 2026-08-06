@@ -23,7 +23,7 @@ blocks: []
 ## 完了条件
 - [x] `.claude/skills/nanobanana2-image-gen/SKILL.md` 作成
 - [x] プロンプトを受け取りAPI呼び出し→画像保存のフロー実装
-- [x] 保存先: `.company/outputs/{指定フォルダ}/`
+- [x] 保存先: `03_成果物/outputs/{指定フォルダ}/`
 - [x] APIキーは環境変数 GOOGLE_AI_STUDIO_API_KEY から取得
 - [x] 動作確認
 

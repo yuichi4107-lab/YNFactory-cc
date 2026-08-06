@@ -21,7 +21,7 @@ note向けの記事を、複数テーマ・複数アカウントで継続投稿�
 | spiritual | 整える日々 | 日常で使える整え方 | 1800-3000 |
 | love | 続く関係の手前で | 続く関係の小さな技術 | 2000-3500 |
 
-初期セットアップは `templates/accounts.json.example` を `.company/outputs/note-articles/accounts.json` にコピーし、各アカウントの `note_url` を埋める。
+初期セットアップは `templates/accounts.json.example` を `03_成果物/outputs/note-articles/accounts.json` にコピーし、各アカウントの `note_url` を埋める。
 
 ## 運用モード
 
@@ -34,11 +34,11 @@ note向けの記事を、複数テーマ・複数アカウントで継続投稿�
 
 ## 管理ファイル
 
-- `.company/outputs/note-articles/accounts.json` - テーマごとの投稿先アカウント設定
-- `.company/outputs/note-articles/history.json` - 投稿履歴
-- `.company/outputs/note-articles/topics/<account_id>.md` - 週次バッチで消化するトピックキュー
-- `.company/outputs/note-articles/YYYY-MM-DD-{theme_id}-{slug}/` - 単発モードの記事ごとの出力先
-- `.company/outputs/note-articles/weekly/YYYY-WNN/` - 週次バッチモードの週単位出力
+- `03_成果物/outputs/note-articles/accounts.json` - テーマごとの投稿先アカウント設定
+- `03_成果物/outputs/note-articles/history.json` - 投稿履歴
+- `03_成果物/outputs/note-articles/topics/<account_id>.md` - 週次バッチで消化するトピックキュー
+- `03_成果物/outputs/note-articles/YYYY-MM-DD-{theme_id}-{slug}/` - 単発モードの記事ごとの出力先
+- `03_成果物/outputs/note-articles/weekly/YYYY-WNN/` - 週次バッチモードの週単位出力
 
 ## 入力
 
@@ -275,7 +275,7 @@ note向けの記事を、複数テーマ・複数アカウントで継続投稿�
   "headings": ["見出し1", "見出し2"],
   "keywords": ["キーワード1", "キーワード2"],
   "image_themes": ["トップ画像", "本文中画像1"],
-  "output_dir": ".company/outputs/note-articles/YYYY-MM-DD-theme-slug",
+  "output_dir": "03_成果物/outputs/note-articles/YYYY-MM-DD-theme-slug",
   "status": "draft",
   "draft_url": null,
   "posted_url": null

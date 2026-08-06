@@ -170,7 +170,7 @@
 - [ ] フォローメール3パターン（承認待ち/検討中/見送り）が即使用可能な完成形であること
 - [ ] オンボードチェックリストに請求書発行→`.company/finance/invoices/`保存の手順が含まれていること
 - [ ] README.mdに全フローが一目でわかる図または表が含まれていること
-- [ ] 既存の個別Zoomコンテンツ成果物（`.company/outputs/sales-content/individual-zoom-30min/`）を流用していること
+- [ ] 既存の個別Zoomコンテンツ成果物（`03_成果物/outputs/sales-content/individual-zoom-30min/`）を流用していること
 
 ### 品質チェック項目（工程3専用）
 | # | チェック項目 | カテゴリ | 配点 |
@@ -310,11 +310,11 @@
 | 本番稼働記録テンプレ | `.company/sales/LAUNCH.md` | GO待ちチェックリスト |
 | 毎朝の承認UIスキル | `.claude/skills/sales-briefing/SKILL.md` | 既存スキル（工程4と統合） |
 | システム設計書 | `.company/engineering/docs/sales-ops-design.md` | VPS構成・API構成 |
-| ウェビナーコンテンツ | `.company/outputs/sales-content/webinar-v1-jinzai-busoku/` | 工程9完成済み成果物 |
-| Zoomコンテンツ | `.company/outputs/sales-content/individual-zoom-30min/` | 工程10完成済み成果物 |
-| オファー資料 | `.company/outputs/sales-content/offer-materials/` | 工程6完成済み成果物 |
-| Calendlyセットアップ | `.company/outputs/sales-content/calendly-setup/` | 工程5a完成済み成果物 |
-| ウェビナー基盤 | `.company/outputs/sales-content/webinar-platform/` | 工程4a完成済み成果物 |
+| ウェビナーコンテンツ | `03_成果物/outputs/sales-content/webinar-v1-jinzai-busoku/` | 工程9完成済み成果物 |
+| Zoomコンテンツ | `03_成果物/outputs/sales-content/individual-zoom-30min/` | 工程10完成済み成果物 |
+| オファー資料 | `03_成果物/outputs/sales-content/offer-materials/` | 工程6完成済み成果物 |
+| Calendlyセットアップ | `03_成果物/outputs/sales-content/calendly-setup/` | 工程5a完成済み成果物 |
+| ウェビナー基盤 | `03_成果物/outputs/sales-content/webinar-platform/` | 工程4a完成済み成果物 |
 | HANDOFF.md | `.company/secretary/HANDOFF.md` | VPS環境・API構成・ブロッカー |
 
 ### 既存システムの安全装置（継続適用）

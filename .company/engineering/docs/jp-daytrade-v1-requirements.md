@@ -779,8 +779,8 @@ jp-daytrade/
 
 ### 最終成果物（完成後に移動）
 
-- Phase 0完了レポート: `.company/outputs/jp-daytrade/phase0_summary.md`
-- Phase 2完了レポート: `.company/outputs/jp-daytrade/phase2_summary.md`
+- Phase 0完了レポート: `03_成果物/outputs/jp-daytrade/phase0_summary.md`
+- Phase 2完了レポート: `03_成果物/outputs/jp-daytrade/phase2_summary.md`
 
 ---
 

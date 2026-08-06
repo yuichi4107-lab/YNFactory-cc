@@ -9,7 +9,7 @@ status: approved-by-user-request
 
 ## Goal
 
-`.company/inputs/` に蓄積される raw / organized / indexes を、毎日レビューできる形に集約する。
+`04_インプット/inputs/` に蓄積される raw / organized / indexes を、毎日レビューできる形に集約する。
 
 Phase 1 では日別TODOやプロジェクトファイルへの自動反映は行わず、判断用レビューMarkdownの生成までを実装する。
 
@@ -17,8 +17,8 @@ Phase 1 では日別TODOやプロジェクトファイルへの自動反映は�
 
 Do:
 
-- `.company/inputs/process_daily_inputs.py` を追加する
-- `.company/inputs/reviews/YYYY-MM-DD-input-review.md` を生成する
+- `04_インプット/inputs/process_daily_inputs.py` を追加する
+- `04_インプット/inputs/reviews/YYYY-MM-DD-input-review.md` を生成する
 - 既存の `organized/` と `indexes/` を入力として使う
 - 未整理バックログ、TODO候補、決定事項候補、機密・個人情報候補を可視化する
 - デフォルトでは外部APIを叩かない
@@ -43,8 +43,8 @@ Do not:
   - sensitive-data candidates
   - unorganized backlog
   - explicit note that TODO auto-apply is disabled
-- `.company/inputs/run_daily.sh` からレビュー生成が呼ばれる
-- `.company/inputs/CLAUDE.md` と README 類に Phase 1 の使い方が残る
+- `04_インプット/inputs/run_daily.sh` からレビュー生成が呼ばれる
+- `04_インプット/inputs/CLAUDE.md` と README 類に Phase 1 の使い方が残る
 
 ## Quality Criteria
 
