@@ -110,8 +110,8 @@ C:\YNFactory-cc
 - `CLAUDE.md`
 - `.agents/`
 - `.codex/`
-- `.company/scripts/`
-- `.company/requirements/`
+- `01_コード/scripts/company/`
+- `02_設定/requirements/`
 - `docs/`
 - 主要コード、設定テンプレート、運用ルール
 
@@ -121,7 +121,7 @@ C:\YNFactory-cc
 
 ```bash
 cd ~/YNFactory-cc
-python3 .company/scripts/sync_drive_git.py commit-push -m "変更内容" docs AGENTS.md CLAUDE.md
+python3 01_コード/scripts/company/sync_drive_git.py commit-push -m "変更内容" docs AGENTS.md CLAUDE.md
 ```
 
 Windowsでは `cd C:\YNFactory-cc` に読み替える。
@@ -132,7 +132,7 @@ Windowsでは `cd C:\YNFactory-cc` に読み替える。
 
 ```bash
 cd ~/YNFactory-cc
-python3 .company/scripts/sync_drive_git.py pull-sync
+python3 01_コード/scripts/company/sync_drive_git.py pull-sync
 ```
 
 ## 禁止事項

@@ -1,7 +1,7 @@
 # Drive側フォルダ整理の手順
 
 Drive側の `YNFactory-cc` を、ローカルGit側と同じ6バケット構成へ組み替える手順。
-`.company/scripts/organize_drive_root.py` を使う。
+`01_コード/scripts/company/organize_drive_root.py` を使う。
 
 ## 前提
 
@@ -19,8 +19,8 @@ YNFactory-cc/
 ├── 03_成果物/          ebooks/  ebook-produce/  outputs/
 ├── 04_インプット/      inputs/  context/
 ├── 05_プロジェクト/    shorts-factory/ keiba-unified/ ... （22個）
-├── 99_その他/          <日付>-cleanup/（ゴミ・キャッシュの退避先）
-├── .company/           会社運営のみ（secretary / ceo / pm / sales / finance …）
+├── 99_その他/          company-records/  <日付>-cleanup/（ゴミ・キャッシュの退避先）
+├── .company/           secretary/（HANDOFF・TODO）と DASHBOARD のみ
 └── CLAUDE.md  AGENTS.md  .gitignore  .claude/  .agents/  .codex/  .vscode/
 ```
 
@@ -37,17 +37,17 @@ YNFactory-cc/
 
 ```bash
 # 1. 何が起きるかを確認（既定はdry-run、ファイルは一切動かない）
-python3 .company/scripts/organize_drive_root.py
+python3 01_コード/scripts/company/organize_drive_root.py
 
 # 2. 内容に納得したら実行
-python3 .company/scripts/organize_drive_root.py --apply
+python3 01_コード/scripts/company/organize_drive_root.py --apply
 ```
 
 キャッシュ（`.playwright-mcp/` `.pytest_cache/` `.wrangler/` `test-results/` `__pycache__/`）を
 退避ではなく削除してDrive容量を空けたい場合:
 
 ```bash
-python3 .company/scripts/organize_drive_root.py --apply --purge-cache
+python3 01_コード/scripts/company/organize_drive_root.py --apply --purge-cache
 ```
 
 その他のオプション:
@@ -61,7 +61,7 @@ python3 .company/scripts/organize_drive_root.py --apply --purge-cache
 2. Drive UI でルート直下が6バケット＋ルート固定ファイルだけになっていることを確認
 3. Drive の同期完了を待ってから、同期スクリプトの疎通を確認:
    ```bash
-   python3 .company/scripts/sync_drive_git.py local-to-drive --dry-run CLAUDE.md
+   python3 01_コード/scripts/company/sync_drive_git.py local-to-drive --dry-run CLAUDE.md
    ```
 4. 各PCの LaunchAgent / Task Scheduler が旧パスを指していないか確認する。
    特に `05_プロジェクト/keiba-unified/scripts/task_*.xml` は登録し直しが必要
@@ -94,8 +94,8 @@ rm "$YNFACTORY_DRIVE_ROOT/.git.disabled-20260615"
 | `JUNK_FILES` / `JUNK_GLOBS` / `JUNK_DIRS` | `99_その他/` 行き |
 | `CACHE_DIRS` | 再生成可能。`--purge-cache` で削除対象になる |
 
-テストは `.company/scripts/tests/test_organize_drive_root.py`:
+テストは `01_コード/scripts/company/tests/test_organize_drive_root.py`:
 
 ```bash
-python3 .company/scripts/tests/test_organize_drive_root.py
+python3 01_コード/scripts/company/tests/test_organize_drive_root.py
 ```

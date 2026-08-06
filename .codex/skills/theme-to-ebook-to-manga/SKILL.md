@@ -44,7 +44,7 @@ description: テーマまたは添付素材から、まず theme-to-ebook で文
 
 ## Phase 0: 統合初回質問
 
-開始時に、文字本とマンガ化の条件をクリック式選択UIで確認する。`request_user_input` が使える場合はその選択カードを使う。使えない場合は `.company/scripts/ebook_setup_ui.py` のローカルクリック式フォームを起動する。Markdownの表や `1A、2B...` 形式を標準にしない。
+開始時に、文字本とマンガ化の条件をクリック式選択UIで確認する。`request_user_input` が使える場合はその選択カードを使う。使えない場合は `01_コード/scripts/company/ebook_setup_ui.py` のローカルクリック式フォームを起動する。Markdownの表や `1A、2B...` 形式を標準にしない。
 
 **クリック式UIの出し方:**
 
@@ -90,7 +90,7 @@ description: テーマまたは添付素材から、まず theme-to-ebook で文
 **ローカルフォームの出し方（`request_user_input` が使えない場合）:**
 
 ```bash
-python3 .company/scripts/ebook_setup_ui.py --theme "{テーマ}" --mode theme-to-ebook-to-manga
+python3 01_コード/scripts/company/ebook_setup_ui.py --theme "{テーマ}" --mode theme-to-ebook-to-manga
 ```
 
 保存先は `03_成果物/outputs/ebook-setup-inputs/latest.json`。回答を読み取り、`PIPELINE_REPORT.md` や各 `progress.json` の Phase 0回答へ反映する。
