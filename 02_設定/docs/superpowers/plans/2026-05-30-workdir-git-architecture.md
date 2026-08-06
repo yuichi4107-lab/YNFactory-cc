@@ -29,7 +29,7 @@
 
 - **変更**: `g:\マイドライブ\YNFactory-cc\.gitignore` — 大容量バイナリ除外ルールを追記
 - **新規履歴**: orphan ブランチ `main`（GitHub の既定ブランチ・今後の作業ブランチ）
-- **改訂**: `.company/engineering/docs/gdrive-git-setup.md` — 確定構成と2台目セットアップ手順に全面改訂
+- **改訂**: `02_設定/docs/engineering/engineering-docs/gdrive-git-setup.md` — 確定構成と2台目セットアップ手順に全面改訂
 - **改訂**: `.claude/skills/handoff/SKILL.md` — push 対応・Drive停止依頼の見直し
 - **更新**: `.company/secretary/HANDOFF.md`、`~/.claude/projects/.../memory/project_ynfactory_git_drive_setup.md` — 構成変更を記録
 - **新規（GitHub）**: `yuichi4107-lab/YNFactory-cc`（private）
@@ -460,7 +460,7 @@ git status   # 正常に動けばOK（大容量はDrive側に既にある）
 Run:
 ```bash
 cd "g:/マイドライブ/YNFactory-cc"
-git add .company/engineering/docs/gdrive-git-setup.md
+git add 02_設定/docs/engineering/engineering-docs/gdrive-git-setup.md
 git commit -m "docs(infra): gdrive-git-setup を確定構成(GitHub軸)に改訂 + 2台目セットアップ手順
 
 Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"

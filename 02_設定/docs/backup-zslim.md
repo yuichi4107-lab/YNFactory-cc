@@ -34,22 +34,22 @@ brew install restic
 
 ```bash
 cd /Users/yuichi/YNFactory-cc
-python3 .company/scripts/backup_zslim_restic.py init
+python3 01_コード/scripts/company/backup_zslim_restic.py init
 ```
 
 ## 手動実行
 
 ```bash
 cd /Users/yuichi/YNFactory-cc
-python3 .company/scripts/backup_zslim_restic.py backup
-python3 .company/scripts/backup_zslim_restic.py forget
-python3 .company/scripts/backup_zslim_restic.py check
+python3 01_コード/scripts/company/backup_zslim_restic.py backup
+python3 01_コード/scripts/company/backup_zslim_restic.py forget
+python3 01_コード/scripts/company/backup_zslim_restic.py check
 ```
 
 まとめて実行する場合:
 
 ```bash
-python3 .company/scripts/backup_zslim_restic.py run
+python3 01_コード/scripts/company/backup_zslim_restic.py run
 ```
 
 ## 自動実行
@@ -58,7 +58,7 @@ python3 .company/scripts/backup_zslim_restic.py run
 
 ```bash
 cd /Users/yuichi/YNFactory-cc
-zsh .company/scripts/install_zslim_backup_launchd.sh
+zsh 01_コード/scripts/company/install_zslim_backup_launchd.sh
 ```
 
 登録される実体:
@@ -81,13 +81,13 @@ zsh .company/scripts/install_zslim_backup_launchd.sh
 ## 確認
 
 ```bash
-python3 .company/scripts/backup_zslim_restic.py snapshots
+python3 01_コード/scripts/company/backup_zslim_restic.py snapshots
 ```
 
 初回フルバックアップの前に、小さいファイルだけで保存・復元の疎通確認をする。
 
 ```bash
-python3 .company/scripts/backup_zslim_restic.py smoke-test
+python3 01_コード/scripts/company/backup_zslim_restic.py smoke-test
 ```
 
 ## 復元テスト
@@ -96,7 +96,7 @@ python3 .company/scripts/backup_zslim_restic.py smoke-test
 
 ```bash
 mkdir -p /tmp/ynfactory-restore-test
-python3 .company/scripts/backup_zslim_restic.py restore-latest --target /tmp/ynfactory-restore-test
+python3 01_コード/scripts/company/backup_zslim_restic.py restore-latest --target /tmp/ynfactory-restore-test
 ```
 
 復元後、最低限これを確認する。

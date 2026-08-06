@@ -3,7 +3,7 @@ title: YNFactory-cc 作業ディレクトリ恒久構成 設計書
 date: "2026-05-30"
 status: approved
 author: 秘書（Claude Code / brainstorming）
-supersedes: .company/engineering/docs/gdrive-git-setup.md（方法A/B/C の比較。本設計で方針確定）
+supersedes: 02_設定/docs/engineering/engineering-docs/gdrive-git-setup.md（方法A/B/C の比較。本設計で方針確定）
 related:
   - .company/engineering/debug-log/2026-05-30-git-head-recovery.md（本設計の発端となった障害）
   - メモリ project_ynfactory_git_drive_setup

@@ -278,6 +278,6 @@ weekly-sales-review スキルが毎週月曜に以下を実行する（工程4 S
 
 ---
 
-*参照: `.company/sales/STRATEGY.md` / `.company/requirements/sales-system-2026-06/REQUIREMENTS.md`*
+*参照: `.company/sales/STRATEGY.md` / `02_設定/requirements/sales-system-2026-06/REQUIREMENTS.md`*
 *本ファイルの数値定義・転換率目標はすべて STRATEGY.md §4・§6 に依拠する*
 *最終更新: 2026-06-09（初期値・実運用開始前）*

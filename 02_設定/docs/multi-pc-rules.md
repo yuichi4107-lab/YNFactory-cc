@@ -61,8 +61,8 @@ C:\YNFactory-cc
 - `CLAUDE.md`
 - `.agents/`
 - `.codex/`
-- `.company/scripts/`
-- `.company/requirements/`
+- `01_コード/scripts/company/`
+- `02_設定/requirements/`
 - `docs/`
 - 主要コード
 - 設定テンプレート
@@ -88,7 +88,7 @@ C:\YNFactory-cc
 
 ```bash
 cd /Users/yuichi/YNFactory-cc
-python3 .company/scripts/sync_drive_git.py commit-push -m "変更内容" <相対パス...>
+python3 01_コード/scripts/company/sync_drive_git.py commit-push -m "変更内容" <相対パス...>
 ```
 
 Windowsでは `cd C:\YNFactory-cc` に読み替える。
@@ -105,7 +105,7 @@ Windowsでは `cd C:\YNFactory-cc` に読み替える。
 
 ```bash
 cd /Users/yuichi/YNFactory-cc
-python3 .company/scripts/sync_drive_git.py pull-sync
+python3 01_コード/scripts/company/sync_drive_git.py pull-sync
 ```
 
 これにより、GitHubから取得したコード・ルール・手順書がDrive側へ戻る。
@@ -125,7 +125,7 @@ Google Drive同期はバックアップではない。削除や破損も同期�
 
 ```bash
 cd /Users/yuichi/YNFactory-cc
-python3 .company/scripts/backup_zslim_restic.py run
+python3 01_コード/scripts/company/backup_zslim_restic.py run
 ```
 
 保持期間:
