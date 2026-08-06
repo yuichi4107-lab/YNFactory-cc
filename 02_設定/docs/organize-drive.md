@@ -74,6 +74,14 @@ python3 .company/scripts/organize_drive_root.py --apply --purge-cache
   は保護対象。ルールに書いても弾かれる
 - 冪等。移動済みの項目はスキップされるので、途中で失敗しても再実行できる
 
+`.git` で始まる名前のものは、たとえゴミでも自動では動かさない方針にしている。
+そのためDriveルートの `.git.disabled-20260615`（34バイト、`.git` 無効化の名残）は残る。
+不要なら実行後に手で削除する:
+
+```bash
+rm "$YNFACTORY_DRIVE_ROOT/.git.disabled-20260615"
+```
+
 ## 次回以降の整理
 
 新しく散らかったものは、スクリプト冒頭のルールテーブルに追記する:
