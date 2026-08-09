@@ -39,7 +39,7 @@ description: セッション終了時のハンドオフ処理。HANDOFF.md更新
 | 技術・環境メモ | `.company/secretary/tech-notes.md` に置く。HANDOFF.md には書かない |
 | サイズ上限 | **400行 / 60KB**。超えていたらハンドオフを終える前に必ず整理する |
 
-> `.company/CLAUDE.md` の「既存ファイルは上書きしない（追記のみ）」は
+> `02_設定/docs/company-ops.md`「書き方の原則」の**既存ファイルは上書きせず追記する**は、
 > **HANDOFF.md・TODO・DASHBOARD には適用しない**（同ファイルに例外として明記済み）。
 > これらは状態を表すファイルであり、上書き更新が正しい。
 
