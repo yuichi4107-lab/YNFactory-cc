@@ -1,8 +1,8 @@
 ---
 last_updated: "2026-08-09"
-last_device: "Mac"
-last_session_summary: "毎日04:00（Asia/Tokyo）にTopview実写素材を8本生成・登録し、当日の9/14/19時の3動画が当日分6素材を先に使い、残り2素材を予備として保持するよう設定。前日までの未使用素材は当日分が不足した時だけ使う。登録時刻をマニフェストへ記録して当日バッチ優先を実装し、runtimeへdeploy済み。対象テスト5件PASS、runtime health ok=true（queue=243）。"
-next_action: "次回04:00のTopview定期補充が8本の生成・登録まで完了し、9/14/19時の3動画が当日バッチから6素材を消費して予備2素材が残るかを実行結果で確認する。"
+last_device: "Windows"
+last_session_summary: "再編で移動した `.company/*` 参照を実行系101ファイル・約3,900箇所で正規パスへ統一し（shorts-factoryの出力先を 03_成果物/outputs/shorts-factory へ変更、壊れていたDriveミラーとSNS認証パスも修復）、廃止済み運用を記述していた `.company/CLAUDE.md`・`.company/secretary/CLAUDE.md` を 99_その他/company-records/ へ退避して規範を 02_設定/docs/ に一本化した（固有内容は owner-profile.md と company-ops.md へ移設、company スキルに廃止バナー）。さらに `/handoff` の対となる `/start` スキルと session_start.py を新設。pull-sync がDriveを上書きする危険に対し、pullで書き換わるパスだけを照合して別PCの未push編集を検出したら止まる仕組みにし、最新時・衝突時・正常pull時の3ケースを実機検証した。commit 8786c49 / aa6ce83 / ba563e2 / f6e40cd / f1c3c6e。"
+next_action: "Mac側で `bash 05_プロジェクト/shorts-factory/scripts/deploy.sh`（installなし）を実行し、shorts-factory の出力先変更とDriveミラー・SNS認証パスの修正を runtime へ反映する（未実行のうちは旧パスを見たまま動く）。あわせて04:00のTopview定期補充が8本完了し、3動画が当日バッチから6素材を消費して予備2素材が残るかを確認する。"
 ---
 
 # セッション引き継ぎ
