@@ -43,7 +43,7 @@ next_action: "次回04:00のTopview定期補充が8本の生成・登録まで�
 - **復元点**: タグ `pre-drive-mirror-2026-08-08` / `pre-bucket-remirror-2026-08-09`（いずれもGitHubへpush済み）。commit `0b80c0f` → `70c2a0b` → `72f7ec5`。
 - **注意1**: `pull-sync` は「pullで新たに取得した差分」しかDriveへ流さず、対象パスは**上書き**する。別PCがDrive上で同じファイルを編集中だと古い内容で潰れうる。実際 2026-08-09 に Windows 整理中と Mac セッションが `HANDOFF.md` と `shorts-factory/src/pipeline.py` で同時編集した。
 - **注意2（対応済み・Mac反映待ち）**: 再編で移動した `.company/*` 参照を、スキル・設定・コード計101ファイル／3,900箇所超で正規パスへ統一した（commit `8786c49`）。shorts-factory は `drive_outputs_dir` → `03_成果物/outputs/shorts-factory`、`drive_marketing_dir` → `99_その他/company-records/marketing/shorts-factory`、`drive_sns_env_path` → `99_その他/company-records/engineering/sns-credentials/.env`。**Mac runtime へ `deploy.sh`（installなし）を実行するまで実機の挙動は変わらない。**
-- **廃止候補（未決）**: Driveのみに残る `.company/CLAUDE.md` と `.company/secretary/CLAUDE.md`。内容は `02_設定/docs/` へ一本化済みで規範が二重化している。
+- **規範の一本化（完了 2026-08-09）**: 廃止済み運用を記述していた `.company/CLAUDE.md` と `.company/secretary/CLAUDE.md` を `99_その他/company-records/` へ退避（廃止注記つき）。固有内容は `02_設定/docs/owner-profile.md`（オーナー情報・対話スタイル）と `company-ops.md`（定期巡回）へ移設。両ファイルを前提にしていた `company` スキルにも廃止バナーと現行参照先の対応表を付けた。`.company/` は `secretary/`・`DASHBOARD.md`・`codex/`・`logs/`・`handoff/` のみ。
 - **障害と復旧**: ローカルGitの `refs/heads/main` ほか3refがNUL埋めで破損（commitは成功済みでreflogから復旧）。破損refは `_archive/git-drive-quarantine/2026-08-09-broken-refs/` に隔離、`git fsck` クリーンを確認。
 
 ## ブロック中（オーナー操作・外部要因待ち）
