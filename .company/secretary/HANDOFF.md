@@ -1,8 +1,8 @@
 ---
 last_updated: "2026-08-08"
 last_device: "Windows"
-last_session_summary: "ハンドオフ方式を現況スナップショット型へ全面変更（HANDOFF.md 387KB/1448行 → 9KB/81行）。旧全文は archive/HANDOFF-2026-08-08-full.md へ無損失退避し、frontmatterの履歴131件を handoff-log/2026-04〜08.md + legacy-undated.md へ分解、技術メモを tech-notes.md へ移設。肥大化の根本原因だった「上書きしない（追記のみ）」ルールに状態ファイルの例外を明記し、handoff スキルを新方式へ改訂。Drive直下の壊れた .git を .git.disabled-2026-08-08 へリネームして無効化。あわせてルール層をGitHub最新へ揃え、Drive側CLAUDE.mdにのみ存在した『ダウンロード事前承認』条項を 02_設定/docs/approval-rules.md へ移植。commit ef1f833 / 2992f07 をpush済み、ルール層16ファイルのDrive↔GitHub一致を検証。"
-next_action: "Driveのバケット移行が未完（GitHub追跡2597件のうち Driveに無い556件・内容相違302件）。特に 99_その他/company-records/ 352件はGitHub側で .company/ から移動済みだがDriveには旧場所のまま残っており、単純コピーすると二重化する。移動＋旧コピー削除の計画を立ててから実施する。あわせて Drive のみに残る .company/CLAUDE.md と .company/secretary/CLAUDE.md の扱い（02_設定/docs へ一本化済みのため廃止候補）を決める。"
+last_session_summary: "ハンドオフ方式を現況スナップショット型へ全面変更（HANDOFF.md 387KB/1448行 → 9KB台）。旧全文は archive/HANDOFF-2026-08-08-full.md へ無損失退避し、frontmatterの履歴131件を handoff-log/2026-04〜08.md + legacy-undated.md へ分解、技術メモを tech-notes.md へ移設。肥大化の根本原因だった「上書きしない（追記のみ）」ルールに状態ファイルの例外を明記し、handoff スキルを新方式へ改訂。Drive直下の壊れた .git を .git.disabled-2026-08-08 へリネームして無効化。『ダウンロード事前承認』条項を 02_設定/docs/approval-rules.md へ移植したうえで、最後に Driveを正としてGitHub側を全面的に合わせた（付け替え330・削除215・上書き296、追跡2384件でDriveと完全一致）。commit ef1f833 / 2992f07 / 925e2eb / 0b80c0f、復元タグ pre-drive-mirror-2026-08-08。"
+next_action: "shorts-factory の本日14:00枠が通り Telegram承認→4媒体投稿まで戻ったかを確認する（720p素材の仕上がりも目視）。あわせて Drive のみに残る .company/CLAUDE.md と .company/secretary/CLAUDE.md の廃止可否を決める（内容は 02_設定/docs へ一本化済みで規範が二重化している）。"
 ---
 
 # セッション引き継ぎ
@@ -29,12 +29,14 @@ next_action: "Driveのバケット移行が未完（GitHub追跡2597件のうち
 - **注意**: Windowsからは `fcntl` 依存で pipeline 実行・deploy ともに不可。runtime操作はMacで行う。
 - **詳細**: `05_プロジェクト/shorts-factory/`、`.company/projects/shorts-factory/2026-07-16-drive-lock-root-fix-debug-log.md`
 
-### Drive↔GitHub の分岐解消 — ルール層のみ完了 (最終更新: 2026-08-08)
+### Drive↔GitHub の統一 — 完了 (最終更新: 2026-08-08)
 
-- **完了**: ルール層をGitHub最新へ統一。`CLAUDE.md`（14行版＋approval-rules/company-ops導線）・`AGENTS.md`・`.gitignore`・`02_設定/docs/*.md` 9本・`01_コード/scripts/company/*.py` をDriveへ反映し、16ファイルのハッシュ一致を検証。旧Drive版は `archive/CLAUDE-drive-old-2026-08-08.md` / `AGENTS-drive-old-2026-08-08.md` に退避。
-- **未完（要計画）**: バケット移行の本体。GitHub追跡2597件のうち **Driveに無い556件・内容相違302件**。うち `99_その他/company-records/` 352件は GitHub側で `.company/` から**移動**されたもので、Driveには旧場所に原本が残る。単純コピーすると二重化するため、移動＋旧コピー削除の計画が必要。`02_設定/docs/note/`・`superpowers/` の相違22件も、Drive側が新しい可能性があるため個別確認が要る。
-- **注意**: `pull-sync` は「pullで新たに取得した差分」しかDriveへ流さない。ローカルが `origin/main` と同一のときは何もしない（今回 "No GitHub updates to sync to Drive."）。既存の乖離を埋めるには `local-to-drive` にパスを明示する。
-- **廃止候補**: Driveのみに残る `.company/CLAUDE.md` と `.company/secretary/CLAUDE.md`。内容は `02_設定/docs/` 側へ一本化済みで、現状は規範が二重化している。
+- **結果**: **Driveを正としてGitHub側を合わせた**。追跡2,384件で Driveに無い0件・内容相違0件を検証済み（施行前は追跡2,598件／Driveに無い544件・内容相違296件）。
+- **内訳**: 付け替え330件（2026-08-06のバケット再編で移動したパスをDrive現物のパスへ戻した。内容は同一）／削除215件（Drive上に対応物なし。一覧は `archive/2026-08-08-drive-mirror-deleted.md`）／上書き296件。`.gitignore` 対象10件（`03_成果物/outputs`・`_archive`）は追加せず削除のみ。Git未追跡のDriveファイル（成果物・バイナリ・.env）は方針どおり追加していない。
+- **復元点**: タグ `pre-drive-mirror-2026-08-08`（GitHubへpush済み）。commit `0b80c0f`。
+- **ルール層**: `CLAUDE.md`（14行版）・`AGENTS.md`・`.gitignore`・`02_設定/docs/*.md`・`01_コード/scripts/company/*.py` はDrive・GitHubとも同一。旧Drive版は `archive/CLAUDE-drive-old-2026-08-08.md` / `AGENTS-drive-old-2026-08-08.md`。
+- **注意**: `pull-sync` は「pullで新たに取得した差分」しかDriveへ流さない。ローカルが `origin/main` と同一なら何もしない。既存の乖離を埋めるときは `local-to-drive` にパスを明示する。
+- **廃止候補（未決）**: Driveのみに残る `.company/CLAUDE.md` と `.company/secretary/CLAUDE.md`。内容は `02_設定/docs/` 側へ一本化済みで、現状は規範が二重化している。
 
 ## ブロック中（オーナー操作・外部要因待ち）
 
