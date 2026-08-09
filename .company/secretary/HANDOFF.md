@@ -1,8 +1,8 @@
 ---
-last_updated: "2026-08-08"
-last_device: "Windows"
-last_session_summary: "ハンドオフ方式を現況スナップショット型へ全面変更（HANDOFF.md 387KB/1448行 → 9KB台）。旧全文は archive/HANDOFF-2026-08-08-full.md へ無損失退避し、frontmatterの履歴131件を handoff-log/2026-04〜08.md + legacy-undated.md へ分解、技術メモを tech-notes.md へ移設。肥大化の根本原因だった「上書きしない（追記のみ）」ルールに状態ファイルの例外を明記し、handoff スキルを新方式へ改訂。Drive直下の壊れた .git を .git.disabled-2026-08-08 へリネームして無効化。『ダウンロード事前承認』条項を 02_設定/docs/approval-rules.md へ移植したうえで、最後に Driveを正としてGitHub側を全面的に合わせた（付け替え330・削除215・上書き296、追跡2384件でDriveと完全一致）。commit ef1f833 / 2992f07 / 925e2eb / 0b80c0f、復元タグ pre-drive-mirror-2026-08-08。"
-next_action: "shorts-factory の本日14:00枠が通り Telegram承認→4媒体投稿まで戻ったかを確認する（720p素材の仕上がりも目視）。あわせて Drive のみに残る .company/CLAUDE.md と .company/secretary/CLAUDE.md の廃止可否を決める（内容は 02_設定/docs へ一本化済みで規範が二重化している）。"
+last_updated: "2026-08-09"
+last_device: "Mac"
+last_session_summary: "Topview実写素材を毎日04:00（Asia/Tokyo）に8本生成・書き出し・在庫登録するCodex定期処理を有効化。既存クレジットだけを使い、追加購入・プラン変更・投稿・既存素材再利用は行わない。人物・衣装・会議室を固定しつつ8種類の画角・動作で生成する。登録後に9:16・無字幕・重複なし・未使用在庫増加を検証する。runtime health ok=true（queue=243）。"
+next_action: "次回04:00のTopview定期補充が8本の生成・登録まで完了したか、実行結果と未使用在庫数を確認する。クレジット不足やログイン切れなら、追加購入せず安全停止した理由を確認する。"
 ---
 
 # セッション引き継ぎ
@@ -20,10 +20,12 @@ next_action: "shorts-factory の本日14:00枠が通り Telegram承認→4媒体
 
 ## 進行中（要アクション）
 
-### shorts-factory — 定刻生成・Topview在庫 (最終更新: 2026-08-08)
+### shorts-factory — 定刻生成・Topview在庫 (最終更新: 2026-08-09)
 
-- **状態**: 8/8の4点修正（安全停止のTelegram通知／在庫低下の事前警告／`register_files`追記マージ／README・config例）をMac runtimeへ `deploy.sh`（installなし）で反映済み。Topview在庫はCanvas既存クリップ6本を書き出して登録し、**有効8本／未使用8本＝動画4本ぶん**（新規生成ゼロ、クレジット残高287.28のまま）。`validate_inventory` と `select_live_clips(2)` が通過し安全停止は解消。
-- **要確認**: 本日14:00枠が通り、Telegram承認→4媒体投稿まで戻ること。新規6本は720pで既存 `Video_8/9` の1080pと混在するため、**初回の仕上がりを目視**する。
+- **状態**: 8/9の09時・14時はTopview混在動画を生成し、19時は**未使用素材0本／必要2本**で安全停止した。動画・キュー・投稿は作成されていない。runtime healthは `ok=true`、queue=243、媒体欠損・台帳異常なし。
+- **定期補充**: Codex cron `topview-4-8` を有効化。毎日04:00（Asia/Tokyo）にTopviewで実写素材8本を生成・書き出し・登録する。既存クレジットのみを利用し、追加購入・プラン変更・投稿はしない。ログイン切れ、クレジット不足、重複、8本未完了では安全停止する。
+- **通知**: TelegramはTopview在庫の安全停止だけを簡潔に伝え、生の外部応答・URL・旧経路名を転送しない。修正はMac runtimeへ `deploy.sh`（installなし）で反映済み。
+- **要対応**: 次枠の前にTopview素材を補充する。未使用素材は最低2本、3枠/日を安定運用するなら6本以上必要。720p素材を使う場合は初回の仕上がりを目視する。
 - **次の補充**: Canvas `654e5964324b4707b12c890e13249039` に未書き出しの Video 3〜7・10・11 が残る。まずここから確認し、足りなければ新規生成（1本約15クレジット）をオーナー承認のうえ実施。
 - **書き出し手順**: Canvasでクリップ選択 → ツールバーの ⬇ → 数十秒待って `~/Downloads` を確認 → `~/shorts-factory/topview_assets/` へ移動 → `cd ~/shorts-factory/app && ~/shorts-factory/.venv/bin/python scripts/register_topview_assets.py <file...>`。保存の反映に時間差があるので、直後にファイルが無くてもブロックと即断しない。投稿済み素材（`Video_12`）は再登録しない。
 - **注意**: Windowsからは `fcntl` 依存で pipeline 実行・deploy ともに不可。runtime操作はMacで行う。

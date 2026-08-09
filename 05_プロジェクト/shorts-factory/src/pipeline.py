@@ -508,7 +508,7 @@ def _build_topview_candidate(
 ) -> dict:
     """Topviewの既存書き出し実写 + 日本語カードの混在候補を作る。
 
-    Topview/Atlas CloudへのAPIアクセスや新規生成は行わない。在庫異常なら例外で
+    Topview以外の外部生成サービスへのAPIアクセスや新規生成は行わない。在庫異常なら例外で
     停止し、呼び出し元は旧カード版へフォールバックしない。
     """
     topic = _topic_text(topic_entry)
@@ -1345,14 +1345,15 @@ def notify_safe_stop(exc: Exception) -> None:
         )
         detail = _topview_inventory_summary()
     else:
-        cause = "混在形式（Seedance実写）の生成失敗"
-        recovery = "Atlas Cloudの動画生成残高とAPI応答を確認する"
-        detail = ""
+        # Telegramには例外本文や旧経路名を載せない。外部サービス由来のURL・
+        # 応答本文などが、利用者向けの障害通知に混ざることを防ぐ。
+        cause = "Topview混在動画の生成処理で停止"
+        recovery = "Topview素材の在庫と実行ログを確認する"
+        detail = _topview_inventory_summary()
     lines = [
         "⏹ shorts-factory: 定刻枠を安全停止しました（動画・キュー・投稿なし）",
         f"枠: {_slot_code()}",
         f"原因: {cause}",
-        f"理由: {redact_secrets(str(exc))[:300]}",
     ]
     if detail:
         lines.append(detail)
@@ -1420,7 +1421,13 @@ def main() -> None:
         log(f"❌ パイプライン失敗: {e}")
         tb = "".join(traceback.format_exception(type(e), e, e.__traceback__))
         log("失敗詳細:\n" + tb[-4000:])
-        notify.send_message(f"❌ shorts-factory 生成失敗: {e}")
+        # 例外本文はログにだけ残す。Telegramへ生の外部応答・URL・旧経路名を
+        # 転送しない。
+        notify.send_message(
+            "❌ shorts-factory: 動画生成処理で予期しない障害が発生しました。\n"
+            "動画・キュー・投稿は作成していません。\n"
+            "実行ログを確認してください。"
+        )
         sys.exit(1)
 
 

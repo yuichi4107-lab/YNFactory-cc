@@ -820,21 +820,25 @@ class SafeStopNotificationTest(unittest.TestCase):
         self.assertEqual(len(sent), 1)
         text = sent[0]
         self.assertIn("安全停止", text)
-        self.assertIn("在庫が足りません", text)
+        self.assertNotIn("在庫が足りません", text)
         self.assertIn("有効 2 本 / 未使用 1 本 / 必要 6 本", text)
         self.assertIn("従来カード版への自動代替は行いません。", text)
 
     def test_hybrid_block_notifies_owner(self):
         sent: list[str] = []
         with patch.object(pipeline.notify, "send_message", side_effect=lambda t, **kw: sent.append(t)):
-            pipeline.notify_safe_stop(pipeline.HybridGenerationBlocked("Seedanceを生成できません"))
+            pipeline.notify_safe_stop(pipeline.HybridGenerationBlocked("external response https://example.invalid"))
 
         self.assertEqual(len(sent), 1)
-        self.assertIn("Seedanceを生成できません", sent[0])
-        self.assertIn("Atlas Cloud", sent[0])
+        self.assertIn("Topview混在動画の生成処理で停止", sent[0])
+        self.assertNotIn("external response", sent[0])
+        self.assertNotIn("https://", sent[0])
 
     def test_notification_failure_does_not_raise(self):
-        with patch.object(pipeline.notify, "send_message", side_effect=RuntimeError("telegram down")):
+        with (
+            patch.object(pipeline.notify, "send_message", side_effect=RuntimeError("telegram down")),
+            patch.object(pipeline, "log"),
+        ):
             pipeline.notify_safe_stop(pipeline.HybridGenerationBlocked("blocked"))
 
 
