@@ -3,7 +3,7 @@ import sys, io
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 """
-Zoom AI Companion議事録 → .company/inputs/conversations/ 取り込みスクリプト
+Zoom AI Companion議事録 → 04_インプット/inputs/conversations/ 取り込みスクリプト
 
 Usage:
     python sync_zoom.py                  # 昨日の議事録を取り込み

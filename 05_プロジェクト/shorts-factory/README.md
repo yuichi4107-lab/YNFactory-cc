@@ -41,7 +41,7 @@ YouTube / TikTok は専用Chromeプロファイルへのログイン確認後に
 | SNS認証 | `~/shorts-factory/sns_credentials/.env`（mode `0600`） |
 | Driveミラー状態 | `~/shorts-factory/drive_mirror/status.json` |
 
-Driveへの反映は `com.ynfactory.shorts-drive-mirror` が5分間隔でローカル→Driveへ行う。ミラー失敗や遅延は、生成・承認・投稿の失敗を意味しない。Drive側の `.company/marketing/shorts-factory/` や `.company/outputs/shorts-factory/` を手編集してもruntimeへは**自動importされず**、次のミラーでローカル正本に上書きされ得る。queue/topicsの修復はDrive側を編集せず、必ずruntime正本に対して行う。
+Driveへの反映は `com.ynfactory.shorts-drive-mirror` が5分間隔でローカル→Driveへ行う。ミラー失敗や遅延は、生成・承認・投稿の失敗を意味しない。Drive側の `99_その他/company-records/marketing/shorts-factory/` や `03_成果物/outputs/shorts-factory/` を手編集してもruntimeへは**自動importされず**、次のミラーでローカル正本に上書きされ得る。queue/topicsの修復はDrive側を編集せず、必ずruntime正本に対して行う。
 
 ## セットアップ（済んでいるもの）
 
@@ -115,11 +115,11 @@ $PY scripts/check_runtime_health.py --json
 
 # 初回移行・管理された再移行だけ。旧Drive状態をruntimeへ一方向コピー
 $PY scripts/migrate_runtime_state.py \
-  --source-marketing "<Drive>/YNFactory-cc/.company/marketing/shorts-factory"
+  --source-marketing "<Drive>/YNFactory-cc/99_その他/company-records/marketing/shorts-factory"
 
 # Drive側の認証ファイルをruntimeへ明示同期（atomic write、mode 0600）
 $PY scripts/sync_runtime_credentials.py \
-  --source "<Drive>/YNFactory-cc/.company/engineering/sns-credentials/.env"
+  --source "<Drive>/YNFactory-cc/99_その他/company-records/engineering/sns-credentials/.env"
 
 # ローカル正本をDriveへ1回ミラー。投稿処理は行わない
 $PY scripts/mirror_to_drive.py

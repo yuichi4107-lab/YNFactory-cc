@@ -44,7 +44,7 @@ description: テーマまたは添付素材から、まず theme-to-ebook で文
 
 ## Phase 0: 統合初回質問
 
-開始時に、文字本とマンガ化の条件をクリック式選択UIで確認する。`request_user_input` が使える場合はその選択カードを使う。使えない場合は `.company/scripts/ebook_setup_ui.py` のローカルクリック式フォームを起動する。Markdownの表や `1A、2B...` 形式を標準にしない。
+開始時に、文字本とマンガ化の条件をクリック式選択UIで確認する。`request_user_input` が使える場合はその選択カードを使う。使えない場合は `01_コード/scripts/company/ebook_setup_ui.py` のローカルクリック式フォームを起動する。Markdownの表や `1A、2B...` 形式を標準にしない。
 
 **クリック式UIの出し方:**
 
@@ -90,10 +90,10 @@ description: テーマまたは添付素材から、まず theme-to-ebook で文
 **ローカルフォームの出し方（`request_user_input` が使えない場合）:**
 
 ```bash
-python3 .company/scripts/ebook_setup_ui.py --theme "{テーマ}" --mode theme-to-ebook-to-manga
+python3 01_コード/scripts/company/ebook_setup_ui.py --theme "{テーマ}" --mode theme-to-ebook-to-manga
 ```
 
-保存先は `.company/outputs/ebook-setup-inputs/latest.json`。回答を読み取り、`PIPELINE_REPORT.md` や各 `progress.json` の Phase 0回答へ反映する。
+保存先は `03_成果物/outputs/ebook-setup-inputs/latest.json`。回答を読み取り、`PIPELINE_REPORT.md` や各 `progress.json` の Phase 0回答へ反映する。
 
 ## Phase 1: theme-to-ebook 実行
 
@@ -112,7 +112,7 @@ Phase 0のうち、文字中心電子書籍に関係する回答を `theme-to-eb
 出力先:
 
 ```text
-.company/outputs/ebooks/{book-name}/
+03_成果物/outputs/ebooks/{book-name}/
 ```
 
 ## Phase 2: 接続前チェック
@@ -158,7 +158,7 @@ Phase 2に通ったら、文字本の出力フォルダを `ebook-to-manga` の�
 このタイトルは、マンガ版の `project.md`、EPUBファイル名、表紙、`KDP出版用/書籍情報.md`、`ジャンル・キーワード.md`、`書籍紹介文_HTML.html`、`PIPELINE_REPORT.md` に反映する。サブタイトルは文字中心版のサブタイトルを流用してよいが、タイトル本体には必ず `マンガでわかる！` を付ける。
 
 ```text
-source_folder = .company/outputs/ebooks/{book-name}/
+source_folder = 03_成果物/outputs/ebooks/{book-name}/
 manga_title = マンガでわかる！{文字中心電子書籍のタイトル}
 target_pages = Phase 0 項目5の回答
 genre = Phase 0 項目7の回答、または ebook-to-manga の自動判定
@@ -199,7 +199,7 @@ genre = Phase 0 項目7の回答、または ebook-to-manga の自動判定
 統合レポート:
 
 ```text
-.company/outputs/ebooks-manga/{book-name}/PIPELINE_REPORT.md
+03_成果物/outputs/ebooks-manga/{book-name}/PIPELINE_REPORT.md
 ```
 
 レポートには以下を含める:
@@ -218,8 +218,8 @@ genre = Phase 0 項目7の回答、または ebook-to-manga の自動判定
 
 ## 完了条件
 
-- 文字中心電子書籍の成果物が `.company/outputs/ebooks/{book-name}/` に揃っている
-- マンガ版の成果物が `.company/outputs/ebooks-manga/{book-name}/` に揃っている
+- 文字中心電子書籍の成果物が `03_成果物/outputs/ebooks/{book-name}/` に揃っている
+- マンガ版の成果物が `03_成果物/outputs/ebooks-manga/{book-name}/` に揃っている
 - マンガ版タイトルが `マンガでわかる！{文字中心電子書籍のタイトル}` になっている
 - 文字本からマンガ版へ進む接続前チェックが記録されている
 - `PIPELINE_REPORT.md` が作成されている

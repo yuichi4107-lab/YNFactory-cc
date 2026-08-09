@@ -75,6 +75,17 @@ class TopviewInventoryReuseGuardTest(unittest.TestCase):
             selected, _ = topview_inventory.select_live_clips({}, count=2)
         self.assertEqual([clip["id"] for clip in selected], ["new-a", "new-b"])
 
+    def test_select_live_clips_uses_today_batch_before_reserve(self):
+        clips = [
+            {"id": "reserve-a", "use_count": 0, "registered_at": "2026-08-08T04:00:00+09:00"},
+            {"id": "today-a", "use_count": 0, "registered_at": "2026-08-09T04:00:00+09:00"},
+            {"id": "today-b", "use_count": 0, "registered_at": "2026-08-09T04:00:00+09:00"},
+            {"id": "reserve-b", "use_count": 0, "registered_at": "2026-08-08T04:00:00+09:00"},
+        ]
+        with patch.object(topview_inventory, "validate_inventory", return_value=({}, clips, Path("/tmp/manifest.json"))):
+            selected, _ = topview_inventory.select_live_clips({}, count=2)
+        self.assertEqual([clip["id"] for clip in selected], ["today-b", "today-a"])
+
     def test_select_live_clips_stops_when_unused_assets_are_insufficient(self):
         clips = [
             {"id": "used-a", "use_count": 1, "last_used_at": "2026-08-08T01:00:00+09:00"},
@@ -125,6 +136,7 @@ class TopviewRegisterMergeTest(unittest.TestCase):
         self.assertEqual(by_id["topview-old"]["use_count"], 1)
         self.assertEqual(by_id["topview-old"]["last_used_at"], "2026-08-08T01:00:00+09:00")
         self.assertEqual(by_id["topview-new"]["use_count"], 0)
+        self.assertIn("registered_at", by_id["topview-new"])
 
     def test_reregistering_a_used_clip_does_not_reset_it_to_unused(self):
         with tempfile.TemporaryDirectory() as tmpdir:

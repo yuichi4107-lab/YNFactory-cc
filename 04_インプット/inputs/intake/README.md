@@ -1,6 +1,6 @@
 # Intake Raw Storage
 
-`.company/inputs/00_INPUT_BOX/` から取り込んだ外部インプットの raw 保存先。
+`04_インプット/inputs/00_INPUT_BOX/` から取り込んだ外部インプットの raw 保存先。
 
 ## 構造
 
@@ -18,7 +18,7 @@ intake/
 
 ## ルール
 
-- `.company/inputs/00_INPUT_BOX/` の原本は削除しない
+- `04_インプット/inputs/00_INPUT_BOX/` の原本は削除しない
 - raw 保存先には、取り込み時点のコピーと metadata を保存する
 - `normalized/` には、AIが読みやすいMarkdown化テキストを保存する
 - organized から raw へ辿れるようにする

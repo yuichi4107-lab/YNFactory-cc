@@ -13,7 +13,7 @@ from openai import OpenAI
 
 
 PROJECT_ROOT = Path(r"G:\マイドライブ\YNFactory-cc")
-BOOK_ROOT = PROJECT_ROOT / ".company" / "outputs" / "ebooks-manga" / "chatgpt55-now-only-manga"
+BOOK_ROOT = PROJECT_ROOT / "03_成果物" / "outputs" / "ebooks-manga" / "chatgpt55-now-only-manga"
 CSV_ROOT = BOOK_ROOT / "panels" / "comicle_scene_split" / "csv"
 TEMPLATE_ROOT = BOOK_ROOT / "共通テンプレ"
 OUTPUT_ROOT = BOOK_ROOT / "pages_openai_generated"

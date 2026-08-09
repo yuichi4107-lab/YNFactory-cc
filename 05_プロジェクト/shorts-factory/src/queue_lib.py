@@ -1,4 +1,4 @@
-"""投稿キュー（.company/marketing/shorts-factory/queue/）の管理。
+"""投稿キュー（99_その他/company-records/marketing/shorts-factory/queue/）の管理。
 
 social-auto-ops のステータス設計を踏襲:
   draft → ready_for_review → approved → posted / failed / skipped / blocked

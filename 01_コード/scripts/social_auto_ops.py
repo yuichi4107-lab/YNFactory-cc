@@ -14,8 +14,8 @@ from zoneinfo import ZoneInfo
 
 
 ROOT = Path(__file__).resolve().parents[1]
-QUEUE_DIR = ROOT / ".company" / "marketing" / "social-auto-ops" / "queue"
-DRY_RUN_DIR = ROOT / ".company" / "marketing" / "social-auto-ops" / "dry-runs"
+QUEUE_DIR = ROOT / "99_その他" / "company-records" / "marketing" / "social-auto-ops" / "queue"
+DRY_RUN_DIR = ROOT / "99_その他" / "company-records" / "marketing" / "social-auto-ops" / "dry-runs"
 DEFAULT_PLATFORMS = ("x", "threads", "instagram")
 
 

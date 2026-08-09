@@ -26,7 +26,7 @@ TODOはコンテキストそのものではない。TODOは、コンテキスト
 
 - ルートの `AGENTS.md`
 - `.company/AGENTS.md`
-- `.company/inputs/persona_profile.md`
+- `04_インプット/inputs/persona_profile.md`
 - 各スキルの `SKILL.md`
 - 明示的に保存された運用ルール
 
@@ -46,7 +46,7 @@ TODOはコンテキストそのものではない。TODOは、コンテキスト
 - `.company/secretary/AGENTS.md`
 - `.company/secretary/HANDOFF.md`
 - `.company/secretary/todos/`
-- `.company/inputs/CLAUDE.md`
+- `04_インプット/inputs/CLAUDE.md`
 
 ### 2.3 プロジェクトコンテキスト
 
@@ -107,13 +107,13 @@ TODOはコンテキストそのものではない。TODOは、コンテキスト
 
 最上位の運用ルール。作業手順、品質ループ、出力制限、参照順序などを定める。
 
-### 3.2 `.company/inputs/`
+### 3.2 `04_インプット/inputs/`
 
 外部から取得・記録した一次情報、参考情報、素材情報を格納する場所。
 
-このフォルダは旧称 `.company/context/` だが、実体はコンテキストそのものではなく「インプット」である。
+このフォルダは旧称 `04_インプット/context/` だが、実体はコンテキストそのものではなく「インプット」である。
 
-`.company/inputs/CLAUDE.md` で定義されている通り、このフォルダは会話記録、参考資料、競合情報、クライアント資料、その他の外部情報を置く場所である。
+`04_インプット/inputs/CLAUDE.md` で定義されている通り、このフォルダは会話記録、参考資料、競合情報、クライアント資料、その他の外部情報を置く場所である。
 
 この `context-map.md` は、同フォルダ内の情報を含め、ワークスペース全体のコンテキストをどう扱うかを定義する地図である。
 
@@ -130,9 +130,9 @@ Limitless などから取り込まれる会話記録には、予定、約束、�
 
 流れ:
 
-1. `.company/inputs/conversations/` に会話記録を保存する
+1. `04_インプット/inputs/conversations/` に会話記録を保存する
 2. `extract_insights.py` などで予定・タスク・判断材料を抽出する
-3. `.company/inputs/organized/` に整理済みインプットとして保存する
+3. `04_インプット/inputs/organized/` に整理済みインプットとして保存する
 4. 必要に応じて `.company/secretary/inbox/` に候補として送る
 5. `HANDOFF.md`、既存プロジェクト状態、ユーザーの最新指示と照合する
 6. 今日実行すべきものだけを `.company/secretary/todos/YYYY-MM-DD.md` に反映する
@@ -186,7 +186,7 @@ Limitless由来の会話記録や外部インプットから抽出されたTODO�
 1. ユーザーの最新指示
 2. ルートの `AGENTS.md`
 3. 対象プロジェクト内の最新ファイル
-4. `.company/inputs/context-map.md`
+4. `04_インプット/inputs/context-map.md`
 5. `.company/secretary/HANDOFF.md`
 6. 日別TODO
 7. 長期メモリ
@@ -277,7 +277,7 @@ TODOは、他のコンテキストから導かれる結果として更新する�
 
 例:
 
-- コンテキスト運用: `.company/inputs/context-map.md`
+- コンテキスト運用: `04_インプット/inputs/context-map.md`
 - 会社運営: `.company/AGENTS.md`
 - 秘書運用: `.company/secretary/AGENTS.md`
 - スキル運用: 各 `SKILL.md`

@@ -1,27 +1,27 @@
 # One-Shot Input Uploader
 
-保存先を毎回選ばずに、1つの画面から `.company/inputs/00_INPUT_BOX/` へ登録するための仕組み。
+保存先を毎回選ばずに、1つの画面から `04_インプット/inputs/00_INPUT_BOX/` へ登録するための仕組み。
 
 ## 1. 今すぐ使える: ローカルLAN版
 
 Mac:
 
 ```bash
-.company/inputs/start_upload_server_mac.sh
+04_インプット/inputs/start_upload_server_mac.sh
 ```
 
 Windows:
 
 ```bat
-.company\inputs\start_upload_server_windows.bat
+04_インプット\inputs\start_upload_server_windows.bat
 ```
 
 起動後に表示される `http://<PCのIP>:8787` を、同じWi-Fiの iPhone / iPad / Android / PC で開く。
 
 アップロードすると以下が自動で行われる。
 
-1. `.company/inputs/00_INPUT_BOX/` に保存
-2. `.company/inputs/import_drive_inbox.py` を実行
+1. `04_インプット/inputs/00_INPUT_BOX/` に保存
+2. `04_インプット/inputs/import_drive_inbox.py` を実行
 3. raw / organized / index へ登録
 4. 拡張子ごとの正規化テキストを raw 側の `normalized/` に保存
 
@@ -50,37 +50,37 @@ Google Apps Script版はDriveへ保存するだけなので、PC側でDrive同�
 Windowsで5分おきに自動取り込みする:
 
 ```bat
-.company\inputs\setup_auto_import_windows.bat
+04_インプット\inputs\setup_auto_import_windows.bat
 ```
 
 解除:
 
 ```bat
-.company\inputs\remove_auto_import_windows.bat
+04_インプット\inputs\remove_auto_import_windows.bat
 ```
 
 タスクスケジューラ登録が使えない場合は、ログイン中だけ動くループ版を起動する。
 
 ```bat
-.company\inputs\start_auto_import_loop_windows.bat
+04_インプット\inputs\start_auto_import_loop_windows.bat
 ```
 
 Macで5分おきに自動取り込みする:
 
 ```bash
-.company/inputs/setup_auto_import_mac.sh
+04_インプット/inputs/setup_auto_import_mac.sh
 ```
 
 解除:
 
 ```bash
-.company/inputs/remove_auto_import_mac.sh
+04_インプット/inputs/remove_auto_import_mac.sh
 ```
 
 一時的にログイン中だけ動かす場合:
 
 ```bash
-.company/inputs/start_auto_import_loop_mac.sh
+04_インプット/inputs/start_auto_import_loop_mac.sh
 ```
 
 ## 4. Google Meet 自動巡回

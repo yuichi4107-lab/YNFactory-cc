@@ -5,7 +5,7 @@ start_image にした image-to-video で連鎖生成し、人物・服装・部�
 
 参考実装: tools/seedance-api-compare/sample_short.py, sample_short_v2.py
 （サンプル制作で確定した技術知見。詳細は
- .company/projects/shorts-factory/2026-07-07-seedance-atlas統合要件定義.md）
+ 99_その他/company-records/projects/shorts-factory/2026-07-07-seedance-atlas統合要件定義.md）
 
 技術知見（本番実装の必須要件）:
 - reference-to-video（顔画像参照）は権利保護フィルタで弾かれるため使用しない。

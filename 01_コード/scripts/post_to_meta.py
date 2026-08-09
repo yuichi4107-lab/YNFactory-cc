@@ -17,7 +17,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_ENV_PATH = ROOT / ".company" / "engineering" / "sns-credentials" / ".env"
+DEFAULT_ENV_PATH = ROOT / "99_その他" / "company-records" / "engineering" / "sns-credentials" / ".env"
 DEFAULT_API_VERSION = "v25.0"
 DEFAULT_REELS_UPLOAD_ATTEMPTS = 3
 

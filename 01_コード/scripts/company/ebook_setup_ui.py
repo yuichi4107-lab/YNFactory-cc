@@ -20,7 +20,7 @@ from zoneinfo import ZoneInfo
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_OUTPUT_DIR = ROOT / ".company" / "outputs" / "ebook-setup-inputs"
+DEFAULT_OUTPUT_DIR = ROOT / "03_成果物" / "outputs" / "ebook-setup-inputs"
 JST = ZoneInfo("Asia/Tokyo")
 
 

@@ -6,7 +6,7 @@
 
 - Drive folder: `00_GOOGLE_MEET_BOX`
 - Folder ID: `1doYv2SjuIgy421Kv_100-a2SCHYEHSRO`
-- Local path: `.company/inputs/00_GOOGLE_MEET_BOX/`
+- Local path: `04_インプット/inputs/00_GOOGLE_MEET_BOX/`
 
 Apps ScriptがこのDriveフォルダへ書き出した後、Macの5分おき自動取り込みが `sync_google_meet.py` と `organize_google_meet_inputs.py --all --force` を実行する。
 

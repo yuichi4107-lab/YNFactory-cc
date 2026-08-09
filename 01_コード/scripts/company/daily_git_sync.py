@@ -33,7 +33,7 @@ DANGEROUS_PATH_PATTERNS: list[re.Pattern[str]] = [
     re.compile(r"(^|/)\.env($|[./])"),
     re.compile(r"(^|/)credentials\.json$"),
     re.compile(r"(^|/)secrets?(/|$)"),
-    re.compile(r"(^|/)\.company/engineering/sns-credentials(/|$)"),
+    re.compile(r"(^|/)\99_その他/company-records/engineering/sns-credentials(/|$)"),
     re.compile(r"\.(pem|key|p12|pfx)$", re.IGNORECASE),
 ]
 

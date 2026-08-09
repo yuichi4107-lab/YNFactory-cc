@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="${YNFACTORY_ROOT:-/Users/yuichi/YNFactory-cc}"
-INPUTS_DIR="${YNFACTORY_INPUTS_DIR:-$ROOT_DIR/.company/inputs}"
+INPUTS_DIR="${YNFACTORY_INPUTS_DIR:-$ROOT_DIR/04_インプット/inputs}"
 PYTHON="${YNFACTORY_PYTHON:-$ROOT_DIR/biz_idea_generator/.venv/bin/python3.12}"
 LOG_DIR="$INPUTS_DIR/logs"
 LOCAL_LOG_DIR="/Users/yuichi/Library/Logs/yn-limitless-sync"

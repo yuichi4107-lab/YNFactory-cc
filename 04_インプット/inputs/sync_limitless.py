@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Limitless AI → .company/inputs/conversations/ 日次バッチ取り込みスクリプト
+Limitless AI → 04_インプット/inputs/conversations/ 日次バッチ取り込みスクリプト
 
 Usage:
     python sync_limitless.py                 # 昨日の会話を取り込み

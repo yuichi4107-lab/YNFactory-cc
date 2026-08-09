@@ -10,7 +10,7 @@ from datetime import date, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-NOTE_ROOT = ROOT / ".company" / "outputs" / "note-articles"
+NOTE_ROOT = ROOT / "03_成果物" / "outputs" / "note-articles"
 ACCOUNTS_PATH = NOTE_ROOT / "accounts.json"
 HISTORY_PATH = NOTE_ROOT / "history.json"
 TOPICS_DIR = NOTE_ROOT / "topics"

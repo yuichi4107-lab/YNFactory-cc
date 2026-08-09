@@ -26,7 +26,7 @@ shorts-factory の投稿は `shorts-factory/src/platforms/poster.py` による�
 5. runtime正本の `~/shorts-factory/state/queue/<queue_id>.json` と `~/shorts-factory/state/topics.json`
 6. runtime正本の `~/shorts-factory/outputs/<queue_id>/`、`work/<queue_id>/`、`posting_ledger/<queue_id>.json`
 7. `~/shorts-factory/drive_mirror/status.json` と、必要な時だけ `~/Library/Logs/shorts-drive-mirror.log`
-8. Drive側 `.company/marketing/shorts-factory/` / `.company/outputs/shorts-factory/` は最後にミラーコピーとして確認する
+8. Drive側 `99_その他/company-records/marketing/shorts-factory/` / `03_成果物/outputs/shorts-factory/` は最後にミラーコピーとして確認する
 
 Drive上のoutputsを広く走査するとGoogle Drive File Providerのロックを誘発しやすい。生成・承認・投稿・復旧判断はruntimeローカルだけを正にし、Driveミラーの異常は別障害として切り分ける。
 
@@ -55,11 +55,11 @@ $PY scripts/check_runtime_health.py --json
 
 # 旧Drive状態からruntimeへの一方向移行。通常運用の同期には使わない
 $PY scripts/migrate_runtime_state.py \
-  --source-marketing "<Drive>/YNFactory-cc/.company/marketing/shorts-factory"
+  --source-marketing "<Drive>/YNFactory-cc/99_その他/company-records/marketing/shorts-factory"
 
 # SNS認証をruntimeローカルへ明示同期（atomic write、mode 0600）
 $PY scripts/sync_runtime_credentials.py \
-  --source "<Drive>/YNFactory-cc/.company/engineering/sns-credentials/.env"
+  --source "<Drive>/YNFactory-cc/99_その他/company-records/engineering/sns-credentials/.env"
 
 # ローカル正本をDriveへ1回best-effortミラー
 $PY scripts/mirror_to_drive.py
@@ -129,7 +129,7 @@ $PY scripts/mirror_to_drive.py --timeout 180
 1. 週5枠以外の時間帯でSeedance版が使われていないか、`pipeline.py` の枠判定と `seedance_costs.jsonl` のタイムスタンプを突き合わせる
 2. 月次コストが上限に近い場合は `budget_remaining()` の残額を確認し、超過ならフォールバックが機能しているか確認する
 3. runtime `~/shorts-factory/app/src/video_bg_gen.py` が意図したデプロイ版か確認する。生成中にDriveコードを自動同期する設計ではない
-4. 実装の詳細技術知見は `.company/projects/shorts-factory/2026-07-07-seedance-atlas統合要件定義.md` を参照する
+4. 実装の詳細技術知見は `99_その他/company-records/projects/shorts-factory/2026-07-07-seedance-atlas統合要件定義.md` を参照する
 
 ## 2026-07-08 ネタ帳自動補充ルール
 

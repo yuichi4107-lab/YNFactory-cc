@@ -14,7 +14,7 @@
 週次バッチの出力は週単位フォルダにまとめる。
 
 ```
-.company/outputs/note-articles/
+03_成果物/outputs/note-articles/
 ├── accounts.json
 ├── history.json
 ├── topics/

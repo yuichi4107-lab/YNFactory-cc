@@ -27,31 +27,31 @@ description: 祖父母・両親・シニアの自分史を、完全文字版電�
 サービス本体:
 
 ```text
-.company/services/jibunshi-ebook-manga/
+99_その他/company-records/services/jibunshi-ebook-manga/
 ```
 
 注文ごとの作業場所:
 
 ```text
-.company/outputs/jibunshi-orders/{order-id}/
+03_成果物/outputs/jibunshi-orders/{order-id}/
 ```
 
 完全文字版:
 
 ```text
-.company/outputs/ebooks/{order-id}-text/
+03_成果物/outputs/ebooks/{order-id}-text/
 ```
 
 完全漫画版:
 
 ```text
-.company/outputs/ebooks-manga/{order-id}-manga/
+03_成果物/outputs/ebooks-manga/{order-id}-manga/
 ```
 
 LP:
 
 ```text
-.company/outputs/lp/jibunshi-ebook-manga/
+03_成果物/outputs/lp/jibunshi-ebook-manga/
 ```
 
 ## 受注フォルダ作成
@@ -59,7 +59,7 @@ LP:
 注文が入ったら、以下のスクリプトで注文フォルダを作る。
 
 ```bash
-python3 .company/services/jibunshi-ebook-manga/tools/create_order_package.py \
+python3 99_その他/company-records/services/jibunshi-ebook-manga/tools/create_order_package.py \
   --subject-name "主役名" \
   --buyer-name "注文者名" \
   --relationship "孫" \
@@ -113,7 +113,7 @@ python3 .company/services/jibunshi-ebook-manga/tools/create_order_package.py \
 
 ## 品質チェック
 
-`.company/services/jibunshi-ebook-manga/quality_checklist.md` を使う。85点未満なら修正する。
+`99_その他/company-records/services/jibunshi-ebook-manga/quality_checklist.md` を使う。85点未満なら修正する。
 
 特に見ること:
 
@@ -125,9 +125,9 @@ python3 .company/services/jibunshi-ebook-manga/tools/create_order_package.py \
 
 ## 関連ファイル
 
-- `.company/services/jibunshi-ebook-manga/README.md`
-- `.company/services/jibunshi-ebook-manga/SERVICE_BLUEPRINT.md`
-- `.company/services/jibunshi-ebook-manga/production_workflow.md`
-- `.company/services/jibunshi-ebook-manga/intake_questions.md`
-- `.company/services/jibunshi-ebook-manga/privacy_and_consent.md`
-- `.company/services/jibunshi-ebook-manga/quality_checklist.md`
+- `99_その他/company-records/services/jibunshi-ebook-manga/README.md`
+- `99_その他/company-records/services/jibunshi-ebook-manga/SERVICE_BLUEPRINT.md`
+- `99_その他/company-records/services/jibunshi-ebook-manga/production_workflow.md`
+- `99_その他/company-records/services/jibunshi-ebook-manga/intake_questions.md`
+- `99_その他/company-records/services/jibunshi-ebook-manga/privacy_and_consent.md`
+- `99_その他/company-records/services/jibunshi-ebook-manga/quality_checklist.md`

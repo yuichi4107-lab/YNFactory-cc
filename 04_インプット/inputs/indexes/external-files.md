@@ -11,5 +11,5 @@ generated_at: 2026-06-26T02:00:04+09:00
 
 > 自動生成ファイル。必要な修正は元の organized input または importer に反映する。
 
-- 明日やること | type:folder | source:`.company/inputs/organized/external/2026-06-16-20260616-071145-input-aa603e2f.md`
-- テスト | type:folder | source:`.company/inputs/organized/external/2026-06-03-20260603-161245-input-8fcecfaa.md`
+- 明日やること | type:folder | source:`04_インプット/inputs/organized/external/2026-06-16-20260616-071145-input-aa603e2f.md`
+- テスト | type:folder | source:`04_インプット/inputs/organized/external/2026-06-03-20260603-161245-input-8fcecfaa.md`

@@ -2,7 +2,7 @@
 
 優先順位: 環境変数 > ~/shorts-factory/config.yaml > DEFAULTS
 秘密情報は ~/shorts-factory/secrets.yaml（Drive外）に置く。
-SNS認証は既存の .company/engineering/sns-credentials/.env を参照する。
+SNS認証は既存の 99_その他/company-records/engineering/sns-credentials/.env を参照する。
 """
 from __future__ import annotations
 
@@ -239,15 +239,15 @@ class Config:
         self.logs_dir = self.runtime_dir / "logs"
 
         self.drive_marketing_dir = (
-            self.repo_root / ".company" / "marketing" / "shorts-factory"
+            self.repo_root / "99_その他" / "company-records" / "marketing" / "shorts-factory"
         )
         self.drive_queue_dir = self.drive_marketing_dir / "queue"
         self.drive_topics_path = self.drive_marketing_dir / "topics.json"
         self.drive_outputs_dir = (
-            self.repo_root / ".company" / "outputs" / "shorts-factory"
+            self.repo_root / "03_成果物" / "outputs" / "shorts-factory"
         )
         self.drive_sns_env_path = (
-            self.repo_root / ".company" / "engineering" / "sns-credentials" / ".env"
+            self.repo_root / "99_その他" / "company-records" / "engineering" / "sns-credentials" / ".env"
         )
         self.sns_env_path = self.runtime_dir / "sns_credentials" / ".env"
         self.mirror_dir = self.runtime_dir / "drive_mirror"

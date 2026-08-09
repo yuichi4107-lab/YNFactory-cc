@@ -1,13 +1,13 @@
 # Google Apps Script Deploy
 
-スマホ外出先から1画面で `.company/inputs/00_INPUT_BOX/` にアップロードするためのデプロイ手順。
+スマホ外出先から1画面で `04_インプット/inputs/00_INPUT_BOX/` にアップロードするためのデプロイ手順。
 
 ## 現在設定済み
 
 アップロード先フォルダ:
 
 ```text
-.company/inputs/00_INPUT_BOX/
+04_インプット/inputs/00_INPUT_BOX/
 ```
 
 Google Drive folder ID:
@@ -64,7 +64,7 @@ Index
 
 ## 動作
 
-Webアプリからアップロードすると、Drive上の `.company/inputs/00_INPUT_BOX/` に以下のようなフォルダが作成される。
+Webアプリからアップロードすると、Drive上の `04_インプット/inputs/00_INPUT_BOX/` に以下のようなフォルダが作成される。
 
 ```text
 YYYYMMDD-HHMMSS-title/

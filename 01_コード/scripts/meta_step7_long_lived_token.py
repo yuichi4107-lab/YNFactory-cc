@@ -22,8 +22,7 @@ from urllib.request import urlopen
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_TOKEN_FILE = (
     ROOT
-    / ".company"
-    / "engineering"
+    / "99_その他" / "company-records" / "engineering"
     / "sns-credentials"
     / "step6-tokens-2026-06-09.txt"
 )

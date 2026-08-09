@@ -59,7 +59,7 @@
 
 ## 日次レビュー
 
-`process_daily_inputs.py` は索引を横断して `.company/inputs/reviews/YYYY-MM-DD-input-review.md` を生成する。
+`process_daily_inputs.py` は索引を横断して `04_インプット/inputs/reviews/YYYY-MM-DD-input-review.md` を生成する。
 
 レビューで使う主な索引:
 

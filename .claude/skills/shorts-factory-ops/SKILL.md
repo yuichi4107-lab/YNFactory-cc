@@ -23,8 +23,8 @@ shorts-factory の投稿は `shorts-factory/src/platforms/poster.py` による�
 2. `.company/secretary/todos/` の最新日付TODO
 3. `~/Library/Logs/shorts-generate.log`
 4. `~/Library/Logs/shorts-approval.log`
-5. `.company/marketing/shorts-factory/queue/<queue_id>.json`
-6. `.company/outputs/shorts-factory/<queue_id>/`
+5. `99_その他/company-records/marketing/shorts-factory/queue/<queue_id>.json`
+6. `03_成果物/outputs/shorts-factory/<queue_id>/`
 7. runtime側の `~/shorts-factory/work/<queue_id>/` と `~/shorts-factory/posting_ledger/<queue_id>.json`
 
 Drive上のoutputsを広く走査するとGoogle Drive File Providerのロックで生成が止まりやすい。生成時の重複検知や復旧判断は、原則としてruntimeローカルの `~/shorts-factory/work/` と queue item を正にする。
@@ -80,7 +80,7 @@ Drive上のoutputsを広く走査するとGoogle Drive File Providerのロック
 1. 週5枠以外の時間帯でSeedance版が使われていないか、`pipeline.py` の枠判定と `seedance_costs.jsonl` のタイムスタンプを突き合わせる
 2. 月次コストが上限に近い場合は `budget_remaining()` の残額を確認し、超過ならフォールバックが機能しているか確認する
 3. Drive正本の `shorts-factory/src/video_bg_gen.py` と runtime `~/shorts-factory/app` の同期状態を確認する（未同期だと本番では旧動作のまま）
-4. 実装の詳細技術知見は `.company/projects/shorts-factory/2026-07-07-seedance-atlas統合要件定義.md` を参照する
+4. 実装の詳細技術知見は `99_その他/company-records/projects/shorts-factory/2026-07-07-seedance-atlas統合要件定義.md` を参照する
 
 ## 実装済みガード
 

@@ -69,7 +69,7 @@ Telegram tool の reply で完了報告:
 
 ### 7. DASHBOARD_SALES.md 更新
 
-今日の送信数を `.company/projects/AI導入支援営業/DASHBOARD_SALES.md` の §1「現状スナップショット」に追記する。
+今日の送信数を `99_その他/company-records/projects/AI導入支援営業/DASHBOARD_SALES.md` の §1「現状スナップショット」に追記する。
 
 - DM送信数 累計: [前日値] → [前日値 + 今日の承認送信数]
 - 今週送信数: [今週累計 + 今日の承認送信数]

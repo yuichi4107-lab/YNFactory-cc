@@ -1,5 +1,5 @@
 {
-  "_comment": "5アカウント運用テンプレート。実運用時は .company/outputs/note-articles/accounts.json にコピーして note_url を埋める。",
+  "_comment": "5アカウント運用テンプレート。実運用時は 03_成果物/outputs/note-articles/accounts.json にコピーして note_url を埋める。",
   "accounts": [
     {
       "account_id": "ai",

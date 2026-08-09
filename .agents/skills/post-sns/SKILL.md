@@ -121,7 +121,7 @@ python scripts/post_to_meta.py threads "投稿テキスト" [--image "画像パ�
 1企画から X / Threads / Instagram をまとめて確認する場合:
 
 ```bash
-python scripts/social_auto_ops.py dry-run ".company/marketing/social-auto-ops/queue/YYYY-MM-DD_slug.json"
+python scripts/social_auto_ops.py dry-run "99_その他/company-records/marketing/social-auto-ops/queue/YYYY-MM-DD_slug.json"
 ```
 
 ### Step 6: 結果報告

@@ -4,7 +4,7 @@ set -euo pipefail
 PLIST="$HOME/Library/LaunchAgents/com.ynfactory.inputs-auto-import.plist"
 RUNNER="$HOME/scripts/run_inputs_auto_import.sh"
 ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
-INPUTS_DIR="$ROOT_DIR/.company/inputs"
+INPUTS_DIR="$ROOT_DIR/04_インプット/inputs"
 PYTHON="$ROOT_DIR/biz_idea_generator/.venv/bin/python3.12"
 LOG_DIR="$HOME/Library/Logs/ynfactory-inputs"
 
