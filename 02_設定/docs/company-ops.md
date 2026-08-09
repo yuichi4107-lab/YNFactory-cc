@@ -19,15 +19,22 @@
 
 ## セッション開始時
 
-**0. まず GitHub 最新を取り込む（必須）**
+**0. まず `/start` を実行する（必須）**
+
+`start` スキルが次を一括で行う。手で叩く場合は同じスクリプトを直接実行する。
 
 ```bash
 cd C:\YNFactory-cc   # Mac は ~/YNFactory-cc
-python 01_コード/scripts/company/sync_drive_git.py pull-sync
+python 01_コード/scripts/company/session_start.py
 ```
 
 他PCが前回のセッション終了時にpushした内容がDriveへ反映される。
-GitHubに新着が無ければ `No GitHub updates to sync to Drive.` と出て何も起きない。
+取り込むコミットが無ければ何もしない。
+
+`pull-sync` は対象パスのDriveファイルを**上書きする**ため、`session_start.py` は
+その前に「pullで書き換わるパスだけ」をDriveと照合し、別PCの未push編集があれば
+**pullせずに衝突一覧を出して止まる**（exit 2）。その場合は先に該当パスを
+`commit-push` してから再実行する。
 
 1. `HANDOFF.md` を読む
 2. `todos/` の直近ファイルを読む

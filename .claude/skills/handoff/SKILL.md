@@ -114,8 +114,9 @@ python3 01_コード/scripts/company/sync_drive_git.py commit-push \
 - リモートと乖離している場合は先に `python3 01_コード/scripts/company/sync_drive_git.py pull-sync` を実行し、GitHub側の最新をpullしてDriveへ反映してから 3-2 を再試行する
 - それでも失敗する場合はユーザーに状況報告する（エラーメッセージを添える）
 
-> **基本サイクル**: セッション開始時に `pull-sync`（GitHub → Drive）、終了時にこのスキルで `commit-push`（Drive → GitHub）。
-> ここでpushを済ませておかないと、次に別PCで開始時pullをしてもこのセッションの成果が渡らない。
+> **基本サイクル**: セッション開始時に `/start`（GitHub → Drive）、終了時にこのスキルで `commit-push`（Drive → GitHub）。
+> ここでpushを済ませておかないと、次に別PCで `/start` してもこのセッションの成果が渡らない。
+> 逆に、pushしないままDrive側だけ編集し続けると、次回の `/start` が衝突として検出して止まる。
 
 ### Step 4: 完了報告
 

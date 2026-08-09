@@ -1,6 +1,6 @@
 # YNFactory-cc
 
-- 作業開始時はまず `sync_drive_git.py pull-sync` でGitHub最新をDriveへ取り込み、その後 `.company/secretary/HANDOFF.md` → `.company/secretary/todos/` の順に読む
+- 作業開始時は `/start` を実行する（GitHub最新を安全にDriveへ取り込み → `HANDOFF.md` → 当日TODO の順に読む）
 - 日付・曜日は推測せずツールで確認し、"明日" 等は絶対日付に変換して保存する
 - ルート直下は6バケット固定（`01_コード` `02_設定` `03_成果物` `04_インプット` `05_プロジェクト` `99_その他`）→ `02_設定/docs/folder-structure.md`
 - 通常作業はDrive側、`git commit` / `push` はローカルGit側 → `02_設定/docs/multi-pc-rules.md`
