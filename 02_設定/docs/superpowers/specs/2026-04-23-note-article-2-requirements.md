@@ -256,7 +256,7 @@ B層の具体例（以下から1つ選択）:
 ### ファイルパス
 
 ```
-g:\マイドライブ\YNFactory-cc\02_設定\docs\note\2026-04-23-ai-literacy-article-2.md
+g:\マイドライブ\YNFactory-cc\docs\note\2026-04-23-ai-literacy-article-2.md
 ```
 
 ### ファイルフォーマット

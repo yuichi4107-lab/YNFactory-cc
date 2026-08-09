@@ -19,7 +19,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime, date
 
 sys.path.insert(0, os.path.dirname(__file__))
-from predictor_v1 import get_conn, predict_day, RACE_BUDGET
+from predictor_v1 import get_conn, predict_day, DAILY_BUDGET
 from scraper_legacy import HEADERS, REQUEST_INTERVAL, init_db, parse_time, parse_weight, extract_id_from_href
 
 # ============================================================
@@ -52,7 +52,7 @@ def scrape_shutuba(race_id, conn):
     url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
     try:
         res = requests.get(url, headers=HEADERS, timeout=15)
-        res.encoding = "EUC-JP"
+        res.encoding = "UTF-8"
     except requests.RequestException as e:
         print(f"  Error fetching shutuba {race_id}: {e}")
         return False
@@ -362,22 +362,32 @@ def _build_jra_cname_map(target_date):
     visited_venues = set()  # 場コード（全R取得済み）
 
     # Step 1: thisweekの全ページから起点CNAMEを収集
+    # JRAのthisweek配下は「その週の土曜MMDD」で固定されるため、
+    # target_dateが日曜・祝日の場合は1〜3日前まで遡って試す
+    from datetime import timedelta as _td
     seed_cnames = []
-    for page_idx in range(1, 5):
-        page_url = (f"https://www.jra.go.jp/keiba/thisweek/"
-                    f"{target_date.year}/{mmdd}_{page_idx}/race.html")
-        try:
-            r = requests.get(page_url, headers=jra_headers, timeout=10)
-            if r.status_code != 200:
+    for _back in range(0, 4):
+        cand_date = target_date - _td(days=_back)
+        cand_mmdd = cand_date.strftime("%m%d")
+        found_any = False
+        for page_idx in range(1, 5):
+            page_url = (f"https://www.jra.go.jp/keiba/thisweek/"
+                        f"{cand_date.year}/{cand_mmdd}_{page_idx}/race.html")
+            try:
+                r = requests.get(page_url, headers=jra_headers, timeout=10)
+                if r.status_code != 200:
+                    continue
+            except requests.RequestException:
                 continue
-        except requests.RequestException:
-            continue
 
-        text = r.content.decode("shift_jis", errors="replace")
-        found = _re.findall(r"CNAME=(pw01dde01[^\"&\s]+)", text)
-        for c in found:
-            if c not in seed_cnames:
-                seed_cnames.append(c)
+            text = r.content.decode("shift_jis", errors="replace")
+            found = _re.findall(r"CNAME=(pw01dde01[^\"&\s]+)", text)
+            for c in found:
+                if c not in seed_cnames:
+                    seed_cnames.append(c)
+            found_any = True
+        if found_any:
+            break
 
     if not seed_cnames:
         return cname_map
@@ -397,25 +407,40 @@ def _build_jra_cname_map(target_date):
             visited_venues.add(seed_venue.group(1))
         time.sleep(0.5)
 
-    # Step 3: まだ未取得の場の11R CNAMEを辿って全レースを取得
-    other_11r = {}
-    for nk_id, cname in list(cname_map.items()):
-        m = _re.match(r"pw01dde01(\d{2})", cname)
-        if m:
-            venue = m.group(1)
-            race_num = nk_id[-2:]
-            if venue not in visited_venues and race_num == "11":
-                other_11r[venue] = cname
-
-    for venue, cname_11r in other_11r.items():
-        if venue in visited_venues:
-            continue
-        visited_venues.add(venue)
-
-        venue_text = _fetch_jra_page(cname_11r)
-        if venue_text:
-            cname_map.update(_extract_cnames(venue_text))
-        time.sleep(0.5)
+    # Step 3: 12R揃っていない場について、その場のレースページ（11R優先）を辿って補完
+    # （日曜日に土曜の seed を使う運用では visited_venues が正しく機能しないため、
+    #  ここでは「カバレッジが12未満の場」を一律で再取得する）
+    while True:
+        from collections import defaultdict as _dd
+        venue_races = _dd(set)
+        for nk_id in cname_map:
+            venue_races[nk_id[4:6]].add(nk_id[-2:])
+        incomplete = [v for v, races in venue_races.items() if len(races) < 12]
+        if not incomplete:
+            break
+        progress = False
+        for venue in incomplete:
+            # 11R を優先、なければ任意のレース
+            pick = None
+            for nk_id, cname in cname_map.items():
+                if nk_id[4:6] != venue:
+                    continue
+                if nk_id[-2:] == "11":
+                    pick = cname
+                    break
+                if pick is None:
+                    pick = cname
+            if pick is None:
+                continue
+            before = len(cname_map)
+            page_text = _fetch_jra_page(pick)
+            if page_text:
+                cname_map.update(_extract_cnames(page_text))
+            time.sleep(0.5)
+            if len(cname_map) > before:
+                progress = True
+        if not progress:
+            break
 
     return cname_map
 
@@ -740,43 +765,11 @@ def _scrape_odds_jra(race_id, conn, cname, verbose=False):
     return updated > 0
 
 
-def scrape_odds(race_id, conn, retries=3, verbose=False):
-    """単勝オッズを取得してresultsを更新（JRA公式 → netkeiba APIのフォールバック）"""
+def _scrape_odds_netkeiba(race_id, conn, retries=3, verbose=False):
+    """netkeiba APIから単勝オッズを取得してresultsを更新。成功時True。
+    netkeibaのオッズAPIは &action=update を付けないと data空 を返す仕様。"""
     import json
-    global _jra_cname_cache
-
-    # --- 1) JRA公式サイトから取得を試みる ---
-    # race_idから日付を取得
-    year = int(race_id[:4])
-    c = conn.cursor()
-    c.execute("SELECT date FROM races WHERE race_id = ?", (race_id,))
-    row = c.fetchone()
-    if row:
-        target_date = datetime.strptime(row[0], "%Y-%m-%d").date()
-        date_key = row[0]
-
-        # CNAMEマップをキャッシュ（1日1回のみ構築）
-        if date_key not in _jra_cname_cache:
-            if verbose:
-                print(f"  JRA公式CNAMEマップ構築中...", flush=True)
-            _jra_cname_cache[date_key] = _build_jra_cname_map(target_date)
-            if verbose:
-                print(f"  {len(_jra_cname_cache[date_key])}レース分取得", flush=True)
-
-        cname = _jra_cname_cache[date_key].get(race_id)
-        if cname:
-            result = _scrape_odds_jra(race_id, conn, cname, verbose)
-            if result:
-                if verbose:
-                    print(f"  JRA公式からオッズ取得成功", flush=True)
-                return True
-            elif verbose:
-                print(f"  JRA公式からのパース失敗、netkeibaにフォールバック", flush=True)
-        elif verbose:
-            print(f"  JRA公式CNAMEなし、netkeibaにフォールバック", flush=True)
-
-    # --- 2) netkeiba APIにフォールバック ---
-    url = f"https://race.netkeiba.com/api/api_get_jra_odds.html?race_id={race_id}&type=1"
+    url = f"https://race.netkeiba.com/api/api_get_jra_odds.html?race_id={race_id}&type=1&action=update"
 
     for attempt in range(retries):
         try:
@@ -789,7 +782,7 @@ def scrape_odds(race_id, conn, retries=3, verbose=False):
 
         if res.status_code != 200:
             if verbose:
-                print(f"  HTTPエラー {res.status_code} ({attempt+1}/{retries})")
+                print(f"  netkeiba HTTPエラー {res.status_code} ({attempt+1}/{retries})")
             time.sleep(2)
             continue
 
@@ -797,19 +790,19 @@ def scrape_odds(race_id, conn, retries=3, verbose=False):
             data = json.loads(res.text)
         except json.JSONDecodeError:
             if verbose:
-                print(f"  JSONパースエラー ({attempt+1}/{retries})")
+                print(f"  netkeiba JSONパースエラー ({attempt+1}/{retries})")
             time.sleep(2)
             continue
 
         status = data.get("status")
         if status not in ("result", "middle"):
             if verbose:
-                print(f"  APIステータス: {status} ({attempt+1}/{retries})")
+                print(f"  netkeiba APIステータス: {status} ({attempt+1}/{retries})")
             time.sleep(3)
             continue
         if not data.get("data") or not isinstance(data["data"], dict):
             if verbose:
-                print(f"  オッズ更新中(data空) ({attempt+1}/{retries})")
+                print(f"  netkeiba オッズ更新中(data空) ({attempt+1}/{retries})")
             time.sleep(5)
             continue
 
@@ -817,7 +810,7 @@ def scrape_odds(race_id, conn, retries=3, verbose=False):
         tan_odds = odds_data.get("1", {})
         if not tan_odds:
             if verbose:
-                print(f"  単勝オッズデータなし ({attempt+1}/{retries})")
+                print(f"  netkeiba 単勝オッズデータなし ({attempt+1}/{retries})")
             time.sleep(2)
             continue
 
@@ -837,8 +830,47 @@ def scrape_odds(race_id, conn, retries=3, verbose=False):
 
         if updated > 0:
             conn.commit()
+            return True
 
-        return updated > 0
+    return False
+
+
+def scrape_odds(race_id, conn, retries=3, verbose=False):
+    """単勝オッズを取得してresultsを更新。
+    取得順: ① netkeiba（主経路） → ② JRA公式（フォールバック・現状403で休眠中）。
+    どちらもオッズ発表後のみ成功。未発表時は両方失敗し、呼び出し側はオッズなし暫定予想へ。"""
+    global _jra_cname_cache
+
+    # --- 1) netkeiba API（主経路） ---
+    if _scrape_odds_netkeiba(race_id, conn, retries, verbose):
+        if verbose:
+            print(f"  netkeibaからオッズ取得成功", flush=True)
+        return True
+
+    # --- 2) JRA公式サイト（フォールバック） ---
+    if verbose:
+        print(f"  netkeiba失敗 → JRA公式にフォールバック", flush=True)
+    c = conn.cursor()
+    c.execute("SELECT date FROM races WHERE race_id = ?", (race_id,))
+    row = c.fetchone()
+    if row:
+        target_date = datetime.strptime(row[0], "%Y-%m-%d").date()
+        date_key = row[0]
+
+        # CNAMEマップをキャッシュ（1日1回のみ構築）
+        if date_key not in _jra_cname_cache:
+            if verbose:
+                print(f"  JRA公式CNAMEマップ構築中...", flush=True)
+            _jra_cname_cache[date_key] = _build_jra_cname_map(target_date)
+            if verbose:
+                print(f"  {len(_jra_cname_cache[date_key])}レース分取得", flush=True)
+
+        cname = _jra_cname_cache[date_key].get(race_id)
+        if cname:
+            if _scrape_odds_jra(race_id, conn, cname, verbose):
+                if verbose:
+                    print(f"  JRA公式からオッズ取得成功", flush=True)
+                return True
 
     return False
 
@@ -959,6 +991,11 @@ def save_predictions(prediction, conn, source="morning"):
         combination TEXT, amount INTEGER, quality_score REAL,
         source TEXT DEFAULT 'morning',
         PRIMARY KEY (date, race_id, combination, source))""")
+    # est_odds: 買い目生成時の推定オッズ。配当均等配分の反実仮想ROI計算用（2026-07-11追加）
+    try:
+        c.execute("ALTER TABLE predictions ADD COLUMN est_odds REAL")
+    except Exception:
+        pass  # 既に列がある
 
     d = prediction["date"]
     for race in prediction["races"]:
@@ -966,9 +1003,10 @@ def save_predictions(prediction, conn, source="morning"):
         bt = race["bets"]["bet_type"]
         for bet in race["bets"]["bets"]:
             c.execute("""INSERT OR REPLACE INTO predictions
-                         (date, race_id, bet_type, combination, amount, quality_score, source)
-                         VALUES (?,?,?,?,?,?,?)""",
-                      (d, race["race_id"], bt, bet["combination"], bet["amount"], q_score, source))
+                         (date, race_id, bet_type, combination, amount, quality_score, source, est_odds)
+                         VALUES (?,?,?,?,?,?,?,?)""",
+                      (d, race["race_id"], bt, bet["combination"], bet["amount"], q_score, source,
+                       bet.get("est_odds")))
     conn.commit()
     print(f"予測データ保存: {len(prediction['races'])}レース ({source})")
 
@@ -1062,7 +1100,7 @@ def main():
 
     # 予測実行
     print("\n予測実行中...")
-    prediction = predict_day(conn, date_str, RACE_BUDGET)
+    prediction = predict_day(conn, date_str, DAILY_BUDGET)
 
     # 予測をDBに保存（結果チェック用）
     save_predictions(prediction, conn)

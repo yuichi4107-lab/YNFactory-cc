@@ -49,7 +49,7 @@
 
 Run:
 ```bash
-cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/keiba-unified/win5"
+cd "g:/マイドライブ/YNFactory-cc/keiba-unified/win5"
 diff -rq src "C:/Users/fcmdt/OneDrive/デスクトップ/ClaudeCode-claude-win-prediction-model-Izfwm/ClaudeCode-claude-win-prediction-model-Izfwm/win5_predictor/src"
 ```
 Expected: 差分ファイル一覧。**keiba-unified側に無い/古いファイルがあれば**そのファイルだけを手動でコピーして取り込む（src全体の上書きはしない）。差分が無ければそのまま次へ。
@@ -58,8 +58,8 @@ Expected: 差分ファイル一覧。**keiba-unified側に無い/古いファイ
 
 Run:
 ```bash
-mkdir -p "g:/マイドライブ/YNFactory-cc/05_プロジェクト/keiba-unified/win5/archive"
-cp -r "C:/Users/fcmdt/OneDrive/デスクトップ/ClaudeCode-claude-win-prediction-model-Izfwm/ClaudeCode-claude-win-prediction-model-Izfwm/win5_predictor" "g:/マイドライブ/YNFactory-cc/05_プロジェクト/keiba-unified/win5/archive/win5_predictor_onedrive_20260606"
+mkdir -p "g:/マイドライブ/YNFactory-cc/keiba-unified/win5/archive"
+cp -r "C:/Users/fcmdt/OneDrive/デスクトップ/ClaudeCode-claude-win-prediction-model-Izfwm/ClaudeCode-claude-win-prediction-model-Izfwm/win5_predictor" "g:/マイドライブ/YNFactory-cc/keiba-unified/win5/archive/win5_predictor_onedrive_20260606"
 ```
 Expected: 退避完了。以後の正本は `keiba-unified/win5/`。
 

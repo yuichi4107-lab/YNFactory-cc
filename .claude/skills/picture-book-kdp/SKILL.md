@@ -12,8 +12,8 @@ Use this skill for YNFactory children's picture-book projects intended for Amazo
 1. Confirm the current date with a tool.
 2. In `YNFactory-cc`, read `.company/secretary/HANDOFF.md` and the latest file under `.company/secretary/todos/` before project exploration.
 3. If the user did not specify the project folder, create or use:
-   - `03_成果物/outputs/picture-books/<YYYY-MM-DD>-<slug>/`
-   - Use the tool-confirmed creation date in Asia/Tokyo. Example: `03_成果物/outputs/picture-books/2026-06-13-kaigara-no-chiisana-koe/`.
+   - `.company/outputs/picture-books/<YYYY-MM-DD>-<slug>/`
+   - Use the tool-confirmed creation date in Asia/Tokyo. Example: `.company/outputs/picture-books/2026-06-13-kaigara-no-chiisana-koe/`.
    - Do not rename older pre-date folders unless the user explicitly asks.
 4. Define the work briefly before execution:
    - goal
@@ -90,9 +90,9 @@ progress.json
 Because final picture-book artifacts are large and are not committed to
 GitHub, mirror the completed project folder to the Google Drive copy of
 `YNFactory-cc` using the same relative path. For example, after creating
-`03_成果物/outputs/picture-books/<YYYY-MM-DD>-<slug>/` in the local working
+`.company/outputs/picture-books/<YYYY-MM-DD>-<slug>/` in the local working
 copy, also copy it to the Drive-side
-`YNFactory-cc/03_成果物/outputs/picture-books/<YYYY-MM-DD>-<slug>/`. Treat this
+`YNFactory-cc/.company/outputs/picture-books/<YYYY-MM-DD>-<slug>/`. Treat this
 as artifact storage only; do not use the Drive folder as the Git worktree or
 execution cwd.
 

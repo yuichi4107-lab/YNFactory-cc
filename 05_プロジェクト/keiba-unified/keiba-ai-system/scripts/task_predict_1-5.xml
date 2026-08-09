@@ -43,7 +43,7 @@
   </Settings>
   <Actions Context="Author">
     <Exec>
-      <Command>G:\マイドライブ\YNFactory-cc\05_プロジェクト\keiba-unified\keiba-ai-system\scripts\run_predict_1-5.bat</Command>
+      <Command>G:\マイドライブ\YNFactory-cc\keiba-unified\keiba-ai-system\scripts\run_predict_1-5.bat</Command>
     </Exec>
   </Actions>
 </Task>

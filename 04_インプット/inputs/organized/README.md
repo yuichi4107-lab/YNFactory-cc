@@ -27,31 +27,31 @@
 ## 自動生成
 
 - `lifelogs/YYYY-MM-DD-lifelog-insights.md` は `organize_inputs.py` が自動生成する
-- 元データは `04_インプット/inputs/conversations/YYYY-MM-DD-lifelogs.md`
+- 元データは `.company/inputs/conversations/YYYY-MM-DD-lifelogs.md`
 - 抽出元は `.company/secretary/inbox/YYYY-MM-DD-lifelog-insights.md`
 - 日次整理版には、要約、TODO候補、決定事項、人物・連絡先、調査トピック、事業アイデア、出典を残す
 - `organize_inputs.py --all` で既存の抽出済み lifelog insights を一括整理できる
 
 - `zoom/YYYY-MM-DD-zoom-meetings.md` は `organize_zoom_inputs.py` が自動生成する
-- 元データは `04_インプット/inputs/conversations/YYYY-MM-DD-zoom.md`
+- 元データは `.company/inputs/conversations/YYYY-MM-DD-zoom.md`
 - Zoom 日次整理版には、会議一覧、会議ごとの概要、Next Steps / TODO候補、出典を残す
 - `organize_zoom_inputs.py --all` で既存の Zoom AI Companion 議事録を一括整理できる
 
 - `google-meet/YYYY-MM-DD-google-meet-meetings.md` は `organize_google_meet_inputs.py` が自動生成する
-- 元データは `04_インプット/inputs/conversations/YYYY-MM-DD-google-meet.md`
+- 元データは `.company/inputs/conversations/YYYY-MM-DD-google-meet.md`
 - Google Meet 日次整理版には、会議一覧、会議ごとの概要、Notes / Transcript、Next Steps / TODO候補、出典を残す
-- `sync_google_meet.py` で `04_インプット/inputs/00_GOOGLE_MEET_BOX/` から raw / normalized / conversation を作れる
+- `sync_google_meet.py` で `.company/inputs/00_GOOGLE_MEET_BOX/` から raw / normalized / conversation を作れる
 - `organize_google_meet_inputs.py --all` で既存の Google Meet 議事録を一括整理できる
 
 - `external/YYYY-MM-DD-*.md` は `import_drive_inbox.py` が自動生成する
-- 元データは `04_インプット/inputs/00_INPUT_BOX/`
-- raw コピーは `04_インプット/inputs/intake/raw/YYYY-MM-DD/` に保存する
+- 元データは `.company/inputs/00_INPUT_BOX/`
+- raw コピーは `.company/inputs/intake/raw/YYYY-MM-DD/` に保存する
 - 外部インプット整理版には、出典、登録メタデータ、URL、テキスト抜粋、添付ファイル、TODO候補、活用メモを残す
 - AIが読みやすい正規化テキストは raw 側の `normalized/all-normalized-content.md` へ残す
 - `import_drive_inbox.py` で Google Drive 投入口を取り込める
 
 ## 日次レビューとの関係
 
-`process_daily_inputs.py` は organized input と indexes を読み、`04_インプット/inputs/reviews/YYYY-MM-DD-input-review.md` に判断用サマリを生成する。
+`process_daily_inputs.py` は organized input と indexes を読み、`.company/inputs/reviews/YYYY-MM-DD-input-review.md` に判断用サマリを生成する。
 
 このレビューは Phase 1 では実行キューではなく、TODO反映前の確認台帳として扱う。`route_decision` が未判定の項目は、重複・完了済み・優先度を確認してから日別TODOやプロジェクトファイルへ反映する。

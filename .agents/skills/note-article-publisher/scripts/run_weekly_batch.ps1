@@ -5,7 +5,7 @@
 $ErrorActionPreference = "Stop"
 
 $ProjectRoot = "G:\マイドライブ\YNFactory-cc"
-$OutputDir = Join-Path $ProjectRoot "03_成果物\outputs\note-articles\weekly"
+$OutputDir = Join-Path $ProjectRoot ".company\outputs\note-articles\weekly"
 $LogDir = $OutputDir
 $LogFile = Join-Path $LogDir "latest-batch.log"
 

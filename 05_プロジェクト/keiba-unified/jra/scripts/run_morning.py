@@ -32,7 +32,7 @@ if sys.stderr.encoding != "utf-8":
 
 sys.path.insert(0, os.path.dirname(__file__))
 from predictor_v1 import (get_conn, score_all_horses, evaluate_race_quality,
-                           generate_bets,
+                           generate_bets, evaluate_race_quality_no_odds, generate_bets_c5b,
                            QUALITY_THRESHOLD, V2_BLEND_WEIGHT, MODEL_VERSION)
 from run_today import (get_today_race_ids, scrape_shutuba, parse_shutuba_entries,
                         scrape_odds, save_predictions, generate_report)
@@ -47,14 +47,21 @@ except ImportError as e:
     print(f"X投稿モジュール読み込み失敗（X投稿無効）: {e}")
     X_POST_AVAILABLE = False
 
-# Telegram設定（環境変数優先・2026-05-30 ハードコード除去）
-TG_TOKEN = os.environ.get("TG_TOKEN_JRA", os.environ.get("TG_TOKEN", ""))
-TG_CHAT_ID = os.environ.get("TG_CHAT_ID", "8571447808")
+# Telegram設定
+TG_TOKEN = "8718145068:AAGDWhDXt3ROsTKckTTunP3-4MT_uRgGL60"
+TG_CHAT_ID = "8571447808"
 
-# オッズありなら通常閾値(0.80)、なしなら低め(0.65)
-MORNING_THRESHOLD_WITH_ODDS = QUALITY_THRESHOLD  # 0.80
-MORNING_THRESHOLD_NO_ODDS = 0.80  # オッズなしでも品質基準は維持
+# 品質閾値は QUALITY_THRESHOLD に一本化（2026-06-05: 0.80→0.86 黒字化策）
+MORNING_THRESHOLD_WITH_ODDS = QUALITY_THRESHOLD  # 0.86
+MORNING_THRESHOLD_NO_ODDS = 0.70  # オッズなしは到達可能閾値(品質上限~0.795)。発表前の暫定予想用
 RACE_BUDGET = 5000  # 1レースあたりの予算（直前予想と統一）
+
+# 完全オッズ抜き（C5b）朝予想モード（2026-06-06 A/B検証で月別ロバスト性が最良）:
+# オッズ取得の成否に関わらず NO_ODDSモデル+自前value+free品質で常に本予想を出す。
+# Falseにすれば従来のオッズ依存モードへ即revert。
+MORNING_FULLY_ODDS_FREE = True
+C5B_MORNING_THRESHOLD = 0.92  # free-qualityスケール（~6レース選定。後で調整可）
+NO_ODDS_MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "models", "model_v2_no_odds.pkl")
 
 
 def send_telegram(message, parse_mode="Markdown"):
@@ -522,6 +529,17 @@ def main():
     threshold = MORNING_THRESHOLD_WITH_ODDS if has_odds else MORNING_THRESHOLD_NO_ODDS
     print(f"閾値: {threshold:.2f} ({'オッズあり' if has_odds else 'オッズなし'})")
 
+    # === 完全オッズ抜き（C5b）モード: モデル/品質/買い目をオッズ非依存に差し替え ===
+    if MORNING_FULLY_ODDS_FREE:
+        import model_v2 as _mv2
+        _mv2.MODEL_PATH = NO_ODDS_MODEL_PATH
+        _mv2.FEATURE_COLS = _mv2.FEATURE_COLS_NO_ODDS
+        global evaluate_race_quality, generate_bets
+        evaluate_race_quality = evaluate_race_quality_no_odds
+        generate_bets = generate_bets_c5b
+        threshold = C5B_MORNING_THRESHOLD
+        print(f"[C5b 完全オッズ抜きモード] NO_ODDSモデル / free品質 / 閾値={threshold:.2f}")
+
     # 全レース予想
     print("\n予想実行中...")
     all_results = predict_all_races(conn, date_str)
@@ -680,6 +698,19 @@ def main():
             print(f"穴予想保存完了: {len(longshot)} レース")
         else:
             print("穴予想: 該当なし")
+            # 案A: 穴予想0件でも Telegram に通知（沈黙を避ける、Xは投稿しない）
+            if not dry_run:
+                no_pick_msg = (
+                    "🎯 穴予想（モーニング）\n\n"
+                    "本日は穴予想に値する候補が見つかりませんでした。\n"
+                    "（全レースで予測確率が閾値未満のため、無理に推奨を出さない設計）\n\n"
+                    "※ 通常レース予想は別途送信済み"
+                )
+                try:
+                    send_telegram(no_pick_msg)
+                    print("穴予想0件Telegram通知完了")
+                except Exception as _e:
+                    print(f"穴予想0件Telegram通知失敗: {_e}")
 
     except Exception as _ls_e:
         import traceback as _tb

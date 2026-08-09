@@ -866,6 +866,96 @@ class PostingCoreTest(unittest.TestCase):
         self.assertEqual(errs, [])
         self.assertIn("二案を並べます", data["cues"][4]["display"])
 
+    def test_fallback_openings_rotate_across_hook_families(self):
+        topic = "ChatGPTで資料を要約する方法"
+        scripts = [
+            script_gen._fallback_script(topic, "beginner", [], variant=variant)
+            for variant in range(1, len(script_gen._FALLBACK_OPENING_HOOKS) + 1)
+        ]
+
+        openings = [script["card_keywords"][0] for script in scripts]
+        opening_displays = [tuple(script["cues"][0]["display"]) for script in scripts]
+        self.assertNotIn("前提整理", openings)
+        self.assertGreaterEqual(len(set(openings)), 7)
+        self.assertGreaterEqual(len(set(opening_displays)), 7)
+        for script in scripts:
+            self.assertEqual([], script_gen.validate_script(script, image_count=4))
+
+    def test_opening_slide_guard_rejects_fixed_or_recent_heading(self):
+        candidate = script_gen._fallback_script(
+            "ChatGPTで資料を要約する方法", "beginner", [], variant=1
+        )
+        with patch.object(script_gen, "_recent_output_scripts", return_value=[]):
+            candidate["card_keywords"][0] = "前提整理"
+            self.assertTrue(script_gen._opening_slide_errors(candidate))
+
+            candidate["card_keywords"][0] = "見落とし確認"
+            old = {"card_keywords": ["見落とし確認"]}
+            with patch.object(script_gen, "_recent_output_scripts", return_value=[old]):
+                self.assertTrue(script_gen._opening_slide_errors(candidate))
+
+    def test_fallback_generation_uses_a_new_outline_after_duplicate_guard(self):
+        topic = "ChatGPTで会議メモから次の担当を決める方法"
+        difficulty = "intermediate"
+        first_variant = script_gen._fallback_variant_order(topic, difficulty)[0]
+        previous = script_gen._fallback_script(topic, difficulty, [], variant=first_variant)
+        previous_signature = script_gen._cue_signature(previous)
+
+        def duplicate_previous(data):
+            if script_gen._cue_signature(data) == previous_signature:
+                return ["字幕/読み上げキューが過去動画と同一"]
+            return []
+
+        with (
+            patch.object(
+                script_gen,
+                "_call_claude_cli",
+                side_effect=RuntimeError("claude CLI failed rc=1: Not logged in"),
+            ),
+            patch.object(script_gen, "recent_duplicate_errors", side_effect=duplicate_previous),
+            patch.object(script_gen.CONFIG, "get", side_effect=lambda *args, **kwargs: {
+                ("images", "count"): 4,
+                ("llm", "provider"): "claude_cli",
+                ("llm", "retries"): 1,
+            }.get(args, kwargs.get("default"))),
+        ):
+            data = script_gen.generate_script(topic, difficulty)
+
+        self.assertEqual([], script_gen.validate_script(data, image_count=4))
+        self.assertNotEqual(previous_signature, script_gen._cue_signature(data))
+        self.assertNotEqual(previous["title"], data["title"])
+        self.assertIn("会議", data["title"])
+        self.assertIn("会議", "".join(data["cues"][1]["display"]))
+
+    def test_fallback_outline_reflects_topic_and_difficulty(self):
+        meeting_topic = "ChatGPTで会議メモから次の担当を決める方法"
+        report_topic = "ChatGPTで月次レポートの異常値を確認する方法"
+        meeting = script_gen._fallback_script(
+            meeting_topic,
+            "beginner",
+            [],
+            variant=script_gen._fallback_variant_order(meeting_topic, "beginner")[0],
+        )
+        report = script_gen._fallback_script(
+            report_topic,
+            "beginner",
+            [],
+            variant=script_gen._fallback_variant_order(report_topic, "beginner")[0],
+        )
+        intermediate = script_gen._fallback_script(
+            meeting_topic,
+            "intermediate",
+            [],
+            variant=script_gen._fallback_variant_order(meeting_topic, "intermediate")[0],
+        )
+
+        for script in (meeting, report, intermediate):
+            self.assertEqual([], script_gen.validate_script(script, image_count=4))
+        self.assertIn("会議", meeting["title"])
+        self.assertIn("数字", report["title"])
+        self.assertNotEqual(script_gen._cue_signature(meeting), script_gen._cue_signature(report))
+        self.assertNotEqual(script_gen._cue_signature(meeting), script_gen._cue_signature(intermediate))
+
     def test_find_due_scheduled_draft(self):
         now = datetime(2026, 6, 25, 9, 0, tzinfo=timezone(timedelta(hours=9)))
         items = [

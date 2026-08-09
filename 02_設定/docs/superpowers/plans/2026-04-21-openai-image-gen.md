@@ -23,7 +23,7 @@
 ├── SKILL.md         # スキル定義本体（今回の唯一の実装物）
 └── desktop.ini      # NanoBanana2 と同じく Windows 用（空でOK）
 
-03_成果物/outputs/openai-image-gen/
+.company/outputs/openai-image-gen/
 └── （テスト実行時に生成される画像の保存先）
 
 docs/superpowers/specs/2026-04-21-openai-image-gen-design.md  # 既存
@@ -76,7 +76,7 @@ description: OpenAI gpt-image-1 API経由で画像を生成して保存するス
 ## 入力
 
 - **画像生成プロンプト**（必須）: 生成したい画像の説明テキスト。複数枚の場合はリスト形式
-- **保存フォルダ名**（任意）: `03_成果物/outputs/` 配下のフォルダ名。未指定時は `openai-image-gen`
+- **保存フォルダ名**（任意）: `.company/outputs/` 配下のフォルダ名。未指定時は `openai-image-gen`
 - **サイズ**（任意）: `1024x1024` / `1024x1536` / `1536x1024` / `auto`。未指定時は `1024x1536`
 - **画質**（任意）: `low` / `medium` / `high` / `auto`。未指定時は `medium`
 - **参照画像**（任意）: 参照画像ファイルパスのリスト。最大10枚、各25MB以下、PNG/JPG/WebP
@@ -341,7 +341,7 @@ SKILL.md 末尾に追記:
 2. 保存フォルダ: `openai-image-gen`（デフォルト）
 3. サイズ: `1024x1536`（デフォルト）
 4. 画質: `medium`（デフォルト）
-5. API呼び出し → `03_成果物/outputs/openai-image-gen/20260421_153000_001.png` に保存
+5. API呼び出し → `.company/outputs/openai-image-gen/20260421_153000_001.png` に保存
 
 ### 単一生成（参照画像あり）
 
@@ -350,7 +350,7 @@ SKILL.md 末尾に追記:
 1. プロンプト: `ミサキが公園を歩いている場面`
 2. 参照画像: `[ミサキ.png]`
 3. モード: edit（参照画像あり）
-4. API呼び出し（images.edit）→ `03_成果物/outputs/openai-image-gen/` に保存
+4. API呼び出し（images.edit）→ `.company/outputs/openai-image-gen/` に保存
 
 ### 複数枚並列生成
 
@@ -474,7 +474,7 @@ Expected: `OPENAI_API_KEY set: yes`
 - [ ] **Step 3: 生成結果を確認**
 
 ```bash
-ls -la "03_成果物/outputs/openai-image-gen/"
+ls -la ".company/outputs/openai-image-gen/"
 ```
 
 Expected: `{timestamp}_001.png` が 1 つ存在し、サイズが数十 KB〜数 MB 程度。
@@ -503,7 +503,7 @@ Read ツールで生成画像を開き、プロンプトに沿った内容であ
 既存のキャラクター画像を利用する（例: ebook-to-manga の manga-career-restart vol1 で使用している `ミサキ.png`）。存在しない場合は任意の人物 PNG を 1 枚用意する。
 
 ```bash
-find "03_成果物/outputs/ebooks-manga" -name "ミサキ*.png" -type f | head -3
+find ".company/outputs/ebooks-manga" -name "ミサキ*.png" -type f | head -3
 ```
 
 - [ ] **Step 2: edit モードでスキルを起動**
@@ -513,7 +513,7 @@ find "03_成果物/outputs/ebooks-manga" -name "ミサキ*.png" -type f | head -
 - [ ] **Step 3: 生成結果を確認**
 
 ```bash
-ls -la "03_成果物/outputs/openai-image-gen/" | tail -3
+ls -la ".company/outputs/openai-image-gen/" | tail -3
 ```
 
 新しい PNG が生成されていること。
@@ -546,7 +546,7 @@ ls -la "03_成果物/outputs/openai-image-gen/" | tail -3
 - [ ] **Step 2: 結果確認**
 
 ```bash
-ls -la "03_成果物/outputs/openai-image-gen/" | grep variant
+ls -la ".company/outputs/openai-image-gen/" | grep variant
 ```
 
 Expected: `variantA_*.png`, `variantB_*.png`, `variantC_*.png` の 3 ファイルが存在する。

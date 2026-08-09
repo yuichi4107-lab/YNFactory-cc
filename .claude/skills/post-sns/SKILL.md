@@ -35,7 +35,7 @@ description: SNS（X / Instagram / Facebook / Threads）へ投稿する。テキ
 - ハッシュタグを適切に付与する
 - 投稿先が指定されていない場合は、対応済みの全SNSを対象とする
 
-調整後の投稿内容をユーザーに確認してから投稿する。
+調整後の投稿内容をユーザーに確認してから投稿する。上位 `note` runから呼び出された場合は、この汎用コマンドではなく、runの事前確認・承認・claim・結果照合を強制する `tools/note-sales-team/x_publish_worker.py` を使う。
 
 ### Step 2: X に投稿
 
@@ -46,20 +46,36 @@ cd YNFactory-cc
 python scripts/post_to_x.py "投稿テキスト" --dry-run
 ```
 
-投稿スクリプトを実行する：
+本番投稿（直前承認後のみ）：
 
 ```bash
 cd YNFactory-cc
-python scripts/post_to_x.py "投稿テキスト"
+python scripts/post_to_x.py "投稿テキスト" --publish-approved
 ```
 
 画像付きの場合：
 
 ```bash
-python scripts/post_to_x.py "投稿テキスト" --image "画像パス"
+python scripts/post_to_x.py "投稿テキスト" --image "画像パス" --publish-approved
 ```
 
-投稿成功したらURLを記録する。
+本文への1件目リプ（直前承認後のみ）：
+
+```bash
+python scripts/post_to_x.py "リプ本文" --reply-to "本文のTweet ID" --publish-approved
+```
+
+投稿成功したらURLを記録する。タイムアウト等で結果が不明な場合は自動再投稿せず、アカウントの公開タイムラインを照合する。
+
+#### 上位 `note` runのX自動投稿
+
+```bash
+python tools/note-sales-team/x_publish_worker.py prepare RUN_ID
+# ローカル承認画面で x_publish を別承認後
+python tools/note-sales-team/x_publish_worker.py publish RUN_ID
+```
+
+`prepare` は認証中のX ID、承認済み告知案、公開済みnote URL、本文と1件目リプをdry-runして事前確認を登録する。`publish` は未使用の `x_publish` claimがなければ外部送信しない。本文の成功を保存してから1件目リプを送信し、両方の公開読み戻しを確認する。
 
 ### Step 3: Instagram に投稿
 
@@ -115,8 +131,8 @@ python scripts/social_auto_ops.py dry-run ".company/marketing/social-auto-ops/qu
 ```
 投稿結果:
 - X: https://x.com/i/status/xxxxx
-- Instagram: （Phase 2で対応）
-- Facebook: （Phase 2で対応）
+- Instagram: （投稿URLまたは未実行理由）
+- Facebook: （投稿URLまたは未実行理由）
 - Threads: （Phase 2で対応）
 ```
 
@@ -130,7 +146,7 @@ python scripts/social_auto_ops.py dry-run ".company/marketing/social-auto-ops/qu
 
 ## ファイル構成
 
-- 認証情報: `.company/engineering/sns-credentials/.env`（リポジトリルートからの相対パス）
+- 認証情報: `~/.ynfactory/credentials/sns-x.env`（ローカル管理、mode 600）。別パスは `YNFACTORY_SNS_CREDENTIALS_FILE` で指定する。Driveやリポジトリ配下に秘密値を保存しない
 - X投稿スクリプト: `scripts/post_to_x.py`
 - Meta投稿スクリプト: `scripts/post_to_meta.py`
 - 共通投稿キューdry-run: `scripts/social_auto_ops.py`

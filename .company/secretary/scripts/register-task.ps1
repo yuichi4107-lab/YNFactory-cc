@@ -1,5 +1,5 @@
 ﻿$taskName = 'YNFactory-MorningBriefing'
-$scriptPath = 'C:\YNFactory-cc\.company\secretary\scripts\morning-briefing.ps1'
+$scriptPath = 'G:\マイドライブ\YNFactory-cc\.company\secretary\scripts\morning-briefing.ps1'
 
 Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
 

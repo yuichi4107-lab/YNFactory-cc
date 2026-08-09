@@ -4,8 +4,8 @@ source: zoom
 type: organized-input
 input_type: zoom-meeting-summaries
 meeting_count: 1
-generated_at: 2026-07-30T07:00:54
-raw_source: 04_インプット/inputs/conversations/2026-01-21-zoom.md
+generated_at: 2026-06-25T07:00:58
+raw_source: .company/inputs/conversations/2026-01-21-zoom.md
 tags:
   - zoom
   - meeting-summary
@@ -18,7 +18,7 @@ tags:
 
 ## 出典
 
-- 原本: `04_インプット/inputs/conversations/2026-01-21-zoom.md`
+- 原本: `.company/inputs/conversations/2026-01-21-zoom.md`
 - 会議数: 1
 
 ## 会議一覧

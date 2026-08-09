@@ -26,7 +26,7 @@ shorts-factory の投稿は `shorts-factory/src/platforms/poster.py` による�
 5. runtime正本の `~/shorts-factory/state/queue/<queue_id>.json` と `~/shorts-factory/state/topics.json`
 6. runtime正本の `~/shorts-factory/outputs/<queue_id>/`、`work/<queue_id>/`、`posting_ledger/<queue_id>.json`
 7. `~/shorts-factory/drive_mirror/status.json` と、必要な時だけ `~/Library/Logs/shorts-drive-mirror.log`
-8. Drive側 `.company/marketing/shorts-factory/` / `03_成果物/outputs/shorts-factory/` は最後にミラーコピーとして確認する
+8. Drive側 `.company/marketing/shorts-factory/` / `.company/outputs/shorts-factory/` は最後にミラーコピーとして確認する
 
 Drive上のoutputsを広く走査するとGoogle Drive File Providerのロックを誘発しやすい。生成・承認・投稿・復旧判断はruntimeローカルだけを正にし、Driveミラーの異常は別障害として切り分ける。
 

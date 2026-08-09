@@ -32,7 +32,7 @@
   </Settings>
   <Actions Context="Author">
     <Exec>
-      <Command>G:\マイドライブ\YNFactory-cc\05_プロジェクト\keiba-unified\scripts\jra_monthly.bat</Command>
+      <Command>G:\マイドライブ\YNFactory-cc\keiba-unified\scripts\jra_monthly.bat</Command>
     </Exec>
   </Actions>
 </Task>

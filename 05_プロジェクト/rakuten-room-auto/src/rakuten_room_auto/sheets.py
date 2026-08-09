@@ -88,6 +88,7 @@ def select_rows(table: SheetTable, sheet_config: SheetConfig, statuses: set[str]
 
 
 def build_sheets_service(google_config: GoogleConfig):
+    from google.auth.exceptions import RefreshError
     from google.auth.transport.requests import Request
     from google.oauth2.credentials import Credentials
     from googleapiclient.discovery import build
@@ -97,7 +98,13 @@ def build_sheets_service(google_config: GoogleConfig):
         raise SheetError(f"Google token is missing: {token_path}")
     creds = Credentials.from_authorized_user_file(str(token_path), SCOPES)
     if creds.expired and creds.refresh_token:
-        creds.refresh(Request())
+        try:
+            creds.refresh(Request())
+        except RefreshError:
+            raise SheetError(
+                "Google認証の有効期限が切れているか、取り消されています。"
+                "scripts/setup_google_oauth.py を再実行してください。"
+            ) from None
         token_path.write_text(creds.to_json(), encoding="utf-8")
     if not creds.valid:
         raise SheetError("Google token is invalid. Run scripts/setup_google_oauth.py again.")

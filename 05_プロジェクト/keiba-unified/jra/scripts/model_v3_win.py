@@ -74,7 +74,7 @@ def train_model(conn, train_start="2022-01-01", train_end="2024-12-31"):
     # 5. LightGBMパラメータ
     params = {
         "objective": "binary",
-        "metric": "binary_logloss",
+        "metric": "auc",
         "boosting_type": "gbdt",
         "num_leaves": 63,
         "learning_rate": 0.05,
@@ -100,13 +100,13 @@ def train_model(conn, train_start="2022-01-01", train_end="2024-12-31"):
 
     print("\n【GroupKFold CV (5分割)】")
     for fold, (train_idx, val_idx) in enumerate(gkf.split(X, y, group_ids)):
-        train_data = lgb.Dataset(X[train_idx], label=y[train_idx])
-        val_data = lgb.Dataset(X[val_idx], label=y[val_idx], reference=train_data)
+        train_data = lgb.Dataset(X[train_idx], label=y[train_idx], feature_name=FEATURE_COLS)
+        val_data = lgb.Dataset(X[val_idx], label=y[val_idx], reference=train_data, feature_name=FEATURE_COLS)
         model = lgb.train(
             params, train_data,
             num_boost_round=1000,
             valid_sets=[val_data],
-            callbacks=[lgb.early_stopping(50), lgb.log_evaluation(0)],
+            callbacks=[lgb.early_stopping(50, first_metric_only=True), lgb.log_evaluation(0)],
         )
         pred = model.predict(X[val_idx])
         score = log_loss(y[val_idx], pred)
@@ -119,7 +119,7 @@ def train_model(conn, train_start="2022-01-01", train_end="2024-12-31"):
     # 7. 最終モデル（全データで学習）
     best_iter_mean = int(np.mean(best_iterations))
     print(f"\n全データで学習中 (num_boost_round={best_iter_mean})...")
-    train_data_all = lgb.Dataset(X, label=y)
+    train_data_all = lgb.Dataset(X, label=y, feature_name=FEATURE_COLS)
     final_model = lgb.train(
         params, train_data_all,
         num_boost_round=best_iter_mean,
@@ -142,7 +142,7 @@ def train_model(conn, train_start="2022-01-01", train_end="2024-12-31"):
         "train_end": train_end,
         "cv_scores": cv_scores,
         "pos_rate": pos_rate,
-        "scale_pos_weight": scale_pos_weight,
+        "is_unbalance": True,
         "label_type": "win",
     }
     with open(MODEL_PATH, "wb") as f:

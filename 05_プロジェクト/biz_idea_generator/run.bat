@@ -1,5 +1,5 @@
 @echo off
-cd /d "C:\YNFactory-cc\05_プロジェクト\biz_idea_generator"
+cd /d "G:\マイドライブ\YNFactory-cc\biz_idea_generator"
 
 if not exist "logs" mkdir logs
 

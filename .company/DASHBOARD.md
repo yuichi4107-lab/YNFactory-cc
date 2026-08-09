@@ -52,7 +52,7 @@
 - **進捗**: ███░░░░░░░ 33%
 - **MS**: 6/18 完了（Phase 1 全完了）
 - **目標**: 月間売上15万円（2026-06-30）
-- **成果物**: `03_成果物/outputs/ai-side-business/`
+- **成果物**: `.company/outputs/ai-side-business/`
 - **統合元**: 旧「Claude Code営業活動」を吸収（2026-03-25）
 - **次のアクション**: note公開確認 → ココナラ改善 → CW追加応募 → ランサーズ開設
 
@@ -71,7 +71,7 @@
 - **状態**: リール制作中
 - **進捗**: ████░░░░░░ 40%
 - **MS**: 1/4 完了（MS2 進行中）
-- **成果物**: `03_成果物/outputs/instagram-reel/`（7社完了）、`03_成果物/outputs/instagram-stories/`（30/30枚完了）
+- **成果物**: `.company/outputs/instagram-reel/`（7社完了）、`.company/outputs/instagram-stories/`（30/30枚完了）
 - **次のアクション**: MS2完了 → MS3 投稿スケジュール運用開始
 
 ### 競馬予想AI `keiba-ai`
@@ -99,14 +99,14 @@
 - **状態**: KDP出版済み
 - **進捗**: ██████████ 100%
 - **出版済み**: 2030年問題シリーズ 第3巻「少数精鋭＋AIが最強の経営である理由」、第4巻「最低賃金1500円の罠と連鎖倒産」（2026-04-04）
-- **成果物**: `03_成果物/outputs/ebooks/03-company-positive/`, `03_成果物/outputs/ebooks/04-company-negative/`
+- **成果物**: `.company/outputs/ebooks/03-company-positive/`, `.company/outputs/ebooks/04-company-negative/`
 
 ### マンガコンテンツ制作 `manga-content`
 - **状態**: KDP出版済み + vol1 KDP申請済み（2026-04-28）
 - **進捗**: ██████████ 100%
 - **出版済み**: 「AIで会社をつくった主婦の話」（2026-04-04）
 - **KDP申請済み**: manga-career-restart vol1（2026-04-28、審査待ち）
-- **成果物**: `03_成果物/outputs/ebooks/manga-ai-company/`, `03_成果物/outputs/ebooks/manga-career-restart/vol1/`
+- **成果物**: `.company/outputs/ebooks/manga-ai-company/`, `.company/outputs/ebooks/manga-career-restart/vol1/`
 - **次のアクション**: vol2-vol4 すべて Codex 側で生成中（完了通知待ち → --import-manual → 自動EPUB → Step8メタ）
 - **コード**: `/comicle-pipeline/`
 
@@ -129,7 +129,7 @@
 
 ### AI業務改善コンテンツ100 `ai-business-content-100`
 - **完了日**: 2026-03-15（予定3/31→前倒し達成）
-- **成果物**: `03_成果物/outputs/ai-business-content-100/`
+- **成果物**: `.company/outputs/ai-business-content-100/`
 - **内容**: Gems 50本 + GPTs 50本、全100件登録完了
 
 ### 営業自動化ツール `sales-automation-tool`
@@ -154,7 +154,7 @@
 ## 成果物マップ
 
 ```
-03_成果物/outputs/
+.company/outputs/
   ebooks/                   5冊（01〜04 + ずぼら投資）
   instagram-reel/           7社完了
   instagram-stories/        ストーリーズ画像30/30枚完了 + プロンプト集

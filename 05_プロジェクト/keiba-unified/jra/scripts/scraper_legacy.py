@@ -442,12 +442,38 @@ def scrape_race(race_id, conn):
     return True
 
 
+def _decode_result_html(content):
+    """netkeibaライブ結果ページのバイト列をデコードする。
+
+    2026-06-20頃にページがEUC-JPからUTF-8へ移行し、EUC-JP固定デコードでは
+    券種名が文字化けしたままDBへ保存されてしまう(2026-07-05修復)。厳密デコードを
+    両方試し、既知の券種語を含むテキストのみ採用する。判定不能なら例外を投げ、
+    化けたデータをDBへ書き込まない。
+    """
+    candidates = []
+    for enc in ("utf-8", "euc-jp"):
+        try:
+            candidates.append(content.decode(enc))
+        except UnicodeDecodeError:
+            continue
+    for text in candidates:
+        if "複勝" in text or "単勝" in text:
+            return text
+    if candidates:
+        return candidates[0]
+    for enc in ("utf-8", "euc-jp"):
+        text = content.decode(enc, "replace")
+        if "複勝" in text or "単勝" in text:
+            return text
+    raise ValueError("result page encoding detection failed")
+
+
 def scrape_result_live_netkeiba(race_id, conn):
     """当日ライブ結果ページ(race.netkeiba.com)から着順＋払戻を取得してDBへ格納する。
 
     db.netkeiba.com(履歴DB)は当日結果の反映が遅く、レース当日17:30時点では
     結果テーブルが未掲載になる。対してライブ結果ページは当日中に着順・払戻を
-    掲載するため、当日分のフォールバックとして使用する(EUC-JP)。
+    掲載するため、当日分のフォールバックとして使用する(エンコーディング自動判定)。
 
     既存の出走馬エントリ行(当日朝に作成済)を壊さないよう、着順は
     UPDATE results SET finish_position=... で更新する。払戻は payouts へ
@@ -464,7 +490,7 @@ def scrape_result_live_netkeiba(race_id, conn):
         return False
 
     try:
-        html = res.content.decode("euc-jp", "replace")
+        html = _decode_result_html(res.content)
         soup = BeautifulSoup(html, "lxml")
 
         # 着順テーブル

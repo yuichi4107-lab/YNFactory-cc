@@ -36,13 +36,13 @@ Google Meet の議事録、文字起こし、会議メモ、録画メモを置�
 手動実行:
 
 ```bash
-python 04_インプット/inputs/sync_google_meet.py
-python 04_インプット/inputs/organize_google_meet_inputs.py --all --force
+python .company/inputs/sync_google_meet.py
+python .company/inputs/organize_google_meet_inputs.py --all --force
 ```
 
 ## Google Meet 自動巡回
 
-`y-nakada@yn-factory.com` のGoogle Driveから自動でMeet生成物を拾う場合は、`04_インプット/inputs/uploader/google_meet_apps_script/` のApps Scriptを使う。
+`y-nakada@yn-factory.com` のGoogle Driveから自動でMeet生成物を拾う場合は、`.company/inputs/uploader/google_meet_apps_script/` のApps Scriptを使う。
 
 - Apps Scriptが `Meet Recordings` やMeet関連Docsを巡回する
 - 会議ごとのフォルダをこの `00_GOOGLE_MEET_BOX/` に出力する
@@ -56,9 +56,9 @@ python 04_インプット/inputs/organize_google_meet_inputs.py --all --force
 
 ## 保存先
 
-- raw整理前: `04_インプット/inputs/intake/google_meet/raw/`
-- conversation raw: `04_インプット/inputs/conversations/YYYY-MM-DD-google-meet.md`
-- organized: `04_インプット/inputs/organized/google-meet/`
-- indexes: `04_インプット/inputs/indexes/google-meet-*.md`
+- raw整理前: `.company/inputs/intake/google_meet/raw/`
+- conversation raw: `.company/inputs/conversations/YYYY-MM-DD-google-meet.md`
+- organized: `.company/inputs/organized/google-meet/`
+- indexes: `.company/inputs/indexes/google-meet-*.md`
 
 daily sync / 自動取り込みに組み込み済みなので、このフォルダに置いた後は次回同期で取り込まれる。Mac の5分おき自動取り込みを有効化している場合は、`00_INPUT_BOX/` と一緒にこのフォルダも処理される。

@@ -2,7 +2,7 @@
 source: import_drive_inbox.py
 type: input-index
 scope: external-drive-inbox
-generated_at: 2026-08-01T02:01:16+09:00
+generated_at: 2026-06-26T02:00:04+09:00
 ---
 
 # External URLs

@@ -6,7 +6,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob, WebSearch, WebFetch
 
 # ebook-from-theme: テーマ起点電子書籍制作オーケストレーター
 
-テーマまたは添付素材を受け取り、Phase 0〜4 の順に実行して `03_成果物/outputs/ebooks/{slug}/` に成果物を生成し、最後に `ebook-to-manga` スキルへの引き渡し案内を出力する。
+テーマまたは添付素材を受け取り、Phase 0〜4 の順に実行して `.company/outputs/ebooks/{slug}/` に成果物を生成し、最後に `ebook-to-manga` スキルへの引き渡し案内を出力する。
 
 > **Codex側 `theme-to-ebook` との使い分け（意図的な別実装）**: 本スキルは Claude Code 側の実装で、既定 25,000字（15,000/25,000/35,000字）・`image_plan.json` 方式。Codex 側には別実装の `theme-to-ebook`（既定 100,000字・7パート構成・`progress.json` 方式）があり、Codex 側の親スキル `theme-to-ebook-to-manga` は `theme-to-ebook` を正本として使う。両者は実行環境の思想差（Claude=対話型、Codex=無人自律完走型）に基づく意図的な別実装であり、仕様を相互に同期しない（2026-07-07 オーナー承認）。
 
@@ -14,7 +14,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob, WebSearch, WebFetch
 
 ## Phase 0: 制作開始前の選択式質問＋自由記述
 
-スキル起動直後、リサーチや原稿作成を始める前に、クリック式選択UIでユーザーの回答を待つ。`request_user_input` が使える場合はその選択カードを使う。使えない場合は `01_コード/scripts/company/ebook_setup_ui.py` のローカルクリック式フォームを起動する。Markdownの表や `1A、2B...` 形式を標準にしない。最後に自由記述が必要な場合は、UI側の `Other` またはクリック回答後の短い補足確認で受け取る。
+スキル起動直後、リサーチや原稿作成を始める前に、クリック式選択UIでユーザーの回答を待つ。`request_user_input` が使える場合はその選択カードを使う。使えない場合は `.company/scripts/ebook_setup_ui.py` のローカルクリック式フォームを起動する。Markdownの表や `1A、2B...` 形式を標準にしない。最後に自由記述が必要な場合は、UI側の `Other` またはクリック回答後の短い補足確認で受け取る。
 
 **クリック式UIの出し方:**
 
@@ -61,10 +61,10 @@ allowed-tools: Read, Write, Edit, Bash, Glob, WebSearch, WebFetch
 **ローカルフォームの出し方（`request_user_input` が使えない場合）:**
 
 ```bash
-python3 01_コード/scripts/company/ebook_setup_ui.py --theme "{テーマ}" --mode ebook-from-theme
+python3 .company/scripts/ebook_setup_ui.py --theme "{テーマ}" --mode ebook-from-theme
 ```
 
-保存先は `03_成果物/outputs/ebook-setup-inputs/latest.json`。回答を読み取り、Phase 0回答として扱う。
+保存先は `.company/outputs/ebook-setup-inputs/latest.json`。回答を読み取り、Phase 0回答として扱う。
 
 ---
 
@@ -73,17 +73,17 @@ python3 01_コード/scripts/company/ebook_setup_ui.py --theme "{テーマ}" --m
 Phase 0 の確定テーマと自由記述をもとにリサーチを実行し、以下2ファイルを出力する。原稿作成や構成設計より前に必ず実行する。
 
 **出力パス:**
-- `03_成果物/outputs/ebooks/{slug}/_research/research.md`
-- `03_成果物/outputs/ebooks/{slug}/_research/meta.json`
+- `.company/outputs/ebooks/{slug}/_research/research.md`
+- `.company/outputs/ebooks/{slug}/_research/meta.json`
 
 ### Step 1-0: slug 生成とディレクトリ作成
 
 テーマから slug を生成する（例: 「言語化力」→ `gengo-ryoku`、「AI活用術」→ `ai-katsuyo`）。
 
 ```bash
-mkdir -p "03_成果物/outputs/ebooks/{slug}/_research"
-mkdir -p "03_成果物/outputs/ebooks/{slug}/_images_source/images"
-mkdir -p "03_成果物/outputs/ebooks/{slug}/manuscript"
+mkdir -p ".company/outputs/ebooks/{slug}/_research"
+mkdir -p ".company/outputs/ebooks/{slug}/_images_source/images"
+mkdir -p ".company/outputs/ebooks/{slug}/manuscript"
 ```
 
 ### Step 1-1: 5層リサーチ（全層実行）
@@ -158,7 +158,7 @@ mkdir -p "03_成果物/outputs/ebooks/{slug}/manuscript"
 **入力:** `_research/research.md`、`_research/meta.json`、Phase 0 項目6で選択した本文文字数
 
 **出力パス:**
-- `03_成果物/outputs/ebooks/{slug}/_images_source/manuscript_raw.md`
+- `.company/outputs/ebooks/{slug}/_images_source/manuscript_raw.md`
 
 ### Step 2-1: 構成設計（目次自動生成）
 
@@ -274,7 +274,7 @@ STYLE: Japanese anime/manga style, pop and emotional, chapter header, landscape 
 
 ### Step 3-2: image_plan.json 作成
 
-変換済みプロンプトを `03_成果物/outputs/ebooks/{slug}/_images_source/image_plan.json` に保存する。`items` 配列に全画像の生成指示を直接入れる。
+変換済みプロンプトを `.company/outputs/ebooks/{slug}/_images_source/image_plan.json` に保存する。`items` 配列に全画像の生成指示を直接入れる。
 
 ```json
 {
@@ -283,8 +283,8 @@ STYLE: Japanese anime/manga style, pop and emotional, chapter header, landscape 
   "recurring_characters": [
     {"role": "読者代理", "appearance": "{外見設定（全プロンプト共通の文言）}"}
   ],
-  "source_image_plan": "03_成果物/outputs/ebooks/{slug}/_images_source/manuscript_raw.md",
-  "final_image_dir": "03_成果物/outputs/ebooks/{slug}/_images_source/images",
+  "source_image_plan": ".company/outputs/ebooks/{slug}/_images_source/manuscript_raw.md",
+  "final_image_dir": ".company/outputs/ebooks/{slug}/_images_source/images",
   "expected_count": {画像タグ総数},
   "items": [
     {
@@ -295,7 +295,7 @@ STYLE: Japanese anime/manga style, pop and emotional, chapter header, landscape 
       "insert_file": "{挿入先章ファイル名}",
       "purpose": "{この画像が果たす役割}",
       "description": "{画像タグのdescriptionを日本語で}",
-      "target_output": "03_成果物/outputs/ebooks/{slug}/_images_source/images/{filename}.png"
+      "target_output": ".company/outputs/ebooks/{slug}/_images_source/images/{filename}.png"
     }
   ]
 }
@@ -313,7 +313,7 @@ STYLE: Japanese anime/manga style, pop and emotional, chapter header, landscape 
 
 ### Step 3-4: 画像QCレポート
 
-全画像生成後、`03_成果物/outputs/ebooks/{slug}/_images_source/image_report.md` を作成する。
+全画像生成後、`.company/outputs/ebooks/{slug}/_images_source/image_report.md` を作成する。
 
 ```markdown
 # 画像生成レポート
@@ -347,7 +347,7 @@ STYLE: Japanese anime/manga style, pop and emotional, chapter header, landscape 
 <!-- [INLINE_IMAGE: ...] --> → ![{図解タイトル}](images/{filename}.png)
 ```
 
-**出力パス:** `03_成果物/outputs/ebooks/{slug}/_images_source/manuscript.md`
+**出力パス:** `.company/outputs/ebooks/{slug}/_images_source/manuscript.md`
 
 ---
 
@@ -356,8 +356,8 @@ STYLE: Japanese anime/manga style, pop and emotional, chapter header, landscape 
 `meta.json` + `manuscript.md` を `ebook-to-manga` スキルが期待する入力形式に変換する。
 
 **出力パス:**
-- `03_成果物/outputs/ebooks/{slug}/project.md`
-- `03_成果物/outputs/ebooks/{slug}/manuscript/` 配下に章別 .md ファイル
+- `.company/outputs/ebooks/{slug}/project.md`
+- `.company/outputs/ebooks/{slug}/manuscript/` 配下に章別 .md ファイル
 
 ### Step 4-1: project.md 生成
 
@@ -408,7 +408,7 @@ STYLE: Japanese anime/manga style, pop and emotional, chapter header, landscape 
 `manuscript.md` をファイル名順に読まれる形式で章別に分割して保存する。ファイル名は `ebook-to-manga` の Step 1 で読み込まれる順序を保証するため、ゼロ埋め連番プレフィックスを付ける:
 
 ```
-03_成果物/outputs/ebooks/{slug}/manuscript/
+.company/outputs/ebooks/{slug}/manuscript/
 ├── 00-はじめに.md
 ├── 第1章_{タイトル}.md
 ├── 第2章_{タイトル}.md
@@ -430,10 +430,10 @@ STYLE: Japanese anime/manga style, pop and emotional, chapter header, landscape 
 ebook-to-manga でマンガ化できる状態になりました。
 
 【ソースフォルダ】
-03_成果物/outputs/ebooks/{slug}/
+.company/outputs/ebooks/{slug}/
 
 【ebook-to-manga 起動時の引数情報】
-- ソースフォルダ: 03_成果物/outputs/ebooks/{slug}/
+- ソースフォルダ: .company/outputs/ebooks/{slug}/
 - 目標ページ数: {Phase0選択章数} × {Phase0選択ページ数/章} = {合計}ページ
 - カラーモード: {Phase0で選択した値（フルカラー/白黒）}
 - キャラクター設定: {Phase0で選択した値}

@@ -3,7 +3,7 @@ title: YNFactory-cc 作業ディレクトリ恒久構成 設計書
 date: "2026-05-30"
 status: approved
 author: 秘書（Claude Code / brainstorming）
-supersedes: 02_設定/docs/engineering/engineering-docs/gdrive-git-setup.md（方法A/B/C の比較。本設計で方針確定）
+supersedes: .company/engineering/docs/gdrive-git-setup.md（方法A/B/C の比較。本設計で方針確定）
 related:
   - .company/engineering/debug-log/2026-05-30-git-head-recovery.md（本設計の発端となった障害）
   - メモリ project_ynfactory_git_drive_setup
@@ -84,7 +84,7 @@ index 破損・ハンドオフハングが原理的に発生しなくなる。�
   - `keiba-unified/jra/data/keiba.db` 102.3 MB
   - `keiba-unified/jra/data/keiba_live.db` 54.5 MB（警告ライン超）
 - 拡張子別サイズ（除外候補）: png 5,622.9MB / jpg 1,074.9MB / db 157.3MB / csv 125.8MB / pkl 120.1MB / mp4 36.2MB
-- 容量の本体: `03_成果物/outputs/ebooks-manga/` = 5.35GB（マンガ画像）
+- 容量の本体: `.company/outputs/ebooks-manga/` = 5.35GB（マンガ画像）
 
 ### スリム化の対象（git 管理外にする＝Drive 一本化）
 拡張子ベースで除外:

@@ -32,6 +32,7 @@ from . import (
     script_gen,
     topic_store,
     tts_voicevox,
+    topview_inventory,
     verifier,
     video_bg_gen,
 )
@@ -46,6 +47,16 @@ def log(msg: str) -> None:
     print(line, flush=True)
     with open(CONFIG.logs_dir / "pipeline.log", "a", encoding="utf-8") as f:
         f.write(line + "\n")
+
+
+class HybridGenerationBlocked(RuntimeError):
+    """混在形式を完走できず、カード版への代替を禁止して停止した状態。"""
+
+
+TopviewInventoryError = topview_inventory.TopviewInventoryError
+
+# 混在1本あたりに使う実写クリップ数。使用済みは再利用しない。
+TOPVIEW_CLIPS_PER_VIDEO = 2
 
 
 def make_slug(title: str) -> str:
@@ -347,19 +358,39 @@ def _build_candidate(
 # 適用枠は config seedance.slots（例: ["mon-09", "wed-14", ...]）と実行時刻の
 # 曜日・時で判定する。該当枠のみSeedance版、他は従来の静止画カード版。
 # API失敗・タイムアウト・キー未設定・コスト上限超過・CER不合格継続の
-# いずれでも、静止画カード版へ自動フォールバックし投稿を止めない。
+# 通常のSeedance枠は静止画カード版へ自動フォールバックする。一方で混在枠は
+# 実写+日本語カードの構成を完走できなければ停止し、従来カード版を出さない。
 
 _WEEKDAY_CODES = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+
+
+def _slot_code(now: datetime | None = None) -> str:
+    now = now or datetime.now()
+    return f"{_WEEKDAY_CODES[now.weekday()]}-{now.hour:02d}"
 
 
 def is_seedance_slot(now: datetime | None = None) -> bool:
     """現在時刻がSeedance適用枠（曜日-時）に該当するかを判定する。"""
     if not CONFIG.get("seedance", "enabled", default=True):
         return False
-    now = now or datetime.now()
-    slot_code = f"{_WEEKDAY_CODES[now.weekday()]}-{now.hour:02d}"
     slots = CONFIG.get("seedance", "slots", default=[]) or []
-    return slot_code in {str(s).strip().lower() for s in slots}
+    return _slot_code(now) in {str(s).strip().lower() for s in slots}
+
+
+def is_hybrid_seedance_slot(now: datetime | None = None) -> bool:
+    """実写→日本語カードを交互にする混在版の適用枠かを判定する。"""
+    if not is_seedance_slot(now):
+        return False
+    slots = CONFIG.get("seedance", "hybrid_slots", default=[]) or []
+    return _slot_code(now) in {str(s).strip().lower() for s in slots}
+
+
+def is_topview_slot(now: datetime | None = None) -> bool:
+    """Topview書き出し素材による混在形式を使う定刻枠か。"""
+    if not CONFIG.get("topview", "enabled", default=False):
+        return False
+    slots = CONFIG.get("topview", "slots", default=[]) or []
+    return _slot_code(now) in {str(s).strip().lower() for s in slots}
 
 
 def _seedance_cost_settings() -> tuple[float, float]:
@@ -368,7 +399,12 @@ def _seedance_cost_settings() -> tuple[float, float]:
     return max_per_video, monthly_budget
 
 
-def _build_seedance_video(script: dict, work: Path) -> tuple[Path, list[dict], list]:
+def _build_seedance_video(
+    script: dict,
+    work: Path,
+    *,
+    cue_indices: list[int] | None = None,
+) -> tuple[Path, list[dict], list]:
     """台本のcuesからSeedanceでカットごとの動画を連鎖生成し、1本に連結する。
 
     Returns:
@@ -379,9 +415,13 @@ def _build_seedance_video(script: dict, work: Path) -> tuple[Path, list[dict], l
         呼び出し元でフォールバック判断すること。
     """
     cues = script["cues"]
+    selected_indices = cue_indices if cue_indices is not None else list(range(len(cues)))
+    if not selected_indices or any(index < 0 or index >= len(cues) for index in selected_indices):
+        raise video_bg_gen.SeedanceError("Seedance生成対象のキュー番号が不正です")
+    selected_cues = [cues[index] for index in selected_indices]
     cut_duration = int(CONFIG.get("seedance", "cut_duration_sec", default=10))
     model = CONFIG.get("seedance", "model", default="fast")
-    estimated_total_sec = cut_duration * len(cues)
+    estimated_total_sec = cut_duration * len(selected_cues)
     estimated_cost = video_bg_gen.estimate_cost(estimated_total_sec, model)
 
     max_per_video, _ = _seedance_cost_settings()
@@ -395,7 +435,7 @@ def _build_seedance_video(script: dict, work: Path) -> tuple[Path, list[dict], l
     room = script.get("room_description", "")
     camera = script.get("camera_description", "")
     chain_cuts = []
-    for i, cue in enumerate(cues):
+    for i, cue in enumerate(selected_cues):
         prompt = cue["video_prompt"]
         # キャラクター統一の固定句をカット1にも明示しておく（カット2以降は
         # video_bg_gen.CONTINUITY_SUFFIX が自動付与するため、ここでは
@@ -415,7 +455,11 @@ def _build_seedance_video(script: dict, work: Path) -> tuple[Path, list[dict], l
     )
     seedance_dir = work / "seedance"
     cut_results = video_bg_gen.generate_chained_cuts(chain_config, seedance_dir)
-    timed_cues = video_bg_gen.assign_cue_timings_from_cuts(cues, cut_results)
+    timed_cues = (
+        video_bg_gen.assign_cue_timings_from_cuts(cues, cut_results)
+        if len(selected_cues) == len(cues)
+        else []
+    )
     # compose_finalはwork直下のファイル名(cwd相対)でffmpegを呼ぶため、連結結果はwork直下に置く
     bg = video_bg_gen.concat_cuts(cut_results, work / "bg_seedance.mp4", seedance_dir)
     return bg, timed_cues, cut_results
@@ -444,10 +488,100 @@ def _seedance_voicevox_cues(script: dict) -> list[dict]:
     return cues
 
 
+def _hybrid_segment_durations(cues: list[dict], total_dur: float) -> list[float]:
+    """TTSキューごとの開始時刻から、4場面の背景尺を確定する。"""
+    if len(cues) != 4:
+        raise video_bg_gen.SeedanceError("混在版は4つのセリフキューが必要です")
+    starts = [float(cue["start"]) for cue in cues]
+    boundaries = starts[1:] + [float(total_dur)]
+    durations = [round(end - start, 3) for start, end in zip(starts, boundaries)]
+    if any(duration <= 0 for duration in durations):
+        raise video_bg_gen.SeedanceError("混在版のセリフ尺を確定できませんでした")
+    # 冒頭の無音は混在版では0秒にするため、先頭キューは必ず0秒開始となる。
+    if starts[0] > 0.05:
+        raise video_bg_gen.SeedanceError("混在版の冒頭発話に無音が残っています")
+    return durations
+
+
+def _build_topview_candidate(
+    topic_entry: str | dict, selected_difficulty: str, attempt: int = 1,
+) -> dict:
+    """Topviewの既存書き出し実写 + 日本語カードの混在候補を作る。
+
+    Topview/Atlas CloudへのAPIアクセスや新規生成は行わない。在庫異常なら例外で
+    停止し、呼び出し元は旧カード版へフォールバックしない。
+    """
+    topic = _topic_text(topic_entry)
+    script = script_gen.generate_seedance_script(topic_entry, selected_difficulty, 4)
+    title = script["title"]
+    suffix = "topview" if attempt == 1 else f"topview-try{attempt}"
+    item_id = make_item_id(title, suffix=suffix)
+    work = CONFIG.work_dir / item_id
+    if work.exists():
+        shutil.rmtree(work)
+    work.mkdir(parents=True)
+    (work / "script.json").write_text(json.dumps(script, ensure_ascii=False, indent=2), encoding="utf-8")
+    selected_clips, _ = topview_inventory.select_live_clips(CONFIG, count=TOPVIEW_CLIPS_PER_VIDEO)
+    speaker_credit = CONFIG.get("topview", "voicevox_speaker_credit", default="VOICEVOX:青山龍星")
+    speaker_id = int(CONFIG.get("topview", "voicevox_speaker_id", default=13))
+    tts = tts_voicevox.synthesize_cues(
+        _seedance_voicevox_cues(script), work, speaker_id=speaker_id, lead_in_sec=0.0,
+    )
+    master_wav = Path(tts["master_wav"])
+    final_cues = tts["cues"]
+    total_dur = tts["total_dur"]
+    images, image_provider = image_gen.generate_images(script, work / "images")
+    if len(images) < 2:
+        raise TopviewInventoryError("混在版用の日本語カードを2枚用意できませんでした")
+    bg = renderer.render_hybrid_background(
+        [Path(clip["path"]) for clip in selected_clips], images[:2],
+        _hybrid_segment_durations(final_cues, total_dur), work,
+    )
+    script.update({
+        "presentation_mode": "hybrid_topview_card",
+        "video_provider": "topview_manual_export",
+        "topview_assets": [clip["id"] for clip in selected_clips],
+        "image_provider": image_provider,
+        "speaker_credit": speaker_credit,
+        "audio_mode": "voicevox",
+    })
+    (work / "script.json").write_text(json.dumps(script, ensure_ascii=False, indent=2), encoding="utf-8")
+    overlay = work / "overlay.png"
+    renderer.make_overlay(title, f"{speaker_credit}／実写映像はTopview書き出し素材", overlay)
+    ass = work / "subs.ass"
+    renderer.make_ass(final_cues, total_dur, ass)
+    measured = renderer.measure_loudnorm(master_wav, work)
+    final = renderer.compose_final(bg, overlay, ass, master_wav, total_dur, work, measured=measured)
+    report = verifier.verify_video(final, final_cues, total_dur, work)
+    report["fix_loops"] = 0
+    (work / "quality_report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    previews = renderer.extract_previews(final, final_cues, work)
+    out_dir = save_outputs(
+        item_id, final, ass, work, images, previews, title, script,
+        credit=f"{speaker_credit}／実写映像はTopview書き出し素材",
+    )
+    topview_inventory.record_usage(CONFIG, [clip["id"] for clip in selected_clips])
+    log(f"Topview混在成果物保存: {out_dir}; assets={[clip['id'] for clip in selected_clips]}")
+    warn_topview_stock_running_out()
+    return {
+        "item_id": item_id, "output_dir": str(out_dir), "out_dir": out_dir,
+        "report": report, "title": title, "topic": topic, "script": script,
+        "final": final, "ass": ass, "work": work, "images": images, "previews": previews,
+        "attempt": attempt, "target_platform": "common", "provider": "hybrid_topview",
+    }
+
+
+def _generate_passable_topview_candidate(topic_entry: str | dict, selected_difficulty: str) -> tuple[dict, int]:
+    """Topview在庫は作り直さない。検証不合格なら呼び出し元で安全停止する。"""
+    return _build_topview_candidate(topic_entry, selected_difficulty), 0
+
+
 def _build_seedance_candidate(
     topic_entry: str | dict,
     selected_difficulty: str,
     attempt: int = 1,
+    *,
+    hybrid: bool = False,
 ) -> dict:
     """Seedance版（AI動画背景）の候補を1本生成する。
 
@@ -460,7 +594,7 @@ def _build_seedance_candidate(
     cut_count = 4
     script = script_gen.generate_seedance_script(topic_entry, selected_difficulty, cut_count)
     title = script["title"]
-    suffix_parts = ["seedance"]
+    suffix_parts = ["hybrid" if hybrid else "seedance"]
     if attempt > 1:
         suffix_parts.append(f"try{attempt}")
     item_id = make_item_id(title, suffix="-".join(suffix_parts))
@@ -475,8 +609,13 @@ def _build_seedance_candidate(
 
     video_id = item_id
     cut_results: list = []
+    images: list[Path] = []
     try:
-        bg, timed_cues, cut_results = _build_seedance_video(script, work)
+        if hybrid and _seedance_audio_mode() != "voicevox":
+            raise video_bg_gen.SeedanceError("混在版はVOICEVOX音声モードでのみ実行できます")
+        bg, timed_cues, cut_results = _build_seedance_video(
+            script, work, cue_indices=[0, 2] if hybrid else None
+        )
         log(
             f"Seedance生成OK: {len(cut_results)}カット "
             f"({sum(c.duration_sec for c in cut_results):.0f}秒)"
@@ -490,6 +629,11 @@ def _build_seedance_candidate(
                 _seedance_voicevox_cues(script),
                 work,
                 speaker_id=speaker_id,
+                lead_in_sec=(
+                    float(CONFIG.get("seedance", "hybrid_lead_in_sec", default=0.0))
+                    if hybrid
+                    else None
+                ),
             )
             master_wav = Path(tts["master_wav"])
             final_cues = tts["cues"]
@@ -523,6 +667,19 @@ def _build_seedance_candidate(
             credit = "音声・映像はAIで自動生成"
             script["speaker_credit"] = "音声・映像はAIで自動生成"
             script["audio_mode"] = "native"
+        if hybrid:
+            images, image_provider = image_gen.generate_images(script, work / "images")
+            if len(images) < 2:
+                raise video_bg_gen.SeedanceError("混在版用の日本語カードを2枚用意できませんでした")
+            bg = renderer.render_hybrid_background(
+                [Path(cut_results[0].path), Path(cut_results[1].path)],
+                images[:2],
+                _hybrid_segment_durations(final_cues, total_dur),
+                work,
+            )
+            script["presentation_mode"] = "hybrid_live_card"
+            script["image_provider"] = image_provider
+            log("混在背景OK: 実写→日本語カード→実写→日本語カード")
         (work / "script.json").write_text(
             json.dumps(script, ensure_ascii=False, indent=2), encoding="utf-8"
         )
@@ -563,7 +720,6 @@ def _build_seedance_candidate(
         )
         raise
 
-    images: list[Path] = []
     out_dir = save_outputs(
         item_id, final, ass, work, images, previews, title, script,
         credit=f"{credit}しています",
@@ -584,13 +740,15 @@ def _build_seedance_candidate(
         "previews": previews,
         "attempt": attempt,
         "target_platform": "common",
-        "provider": "seedance",
+        "provider": "hybrid_seedance" if hybrid else "seedance",
     }
 
 
 def _generate_passable_seedance_candidate(
     topic_entry: str | dict,
     selected_difficulty: str,
+    *,
+    hybrid: bool = False,
 ) -> tuple[dict, int]:
     """Seedance候補を生成し、CER不合格なら1回だけ再生成する（config seedance.remake_max_attempts）。
 
@@ -600,7 +758,9 @@ def _generate_passable_seedance_candidate(
     candidate = None
     discarded_count = 0
     for attempt in range(1, remake_max_attempts + 1):
-        candidate = _build_seedance_candidate(topic_entry, selected_difficulty, attempt)
+        candidate = _build_seedance_candidate(
+            topic_entry, selected_difficulty, attempt, hybrid=hybrid
+        )
         report = candidate["report"]
         if report["pass"]:
             break
@@ -783,24 +943,32 @@ def produce(
     """1本の動画を生成して結果情報を返す。"""
     selected_difficulty = topic_store.normalize_difficulty(difficulty) or scheduled_difficulty()
     target_platform = script_gen.normalize_target_platform(target_platform)
+    use_topview = target_platform == "common" and is_topview_slot()
+    # ネタ補充・消費やキュー遷移より先に実写在庫を検査する。不足時は外部通知も
+    # 旧カード版の生成も起こさず、この定刻枠を安全停止する。
+    if use_topview:
+        topview_inventory.validate_inventory(CONFIG)
     if not topic and send_queue:
         scheduled_item = queue_lib.find_due_scheduled_draft(
             datetime.now().astimezone(), selected_difficulty
         )
         if scheduled_item:
-            queue_lib.transition(
-                scheduled_item,
-                "ready_for_review",
-                f"予約済み動画を{scheduled_item.get('scheduled_for')}枠へ投入",
-            )
-            log(f"予約済み動画を投入: {scheduled_item['id']}")
-            return {
-                "id": scheduled_item["id"],
-                "output_dir": scheduled_item.get("output_dir"),
-                "report": scheduled_item.get("quality", {}),
-                "title": scheduled_item.get("title"),
-                "scheduled": True,
-            }
+            if use_topview and scheduled_item.get("provider") != "hybrid_topview":
+                log(f"従来形式の予約済み動画はTopview枠に投入せず保留: {scheduled_item['id']}")
+            else:
+                queue_lib.transition(
+                    scheduled_item,
+                    "ready_for_review",
+                    f"予約済み動画を{scheduled_item.get('scheduled_for')}枠へ投入",
+                )
+                log(f"予約済み動画を投入: {scheduled_item['id']}")
+                return {
+                    "id": scheduled_item["id"],
+                    "output_dir": scheduled_item.get("output_dir"),
+                    "report": scheduled_item.get("quality", {}),
+                    "title": scheduled_item.get("title"),
+                    "scheduled": True,
+                }
 
     # --- 0. トピック決定 ---
     topic_entry = _select_topic_entry(topic, selected_difficulty)
@@ -810,21 +978,55 @@ def produce(
     topic = _topic_text(topic_entry)
     log(f"テーマ: {topic} (difficulty={selected_difficulty}, target_platform={target_platform})")
 
-    use_seedance = target_platform == "common" and is_seedance_slot()
+    # Topview枠ではSeedanceの判定・クライアント経路にすら入らない。
+    use_seedance = False if use_topview else (target_platform == "common" and is_seedance_slot())
+    use_hybrid_seedance = False if use_topview else (target_platform == "common" and is_hybrid_seedance_slot())
     candidate = None
     discarded_count = 0
-    if use_seedance:
+    if use_topview:
         try:
-            candidate, discarded_count = _generate_passable_seedance_candidate(
+            candidate, discarded_count = _generate_passable_topview_candidate(
                 topic_entry, selected_difficulty
             )
             if not candidate["report"]["pass"]:
+                raise HybridGenerationBlocked(
+                    "Topview混在形式の品質検証が不合格のため停止しました。"
+                    "従来カード版への代替は行いません。"
+                )
+        except HybridGenerationBlocked:
+            raise
+        except Exception as exc:  # Topview在庫/レンダリングの全失敗を安全停止する
+            log(f"Topview混在形式を完走できないため停止: {exc}")
+            raise HybridGenerationBlocked(
+                "Topview混在形式を生成できなかったため停止しました。"
+                "従来カード版への代替は行いません。"
+            ) from exc
+    elif use_seedance:
+        try:
+            candidate, discarded_count = _generate_passable_seedance_candidate(
+                topic_entry, selected_difficulty, hybrid=use_hybrid_seedance
+            )
+            if not candidate["report"]["pass"]:
+                if use_hybrid_seedance:
+                    raise HybridGenerationBlocked(
+                        "混在形式の品質検証が不合格のため停止しました。"
+                        "従来カード版への代替は行いません。"
+                    )
                 log(
                     "Seedance版が品質検証不合格のまま上限到達 → "
                     "静止画カード版へフォールバック"
                 )
                 candidate = None
+        except HybridGenerationBlocked:
+            # 混在形式を作れない場合は公開候補・キューを作らず、その場で停止する。
+            raise
         except video_bg_gen.SeedanceError as exc:
+            if use_hybrid_seedance:
+                log(f"混在形式の生成に失敗 → 従来カード版へ代替せず停止: {exc}")
+                raise HybridGenerationBlocked(
+                    "混在形式を生成できなかったため停止しました。"
+                    "従来カード版への代替は行いません。"
+                ) from exc
             log(f"Seedance版の生成に失敗 → 静止画カード版へフォールバック: {exc}")
             notify.send_message(
                 f"⚠️ shorts-factory: Seedance生成に失敗したため静止画版で代替しました。\n"
@@ -832,6 +1034,12 @@ def produce(
             )
             candidate = None
         except Exception as exc:  # noqa: BLE001 - 予期しない失敗でも投稿を止めない
+            if use_hybrid_seedance:
+                log(f"混在形式で予期しない例外 → 従来カード版へ代替せず停止: {exc}")
+                raise HybridGenerationBlocked(
+                    "混在形式を生成できなかったため停止しました。"
+                    "従来カード版への代替は行いません。"
+                ) from exc
             log(f"Seedance版で予期しない例外 → 静止画カード版へフォールバック: {exc}")
             tb = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
             log("Seedance失敗詳細:\n" + tb[-2000:])
@@ -1069,6 +1277,93 @@ def result_summary(result: dict) -> dict:
     }
 
 
+def _topview_stock_counts() -> tuple[int, int, int] | None:
+    """マニフェストから (有効, 未使用, 必要) を数える。読めない場合はNone。
+
+    在庫不足の判定そのものは topview_inventory 側が行う。ここは通知に載せる
+    残量表示だけを担い、ffprobeの再検査はしない。
+    """
+    try:
+        manifest_path = Path(
+            CONFIG.get("topview", "manifest", default="~/shorts-factory/topview_assets/manifest.json")
+        ).expanduser()
+        clips = json.loads(manifest_path.read_text(encoding="utf-8")).get("clips") or []
+        enabled_clips = [c for c in clips if isinstance(c, dict) and c.get("enabled", True)]
+    except Exception:  # noqa: BLE001 - 在庫が読めない事実自体は本文の詳細で伝わる
+        return None
+    unused = sum(1 for c in enabled_clips if int(c.get("use_count", 0) or 0) == 0)
+    required = max(2, int(CONFIG.get("topview", "min_enabled_clips", default=6)))
+    return len(enabled_clips), unused, required
+
+
+def _topview_inventory_summary() -> str:
+    """安全停止通知へ載せる実写在庫の残量。読めない場合は空文字を返す。"""
+    counts = _topview_stock_counts()
+    if counts is None:
+        return ""
+    total, unused, required = counts
+    return f"在庫: 有効 {total} 本 / 未使用 {unused} 本 / 必要 {required} 本"
+
+
+def warn_topview_stock_running_out() -> None:
+    """未使用の実写在庫が次の定刻枠で尽きる前にオーナーへ補充を促す。
+
+    1本の生成で未使用素材を2本消費し、使用済みは再利用しない。枯渇してから
+    安全停止で気づくと、その枠の投稿がそのまま失われる。
+    """
+    counts = _topview_stock_counts()
+    if counts is None:
+        return
+    _, unused, _ = counts
+    threshold = int(CONFIG.get("topview", "low_stock_warn_clips", default=6))
+    if unused > threshold:
+        return
+    remaining_videos = unused // TOPVIEW_CLIPS_PER_VIDEO
+    try:
+        notify.send_message(
+            "⚠️ shorts-factory: Topview実写素材の残りが少なくなっています。\n"
+            f"未使用 {unused} 本（残り約 {remaining_videos} 本ぶん）\n"
+            "1本の生成で未使用2本を消費し、使用済みは再利用しません。\n"
+            "補充: Topviewで9:16・無字幕の素材を書き出し、"
+            "scripts/register_topview_assets.py で登録する"
+        )
+    except Exception as exc:  # noqa: BLE001 - 通知失敗で生成結果を捨てない
+        log(f"Topview在庫警告の送信に失敗: {exc}")
+
+
+def notify_safe_stop(exc: Exception) -> None:
+    """定刻枠を安全停止した事実をオーナーへ通知する。
+
+    安全停止は動画もキューも投稿も作らないため、通知がないと「投稿がなかった」
+    ことに気づけない。通知の失敗で終了処理を壊さない。
+    """
+    if isinstance(exc, TopviewInventoryError):
+        cause = "Topview実写素材の在庫不足または在庫不正"
+        recovery = (
+            "Topviewで9:16・無字幕の素材を書き出し、"
+            "scripts/register_topview_assets.py で登録する"
+        )
+        detail = _topview_inventory_summary()
+    else:
+        cause = "混在形式（Seedance実写）の生成失敗"
+        recovery = "Atlas Cloudの動画生成残高とAPI応答を確認する"
+        detail = ""
+    lines = [
+        "⏹ shorts-factory: 定刻枠を安全停止しました（動画・キュー・投稿なし）",
+        f"枠: {_slot_code()}",
+        f"原因: {cause}",
+        f"理由: {redact_secrets(str(exc))[:300]}",
+    ]
+    if detail:
+        lines.append(detail)
+    lines.append(f"復旧: {recovery}")
+    lines.append("従来カード版への自動代替は行いません。")
+    try:
+        notify.send_message("\n".join(lines))
+    except Exception as notify_exc:  # noqa: BLE001 - 通知失敗で停止処理を止めない
+        log(f"安全停止通知の送信に失敗: {notify_exc}")
+
+
 def main() -> None:
     drive_guard.install()
     CONFIG.assert_runtime_ready()
@@ -1115,6 +1410,12 @@ def main() -> None:
                     target_platform=args.target_platform,
                 )
         print(json.dumps(result_summary(result), ensure_ascii=False))
+    except (HybridGenerationBlocked, TopviewInventoryError) as e:
+        # 想定済みの混在形式停止は、投稿候補・承認ボタン付きプレビューを作らない。
+        # ただし「今回は投稿がない」事実だけはオーナーへ通知する。
+        log(f"⏹ 混在形式を安全停止: {e}")
+        notify_safe_stop(e)
+        sys.exit(1)
     except Exception as e:
         log(f"❌ パイプライン失敗: {e}")
         tb = "".join(traceback.format_exception(type(e), e, e.__traceback__))

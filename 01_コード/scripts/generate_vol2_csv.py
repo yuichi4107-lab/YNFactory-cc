@@ -260,8 +260,8 @@ def update_single_prompt_outfit(original_prompt, outfit_id):
     return '\n'.join(new_lines)
 
 def main():
-    src_path = r'G:\マイドライブ\YNFactory-cc\03_成果物\outputs\ebooks-manga\manga-career-restart\vol2\panels\comicle_output_pre_50char_redesign.csv'
-    out_path = r'G:\マイドライブ\YNFactory-cc\03_成果物\outputs\ebooks-manga\manga-career-restart\vol2\panels\comicle_output.csv'
+    src_path = r'G:\マイドライブ\YNFactory-cc\.company\outputs\ebooks-manga\manga-career-restart\vol2\panels\comicle_output_pre_50char_redesign.csv'
+    out_path = r'G:\マイドライブ\YNFactory-cc\.company\outputs\ebooks-manga\manga-career-restart\vol2\panels\comicle_output.csv'
 
     src_pages = load_source_csv(src_path)
     print(f"Loaded {len(src_pages)} source pages")

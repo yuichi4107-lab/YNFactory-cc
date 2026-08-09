@@ -338,7 +338,7 @@ Article 3は「Article 2を実践した人が、次にぶつかる壁」を扱�
 ### ファイルパス
 
 ```
-g:\マイドライブ\YNFactory-cc\02_設定\docs\note\2026-04-23-ai-literacy-article-3.md
+g:\マイドライブ\YNFactory-cc\docs\note\2026-04-23-ai-literacy-article-3.md
 ```
 
 ### ファイルフォーマット

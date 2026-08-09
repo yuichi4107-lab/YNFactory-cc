@@ -7,9 +7,9 @@ rem Failure here must not block the Notion sync, so errors are tolerated.
 rem Run from biz_idea_generator so load_dotenv() finds LIMITLESS_API_KEY.
 pushd "..\..\biz_idea_generator"
 if exist ".venv\Scripts\python.exe" (
-  ".venv\Scripts\python.exe" -X utf8 "..\04_インプット\inputs\sync_limitless.py" --range 3
+  ".venv\Scripts\python.exe" -X utf8 "..\.company\inputs\sync_limitless.py" --range 3
 ) else (
-  py -3 -X utf8 "..\04_インプット\inputs\sync_limitless.py" --range 3
+  py -3 -X utf8 "..\.company\inputs\sync_limitless.py" --range 3
 )
 popd
 

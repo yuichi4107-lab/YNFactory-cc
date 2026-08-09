@@ -13,7 +13,7 @@
 **前提状態（2026-05-30 実測）:**
 - `.git` = `C:\dev\YNFactory-git\.git`（ローカル復元済）、作業ツリー = `G:\マイドライブ\YNFactory-cc`
 - 現ブランチ `codex/sagyo` HEAD=`163f6b5`、他に `codex/ebookgpt5.5` / `master`、remote 無し
-- 追跡 11,847ファイル / 7.21GB。100MB超: keiba の pkl/csv/db。最大ディレクトリ: `03_成果物/outputs/ebooks-manga` 5.35GB
+- 追跡 11,847ファイル / 7.21GB。100MB超: keiba の pkl/csv/db。最大ディレクトリ: `.company/outputs/ebooks-manga` 5.35GB
 - `core.longpaths=true` 設定済、`.git_drivebackup`（4.7GB）が究極のバックアップとして温存中
 
 **安全原則（全タスク共通）:**
@@ -29,7 +29,7 @@
 
 - **変更**: `g:\マイドライブ\YNFactory-cc\.gitignore` — 大容量バイナリ除外ルールを追記
 - **新規履歴**: orphan ブランチ `main`（GitHub の既定ブランチ・今後の作業ブランチ）
-- **改訂**: `02_設定/docs/engineering/engineering-docs/gdrive-git-setup.md` — 確定構成と2台目セットアップ手順に全面改訂
+- **改訂**: `.company/engineering/docs/gdrive-git-setup.md` — 確定構成と2台目セットアップ手順に全面改訂
 - **改訂**: `.claude/skills/handoff/SKILL.md` — push 対応・Drive停止依頼の見直し
 - **更新**: `.company/secretary/HANDOFF.md`、`~/.claude/projects/.../memory/project_ynfactory_git_drive_setup.md` — 構成変更を記録
 - **新規（GitHub）**: `yuichi4107-lab/YNFactory-cc`（private）
@@ -297,7 +297,7 @@ Expected: `branch=main`、`git rev-list --count HEAD` = `1`（新規履歴なの
 Run:
 ```bash
 cd "g:/マイドライブ/YNFactory-cc"
-ls -la "03_成果物/outputs/ebooks-manga/" | head -3
+ls -la ".company/outputs/ebooks-manga/" | head -3
 git status --short | grep -E '\.(png|jpg|mp4)$' | head -3
 echo "--- statusに画像が出なければignore正常・実ファイルはDriveに健在 ✓ ---"
 ```
@@ -460,7 +460,7 @@ git status   # 正常に動けばOK（大容量はDrive側に既にある）
 Run:
 ```bash
 cd "g:/マイドライブ/YNFactory-cc"
-git add 02_設定/docs/engineering/engineering-docs/gdrive-git-setup.md
+git add .company/engineering/docs/gdrive-git-setup.md
 git commit -m "docs(infra): gdrive-git-setup を確定構成(GitHub軸)に改訂 + 2台目セットアップ手順
 
 Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
@@ -573,7 +573,7 @@ rm -rf /c/dev/_ynfc_clonetest
 git clone https://github.com/yuichi4107-lab/YNFactory-cc.git /c/dev/_ynfc_clonetest 2>&1 | tail -3
 du -sh /c/dev/_ynfc_clonetest/.git 2>/dev/null
 ls /c/dev/_ynfc_clonetest/.company/secretary/HANDOFF.md && echo "ドキュメント取得OK ✓"
-ls /c/dev/_ynfc_clonetest/03_成果物/outputs/ebooks-manga/*/*.png 2>/dev/null | head -1 || echo "画像は含まれない(設計通り)✓"
+ls /c/dev/_ynfc_clonetest/.company/outputs/ebooks-manga/*/*.png 2>/dev/null | head -1 || echo "画像は含まれない(設計通り)✓"
 rm -rf /c/dev/_ynfc_clonetest
 ```
 Expected: clone 成功、`.git` が数百MB以下、HANDOFF.md は取得でき、画像は含まれない。

@@ -9,6 +9,22 @@ description: 複数テーマ・複数noteアカウントで毎日投稿するた
 
 note向けの記事を、複数テーマ・複数アカウントで継続投稿する。毎回、投稿先アカウント、過去記事履歴、テーマの重複、画像構図の重複を確認し、誤投稿を防ぎながら投稿用素材一式を作る。
 
+企画・構成・章別承認・X告知案・販売分析までを一つのチームで回す依頼は、上位の `note` スキルを使う。このスキルは、その下位工程である記事素材作成、note下書き投入、別承認後のnote公開を担当する。
+
+### 上位 `note` runの場合の優先ルール
+
+`.company/projects/note販売AIチーム/runs/<run-id>/state.json` から呼び出された場合、このスキルの単発・週次承認例外ではなく、上位 `note` スキルの per-run ゲートを必ず優先する。
+
+- 投入原稿はstateのdraft工程が指す承認済み `.snapshots/` ファイルだけ
+- `note_draft` 工程の `preflight` は正しいnote IDと、保存を生まない空の `https://note.com/notes/new` の読み取り確認だけとする。ローカル承認画面のオーナー許可なしに本文入力や保存をしない
+- ブラウザ書き込み直前に `claim-external RUN_ID note_draft` を実行し、10分間・1回限りの許可を消費する。新規下書きの保存はclaim後5分以内に行い、Step 6の保存確認で一度停止する
+- 下書き保存後はclaim ID、原稿SHA-256、事前確認SHA-256、`operation=create_new_draft`、editor draft ID、`draft_saved_at`、現在の `checked_at`、画像反映を含む確認JSONを残す
+- stateが `note_publish` へ進んだ後に、承認済み `note_draft` 結果が指す同一下書きURL、アカウント、タイトル、原稿SHA-256、公開設定を照合し、`preflight --stage note_publish` を登録する
+- `note_publish` の別承認後に限り、公開操作の直前に `claim-external RUN_ID note_publish` を実行してStep 7〜11へ進む。`note_draft` の承認やclaimを公開許可に流用しない
+- 公開後は同じclaim ID、公開URL、公開時刻、タイトル、note ID、公開画面の読み戻し結果を含む確認JSONを登録する。公開URLの記事IDは元のeditor draft IDと完全一致させる
+- どちらの工程も失敗・タイムアウト時は `external-failure` を記録し、`reconciliation_required` で新規操作を停止する。下書き一覧または公開一覧を照合し、結果不明のまま保存・公開ボタンを再操作しない
+- 初回外部パイロットでは下書きURLを開いたまま止め、オーナーがタイトル・本文冒頭・本文末尾・途中欠落・画像を承認済みスナップショットと目視照合し、その後に `note_publish` を別承認する。確認JSONだけを実DOMの独立証拠として扱わない
+
 ## 標準5アカウント
 
 このスキルは以下の5アカウント運用を標準サポートする。各アカウントのペルソナ・文体・NG・文字数・構成は `references/personas/<account_id>.md` に定義済み。記事生成前に必ず対象アカウントのペルソナファイルを読み込んでから書き始める。
@@ -21,7 +37,7 @@ note向けの記事を、複数テーマ・複数アカウントで継続投稿�
 | spiritual | 整える日々 | 日常で使える整え方 | 1800-3000 |
 | love | 続く関係の手前で | 続く関係の小さな技術 | 2000-3500 |
 
-初期セットアップは `templates/accounts.json.example` を `03_成果物/outputs/note-articles/accounts.json` にコピーし、各アカウントの `note_url` を埋める。
+初期セットアップは `templates/accounts.json.example` を `.company/outputs/note-articles/accounts.json` にコピーし、各アカウントの `note_url` を埋める。
 
 ## 運用モード
 
@@ -34,11 +50,11 @@ note向けの記事を、複数テーマ・複数アカウントで継続投稿�
 
 ## 管理ファイル
 
-- `03_成果物/outputs/note-articles/accounts.json` - テーマごとの投稿先アカウント設定
-- `03_成果物/outputs/note-articles/history.json` - 投稿履歴
-- `03_成果物/outputs/note-articles/topics/<account_id>.md` - 週次バッチで消化するトピックキュー
-- `03_成果物/outputs/note-articles/YYYY-MM-DD-{theme_id}-{slug}/` - 単発モードの記事ごとの出力先
-- `03_成果物/outputs/note-articles/weekly/YYYY-WNN/` - 週次バッチモードの週単位出力
+- `.company/outputs/note-articles/accounts.json` - テーマごとの投稿先アカウント設定
+- `.company/outputs/note-articles/history.json` - 投稿履歴
+- `.company/outputs/note-articles/topics/<account_id>.md` - 週次バッチで消化するトピックキュー
+- `.company/outputs/note-articles/YYYY-MM-DD-{theme_id}-{slug}/` - 単発モードの記事ごとの出力先
+- `.company/outputs/note-articles/weekly/YYYY-WNN/` - 週次バッチモードの週単位出力
 
 ## 入力
 
@@ -65,7 +81,7 @@ note向けの記事を、複数テーマ・複数アカウントで継続投稿�
 1. 作業前に日付をツールで確認する。
 2. `accounts.json` と `history.json` を必ず読む。存在しない場合は最小構成で作成する。
 3. テーマに対応する `account_id` を決めてから記事を作る。
-4. **`account_id` が決まったら、対応する `references/personas/<account_id>.md` を必ず読み込んでから本文に取りかかる。** ペルソナ未参照のまま本文を書き始めない。
+4. **`account_id` が決まったら、`accounts.json` の対象アカウントにある `persona_file` を必ず読み込んでから本文に取りかかる。** `persona_file` がない場合だけ `references/personas/<account_id>.md` を使う。ペルソナ未参照のまま本文を書き始めない。
 5. 履歴を見て、テーマ・切り口・タイトル構造・見出し・画像構図が被らないようにする。
 6. 記事作成前に、今回の記事が過去記事とどう違うかを「差別化メモ」として決める。
 7. 画像生成が必要な場合は ChatGPT Pro Web の ChatGPT Images 2.0 / `gpt-image-2` で作成する。OpenAI API、`openai-image-gen` の旧API実行、APIキー、Pillow/ローカル生成画像への代替は禁止。生成できない場合はプロンプトと配置指示を保存し、画像ステータスを `pending_gpt_image2_web` または `blocked_gpt_image2_web` にする。
@@ -275,7 +291,7 @@ note向けの記事を、複数テーマ・複数アカウントで継続投稿�
   "headings": ["見出し1", "見出し2"],
   "keywords": ["キーワード1", "キーワード2"],
   "image_themes": ["トップ画像", "本文中画像1"],
-  "output_dir": "03_成果物/outputs/note-articles/YYYY-MM-DD-theme-slug",
+  "output_dir": ".company/outputs/note-articles/YYYY-MM-DD-theme-slug",
   "status": "draft",
   "draft_url": null,
   "posted_url": null
@@ -307,6 +323,8 @@ note向けの記事を、複数テーマ・複数アカウントで継続投稿�
 
 ### ブラウザ投入手順
 
+> 上位 `note` runでは `note_draft` claimでStep 6まで実行し、一度停止する。Step 7〜11は、stateが `note_publish` で別の事前確認・承認・claimを完了した場合に限り、同一下書きに対して実行する。
+
 1. note新規記事画面を開く。
 2. タイトルを貼り付ける。
 3. 本文を貼り付ける。
@@ -318,7 +336,7 @@ note向けの記事を、複数テーマ・複数アカウントで継続投稿�
    - 特にユーザー指定がなければ、記事タイプは無料のままにする。
    - ユーザー指定がなければ、既定の詳細設定は変更しない。
 9. 予約投稿の日時設定は開かない。即時投稿では、公開設定画面右上のボタンが `投稿する` であることを確認する。
-10. ユーザー承認済みの場合のみ `投稿する` を押す。
+10. 単発モードはユーザー承認済み、上位runは `note_publish` claim済みの場合のみ `投稿する` を押す。
 11. 投稿完了表示または公開後URLを確認する。
 
 ### 完了後の履歴更新
@@ -345,9 +363,9 @@ note向けの記事を、複数テーマ・複数アカウントで継続投稿�
 
 現在の標準運用では予約投稿を使わない。ユーザーが明示的に「予約投稿に戻す」「指定日時で予約して」と依頼した場合のみ、`references/scheduled-posting.md` を読み込んでこのフローを実行する。即時投稿の依頼ではこのファイルを開かない。
 
-## 将来の自動投稿フロー
+## 上位 `note` runの承認後自動公開フロー
 
-自動投稿を実装する場合は、ブラウザプロファイル方式を使う。
+上位 `note` runの `note_draft` と `note_publish` は、ブラウザプロファイル方式で自動実行する。
 
 1. `accounts.json` の `browser_profile` で対象プロファイルを開く。
 2. note投稿画面を開く。
@@ -358,8 +376,8 @@ note向けの記事を、複数テーマ・複数アカウントで継続投稿�
 7. 下書き保存する。
 8. 下書きURLを取得して `history.json` の `draft_url` に入れる。
 9. 標準では予約投稿の日時設定を開かず、即時投稿として進める。
-10. ユーザー承認がある場合のみ `投稿する` を押す。
+10. `note_publish` の事前確認・別承認・claimがそろった場合のみ `投稿する` を押す。
 11. 公開後、`status` を `posted`、`posted_url` を投稿URLに更新する。
 12. ユーザーが明示した場合のみ予約投稿を使い、予約完了後に `status` を `scheduled`、`scheduled_url` を予約後URLに更新する。
 
-公開操作は、必ずユーザーの明示承認を取る。
+公開操作は、必ず対象runの `note_publish` へのユーザー明示承認と未使用claimを確認する。

@@ -5,12 +5,12 @@ from __future__ import annotations
 Import files dropped into the Google Drive input box.
 
 Default input box:
-    <workspace>/04_インプット/inputs/00_INPUT_BOX
+    <workspace>/.company/inputs/00_INPUT_BOX
 
 Outputs:
-    04_インプット/inputs/intake/raw/YYYY-MM-DD/<input-id>/
-    04_インプット/inputs/organized/external/YYYY-MM-DD-<input-id>.md
-    04_インプット/inputs/indexes/external-*.md
+    .company/inputs/intake/raw/YYYY-MM-DD/<input-id>/
+    .company/inputs/organized/external/YYYY-MM-DD-<input-id>.md
+    .company/inputs/indexes/external-*.md
 """
 import argparse
 import datetime as dt
@@ -794,7 +794,7 @@ def render_organized(imported: ImportedItem) -> str:
         "",
         "## 活用メモ",
         "",
-        "- 原本は `04_インプット/inputs/00_INPUT_BOX/` 側と raw 保存先の両方から確認できる。",
+        "- 原本は `.company/inputs/00_INPUT_BOX/` 側と raw 保存先の両方から確認できる。",
         "- AIが原本拡張子を読めない場合は、raw保存先の `normalized/all-normalized-content.md` を参照する。",
         "- TODO候補は日別TODOへ直接入れず、案件状態と優先度を確認してから昇格する。",
         "- 顧客資料・案件資料として継続利用する場合は、案件別ファイルや顧客別メモへ昇格する。",
@@ -991,7 +991,7 @@ def run_import(args: argparse.Namespace) -> int:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Import Google Drive input box files into 04_インプット/inputs")
+    parser = argparse.ArgumentParser(description="Import Google Drive input box files into .company/inputs")
     parser.add_argument("--inbox", type=Path, default=DEFAULT_INBOX_DIR, help="Input box directory")
     parser.add_argument("--raw-base", type=Path, default=RAW_BASE_DIR, help="Raw intake output directory")
     parser.add_argument("--organized-dir", type=Path, default=ORGANIZED_DIR, help="Organized external output directory")

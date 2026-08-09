@@ -52,22 +52,22 @@ curl -s --max-time 5 http://localhost:3001/api/status
 # シンプル生成（プロンプト→2曲）
 python3 .agents/skills/suno-music-gen/scripts/suno_generate.py generate \
   --prompt "明るいJ-POP、夏の海、女性ボーカル" \
-  --out 03_成果物/outputs/suno-gen
+  --out .company/outputs/suno-gen
 
 # カスタム生成（歌詞・スタイル・タイトル指定）
 python3 .agents/skills/suno-music-gen/scripts/suno_generate.py custom \
   --lyrics-file lyrics.txt --style "acoustic pop, emotional" \
-  --title "夏の記憶" --out 03_成果物/outputs/suno-gen
+  --title "夏の記憶" --out .company/outputs/suno-gen
 
 # インスト曲（BGM用途）
 python3 .agents/skills/suno-music-gen/scripts/suno_generate.py generate \
-  --prompt "lo-fi chill beat, no vocals" --instrumental --out 03_成果物/outputs/suno-gen
+  --prompt "lo-fi chill beat, no vocals" --instrumental --out .company/outputs/suno-gen
 
 # クレジット残確認
 python3 .agents/skills/suno-music-gen/scripts/suno_generate.py credits
 ```
 
-- 保存先は原則 `03_成果物/outputs/<用途名>/` 配下
+- 保存先は原則 `.company/outputs/<用途名>/` 配下
 - モデルは `--model` で指定可。デフォルト `chirp-crow`（v5相当）。他: `chirp-auk`(v4.5)等
 - 生成は非同期。スクリプトが完了までポーリング（最大10分）し、MP3をダウンロードする
 

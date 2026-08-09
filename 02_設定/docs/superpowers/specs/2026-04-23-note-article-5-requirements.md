@@ -375,7 +375,7 @@ Article 5は「Article 4の末尾から連続して読んでいる人」と「Ar
 ### ファイルパス
 
 ```
-g:\マイドライブ\YNFactory-cc\02_設定\docs\note\2026-04-23-ai-literacy-article-5.md
+g:\マイドライブ\YNFactory-cc\docs\note\2026-04-23-ai-literacy-article-5.md
 ```
 
 ### ファイルフォーマット

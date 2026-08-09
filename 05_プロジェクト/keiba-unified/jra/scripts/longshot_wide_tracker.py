@@ -19,7 +19,8 @@ from typing import List, Dict, Optional
 
 DATA_DIR      = "/opt/keiba-unified/jra/data"
 LONGSHOT_DIR  = os.path.join(DATA_DIR, "longshot_wide")
-CUMULATIVE_JSON = os.path.join(LONGSHOT_DIR, "cumulative.json")
+# 朝予想(morning)とライブ(live)は合算せず source別に累計する
+CUMULATIVE_JSON = os.path.join(LONGSHOT_DIR, "cumulative.json")  # 旧・合算版（deprecated）
 DB_PATH       = os.path.join(DATA_DIR, "keiba_live.db")
 
 BET_AMOUNT = 100  # 1コンボあたりの賭け金
@@ -29,12 +30,20 @@ def _ensure_dir():
     os.makedirs(LONGSHOT_DIR, exist_ok=True)
 
 
-def _load_cumulative() -> Dict:
+def _cum_path(source: str) -> str:
+    """source別の累計ファイルパス（cumulative_morning.json / cumulative_live.json）"""
+    src = source if source in ("morning", "live") else "all"
+    return os.path.join(LONGSHOT_DIR, f"cumulative_{src}.json")
+
+
+def _load_cumulative(source: str = "all") -> Dict:
     _ensure_dir()
-    if os.path.exists(CUMULATIVE_JSON):
-        with open(CUMULATIVE_JSON, "r", encoding="utf-8") as f:
+    path = _cum_path(source)
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     return {
+        "source": source,
         "start_date": date.today().isoformat(),
         "total_bets": 0, "total_hits": 0,
         "total_invested": 0, "total_payout": 0,
@@ -43,9 +52,9 @@ def _load_cumulative() -> Dict:
     }
 
 
-def _save_cumulative(data: Dict):
+def _save_cumulative(data: Dict, source: str = "all"):
     _ensure_dir()
-    with open(CUMULATIVE_JSON, "w", encoding="utf-8") as f:
+    with open(_cum_path(source), "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 
@@ -223,17 +232,10 @@ def check_longshot_results(date_str: str, source: str = "all") -> Optional[Dict]
     day_roi    = day_payout / day_invested if day_invested > 0 else 0.0
     day_profit = day_payout - day_invested
 
-    # cumulative 更新
-    cum = _load_cumulative()
-    cum["total_bets"]     += day_bets
-    cum["total_hits"]     += day_hits
-    cum["total_invested"] += day_invested
-    cum["total_payout"]   += day_payout
-    cum["net_profit"]      = cum["total_payout"] - cum["total_invested"]
-    cum["hit_rate"]        = cum["total_hits"] / cum["total_bets"] if cum["total_bets"] > 0 else 0
-    cum["roi"]             = cum["total_payout"] / cum["total_invested"] if cum["total_invested"] > 0 else 0
+    # cumulative 更新（source別・daily_historyからの再計算で冪等化）
+    cum = _load_cumulative(result_source)
 
-    # 既存エントリがあれば上書き
+    # 同日エントリを上書き
     existing = [e for e in cum["daily_history"] if e["date"] != date_str]
     existing.append({
         "date": date_str, "bets": day_bets, "hits": day_hits,
@@ -241,7 +243,19 @@ def check_longshot_results(date_str: str, source: str = "all") -> Optional[Dict]
         "profit": day_profit, "roi": day_roi,
     })
     cum["daily_history"] = sorted(existing, key=lambda x: x["date"])
-    _save_cumulative(cum)
+
+    # 累計は daily_history の合算で算出（再実行しても二重計上しない）
+    cum["source"]         = result_source
+    cum["total_bets"]     = sum(e["bets"] for e in cum["daily_history"])
+    cum["total_hits"]     = sum(e["hits"] for e in cum["daily_history"])
+    cum["total_invested"] = sum(e["invested"] for e in cum["daily_history"])
+    cum["total_payout"]   = sum(e["payout"] for e in cum["daily_history"])
+    cum["net_profit"]     = cum["total_payout"] - cum["total_invested"]
+    cum["hit_rate"]       = cum["total_hits"] / cum["total_bets"] if cum["total_bets"] > 0 else 0
+    cum["roi"]            = cum["total_payout"] / cum["total_invested"] if cum["total_invested"] > 0 else 0
+    if cum["daily_history"]:
+        cum["start_date"] = cum["daily_history"][0]["date"]
+    _save_cumulative(cum, result_source)
 
     result = {
         "date": date_str,
@@ -295,16 +309,18 @@ def format_longshot_result_message(result: Dict) -> str:
     return "\n".join(lines)
 
 
-def generate_monthly_report(year_month: str) -> str:
+def generate_monthly_report(year_month: str, source: str = "all") -> str:
     """
-    月次サマリー生成
+    月次サマリー生成（source別）
     year_month: "YYYY-MM"
+    source: "morning" / "live" / "all"
     """
-    cum = _load_cumulative()
+    SRC_LABEL = {"morning": "モーニング", "live": "直前", "all": ""}
+    cum = _load_cumulative(source)
     history = [e for e in cum.get("daily_history", [])
                if e["date"].startswith(year_month)]
     if not history:
-        return f"[Tracker] {year_month}: データなし"
+        return f"[Tracker] {year_month}({source}): データなし"
 
     total_bets     = sum(e["bets"] for e in history)
     total_hits     = sum(e["hits"] for e in history)
@@ -314,9 +330,11 @@ def generate_monthly_report(year_month: str) -> str:
     roi            = total_payout / total_invested if total_invested > 0 else 0
     hit_rate       = total_hits / total_bets if total_bets > 0 else 0
 
+    label = SRC_LABEL.get(source, source)
+    title = f"🎯 穴予想({label}) 月次レポート {year_month}" if label else f"🎯 穴予想 月次レポート {year_month}"
     lines = [
         f"━━━━━━━━━━",
-        f"🎯 穴予想 月次レポート {year_month}",
+        title,
         f"開催日数: {len(history)}日",
         f"コンボ数: {total_bets} / 的中: {total_hits} ({hit_rate*100:.1f}%)",
         f"投資: {total_invested:,}円 → 回収: {total_payout:,.0f}円",
@@ -331,8 +349,10 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[1] == "--monthly":
             ym = sys.argv[2] if len(sys.argv) > 2 else date.today().strftime("%Y-%m")
-            print(generate_monthly_report(ym))
+            src = sys.argv[3] if len(sys.argv) > 3 else "all"
+            print(generate_monthly_report(ym, src))
         else:
-            r = check_longshot_results(sys.argv[1])
+            src = sys.argv[2] if len(sys.argv) > 2 else "all"
+            r = check_longshot_results(sys.argv[1], source=src)
             if r:
                 print(format_longshot_result_message(r))

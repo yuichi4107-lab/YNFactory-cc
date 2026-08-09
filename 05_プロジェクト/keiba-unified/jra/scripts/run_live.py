@@ -40,9 +40,9 @@ try:
 except ImportError as _e:
     print(f"[longshot] モジュール読み込み失敗（スキップ）: {_e}")
 
-# Telegram設定（環境変数優先・2026-05-30 ハードコード除去）
-TG_TOKEN = os.environ.get("TG_TOKEN_JRA", os.environ.get("TG_TOKEN", ""))
-TG_CHAT_ID = os.environ.get("TG_CHAT_ID", "8571447808")
+# Telegram設定
+TG_TOKEN = "8718145068:AAGDWhDXt3ROsTKckTTunP3-4MT_uRgGL60"
+TG_CHAT_ID = "8571447808"
 
 # 発走何分前にオッズ取得・予測するか（オッズ更新ラグを考慮し7分前）
 MINUTES_BEFORE = 7
@@ -349,7 +349,7 @@ def main():
                      WHERE race_id = ? AND odds_win IS NOT NULL AND odds_win > 0""",
                   (race_id,))
         has_odds = c.fetchone()[0] > 0
-        threshold = QUALITY_THRESHOLD if has_odds else 0.80
+        threshold = QUALITY_THRESHOLD if has_odds else 0.70
         print(f"  品質スコア: {qs:.3f} (閾値: {threshold}{'[オッズあり]' if has_odds else '[オッズなし]'})")
 
         # レース情報

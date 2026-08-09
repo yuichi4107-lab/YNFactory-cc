@@ -4,7 +4,7 @@ source: limitless-ai-extraction
 type: organized-input
 input_type: lifelog-insights
 generated_at: 2026-06-12T07:01:36
-raw_source: 04_インプット/inputs/conversations/2026-06-11-lifelogs.md
+raw_source: .company/inputs/conversations/2026-06-11-lifelogs.md
 extraction_source: .company/secretary/inbox/2026-06-11-lifelog-insights.md
 tags:
   - lifelog
@@ -25,7 +25,7 @@ tags:
 
 ## 出典
 
-- 原本: `04_インプット/inputs/conversations/2026-06-11-lifelogs.md`
+- 原本: `.company/inputs/conversations/2026-06-11-lifelogs.md`
 - 抽出元: `.company/secretary/inbox/2026-06-11-lifelog-insights.md`
 
 ## TODO候補

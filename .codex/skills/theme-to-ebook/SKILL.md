@@ -18,7 +18,7 @@ description: テーマ指定または添付素材から、初回だけクリッ�
 - Phase 0では、利用可能な場合は必ず `request_user_input` のクリック式選択UIを使う。
 - クリック式UIの1回あたり質問数に制限がある場合は、従来の質問セットを複数回に分けて提示する。質問項目そのものを削らない。
 - 推奨案のラベルには必ず `(Recommended)` を付ける。
-- `request_user_input` が利用できない実行環境では、Markdownの代替質問へ勝手に切り替えない。代わりに `01_コード/scripts/company/ebook_setup_ui.py` のローカルクリック式フォームを起動し、ブラウザで選択してもらう。
+- `request_user_input` が利用できない実行環境では、Markdownの代替質問へ勝手に切り替えない。代わりに `.company/scripts/ebook_setup_ui.py` のローカルクリック式フォームを起動し、ブラウザで選択してもらう。
 - Phase 0の回答が不足している場合は、不足項目だけ短く再質問する。
 - 判断に迷う仕様・範囲・優先順位が途中で出た場合も、クリック式UIで短く確認する。
 - 軽微な判断は止まらず、Phase 0回答とStep 0リサーチから妥当な前提を置いて進める。
@@ -39,7 +39,7 @@ description: テーマ指定または添付素材から、初回だけクリッ�
 
 ## Phase 0: 初回質問UI
 
-スキル起動直後、リサーチやStep 1に入る前に、クリック式選択UIでユーザーの回答を待つ。`request_user_input` が使える場合は各質問を独立した選択カードとして提示する。使えない場合は `01_コード/scripts/company/ebook_setup_ui.py` を起動し、ローカルブラウザフォームで同等の選択肢を提示する。質問項目・選択肢の意味は従来のPhase 0から変えない。
+スキル起動直後、リサーチやStep 1に入る前に、クリック式選択UIでユーザーの回答を待つ。`request_user_input` が使える場合は各質問を独立した選択カードとして提示する。使えない場合は `.company/scripts/ebook_setup_ui.py` を起動し、ローカルブラウザフォームで同等の選択肢を提示する。質問項目・選択肢の意味は従来のPhase 0から変えない。
 
 **クリック式UIの必須仕様:**
 - 1回に出せる質問数が1〜3問までの場合は、Phase 0を2回に分けて提示する。
@@ -85,12 +85,12 @@ description: テーマ指定または添付素材から、初回だけクリッ�
 **ローカルフォームの出し方（`request_user_input` が使えない場合）:**
 
 ```bash
-python3 01_コード/scripts/company/ebook_setup_ui.py --theme "{テーマ}" --mode theme-to-ebook
+python3 .company/scripts/ebook_setup_ui.py --theme "{テーマ}" --mode theme-to-ebook
 ```
 
 - サーバーは `127.0.0.1` の空きポートで起動する
 - 表示された `ebook_setup_ui_url=...` をユーザーへ案内する
-- ユーザーが保存すると `03_成果物/outputs/ebook-setup-inputs/latest.json` に回答が保存される
+- ユーザーが保存すると `.company/outputs/ebook-setup-inputs/latest.json` に回答が保存される
 - 回答を読み取り、`progress.json` の `initial_questions` に `ui: "local_clickable_form"` として保存する
 
 **質問セット（内容は従来どおり）:**
@@ -164,7 +164,7 @@ python3 01_コード/scripts/company/ebook_setup_ui.py --theme "{テーマ}" --m
 ## 標準出力
 
 ```
-03_成果物/outputs/ebooks/{book-name}/
+.company/outputs/ebooks/{book-name}/
 ├── project.md
 ├── progress.json
 ├── _research/
@@ -263,7 +263,7 @@ Phase 0の回答で確定したテーマについて、Step 1の企画決定前�
 
 **出力:**
 
-`03_成果物/outputs/ebooks/{book-name}/_research/theme_research.md`
+`.company/outputs/ebooks/{book-name}/_research/theme_research.md`
 
 ```markdown
 # テーマリサーチ: {テーマ}
@@ -333,8 +333,20 @@ Phase 0回答とStep 0のテーマリサーチをもとに、以下を自動決�
 ```markdown
 # {タイトル}
 
+## タイトルフリガナ
+{タイトルの全角カタカナ読み}
+
+## タイトルローマ字
+{タイトルの記号なしASCIIローマ字}
+
 ## サブタイトル
 {サブタイトル}
+
+## サブタイトルフリガナ
+{サブタイトルの全角カタカナ読み}
+
+## サブタイトルローマ字
+{サブタイトルの記号なしASCIIローマ字}
 
 ## 著者
 {著者名}
@@ -437,6 +449,35 @@ Phase 0回答とStep 0のテーマリサーチをもとに、以下を自動決�
 4. `cover.png`
 5. `cover.jpg`
 
+`書籍情報.md` の冒頭は、タイトルとサブタイトルをそれぞれ **日本語 → フリガナ → ローマ字** の順で、次の見出し名どおりに作る。
+
+```markdown
+## タイトル
+{日本語タイトル}
+
+## タイトルフリガナ
+{全角カタカナ読み}
+
+## タイトルローマ字
+{ASCIIローマ字}
+
+## サブタイトル
+{日本語サブタイトル}
+
+## サブタイトルフリガナ
+{全角カタカナ読み}
+
+## サブタイトルローマ字
+{ASCIIローマ字}
+```
+
+- 日本語欄は正式なタイトル表記を保ち、日本語の句読点・中黒・疑問符・数字を削らない
+- フリガナ欄は全角カタカナで作り、数字は読みをカタカナで書く
+- ローマ字欄は半角英字と半角スペースだけを使い、値全体を `^[A-Za-z ]+$` に一致させる
+- ローマ字欄ではカンマ、ピリオド、疑問符、感嘆符、コロン、セミコロン、中黒、ハイフン、スラッシュ、アポストロフィ、括弧、長音記号・マクロン等のダイアクリティカルマークを使わない
+- ローマ字欄へ算用数字を残さず、数字も読みを英字で書く（例: `72時間` → `Nanajuuni Jikan`）
+- `ローマ字タイトル（ヘボン式）` と `ASCII入力用` のように欄を分けず、上記の記号なしローマ字欄へ統一する
+
 表紙を生成した場合は、PNGだけで完了せず、KDP申請用にJPEG版も保存する。macOSでは以下を使える。
 
 ```bash
@@ -473,6 +514,9 @@ sips -s format jpeg -s formatOptions 95 KDP出版用/cover.png --out KDP出版�
 - 段落の字下げが1字分相当で、2字下げになっていない
 - 表やチェックリストがEPUB上で読みやすい形に変換されている
 - `KDP出版用/` のメタデータ3点と、表紙を作成した場合の画像2点が揃っている
+- `書籍情報.md` と `project.md` で、タイトルとサブタイトルがそれぞれ日本語 → フリガナ → ローマ字の順になっている
+- タイトルとサブタイトルのフリガナ欄が空でなく、数字を含む場合も読みが全角カタカナで書かれている
+- タイトルとサブタイトルのローマ字欄が `^[A-Za-z ]+$` に一致し、記号・数字・ダイアクリティカルマークを含まない
 - 表紙を作成した場合、`cover.png` と `cover.jpg` が揃っている
 - `ebook-to-manga` の入力として使える構成になっている
 
@@ -483,7 +527,7 @@ sips -s format jpeg -s formatOptions 95 KDP出版用/cover.png --out KDP出版�
 このスキルの出力フォルダは、`ebook-to-manga` のソースフォルダとして使う。
 
 ```
-ebook-to-manga source = 03_成果物/outputs/ebooks/{book-name}/
+ebook-to-manga source = .company/outputs/ebooks/{book-name}/
 ```
 
 マンガ化前提の場合は、本文中の重要な会話・事例・心理変化を多めに入れると、後工程のシナリオ化がしやすい。

@@ -27,7 +27,7 @@
 | 引数 | 必須 | デフォルト | 説明 |
 |---|---|---|---|
 | `prompt` | ✅ | - | 生成プロンプト。複数指定時は並列実行 |
-| `output_folder` | - | `openai-image-gen` | `03_成果物/outputs/` 配下のフォルダ名 |
+| `output_folder` | - | `openai-image-gen` | `.company/outputs/` 配下のフォルダ名 |
 | `size` | - | `1024x1536` | `1024x1024` / `1024x1536` / `1536x1024` / `auto` |
 | `quality` | - | `medium` | `low` / `medium` / `high` / `auto` |
 | `reference_images` | - | なし | 参照画像ファイルパスのリスト（最大10枚、各25MB以下、PNG/JPG/WebP） |
@@ -59,7 +59,7 @@ ebook-to-manga 1冊 100コマで medium 使用時の概算: $6.3 / 約950円。
 ## 3. ファイル規則
 
 ### 保存先
-- ルート: `03_成果物/outputs/{output_folder}/`
+- ルート: `.company/outputs/{output_folder}/`
 - プロジェクトルート: `G:/マイドライブ/YNFactory-cc`
 
 ### ファイル名
@@ -108,7 +108,7 @@ ebook-to-manga 1冊 100コマで medium 使用時の概算: $6.3 / 約950円。
 | 参照画像 | プロンプトに埋め込み | `images.edit` に引き渡し（最大10枚） |
 | アスペクト比 | 9種類（1:1〜5:4） | 4種類（1024x1024 / 1024x1536 / 1536x1024 / auto） |
 | 料金体系 | トークン課金 | 画像1枚課金（quality依存） |
-| 保存先規則 | `03_成果物/outputs/{folder}/` | 同左 |
+| 保存先規則 | `.company/outputs/{folder}/` | 同左 |
 | ファイル名規則 | `{prefix}_{timestamp}_{連番}.png` | 同左 |
 | 並列実行 | `run_in_background` | 同左 |
 

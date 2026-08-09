@@ -27,7 +27,7 @@ APP_ROOT = Path(__file__).resolve().parents[1]
 if str(APP_ROOT) not in sys.path:
     sys.path.insert(0, str(APP_ROOT))
 
-from src import pipeline, renderer, script_gen, video_bg_gen
+from src import pipeline, renderer, script_gen, topview_inventory, video_bg_gen
 from src.config import CONFIG
 
 
@@ -60,6 +60,85 @@ def _fixed_seedance_data(cue_overrides: dict | None = None) -> dict:
         "hashtags": ["#生成AI", "#AI活用", "#仕事術"],
         "card_keywords": ["見える化", "自動判定", "優先度", "効率化"],
     }
+
+
+class TopviewInventoryReuseGuardTest(unittest.TestCase):
+    """書き出し済み実写素材を最終ショート間で再利用しない。"""
+
+    def test_select_live_clips_returns_only_unused_assets(self):
+        clips = [
+            {"id": "used", "use_count": 1, "last_used_at": "2026-08-08T01:00:00+09:00"},
+            {"id": "new-b", "use_count": 0, "last_used_at": None},
+            {"id": "new-a", "use_count": 0, "last_used_at": None},
+        ]
+        with patch.object(topview_inventory, "validate_inventory", return_value=({}, clips, Path("/tmp/manifest.json"))):
+            selected, _ = topview_inventory.select_live_clips({}, count=2)
+        self.assertEqual([clip["id"] for clip in selected], ["new-a", "new-b"])
+
+    def test_select_live_clips_stops_when_unused_assets_are_insufficient(self):
+        clips = [
+            {"id": "used-a", "use_count": 1, "last_used_at": "2026-08-08T01:00:00+09:00"},
+            {"id": "unused", "use_count": 0, "last_used_at": None},
+            {"id": "used-b", "use_count": 2, "last_used_at": "2026-08-08T02:00:00+09:00"},
+        ]
+        with patch.object(topview_inventory, "validate_inventory", return_value=({}, clips, Path("/tmp/manifest.json"))):
+            with self.assertRaisesRegex(topview_inventory.TopviewInventoryError, "使用済み素材は再利用しません"):
+                topview_inventory.select_live_clips({}, count=2)
+
+
+class TopviewRegisterMergeTest(unittest.TestCase):
+    """補充登録で既存クリップの使用履歴を消さない。"""
+
+    class _Config:
+        def __init__(self, assets_dir: Path):
+            self._assets_dir = assets_dir
+
+        def get(self, *keys, default=None):
+            if keys == ("topview", "assets_dir"):
+                return str(self._assets_dir)
+            if keys == ("topview", "manifest"):
+                return str(self._assets_dir / "manifest.json")
+            return default
+
+    def _register(self, tmp: Path, names: list[str]) -> dict:
+        for name in names:
+            (tmp / name).write_bytes(b"stub")
+        meta = {"duration_sec": 5.0, "width": 1080, "height": 1920}
+        with patch.object(topview_inventory, "_probe_clip", return_value=meta):
+            path = topview_inventory.register_files(self._Config(tmp), names)
+        return json.loads(Path(path).read_text(encoding="utf-8"))
+
+    def test_replenishment_keeps_use_history_of_existing_clips(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            self._register(tmp, ["old.mp4"])
+            manifest_path = tmp / "manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["clips"][0]["use_count"] = 1
+            manifest["clips"][0]["last_used_at"] = "2026-08-08T01:00:00+09:00"
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+            merged = self._register(tmp, ["new.mp4"])
+
+        by_id = {c["id"]: c for c in merged["clips"]}
+        self.assertEqual(set(by_id), {"topview-old", "topview-new"})
+        self.assertEqual(by_id["topview-old"]["use_count"], 1)
+        self.assertEqual(by_id["topview-old"]["last_used_at"], "2026-08-08T01:00:00+09:00")
+        self.assertEqual(by_id["topview-new"]["use_count"], 0)
+
+    def test_reregistering_a_used_clip_does_not_reset_it_to_unused(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            self._register(tmp, ["clip.mp4"])
+            manifest_path = tmp / "manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["clips"][0]["use_count"] = 2
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+            merged = self._register(tmp, ["clip.mp4"])
+
+        self.assertEqual(len(merged["clips"]), 1)
+        self.assertEqual(merged["clips"][0]["use_count"], 2)
 
 
 class VideoBgGenCostTest(unittest.TestCase):
@@ -147,39 +226,52 @@ class VideoBgGenCostTest(unittest.TestCase):
 
 
 class SeedanceSlotTest(unittest.TestCase):
-    """週5枠判定（曜日-時マッチ）のテスト。"""
+    """毎日3枠の混在形式判定（曜日-時マッチ）のテスト。"""
 
-    def test_all_five_configured_slots_match(self):
-        # config既定: mon-09 / wed-14 / fri-19 / sat-14 / sun-09
+    def test_all_daily_scheduled_slots_are_hybrid_seedance(self):
         cases = [
-            (datetime(2026, 7, 6, 9, 0), "mon-09"),    # Monday
-            (datetime(2026, 7, 8, 14, 0), "wed-14"),   # Wednesday
-            (datetime(2026, 7, 10, 19, 0), "fri-19"),  # Friday
-            (datetime(2026, 7, 11, 14, 0), "sat-14"),  # Saturday
-            (datetime(2026, 7, 12, 9, 0), "sun-09"),   # Sunday
+            (datetime(2026, 7, 6 + weekday, hour, 0), f"{code}-{hour:02d}")
+            for weekday, code in enumerate(("mon", "tue", "wed", "thu", "fri", "sat", "sun"))
+            for hour in (9, 14, 19)
         ]
-        for dt, slot_code in cases:
-            with self.subTest(slot_code=slot_code):
-                self.assertTrue(pipeline.is_seedance_slot(dt))
+        seedance = {**CONFIG.cfg["seedance"], "enabled": True}
+        with patch.object(CONFIG, "cfg", {**CONFIG.cfg, "seedance": seedance}):
+            for dt, slot_code in cases:
+                with self.subTest(slot_code=slot_code):
+                    self.assertTrue(pipeline.is_seedance_slot(dt))
+                    self.assertTrue(pipeline.is_hybrid_seedance_slot(dt))
 
     def test_slot_matches_by_hour_regardless_of_minute(self):
         # 分は見ない: 09:00〜09:59台であれば発火する
-        self.assertTrue(pipeline.is_seedance_slot(datetime(2026, 7, 6, 9, 59)))
-        self.assertTrue(pipeline.is_seedance_slot(datetime(2026, 7, 6, 9, 1)))
-
-    def test_non_configured_weekday_does_not_match(self):
-        # 火曜09:00は対象枠に含まれない
-        self.assertFalse(pipeline.is_seedance_slot(datetime(2026, 7, 7, 9, 0)))
+        seedance = {**CONFIG.cfg["seedance"], "enabled": True}
+        with patch.object(CONFIG, "cfg", {**CONFIG.cfg, "seedance": seedance}):
+            self.assertTrue(pipeline.is_seedance_slot(datetime(2026, 7, 6, 9, 59)))
+            self.assertTrue(pipeline.is_seedance_slot(datetime(2026, 7, 6, 9, 1)))
 
     def test_non_configured_hour_does_not_match(self):
-        # 月曜だが対象枠は09時のみ。10時は対象外
-        self.assertFalse(pipeline.is_seedance_slot(datetime(2026, 7, 6, 10, 0)))
+        # 定刻外の10時は対象外
+        seedance = {**CONFIG.cfg["seedance"], "enabled": True}
+        with patch.object(CONFIG, "cfg", {**CONFIG.cfg, "seedance": seedance}):
+            self.assertFalse(pipeline.is_seedance_slot(datetime(2026, 7, 6, 10, 0)))
+            self.assertFalse(pipeline.is_hybrid_seedance_slot(datetime(2026, 7, 6, 10, 0)))
 
     def test_disabled_returns_false_even_in_slot(self):
         with patch.object(
             CONFIG, "cfg", {**CONFIG.cfg, "seedance": {**CONFIG.cfg["seedance"], "enabled": False}}
         ):
             self.assertFalse(pipeline.is_seedance_slot(datetime(2026, 7, 6, 9, 0)))
+
+    def test_topview_covers_all_daily_slots_when_enabled(self):
+        topview = {**CONFIG.cfg["topview"], "enabled": True}
+        with patch.object(CONFIG, "cfg", {**CONFIG.cfg, "topview": topview}):
+            for weekday in range(7):
+                for hour in (9, 14, 19):
+                    with self.subTest(weekday=weekday, hour=hour):
+                        self.assertTrue(pipeline.is_topview_slot(datetime(2026, 7, 6 + weekday, hour, 0)))
+
+    def test_hybrid_segment_durations_follow_tts_boundaries(self):
+        cues = [{"start": start} for start in (0.0, 5.2, 10.0, 15.6)]
+        self.assertEqual(pipeline._hybrid_segment_durations(cues, 21.0), [5.2, 4.8, 5.6, 5.4])
 
 
 class SeedanceSecretRedactionTest(unittest.TestCase):
@@ -527,6 +619,54 @@ class ProduceSeedanceIntegrationTest(unittest.TestCase):
         self.assertFalse(called["seedance"])
         self.assertEqual(result["id"], "fake-id")
 
+
+class ProduceTopviewRouteTest(unittest.TestCase):
+    """Topview枠はAtlas/旧カード生成へ絶対にフォールバックしない。"""
+
+    @staticmethod
+    def _candidate() -> dict:
+        report = {"pass": True, "accuracy": {"avg_cer": 0.01}, "duration": 30, "size_mb": 5, "checks": []}
+        return {
+            "item_id": "topview-id", "out_dir": Path("/tmp/topview"), "report": report,
+            "title": "topview title", "topic": "fake topic",
+            "script": {"title": "topview title", "caption": "x" * 70, "hashtags": ["#a", "#b", "#c"], "target_platform": "common"},
+        }
+
+    def test_topview_preempts_seedance_and_card_fallback(self):
+        with (
+            patch.object(pipeline, "is_topview_slot", return_value=True),
+            patch.object(pipeline.topview_inventory, "validate_inventory"),
+            patch.object(pipeline, "is_seedance_slot", side_effect=AssertionError("Atlas判定をしてはいけない")),
+            patch.object(pipeline, "_generate_passable_topview_candidate", return_value=(self._candidate(), 0)),
+            patch.object(pipeline, "_generate_passable_seedance_candidate", side_effect=AssertionError("Atlasを呼んではいけない")),
+            patch.object(pipeline, "_generate_passable_candidate", side_effect=AssertionError("旧カード版を作ってはいけない")),
+            patch.object(pipeline, "_select_topic_entry", return_value={"topic": "fake topic"}),
+            patch.object(pipeline.topic_store, "normalize_difficulty", return_value="beginner"),
+        ):
+            result = pipeline.produce(topic="fake topic", send_queue=False, target_platform="common")
+        self.assertEqual(result["id"], "topview-id")
+
+    def test_topview_inventory_failure_stops_before_topic_selection(self):
+        with (
+            patch.object(pipeline, "is_topview_slot", return_value=True),
+            patch.object(pipeline.topview_inventory, "validate_inventory", side_effect=pipeline.TopviewInventoryError("stock missing")),
+            patch.object(pipeline, "_select_topic_entry", side_effect=AssertionError("ネタを消費してはいけない")),
+        ):
+            with self.assertRaises(pipeline.TopviewInventoryError):
+                pipeline.produce(topic=None, send_queue=False, target_platform="common")
+
+    def test_topview_failure_never_falls_back_to_legacy_card(self):
+        with (
+            patch.object(pipeline, "is_topview_slot", return_value=True),
+            patch.object(pipeline.topview_inventory, "validate_inventory"),
+            patch.object(pipeline, "_generate_passable_topview_candidate", side_effect=RuntimeError("stock broken")),
+            patch.object(pipeline, "_generate_passable_candidate", side_effect=AssertionError("旧カード版を作ってはいけない")),
+            patch.object(pipeline, "_select_topic_entry", return_value={"topic": "fake topic"}),
+            patch.object(pipeline.topic_store, "normalize_difficulty", return_value="beginner"),
+        ):
+            with self.assertRaises(pipeline.HybridGenerationBlocked):
+                pipeline.produce(topic="fake topic", send_queue=False, target_platform="common")
+
     def test_is_seedance_slot_true_uses_seedance_candidate_when_it_passes(self):
         # is_seedance_slotがTrueで、Seedance候補が品質検証を合格した場合は
         # 静止画版へフォールバックしないこと。
@@ -562,6 +702,60 @@ class ProduceSeedanceIntegrationTest(unittest.TestCase):
         self.assertEqual(fallback_calls["count"], 0)
         self.assertEqual(result["id"], "seedance-id")
 
+    def test_hybrid_failure_stops_without_card_fallback(self):
+        """混在対象枠は失敗しても従来カード版へ置き換えない。"""
+        from src import pipeline
+
+        fallback_calls = {"count": 0}
+
+        def fail_if_called(*a, **kw):
+            fallback_calls["count"] += 1
+            raise AssertionError("混在失敗時にカード版を作ってはいけない")
+
+        with (
+            patch.object(pipeline, "is_seedance_slot", return_value=True),
+            patch.object(pipeline, "is_hybrid_seedance_slot", return_value=True),
+            patch.object(
+                pipeline,
+                "_generate_passable_seedance_candidate",
+                side_effect=RuntimeError("実写素材を生成できません"),
+            ),
+            patch.object(pipeline, "_generate_passable_candidate", side_effect=fail_if_called),
+            patch.object(pipeline, "_select_topic_entry", return_value={"topic": "fake topic"}),
+            patch.object(pipeline.topic_store, "normalize_difficulty", return_value="beginner"),
+        ):
+            with self.assertRaises(pipeline.HybridGenerationBlocked):
+                pipeline.produce(topic="fake topic", send_queue=False, target_platform="common")
+
+        self.assertEqual(fallback_calls["count"], 0)
+
+    def test_non_hybrid_seedance_failure_keeps_card_fallback(self):
+        """従来のSeedance枠は、混在対象でなければ従来どおりカードへ退避する。"""
+        from src import pipeline
+
+        fake_report = {"pass": True, "accuracy": {"avg_cer": 0.01}, "duration": 30, "size_mb": 5, "checks": []}
+        fake_candidate = {
+            "item_id": "card-id", "out_dir": Path("/tmp/card"), "report": fake_report,
+            "title": "card title", "topic": "fake topic",
+            "script": {"title": "card title", "caption": "x" * 70, "hashtags": ["#a", "#b", "#c"], "target_platform": "common"},
+        }
+
+        with (
+            patch.object(pipeline, "is_seedance_slot", return_value=True),
+            patch.object(pipeline, "is_hybrid_seedance_slot", return_value=False),
+            patch.object(
+                pipeline,
+                "_generate_passable_seedance_candidate",
+                side_effect=RuntimeError("Seedance障害"),
+            ),
+            patch.object(pipeline, "_generate_passable_candidate", return_value=(fake_candidate, 0)),
+            patch.object(pipeline, "_select_topic_entry", return_value={"topic": "fake topic"}),
+            patch.object(pipeline.topic_store, "normalize_difficulty", return_value="beginner"),
+        ):
+            result = pipeline.produce(topic="fake topic", send_queue=False, target_platform="common")
+
+        self.assertEqual(result["id"], "card-id")
+
     def test_non_common_target_platform_never_triggers_seedance(self):
         # target_platform が common 以外（x/instagram/tiktok/youtube個別）の場合は
         # is_seedance_slot がTrueでもSeedance分岐に入らないこと
@@ -592,6 +786,102 @@ class ProduceSeedanceIntegrationTest(unittest.TestCase):
 
         self.assertFalse(called["seedance"])
         self.assertEqual(result["id"], "fake-id")
+
+
+class SafeStopNotificationTest(unittest.TestCase):
+    """安全停止は投稿を作らないが、通知だけは必ず出す。"""
+
+    def test_topview_stock_stop_notifies_owner_with_stock_counts(self):
+        manifest = {
+            "clips": [
+                {"id": "a", "enabled": True, "use_count": 1},
+                {"id": "b", "enabled": True, "use_count": 0},
+                {"id": "c", "enabled": False, "use_count": 0},
+            ]
+        }
+        sent: list[str] = []
+        with tempfile.TemporaryDirectory() as tmp:
+            manifest_path = Path(tmp) / "manifest.json"
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+            def fake_get(*keys, default=None):
+                if keys == ("topview", "manifest"):
+                    return str(manifest_path)
+                if keys == ("topview", "min_enabled_clips"):
+                    return 6
+                return default
+
+            with (
+                patch.object(pipeline.CONFIG, "get", side_effect=fake_get),
+                patch.object(pipeline.notify, "send_message", side_effect=lambda t, **kw: sent.append(t)),
+            ):
+                pipeline.notify_safe_stop(pipeline.TopviewInventoryError("在庫が足りません"))
+
+        self.assertEqual(len(sent), 1)
+        text = sent[0]
+        self.assertIn("安全停止", text)
+        self.assertIn("在庫が足りません", text)
+        self.assertIn("有効 2 本 / 未使用 1 本 / 必要 6 本", text)
+        self.assertIn("従来カード版への自動代替は行いません。", text)
+
+    def test_hybrid_block_notifies_owner(self):
+        sent: list[str] = []
+        with patch.object(pipeline.notify, "send_message", side_effect=lambda t, **kw: sent.append(t)):
+            pipeline.notify_safe_stop(pipeline.HybridGenerationBlocked("Seedanceを生成できません"))
+
+        self.assertEqual(len(sent), 1)
+        self.assertIn("Seedanceを生成できません", sent[0])
+        self.assertIn("Atlas Cloud", sent[0])
+
+    def test_notification_failure_does_not_raise(self):
+        with patch.object(pipeline.notify, "send_message", side_effect=RuntimeError("telegram down")):
+            pipeline.notify_safe_stop(pipeline.HybridGenerationBlocked("blocked"))
+
+
+class TopviewLowStockWarningTest(unittest.TestCase):
+    """枯渇して安全停止する前に補充を促す。"""
+
+    def _run(self, use_counts: list[int], threshold: int = 6) -> list[str]:
+        manifest = {
+            "clips": [
+                {"id": f"c{i}", "enabled": True, "use_count": n}
+                for i, n in enumerate(use_counts)
+            ]
+        }
+        sent: list[str] = []
+        with tempfile.TemporaryDirectory() as tmp:
+            manifest_path = Path(tmp) / "manifest.json"
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+            def fake_get(*keys, default=None):
+                if keys == ("topview", "manifest"):
+                    return str(manifest_path)
+                if keys == ("topview", "min_enabled_clips"):
+                    return 6
+                if keys == ("topview", "low_stock_warn_clips"):
+                    return threshold
+                return default
+
+            with (
+                patch.object(pipeline.CONFIG, "get", side_effect=fake_get),
+                patch.object(pipeline.notify, "send_message", side_effect=lambda t, **kw: sent.append(t)),
+            ):
+                pipeline.warn_topview_stock_running_out()
+        return sent
+
+    def test_warns_when_unused_stock_is_low(self):
+        sent = self._run([0, 0, 1, 1, 1, 1])
+        self.assertEqual(len(sent), 1)
+        self.assertIn("未使用 2 本", sent[0])
+        self.assertIn("残り約 1 本ぶん", sent[0])
+
+    def test_no_warning_while_stock_is_sufficient(self):
+        self.assertEqual(self._run([0] * 10), [])
+
+    def test_warns_when_stock_is_exhausted(self):
+        sent = self._run([1, 1, 1, 1])
+        self.assertEqual(len(sent), 1)
+        self.assertIn("未使用 0 本", sent[0])
 
 
 if __name__ == "__main__":

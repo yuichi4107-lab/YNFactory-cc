@@ -14,6 +14,7 @@ import os
 import re
 import subprocess
 import unicodedata
+from hashlib import sha256
 from pathlib import Path
 
 from .config import CONFIG
@@ -398,6 +399,7 @@ def _recent_output_scripts(limit: int = 50) -> list[dict]:
 def recent_duplicate_errors(data: dict) -> list[str]:
     """Reject scripts that would recreate a recent video."""
     errs: list[str] = []
+    errs.extend(_opening_slide_errors(data))
     title = str(data.get("title") or "").strip()
     if title:
         recent_titles = {
@@ -420,6 +422,38 @@ def recent_duplicate_errors(data: dict) -> list[str]:
             )
             break
     return errs
+
+
+_BANNED_OPENING_SLIDES = {"前提整理", "前提の整理", "前提を整理"}
+
+
+def _opening_slide_keyword(data: dict) -> str:
+    """Return the normalized keyword used by the first background card."""
+    keywords = data.get("card_keywords") or []
+    if not keywords or not isinstance(keywords[0], str):
+        return ""
+    return re.sub(r"\s+", "", unicodedata.normalize("NFKC", keywords[0])).strip()
+
+
+def _opening_slide_errors(data: dict, lookback: int = 5) -> list[str]:
+    """Keep the visual opening distinct from the immediately previous videos."""
+    opening = _opening_slide_keyword(data)
+    if not opening:
+        return []
+    if opening in _BANNED_OPENING_SLIDES:
+        return [f"冒頭背景カード「{opening}」は定型的なため使わないこと"]
+
+    recent = {
+        _opening_slide_keyword(old)
+        for old in _recent_output_scripts(lookback)
+    }
+    recent.discard("")
+    if opening in recent:
+        return [
+            f"冒頭背景カード「{opening}」は直近{lookback}本と重複。"
+            "別のフック類型・見出しにすること"
+        ]
+    return []
 
 
 def _extract_json(text: str) -> dict:
@@ -964,15 +998,161 @@ def _fallback_cues_for_topic(topic: str) -> tuple[str, list[dict]]:
     ]
 
 
+_FALLBACK_BEGINNER_ANGLES = (
+    "まず一つ試す",
+    "迷わない順番",
+    "小さく始める",
+    "失敗を減らす",
+    "今日の確認点",
+    "続けやすい手順",
+    "最初の見直し",
+    "すぐ使うコツ",
+    "一回目の進め方",
+    "成果を見る順番",
+    "基本に戻る",
+    "次に試すこと",
+)
+
+_FALLBACK_INTERMEDIATE_ANGLES = (
+    "判断基準を作る",
+    "検証の順番",
+    "運用に乗せる",
+    "例外を減らす",
+    "品質をそろえる",
+    "数字で確かめる",
+    "チームで回す",
+    "改善を続ける",
+    "失敗を記録する",
+    "再現性を上げる",
+    "見直しを仕組みに",
+    "次の検証点",
+)
+
+# 冒頭背景カードと最初の字幕は、同じ「前提整理」型に固定しない。
+# 12候補は7類型（問いかけ、結論、失敗回避、比較、手順予告、具体例、チェック）
+# を含み、直近のカードと重なった場合は次の候補へ切り替える。
+_FALLBACK_OPENING_HOOKS = (
+    ("問いかけ", "見落とし確認", "見落としてない？", "見落としていませんか。", "ミオトシテイマセンカ。"),
+    ("失敗回避", "損失を防ぐ", "実は損してる", "実は、そこで損をしやすいです。", "ジツハ、ソコデソンヲシヤスイデス。"),
+    ("結論", "結論から", "先に結論", "先に結論を言います。", "サキニケツロンヲイイマス。"),
+    ("比較", "比べる順番", "比べる順番", "比べる順番で、結果が変わります。", "クラベルジュンバンデ、ケッカガカワリマス。"),
+    ("手順予告", "最初の一手", "最初に見る所", "最初に見る場所は、一つです。", "サイショニミルバショハ、ヒトツデス。"),
+    ("具体例", "三分診断", "三分で確認", "三分で確認できることがあります。", "サンプンデカクニンデキルコトガアリマス。"),
+    ("チェック", "今日のチェック", "今日の確認点", "今日の確認点は、ここです。", "キョウノカクニンテンハ、ココデス。"),
+    ("問いかけ", "意外な盲点", "そこが盲点", "そこが、意外な盲点です。", "ソコガ、イガイナモウテンデス。"),
+    ("失敗回避", "やり直し回避", "やり直しを防ぐ", "やり直しを、防ぐことができます。", "ヤリナオシヲ、フセグコトガデキマス。"),
+    ("結論", "差が出る所", "差が出るポイント", "差が出るポイントは、一つです。", "サガデルポイントハ、ヒトツデス。"),
+    ("比較", "改善前と後", "改善前と比べる", "改善前と比べると、違いが見えます。", "カイゼンマエトクラベルト、チガイガミエマス。"),
+    ("手順予告", "すぐ試す一手", "今すぐ試せる", "今すぐ試せる一手から始めます。", "イマスグタメセルヒトテカラハジメマス。"),
+)
+
+
+_FALLBACK_TOPIC_FOCUSES = (
+    (("会議", "議事録"), "会議の決定事項", "カイギノケッテイジコウ"),
+    (("資料", "企画書", "提案書"), "資料の伝達順", "シリョウノデンタツジュン"),
+    (("営業", "商談", "失注"), "営業の次の仮説", "エイギョウノツギノカセツ"),
+    (("採用", "面接"), "採用の評価基準", "サイヨウノヒョウカキジュン"),
+    (("競合", "差別化"), "比較の判断軸", "ヒカクノハンダンジク"),
+    (("FAQ", "問い合わせ"), "回答の確認点", "カイトウノカクニンテン"),
+    (("研修", "復習"), "研修の理解度", "ケンシュウノリカイド"),
+    (("マニュアル", "チェックリスト"), "手順の抜け漏れ", "テジュンノヌケモレ"),
+    (("KPI", "月次", "レポート", "数字"), "数字の確認順", "スウジノカクニンジュン"),
+    (("リスク", "契約", "クレーム"), "リスクの見落とし", "リスクノミオトシ"),
+    (("SNS", "ウェビナー", "セミナー"), "伝える順番", "ツタエルジュンバン"),
+    (("AI導入", "自動化", "業務フロー"), "自動化の候補", "ジドウカノコウホ"),
+    (("ナレッジ", "検索", "知識ベース"), "知識の探し方", "チシキノサガシカタ"),
+    (("優先順位", "タスク"), "仕事の優先順位", "シゴトノユウセンジュンイ"),
+)
+
+
+def _fallback_topic_focus(topic: str) -> tuple[str, str]:
+    for terms, display, kana in _FALLBACK_TOPIC_FOCUSES:
+        if any(term in topic for term in terms):
+            return display, kana
+    return "AI活用の目的", "エーアイカツヨウノモクテキ"
+
+
+def _fallback_context_cue(topic: str, difficulty: str) -> dict:
+    focus, focus_kana = _fallback_topic_focus(topic)
+    if difficulty == "intermediate":
+        return {
+            "display": [focus, "基準を決める"],
+            "tts_text": _replace_unstable_terms(f"最初に、{focus}の基準を決めます。"),
+            "reading_kana": f"サイショニ、{focus_kana}ノキジュンヲキメマス。",
+            "emphasis": True,
+        }
+    return {
+        "display": [focus, "一つ試します"],
+        "tts_text": _replace_unstable_terms(f"今日は、{focus}を一つ試します。"),
+        "reading_kana": f"キョウハ、{focus_kana}ヲヒトツタメシマス。",
+        "emphasis": True,
+    }
+
+
+def _fallback_opening_cue(topic: str, variant: int) -> dict:
+    """Return a topic-aware opening cue from a rotating hook family."""
+    focus, focus_kana = _fallback_topic_focus(topic)
+    _hook_type, _keyword, display_tail, speech_tail, kana_tail = _FALLBACK_OPENING_HOOKS[
+        (variant - 1) % len(_FALLBACK_OPENING_HOOKS)
+    ]
+    return {
+        "display": [focus, display_tail],
+        "tts_text": _replace_unstable_terms(f"{focus}、{speech_tail}"),
+        "reading_kana": f"{focus_kana}、{kana_tail}",
+        "emphasis": True,
+    }
+
+
+def _fallback_card_keywords(topic: str, difficulty: str, variant: int | None) -> list[str]:
+    """Create varied image-card keywords; index 0 is the visual opening slide."""
+    selected = variant or _fallback_variant_order(topic, difficulty)[0]
+    _hook_type, opening, _display_tail, _speech_tail, _kana_tail = _FALLBACK_OPENING_HOOKS[
+        (selected - 1) % len(_FALLBACK_OPENING_HOOKS)
+    ]
+    focus, _focus_kana = _fallback_topic_focus(topic)
+    angles = _FALLBACK_INTERMEDIATE_ANGLES if difficulty == "intermediate" else _FALLBACK_BEGINNER_ANGLES
+    angle = angles[(selected - 1) % len(angles)]
+    return [opening, focus, angle, "実務で試す"]
+
+
+def _fallback_variant_order(topic: str, difficulty: str) -> list[int]:
+    """テーマ・難易度ごとに最初のフォールバック構成を決定する。"""
+    angle_count = len(_FALLBACK_BEGINNER_ANGLES)
+    digest = sha256(f"{difficulty}\0{topic}".encode("utf-8")).digest()
+    start = int.from_bytes(digest[:2], "big") % angle_count
+    return [((start + offset) % angle_count) + 1 for offset in range(angle_count)]
+
+
 def _fallback_script(
     topic: str | dict,
     difficulty: str,
     last_errs: list[str],
     target_platform: str = "common",
+    variant: int | None = None,
 ) -> dict:
     meta = _topic_meta(topic)
     topic_text = _topic_text(topic)
     title, cues = _fallback_cues_for_topic(topic_text)
+    if variant is not None:
+        angles = (
+            _FALLBACK_INTERMEDIATE_ANGLES
+            if difficulty == "intermediate"
+            else _FALLBACK_BEGINNER_ANGLES
+        )
+        angle = angles[(variant - 1) % len(angles)]
+        # 冒頭の問題提起と最後のCTAを残し、本文を回転して別構成にする。
+        # 同じ固定フォールバックが連続して重複ガードに落ちることを防ぐ。
+        body = cues[1:-1]
+        shift = variant % len(body)
+        focus, _focus_kana = _fallback_topic_focus(topic_text)
+        cues = [
+            _fallback_opening_cue(topic_text, variant),
+            _fallback_context_cue(topic_text, difficulty),
+            *body[shift:],
+            *body[:shift],
+            cues[-1],
+        ]
+        title = f"{focus}：{angle}"
     return {
         "title": title,
         "cues": cues,
@@ -982,7 +1162,7 @@ def _fallback_script(
             "保存して、次の仕事でそのまま試してみてください。"
         ),
         "hashtags": ["#生成AI", "#AI活用", "#AI導入", "#仕事術", "#業務効率化"],
-        "card_keywords": ["前提整理", "記録", "改善", "共有"],
+        "card_keywords": _fallback_card_keywords(topic_text, difficulty, variant),
         "topic": topic_text,
         "difficulty": difficulty,
         "target_platform": normalize_target_platform(target_platform),
@@ -1048,15 +1228,18 @@ def generate_script(topic: str | dict, difficulty: str = "beginner", target_plat
             data["platform_angles"] = meta.get("platform_angles", {})
             return data
         last_errs = errs
-    data = _fallback_script(topic, difficulty, last_errs, target_platform)
-    errs = validate_script(data, image_count)
-    if not errs:
-        errs = recent_duplicate_errors(data)
-    if not errs:
-        return data
+    fallback_errs: list[str] = []
+    for variant in _fallback_variant_order(topic_text, difficulty):
+        data = _fallback_script(topic, difficulty, last_errs, target_platform, variant)
+        errs = validate_script(data, image_count)
+        if not errs:
+            errs = recent_duplicate_errors(data)
+        if not errs:
+            return data
+        fallback_errs = errs
     raise RuntimeError(
         f"台本生成が{retries}回失敗し、フォールバック台本も不合格。最終エラー: "
-        + "; ".join((last_errs + errs)[:5])
+        + "; ".join((last_errs + fallback_errs)[:5])
     )
 
 
@@ -1324,25 +1507,29 @@ def _apply_line_injection(data: dict) -> dict:
     return data
 
 
-def _fallback_seedance_script(topic: str | dict, difficulty: str, last_errs: list[str]) -> dict:
+def _fallback_seedance_script(
+    topic: str | dict,
+    difficulty: str,
+    last_errs: list[str],
+    variant: int | None = None,
+) -> dict:
     """Seedance生成もLLM生成も失敗した場合の最終フォールバック台本。
 
     この場合でも呼び出し元（pipeline.py）は例外を検知して静止画版へ
     フォールバックする設計のため、ここでは軽量な汎用台本を返す。
-    決定論的な固定文言のため、直近動画との重複チェック
-    （recent_duplicate_errors）の対象からは意図的に除外する
-    （非常用フォールバックにまで「ネタ被り禁止」を課すと、同一topicの
-    2回目以降で必ず重複判定に引っかかり、フォールバックが機能しなくなるため）。
+    冒頭は通常版と同じ候補群で分散し、呼び出し元で重複検査する。
     """
     topic_text = _topic_text(topic)
     character = SEEDANCE_FIXED_CHARACTER_DESCRIPTION
     room = SEEDANCE_FIXED_ROOM_DESCRIPTION
     camera = SEEDANCE_FIXED_CAMERA_DESCRIPTION
+    selected = variant or _fallback_variant_order(topic_text, difficulty)[0]
+    opening = _fallback_opening_cue(topic_text, selected)
     lines = [
         (
-            "実は多くの人が知らない使い方があります。今日は3つだけ紹介しますね。",
-            "ジツハオオクノヒトガシラナイツカイカタガアリマス。キョウハミッツダケショウカイシマスネ。",
-            ["知らない使い方", "3つ紹介します"],
+            opening["tts_text"],
+            opening["reading_kana"],
+            opening["display"],
             True,
         ),
         (
@@ -1390,7 +1577,7 @@ def _fallback_seedance_script(topic: str | dict, difficulty: str, last_errs: lis
             "続きはプロフィールから見てください。"
         ),
         "hashtags": ["#生成AI", "#AI活用", "#AI導入", "#仕事術", "#業務効率化"],
-        "card_keywords": ["前提整理", "記録", "改善", "共有"],
+        "card_keywords": _fallback_card_keywords(topic_text, difficulty, selected),
         "topic": topic_text,
         "difficulty": difficulty,
         "target_platform": "common",
@@ -1466,13 +1653,16 @@ def generate_seedance_script(topic: str | dict, difficulty: str = "beginner", cu
             data["platform_angles"] = meta.get("platform_angles", {})
             return data
         last_errs = errs
-    # フォールバック台本は決定論的な固定文言のため、重複チェック
-    # （recent_duplicate_errors）は意図的に適用しない（上記docstring参照）。
-    data = _fallback_seedance_script(topic, difficulty, last_errs)
-    errs = validate_seedance_script(data, cut_count)
-    if not errs:
-        return data
+    fallback_errs: list[str] = []
+    for variant in _fallback_variant_order(topic_text, difficulty):
+        data = _fallback_seedance_script(topic, difficulty, last_errs, variant)
+        errs = validate_seedance_script(data, cut_count)
+        if not errs:
+            errs = recent_duplicate_errors(data)
+        if not errs:
+            return data
+        fallback_errs = errs
     raise RuntimeError(
         f"Seedance台本生成が{retries}回失敗し、フォールバック台本も不合格。最終エラー: "
-        + "; ".join((last_errs + errs)[:5])
+        + "; ".join((last_errs + fallback_errs)[:5])
     )

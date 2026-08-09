@@ -52,6 +52,9 @@ fi
 export PYTHONPATH="$REPO_ROOT/rakuten-room-auto/src"
 export RAKUTEN_ROOM_CONFIG="${RAKUTEN_ROOM_CONFIG:-$APP_ROOT/config.yaml}"
 
+# シートを読み取り専用で1回確認し、認証・API障害時は変更処理の前に終了する。
+"$VENV/bin/python" -m rakuten_room_auto preview --limit 1 >/dev/null
+
 # 自動承認モード（既定ON）: 未投稿→承認待ち→承認済 まで自動で進めてから投稿する。
 # 手動承認に戻すときは RAKUTEN_ROOM_AUTO_APPROVE=0 を設定する。
 AUTO_APPROVE="${RAKUTEN_ROOM_AUTO_APPROVE:-1}"

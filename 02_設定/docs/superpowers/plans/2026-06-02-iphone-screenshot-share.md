@@ -32,7 +32,7 @@
 
 **テスト実行コマンド（共通）**: フォルダに入って実行する。
 ```
-cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/iphone-screenshot-share" && python -m unittest tests.test_core -v
+cd "g:/マイドライブ/YNFactory-cc/iphone-screenshot-share" && python -m unittest tests.test_core -v
 ```
 （全体は `python -m unittest discover -s tests -p "test_*.py" -v`）
 
@@ -126,7 +126,7 @@ if __name__ == "__main__":
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/iphone-screenshot-share" && python -m unittest tests.test_core -v`
+Run: `cd "g:/マイドライブ/YNFactory-cc/iphone-screenshot-share" && python -m unittest tests.test_core -v`
 Expected: FAIL（`ModuleNotFoundError: No module named 'core'` または `AttributeError: ... is_allowed`）
 
 - [ ] **Step 3: Write minimal implementation**
@@ -149,7 +149,7 @@ def is_allowed(chat_id, allowlist):
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/iphone-screenshot-share" && python -m unittest tests.test_core -v`
+Run: `cd "g:/マイドライブ/YNFactory-cc/iphone-screenshot-share" && python -m unittest tests.test_core -v`
 Expected: PASS（3 tests OK）
 
 - [ ] **Step 5: Commit**
@@ -203,7 +203,7 @@ class ExtractImage(unittest.TestCase):
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/iphone-screenshot-share" && python -m unittest tests.test_core -v`
+Run: `cd "g:/マイドライブ/YNFactory-cc/iphone-screenshot-share" && python -m unittest tests.test_core -v`
 Expected: FAIL（`AttributeError: module 'core' has no attribute 'extract_image'`）
 
 - [ ] **Step 3: Write minimal implementation（core.py に追記）**
@@ -253,7 +253,7 @@ def extract_image(message):
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/iphone-screenshot-share" && python -m unittest tests.test_core -v`
+Run: `cd "g:/マイドライブ/YNFactory-cc/iphone-screenshot-share" && python -m unittest tests.test_core -v`
 Expected: PASS（全テストOK）
 
 - [ ] **Step 5: Commit**
@@ -300,7 +300,7 @@ class BuildFilename(unittest.TestCase):
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/iphone-screenshot-share" && python -m unittest tests.test_core -v`
+Run: `cd "g:/マイドライブ/YNFactory-cc/iphone-screenshot-share" && python -m unittest tests.test_core -v`
 Expected: FAIL（`AttributeError: ... build_filename`）
 
 - [ ] **Step 3: Write minimal implementation（core.py に追記）**
@@ -324,7 +324,7 @@ def build_filename(dt, ext, existing):
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/iphone-screenshot-share" && python -m unittest tests.test_core -v`
+Run: `cd "g:/マイドライブ/YNFactory-cc/iphone-screenshot-share" && python -m unittest tests.test_core -v`
 Expected: PASS
 
 - [ ] **Step 5: Commit**
@@ -363,7 +363,7 @@ class ExpandSaveDir(unittest.TestCase):
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/iphone-screenshot-share" && python -m unittest tests.test_core -v`
+Run: `cd "g:/マイドライブ/YNFactory-cc/iphone-screenshot-share" && python -m unittest tests.test_core -v`
 Expected: FAIL（`AttributeError: ... expand_save_dir`）
 
 - [ ] **Step 3: Write minimal implementation（core.py に追記）**
@@ -386,7 +386,7 @@ def expand_save_dir(raw):
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/iphone-screenshot-share" && python -m unittest tests.test_core -v`
+Run: `cd "g:/マイドライブ/YNFactory-cc/iphone-screenshot-share" && python -m unittest tests.test_core -v`
 Expected: PASS（core全クラスがOK）
 
 - [ ] **Step 5: Commit**
@@ -477,7 +477,7 @@ if __name__ == "__main__":
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/iphone-screenshot-share" && python -m unittest tests.test_telegram_client -v`
+Run: `cd "g:/マイドライブ/YNFactory-cc/iphone-screenshot-share" && python -m unittest tests.test_telegram_client -v`
 Expected: FAIL（`ModuleNotFoundError: No module named 'telegram_client'`）
 
 - [ ] **Step 3: Write minimal implementation**
@@ -548,7 +548,7 @@ class TelegramClient:
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/iphone-screenshot-share" && python -m unittest tests.test_telegram_client -v`
+Run: `cd "g:/マイドライブ/YNFactory-cc/iphone-screenshot-share" && python -m unittest tests.test_telegram_client -v`
 Expected: PASS（4 tests OK）
 
 - [ ] **Step 5: Commit**
@@ -664,7 +664,7 @@ if __name__ == "__main__":
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/iphone-screenshot-share" && python -m unittest tests.test_receiver -v`
+Run: `cd "g:/マイドライブ/YNFactory-cc/iphone-screenshot-share" && python -m unittest tests.test_receiver -v`
 Expected: FAIL（`ModuleNotFoundError: No module named 'receiver'`）
 
 - [ ] **Step 3: Write minimal implementation**
@@ -807,7 +807,7 @@ if __name__ == "__main__":
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/iphone-screenshot-share" && python -m unittest tests.test_receiver -v`
+Run: `cd "g:/マイドライブ/YNFactory-cc/iphone-screenshot-share" && python -m unittest tests.test_receiver -v`
 Expected: PASS（6 tests OK）
 
 - [ ] **Step 5: Commit**
@@ -865,7 +865,7 @@ import json
 
 - [ ] **Step 2: Run test to verify it fails or passes**
 
-Run: `cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/iphone-screenshot-share" && python -m unittest tests.test_receiver -v`
+Run: `cd "g:/マイドライブ/YNFactory-cc/iphone-screenshot-share" && python -m unittest tests.test_receiver -v`
 Expected: PASS（実装はTask 7済みのため通る想定）。もしFAILなら `run()` のoffset更新/`save_state`呼び出しを確認して修正。
 
 - [ ] **Step 3: （必要時のみ）修正**
@@ -874,7 +874,7 @@ Expected: PASS（実装はTask 7済みのため通る想定）。もしFAILな�
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/iphone-screenshot-share" && python -m unittest tests.test_receiver -v`
+Run: `cd "g:/マイドライブ/YNFactory-cc/iphone-screenshot-share" && python -m unittest tests.test_receiver -v`
 Expected: PASS
 
 - [ ] **Step 5: Commit**
@@ -1001,7 +1001,7 @@ PC: receiver.py が受信して画像をフォルダに自動保存
 
 - [ ] **Step 3: 動作確認（起動だけ）**
 
-Run: `cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/iphone-screenshot-share" && python receiver.py`
+Run: `cd "g:/マイドライブ/YNFactory-cc/iphone-screenshot-share" && python receiver.py`
 Expected: `config.json` 未作成なら `SystemExit: config.json: set your bot_token first` で即終了すればOK（ここではトークン未設定の正常な失敗を確認するだけ）。Ctrl+Cで終了。
 
 - [ ] **Step 4: Commit**
@@ -1021,7 +1021,7 @@ git commit -m "docs(iphone-share): start.bat launcher and Japanese README"
 
 - [ ] **Step 1: 全単体テストを通す**
 
-Run: `cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/iphone-screenshot-share" && python -m unittest discover -s tests -p "test_*.py" -v`
+Run: `cd "g:/マイドライブ/YNFactory-cc/iphone-screenshot-share" && python -m unittest discover -s tests -p "test_*.py" -v`
 Expected: 全テスト PASS（core / telegram_client / receiver）。出力は要約＋末尾のみ確認（CLAUDE.md 出力制限）。
 
 - [ ] **Step 2: 手動E2E（実機・ユーザー操作）**

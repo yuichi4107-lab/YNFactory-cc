@@ -370,7 +370,7 @@ CLAUDE.mdに定義されている「requirements-definer / executor / quality-ch
 ### ファイルパス
 
 ```
-g:\マイドライブ\YNFactory-cc\02_設定\docs\note\2026-04-23-ai-literacy-article-4.md
+g:\マイドライブ\YNFactory-cc\docs\note\2026-04-23-ai-literacy-article-4.md
 ```
 
 ### ファイルフォーマット

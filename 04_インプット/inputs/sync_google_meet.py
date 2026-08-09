@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Google Meet notes/transcripts -> 04_インプット/inputs/conversations/.
+Google Meet notes/transcripts -> .company/inputs/conversations/.
 
 Google Meet often stores transcripts and meeting notes as Google Docs. This
-script ingests exported or synced files from 04_インプット/inputs/00_GOOGLE_MEET_BOX,
+script ingests exported or synced files from .company/inputs/00_GOOGLE_MEET_BOX,
 keeps raw copies, writes normalized text, and rebuilds daily conversation files.
 """
 from __future__ import annotations

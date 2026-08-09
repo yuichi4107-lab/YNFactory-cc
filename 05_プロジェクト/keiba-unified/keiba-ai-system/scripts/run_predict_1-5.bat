@@ -1,5 +1,5 @@
 @echo off
-cd /d "G:\マイドライブ\YNFactory-cc\05_プロジェクト\keiba-unified\keiba-ai-system"
+cd /d "G:\マイドライブ\YNFactory-cc\keiba-unified\keiba-ai-system"
 set PYTHONPATH=.
 set PYTHONIOENCODING=utf-8
 chcp 65001 > nul 2>&1

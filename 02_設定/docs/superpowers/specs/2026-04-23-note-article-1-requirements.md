@@ -219,7 +219,7 @@ note投稿時に使用するハッシュタグの方向性:
 ### ファイルパス
 
 ```
-g:\マイドライブ\YNFactory-cc\02_設定\docs\note\2026-04-23-ai-literacy-article-1.md
+g:\マイドライブ\YNFactory-cc\docs\note\2026-04-23-ai-literacy-article-1.md
 ```
 
 ### ファイルフォーマット

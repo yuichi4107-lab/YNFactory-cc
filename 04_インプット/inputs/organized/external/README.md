@@ -14,4 +14,4 @@
 
 `import_drive_inbox.py` が自動生成する。
 
-原本は `00_INPUT_BOX/` に残し、raw コピーは `04_インプット/inputs/intake/raw/` に保存する。
+原本は `00_INPUT_BOX/` に残し、raw コピーは `.company/inputs/intake/raw/` に保存する。

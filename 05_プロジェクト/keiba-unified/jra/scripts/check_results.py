@@ -30,8 +30,8 @@ from run_today import _build_jra_result_cname_map, scrape_result_jra
 from backtest_legacy import check_hit
 
 # Telegram設定
-TG_TOKEN = os.environ.get("TG_TOKEN_JRA", os.environ.get("TG_TOKEN", ""))
-TG_CHAT_ID = os.environ.get("TG_CHAT_ID", "8571447808")
+TG_TOKEN = "8718145068:AAGDWhDXt3ROsTKckTTunP3-4MT_uRgGL60"
+TG_CHAT_ID = "8571447808"
 
 # --no-notify / 再集計リプレイ時に Telegram 送信を抑制するためのフラグ
 NOTIFY = True
@@ -106,6 +106,101 @@ def scrape_day_results(conn, date_str):
     return scraped
 
 
+from bet_constants import KNOWN_BET_TYPES
+from backtest_legacy import _normalize_combo
+
+
+def _counterfactual_eq_payout(conn, race_id, bets_by_type, bet_total):
+    """配当均等配分（掛け金∝1/推定オッズ）だった場合の払戻額を計算する。
+
+    フラット運用と並走比較するための反実仮想（2026-07-11オーナー依頼）。
+    est_odds未記録の買い目が1つでもあれば None（旧データは対象外）。
+    """
+    weights = []
+    for bt, bs in bets_by_type.items():
+        for b in bs:
+            eo = b.get("est_odds")
+            if not eo or eo <= 0:
+                return None
+            weights.append((bt, b["combination"], 1.0 / max(float(eo), 1.01)))
+    tw = sum(w for _, _, w in weights)
+    if tw <= 0:
+        return None
+    c = conn.cursor()
+    payout = 0.0
+    for bt, comb, w in weights:
+        stake = bet_total * w / tw
+        c.execute("SELECT combination, payout FROM payouts WHERE race_id = ? AND bet_type = ?",
+                  (race_id, bt))
+        target = _normalize_combo(comb)
+        for wc, po in c.fetchall():
+            if _normalize_combo(wc) == target:
+                payout += po * stake / 100.0
+                break
+    return int(round(payout))
+
+
+def _data_quality_warnings(conn, date_str):
+    """当日データの品質チェック。異常があれば警告文リストを返す。
+
+    2026-06-20〜07-04にnetkeibaのUTF-8化で払戻券種が文字化けしたまま保存され、
+    1か月間の成績が過小報告された事故（2026-07-05修復）の再発検知ゲート。
+    サイト側の仕様変更で「静かにデータが壊れる」ことを当日中に検知する。
+    """
+    c = conn.cursor()
+    warns = []
+
+    # 1. 券種名の文字化け（未知のbet_type）
+    ph = ",".join("?" * len(KNOWN_BET_TYPES))
+    c.execute(f"""SELECT COUNT(*) FROM payouts p JOIN races r ON p.race_id = r.race_id
+                  WHERE r.date = ? AND p.bet_type NOT IN ({ph})""",
+              (date_str, *KNOWN_BET_TYPES))
+    n = c.fetchone()[0]
+    if n:
+        warns.append(f"⚠ データ品質: 未知の券種名の払戻が{n}行（文字化けの疑い。エンコーディング変更を確認）")
+
+    # 2. 買い予測があるのに結果未取得のレース
+    c.execute("""SELECT COUNT(DISTINCT p.race_id) FROM predictions p
+                 WHERE p.date = ? AND p.amount > 0
+                   AND NOT EXISTS (SELECT 1 FROM results r
+                                   WHERE r.race_id = p.race_id AND r.finish_position > 0)""",
+              (date_str,))
+    n = c.fetchone()[0]
+    if n:
+        warns.append(f"⚠ データ品質: 買い予測ありで着順未取得のレースが{n}件（結果取得系の不調を確認）")
+
+    # 3. 着順は取れたのに払戻行が極端に少ないレース（正常時はレースあたり10行前後）
+    c.execute("""SELECT COUNT(*) FROM (
+                   SELECT r.race_id FROM races r
+                   WHERE r.date = ?
+                     AND EXISTS (SELECT 1 FROM results x
+                                 WHERE x.race_id = r.race_id AND x.finish_position > 0)
+                   GROUP BY r.race_id
+                   HAVING (SELECT COUNT(*) FROM payouts p WHERE p.race_id = r.race_id) < 6)""",
+              (date_str,))
+    n = c.fetchone()[0]
+    if n:
+        warns.append(f"⚠ データ品質: 払戻行が6行未満の確定レースが{n}件（払戻パース不調の疑い）")
+
+    # 4. 母数があるのに全ソース的中ゼロ（照合ロジック故障のソフトサイン）
+    #    直近90日の実的中率から「偶然すべて外れる確率」を二項分布で見積り、
+    #    2%未満のときだけ警告する（固定閾値だと自然発生の不運で誤検知するため）
+    c.execute("""SELECT COUNT(*), COALESCE(SUM(hit), 0) FROM prediction_results
+                 WHERE date >= date(?, '-90 day') AND date < ?""", (date_str, date_str))
+    n90, h90 = c.fetchone()
+    p_hit = (h90 / n90) if n90 and n90 >= 30 else 0.25
+    c.execute("""SELECT COUNT(*), COALESCE(SUM(hit), 0) FROM prediction_results
+                 WHERE date = ?""", (date_str,))
+    races, hits = c.fetchone()
+    if races >= 5 and hits == 0 and (1.0 - p_hit) ** races < 0.02:
+        warns.append(
+            f"⚠ データ品質: 買い{races}レースで的中0"
+            f"（直近90日の的中率{p_hit:.0%}なら偶然の確率{100 * (1 - p_hit) ** races:.1f}%。"
+            f"券種マッチ・払戻照合の故障も疑って確認推奨）")
+
+    return warns
+
+
 def _check_source_results(conn, date_str, source):
     """指定ソース(morning/live)の予測と結果を照合して収支を計算"""
     c = conn.cursor()
@@ -152,26 +247,53 @@ def _check_source_results(conn, date_str, source):
     total_bet = 0
     total_payout = 0
     hits = 0
+    cf_races = 0          # 配当均等の反実仮想が計算できたレース数
+    cf_bet = 0
+    cf_eq_payout = 0
+    cf_flat_payout = 0
 
     for race_id, info in recommended.items():
         if race_id not in finished_ids:
             continue
 
-        # 買い目を取得（amount > 0 のみ）
-        if has_source:
-            c.execute("""SELECT combination, amount FROM predictions
-                         WHERE date = ? AND race_id = ? AND source = ? AND amount > 0""",
-                      (date_str, race_id, source))
-        else:
-            c.execute("""SELECT combination, amount FROM predictions
-                         WHERE date = ? AND race_id = ? AND amount > 0""",
-                      (date_str, race_id))
-        bets = [{"combination": row[0], "amount": row[1]} for row in c.fetchall()]
-        if not bets:
+        # 買い目を取得（amount > 0 のみ）。券種混在レースに対応するため
+        # bet_typeごとに分けて精算し合算する（2026-07-08修正: 旧構成の
+        # 三連複+馬連併用レースで片方の的中が未計上になっていた）
+        try:
+            if has_source:
+                c.execute("""SELECT bet_type, combination, amount, est_odds FROM predictions
+                             WHERE date = ? AND race_id = ? AND source = ? AND amount > 0""",
+                          (date_str, race_id, source))
+            else:
+                c.execute("""SELECT bet_type, combination, amount, est_odds FROM predictions
+                             WHERE date = ? AND race_id = ? AND amount > 0""",
+                          (date_str, race_id))
+            rows_ = c.fetchall()
+        except Exception:  # est_odds列が無い旧スキーマ
+            if has_source:
+                c.execute("""SELECT bet_type, combination, amount, NULL FROM predictions
+                             WHERE date = ? AND race_id = ? AND source = ? AND amount > 0""",
+                          (date_str, race_id, source))
+            else:
+                c.execute("""SELECT bet_type, combination, amount, NULL FROM predictions
+                             WHERE date = ? AND race_id = ? AND amount > 0""",
+                          (date_str, race_id))
+            rows_ = c.fetchall()
+        bets_by_type = {}
+        for bt_row, comb_row, amt_row, eo_row in rows_:
+            bets_by_type.setdefault(bt_row, []).append(
+                {"combination": comb_row, "amount": amt_row, "est_odds": eo_row})
+        if not bets_by_type:
             continue
 
-        bet_total = sum(b["amount"] for b in bets)
-        hit_result = check_hit(conn, race_id, info["bet_type"], bets)
+        bet_total = sum(b["amount"] for bs in bets_by_type.values() for b in bs)
+        hit_result = {"hit": False, "total_payout": 0, "hit_details": []}
+        for bt_row, bs in bets_by_type.items():
+            hr = check_hit(conn, race_id, bt_row, bs)
+            hit_result["total_payout"] += hr["total_payout"]
+            hit_result["hit_details"].extend(hr["hit_details"])
+            if hr["hit"]:
+                hit_result["hit"] = True
 
         # レース情報
         c.execute("SELECT venue, race_number, name FROM races WHERE race_id = ?", (race_id,))
@@ -188,6 +310,14 @@ def _check_source_results(conn, date_str, source):
 
         total_bet += bet_total
         total_payout += payout
+
+        # 配当均等の反実仮想（est_odds記録済みレースのみ・表示用）
+        cf = _counterfactual_eq_payout(conn, race_id, bets_by_type, bet_total)
+        if cf is not None:
+            cf_races += 1
+            cf_bet += bet_total
+            cf_eq_payout += cf
+            cf_flat_payout += payout
 
         # prediction_results に保存（source別に独立保存）
         c.execute("""INSERT OR REPLACE INTO prediction_results
@@ -239,6 +369,10 @@ def _check_source_results(conn, date_str, source):
         "total_payout": total_payout,
         "profit": total_payout - total_bet,
         "roi": roi,
+        "cf_races": cf_races,
+        "cf_bet": cf_bet,
+        "cf_eq_payout": cf_eq_payout,
+        "cf_flat_payout": cf_flat_payout,
         "hits": hits,
         "races": len(results),
     }
@@ -250,14 +384,17 @@ def check_day_results(conn, date_str):
     morning_nv = _check_source_results(conn, date_str, "morning_nv")
     live = _check_source_results(conn, date_str, "live")
     live_c3 = _check_source_results(conn, date_str, "live_c3")
+    live_santan = _check_source_results(conn, date_str, "live_santan")
+    morning_jv = _check_source_results(conn, date_str, "morning_jv")
 
-    if not morning and not live and not morning_nv and not live_c3:
+    if (not morning and not live and not morning_nv and not live_c3
+            and not live_santan and not morning_jv):
         print(f"予測データなし: {date_str}")
         return None
 
     # daily_summary に source別で独立保存（合算行は作らない）
     c = conn.cursor()
-    for src in (morning, morning_nv, live, live_c3):
+    for src in (morning, morning_nv, live, live_c3, live_santan, morning_jv):
         if not src:
             continue
         races = len(src["results"])
@@ -277,6 +414,8 @@ def check_day_results(conn, date_str):
         "morning_nv": morning_nv,
         "live": live,
         "live_c3": live_c3,
+        "live_santan": live_santan,
+        "morning_jv": morning_jv,
     }
 
 
@@ -325,6 +464,13 @@ def _format_source_section(src, label, conn=None, date_str=None):
         lines.append(f"  └ 累計{cum['days']}日: {csign}{cum['profit']:,}円 "
                      f"(ROI {cum['roi']*100:.1f}% / {cum['hits']}/{cum['races']}的中)")
 
+    # 配当均等の反実仮想（同じ買い目・配分だけ変えた場合の比較。est_odds記録済みレースのみ）
+    if src.get("cf_races"):
+        diff = src["cf_eq_payout"] - src["cf_flat_payout"]
+        dsign = "+" if diff >= 0 else ""
+        lines.append(f"💱 配当均等なら: 回収{src['cf_eq_payout']:,}円 "
+                     f"(ROI {100*src['cf_eq_payout']/src['cf_bet']:.1f}% / フラット比{dsign}{diff:,}円 / 対象{src['cf_races']}R)")
+
     hit_races = [r for r in src["results"] if r["hit"]]
     miss_races = [r for r in src["results"] if not r["hit"]]
 
@@ -358,6 +504,16 @@ def format_result_message(day, conn=None):
         lines.extend(_format_source_section(day.get("live_c3"), "🟣 ライブC3(オッズ抜き)", conn, d))
         lines.append("")
 
+    # サンタンシャドー（新馬未勝利ダ短の三連単1点・記録のみ）
+    if day.get("live_santan"):
+        lines.extend(_format_source_section(day.get("live_santan"), "🎯 サンタンシャドー(新馬未勝利ダ短)", conn, d))
+        lines.append("")
+
+    # JV調教モデルシャドー（デプロイ候補の並走記録・2026-07-26頃に差替判定）
+    if day.get("morning_jv"):
+        lines.extend(_format_source_section(day.get("morning_jv"), "🔬 朝JVモデル(調教特徴量・シャドー)", conn, d))
+        lines.append("")
+
     # A/Bテスト（バリューなし版）
     if day.get("morning_nv"):
         lines.extend(_format_source_section(day.get("morning_nv"), "🧪 朝予想B(バリューなし)", conn, d))
@@ -378,7 +534,9 @@ def format_result_message(day, conn=None):
 
 
 SRC_LABELS = {"morning": "🌅 朝予想", "live": "🔴 ライブ", "morning_nv": "🧪 朝予想B",
-              "live_c3": "🟣 ライブC3(オッズ抜き)"}
+              "live_c3": "🟣 ライブC3(オッズ抜き)",
+              "live_santan": "🎯 サンタンシャドー(新馬未勝利ダ短)",
+              "morning_jv": "🔬 朝JVモデル(調教特徴量・シャドー)"}
 
 
 def monthly_summary(conn, year=None, month=None):
@@ -482,8 +640,11 @@ def main():
         conn.close()
         return
 
-    # 結果表示
+    # 結果表示（データ品質警告があれば冒頭に付ける）
     msg = format_result_message(day, conn)
+    dq = _data_quality_warnings(conn, date_str)
+    if dq:
+        msg = "\n".join(dq) + "\n\n" + msg
     print("\n" + msg)
 
     # Telegram送信

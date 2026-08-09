@@ -48,7 +48,7 @@
 
 Run:
 ```bash
-cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/keiba-unified/win5"
+cd "g:/マイドライブ/YNFactory-cc/keiba-unified/win5"
 cp -r "C:/Users/fcmdt/OneDrive/デスクトップ/ClaudeCode-claude-win-prediction-model-Izfwm/ClaudeCode-claude-win-prediction-model-Izfwm/win5_predictor/src/popularity" src/popularity
 ```
 Expected: `src/popularity/__init__.py` `model.py` `loader.py` 等がコピーされる。

@@ -40,8 +40,9 @@ def _resolve_factory_root(repo_root: Path) -> Path:
     return Path(__file__).resolve().parents[1]
 
 DEFAULTS: dict = {
-    "speaker_id": 3,  # ずんだもん（ノーマル）
-    "speaker_credit": "VOICEVOX:ずんだもん",
+    # 静止画カード版・実写版を同じ落ち着いた男性声にそろえる。
+    "speaker_id": 13,  # 青山龍星（ノーマル）
+    "speaker_credit": "VOICEVOX:青山龍星",
     "speed_scale": 1.0,
     "llm": {
         "provider": "claude_cli",  # claude_cli | openai
@@ -145,8 +146,19 @@ DEFAULTS: dict = {
         }
     },
     "seedance": {
-        "enabled": True,  # False にすると枠判定に関わらず常に静止画版
-        "slots": ["mon-09", "wed-14", "fri-19", "sat-14", "sun-09"],  # 週5枠（曜日-時）
+        "enabled": False,  # Atlas Cloudは既定で無効。Topview在庫経路を使う。
+        "slots": [
+            "mon-09", "mon-14", "mon-19", "tue-09", "tue-14", "tue-19", "wed-09", "wed-14", "wed-19",
+            "thu-09", "thu-14", "thu-19", "fri-09", "fri-14", "fri-19", "sat-09", "sat-14", "sat-19",
+            "sun-09", "sun-14", "sun-19",
+        ],
+        # 全ての定刻投稿を、実写カットと日本語カードを交互につなぐ混在版にする。
+        "hybrid_slots": [
+            "mon-09", "mon-14", "mon-19", "tue-09", "tue-14", "tue-19", "wed-09", "wed-14", "wed-19",
+            "thu-09", "thu-14", "thu-19", "fri-09", "fri-14", "fri-19", "sat-09", "sat-14", "sat-19",
+            "sun-09", "sun-14", "sun-19",
+        ],
+        "hybrid_lead_in_sec": 0.0,  # ショート動画は最初のフレームから発話する
         "model": "fast",  # std ($0.112/s) | fast ($0.09/s)
         "resolution": "720p",
         "ratio": "9:16",
@@ -163,7 +175,22 @@ DEFAULTS: dict = {
         "max_cost_per_video_usd": 10.0,
         "cer_line_max": 0.30,  # Seedance音声はVOICEVOXよりCER許容を緩める
         "cer_avg_max": 0.18,
-        "remake_max_attempts": 1,  # CER不合格時、再生成は1回だけ（それでもダメならフォールバック）
+        "remake_max_attempts": 1,  # CER不合格時、再生成は1回だけ（混在枠は失敗なら停止）
+    },
+    # Topviewで手動書き出しした実写素材だけを使う。Topview API/新規生成はしない。
+    "topview": {
+        "enabled": False,
+        "slots": [
+            "mon-09", "mon-14", "mon-19", "tue-09", "tue-14", "tue-19", "wed-09", "wed-14", "wed-19",
+            "thu-09", "thu-14", "thu-19", "fri-09", "fri-14", "fri-19", "sat-09", "sat-14", "sat-19",
+            "sun-09", "sun-14", "sun-19",
+        ],
+        "assets_dir": "~/shorts-factory/topview_assets",
+        "manifest": "~/shorts-factory/topview_assets/manifest.json",
+        "min_enabled_clips": 6,
+        "min_clip_duration_sec": 3.0,
+        "voicevox_speaker_id": 13,
+        "voicevox_speaker_credit": "VOICEVOX:青山龍星",
     },
     "telegram": {"enabled": True},
     "ffmpeg": "/Users/yuichi/bin/ffmpeg",

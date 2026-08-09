@@ -25,7 +25,7 @@
 - 機械可読形式: [publish-schedule.json](publish-schedule.json)
 - CSV形式: [publish-schedule.csv](publish-schedule.csv)
 - 各記事の本文: `docs/note/2026-04-23-ai-literacy-article-{1-5}.md`（各記事のフロントマターに `publish_date` 等を埋め込み済み）
-- 各記事の画像: `03_成果物/outputs/note-article-{1-5}/` に漫画風4枚ずつ
+- 各記事の画像: `.company/outputs/note-article-{1-5}/` に漫画風4枚ずつ
 
 ## Genspark Claw への渡し方（確認依頼）
 

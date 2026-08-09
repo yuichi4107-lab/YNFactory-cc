@@ -5,7 +5,7 @@ One-shot uploader for external inputs.
 Usage:
     python upload_server.py --host 0.0.0.0 --port 8787
 
-Uploaded items are saved into 04_インプット/inputs/00_INPUT_BOX/ and immediately
+Uploaded items are saved into .company/inputs/00_INPUT_BOX/ and immediately
 imported by import_drive_inbox.py.
 """
 import argparse

@@ -22,8 +22,26 @@ MODEL_VERSION = "v2"  # "v1" or "v2"
 V2_BLEND_WEIGHT = 0.7  # v2の予測確率の重み（v1は1-この値）
 
 # === レース選定 ===
-QUALITY_THRESHOLD = 0.80  # 絶対評価閾値（年間~750レース = 約25%）
-RACE_BUDGET = 5000  # 1レースあたりの予算
+# 2026-06-05: 3か月バックテストにより 0.80→0.86 に引き上げ（黒字化策）。
+# 合算 -136,020円(ROI88.7%) → +70,620円(ROI118.7%)。0.80-0.86帯は期待値マイナスのため買わない。
+QUALITY_THRESHOLD = 0.86  # 絶対評価閾値（買い目を出す品質下限）
+DAILY_BUDGET = 10000  # 1日の予算上限
+
+# === 相手（ヒモ）選定チューニング ===
+# 軸（モデル上位1-2位）の選定は変更しない。相手の当たり所だけを中穴寄りに調整する。
+# 2026-08-08 バックテスト（2025-01〜2026-08 / 対象528レース / 実払戻・本番コード同値検証済）:
+#   VALUE_COEF 0.05→0.18 で 相手の5-9番人気シェア 44.9%→57.0%、ROI 140.6%→190.0%。
+#   レース単位ブートストラップ3000回で BASE差 90%CI +12.2〜+90.6pt・改善確率99%。
+#   レース的中率は 41.1%→34.8%（BASEの85%。下限80%を全期間・2025年・2026年すべてで充足）。
+#   候補プール拡大は的中率を下げるだけで中穴シェアを増やさなかったため 6/7 に据え置いた。
+PARTNER_POOL_UMAREN = 6    # 馬連の相手候補プール（モデル上位N頭）
+PARTNER_POOL_SAN = 7       # 三連複の相手候補プール（モデル上位N頭）
+VALUE_COEF = 0.18          # 市場妙味ボーナスの係数
+VALUE_ODDS_PEN_MID = 30.0  # このオッズ超で妙味を0.7倍に減衰
+VALUE_ODDS_PEN_HI = 60.0   # このオッズ超で妙味を0.3倍に減衰
+# 朝C5b（完全オッズ抜き）は市場妙味を持たないため今回は変更しない（プール拡大は有意差なし）
+C5B_POOL_UMAREN = 6
+C5B_POOL_SAN = 7
 
 # === スコアリングの重み ===
 WEIGHTS = {
@@ -144,14 +162,6 @@ def score_all_horses(conn, race_id):
             + WEIGHTS["trainer"] * s_trainer
         )
 
-        # トラック替わり補正
-        track_switch = _calc_track_switch_info(
-            past_data.get(horse_id, []),
-            race_info["surface"],
-            entry[6],   # horse_weight (当日 or None)
-        )
-        total += track_switch["score_adj"]
-
         scored.append({
             "horse_id": horse_id,
             "horse_number": horse_number,
@@ -166,7 +176,6 @@ def score_all_horses(conn, race_id):
                 "distance": s_distance, "class_perf": s_class,
                 "rotation": s_rotation, "post_position": s_post, "trainer": s_trainer,
             },
-            "track_switch": track_switch,
         })
 
     scored.sort(key=lambda x: x["total_score"], reverse=True)
@@ -184,7 +193,7 @@ def _batch_past_performance(conn, horse_ids, before_date):
     c.execute(f"""
         SELECT r.horse_id, ra.date, r.finish_position, r.last_3f, r.odds_win,
                ra.head_count, ra.venue, ra.surface, ra.distance, ra.class,
-               r.finish_time, r.passing, ra.race_id, r.horse_weight
+               r.finish_time, r.passing, ra.race_id
         FROM results r
         JOIN races ra ON r.race_id = ra.race_id
         WHERE r.horse_id IN ({placeholders})
@@ -207,7 +216,6 @@ def _batch_past_performance(conn, horse_ids, before_date):
                 "odds_win": row[4], "head_count": row[5], "venue": row[6],
                 "surface": row[7], "distance": row[8], "class": row[9],
                 "finish_time": row[10], "passing": row[11], "race_id": row[12],
-                "horse_weight": row[13],
             })
             counts[hid] += 1
     return result
@@ -331,92 +339,6 @@ def _batch_post_position_stats(conn, venue, surface, distance, before_date):
     for row in c.fetchall():
         stats[row[0]] = {"rides": row[1], "wins": row[2], "top3": row[3]}
     return stats
-
-
-# --- トラック替わり判定・補正 ---
-
-def _calc_track_switch_info(past_races, current_surface, horse_weight_today=None):
-    """トラック替わりの判定とスコア補正値を返す
-
-    バックテスト結果に基づく補正:
-    - 芝→ダート: 馬体重480kg以上で加点、440kg未満で減点
-    - ダート→芝: キャリア4-7戦で加点
-    - 重賞以上のトラック替わりは減点
-    """
-    result = {
-        "is_first_dirt": False,
-        "is_first_turf": False,
-        "career_count": 0,
-        "prev_weight": None,
-        "effective_weight": None,  # 朝=前走体重、直前=当日体重
-        "score_adj": 0.0,
-        "label": "",
-    }
-
-    if not past_races or not current_surface:
-        return result
-
-    past_surfaces = [r["surface"] for r in past_races if r.get("surface") in ("芝", "ダート")]
-    if not past_surfaces:
-        return result
-
-    result["career_count"] = len(past_surfaces)
-
-    # 前走馬体重を取得
-    for r in past_races:
-        hw = r.get("horse_weight")  # keiba_live.db のカラム名
-        if not hw:
-            # past_dataにはhorse_weightカラムがない場合もある
-            # run_today/run_liveのparse_shutuba_entriesで取得済みのケースを考慮
-            continue
-        if hw and hw > 0:
-            result["prev_weight"] = hw
-            break
-
-    # 馬体重の決定: 直前予想は当日体重、朝予想は前走体重
-    if horse_weight_today and horse_weight_today > 0:
-        result["effective_weight"] = horse_weight_today
-    else:
-        result["effective_weight"] = result["prev_weight"]
-
-    weight = result["effective_weight"]
-
-    # --- 芝→ダート ---
-    if current_surface == "ダート" and "ダート" not in past_surfaces:
-        result["is_first_dirt"] = True
-        result["label"] = "初ダート"
-
-        # 馬体重による補正（バックテスト: 520kg以上→単回収123%、440未満→壊滅）
-        if weight:
-            if weight >= 520:
-                result["score_adj"] = 0.05   # 大型馬ボーナス
-            elif weight >= 480:
-                result["score_adj"] = 0.02   # 中型馬やや加点
-            elif weight < 440:
-                result["score_adj"] = -0.05  # 軽量馬ペナルティ
-
-        # キャリア4-15戦のボーナス（バックテスト: 単回収76-77%）
-        career = len(past_surfaces)
-        if 4 <= career <= 15:
-            result["score_adj"] += 0.02
-
-    # --- ダート→芝 ---
-    elif current_surface == "芝" and "芝" not in past_surfaces:
-        result["is_first_turf"] = True
-        result["label"] = "初芝"
-
-        # キャリア4-7戦のボーナス（バックテスト: 単回収72%、複回収66%）
-        career = len(past_surfaces)
-        if 4 <= career <= 7:
-            result["score_adj"] = 0.03
-
-        # 馬体重480kg以上で加点
-        if weight and weight >= 480:
-            result["score_adj"] += 0.02
-        elif weight and weight < 440:
-            result["score_adj"] -= 0.03
-
-    return result
 
 
 # --- 個別スコア計算 ---
@@ -730,7 +652,7 @@ def select_races(conn, date):
                  JOIN races ra ON r.race_id = ra.race_id
                  WHERE ra.date = ? AND r.odds_win IS NOT NULL AND r.odds_win > 0""", (date,))
     has_odds_data = c.fetchone()[0] > 0
-    threshold = QUALITY_THRESHOLD if has_odds_data else 0.70
+    threshold = QUALITY_THRESHOLD if has_odds_data else QUALITY_THRESHOLD
 
     # v2モデルの読み込み（使用時のみ）
     v2_model = None
@@ -838,9 +760,9 @@ def _calc_value_score(horse, model_rank):
     # モデル順位より人気が低い（過小評価されている）ほどバリューが高い
     rank_gap = pop - model_rank  # 正なら過小評価
     # オッズが高すぎる馬は除外（大穴すぎると当たらない）
-    if odds > 60:
+    if odds > VALUE_ODDS_PEN_HI:
         return rank_gap * 0.3  # ペナルティ
-    elif odds > 30:
+    elif odds > VALUE_ODDS_PEN_MID:
         return rank_gap * 0.7
 
     return rank_gap
@@ -874,7 +796,7 @@ def _allocate_by_odds(combos, budget, bet_type="umaren"):
     for c in combos:
         est_odds = c.get("est_odds", 10.0)
         # 逆数（低オッズ＝高ウェイト）
-        w = 1.0 / est_odds
+        w = 1.0  # flat staking: 配当均等は穴の払戻取りこぼしで回収率劣後(2026-06-06 A/B検証)
         weights.append(w)
 
     total_w = sum(weights)
@@ -905,6 +827,8 @@ def _allocate_by_odds(combos, budget, bet_type="umaren"):
             "est_odds": c.get("est_odds", 0),
         })
 
+    # 金額降順でソート（印順と一致させる）
+    bets.sort(key=lambda x: x["amount"], reverse=True)
     return bets
 
 
@@ -914,7 +838,7 @@ def _generate_umaren(scored_horses, budget):
     軸: モデル上位2頭
     相手: モデル上位6頭の中からバリュースコアが高い馬を含む組み合わせを優先
     """
-    top_n = min(6, len(scored_horses))
+    top_n = min(PARTNER_POOL_UMAREN, len(scored_horses))
 
     # 各馬のバリュースコア計算
     for i, h in enumerate(scored_horses[:top_n]):
@@ -928,7 +852,7 @@ def _generate_umaren(scored_horses, budget):
 
             # スコア: モデルスコア + バリューボーナス
             combo_score = h1["total_score"] + h2["total_score"]
-            value_bonus = (h1.get("_value", 0) + h2.get("_value", 0)) * 0.05
+            value_bonus = (h1.get("_value", 0) + h2.get("_value", 0)) * VALUE_COEF
             ranking_score = combo_score + value_bonus
 
             # 軸馬（モデル1-2位）を含む組み合わせを優遇
@@ -962,7 +886,7 @@ def _generate_sanrenpuku(scored_horses, budget):
     軸: モデル上位2頭のうち少なくとも1頭を含む
     相手: モデル上位7頭からバリュースコアを加味して選定
     """
-    top_n = min(7, len(scored_horses))
+    top_n = min(PARTNER_POOL_SAN, len(scored_horses))
 
     for i, h in enumerate(scored_horses[:top_n]):
         h["_value"] = _calc_value_score(h, i + 1)
@@ -975,7 +899,7 @@ def _generate_sanrenpuku(scored_horses, budget):
                 triple = tuple(sorted([h1["horse_number"], h2["horse_number"], h3["horse_number"]]))
 
                 combo_score = h1["total_score"] + h2["total_score"] + h3["total_score"]
-                value_bonus = (h1.get("_value", 0) + h2.get("_value", 0) + h3.get("_value", 0)) * 0.05
+                value_bonus = (h1.get("_value", 0) + h2.get("_value", 0) + h3.get("_value", 0)) * VALUE_COEF
                 ranking_score = combo_score + value_bonus
 
                 # 軸馬（モデル1-2位）を含む組み合わせを優遇
@@ -1008,6 +932,101 @@ def _generate_sanrenpuku(scored_horses, budget):
     return {"bet_type": "三連複", "bets": bets}
 
 
+def rank_marks_by_bet_amount(bets):
+    """買い目の金額合計が多い馬順に印(◎○▲△☆)を返す。
+
+    Args:
+        bets: generate_bets()の戻り値 {"bet_type": ..., "bets": [...]}
+    Returns:
+        dict: {horse_number: mark} のマッピング
+    """
+    MARKS = ["◎", "○", "▲", "△", "☆"]
+    totals = {}  # horse_number -> total amount
+    for b in bets.get("bets", []):
+        for hn in b.get("horses", []):
+            totals[hn] = totals.get(hn, 0) + b["amount"]
+
+    # 金額降順でソート
+    ranked = sorted(totals.items(), key=lambda x: x[1], reverse=True)
+    marks = {}
+    for i, (hn, _) in enumerate(ranked):
+        if i < len(MARKS):
+            marks[hn] = MARKS[i]
+    return marks
+
+
+
+def generate_bets_no_value(scored_horses, race_info, budget):
+    """バリューボーナスなし版の買い目生成（A/Bテスト用）
+    
+    モデルスコア上位の素直な組み合わせのみで構成。
+    バリュースコア（人気との乖離）を一切使わない。
+    """
+    if len(scored_horses) < 3:
+        return {"bet_type": None, "bets": []}
+
+    scores = [h["total_score"] for h in scored_horses]
+    ratio_3rd = scores[2] / scores[0] if scores[0] > 0 else 0
+    top2_pops = [h.get("popularity", 0) or 0 for h in scored_horses[:2]]
+    both_top2_popular = all(1 <= p <= 2 for p in top2_pops)
+
+    if ratio_3rd >= 0.65 or both_top2_popular:
+        return _generate_sanrenpuku_no_value(scored_horses, budget)
+    else:
+        return _generate_umaren_no_value(scored_horses, budget)
+
+
+def _generate_umaren_no_value(scored_horses, budget):
+    """馬連（バリューなし）: モデルスコア + 軸馬ボーナスのみ"""
+    top_n = min(6, len(scored_horses))
+    combos = []
+    for i in range(top_n):
+        for j in range(i + 1, top_n):
+            h1, h2 = scored_horses[i], scored_horses[j]
+            pair = tuple(sorted([h1["horse_number"], h2["horse_number"]]))
+            combo_score = h1["total_score"] + h2["total_score"]
+            ranking_score = combo_score
+            has_axis = (i <= 1 or j <= 1)
+            if has_axis:
+                ranking_score += 0.1
+            est_odds = _estimate_combo_odds([h1, h2], "umaren")
+            combos.append({
+                "horses": pair, "combo_score": combo_score,
+                "ranking_score": ranking_score, "est_odds": est_odds,
+            })
+    combos.sort(key=lambda x: x["ranking_score"], reverse=True)
+    combos = combos[:5]
+    bets = _allocate_by_odds(combos, budget, "umaren")
+    bets.sort(key=lambda x: x["amount"], reverse=True)
+    return {"bet_type": "馬連", "bets": bets}
+
+
+def _generate_sanrenpuku_no_value(scored_horses, budget):
+    """三連複（バリューなし）: モデルスコア + 軸馬ボーナスのみ"""
+    top_n = min(7, len(scored_horses))
+    combos = []
+    for i in range(top_n):
+        for j in range(i + 1, top_n):
+            for k in range(j + 1, top_n):
+                h1, h2, h3 = scored_horses[i], scored_horses[j], scored_horses[k]
+                triple = tuple(sorted([h1["horse_number"], h2["horse_number"], h3["horse_number"]]))
+                combo_score = h1["total_score"] + h2["total_score"] + h3["total_score"]
+                ranking_score = combo_score
+                has_axis = (i <= 1 or j <= 1)
+                if has_axis:
+                    ranking_score += 0.1
+                est_odds = _estimate_combo_odds([h1, h2, h3], "sanrenpuku")
+                combos.append({
+                    "horses": triple, "combo_score": combo_score,
+                    "ranking_score": ranking_score, "est_odds": est_odds,
+                })
+    combos.sort(key=lambda x: x["ranking_score"], reverse=True)
+    combos = combos[:8]
+    bets = _allocate_by_odds(combos, budget, "sanrenpuku")
+    bets.sort(key=lambda x: x["amount"], reverse=True)
+    return {"bet_type": "三連複", "bets": bets}
+
+
 def allocate_budget(selected_races, total_budget=10000):
     """レース間の予算配分（品質スコア比例・予算上限厳守）"""
     if not selected_races:
@@ -1035,18 +1054,20 @@ def allocate_budget(selected_races, total_budget=10000):
 # メインエントリ: 1日分の予測
 # ============================================================
 
-def predict_day(conn, date, race_budget=RACE_BUDGET):
+def predict_day(conn, date, total_budget=10000):
     """指定日の予測を生成"""
     selected = select_races(conn, date)
     if not selected:
         return {"date": date, "races": [], "total_bet": 0}
+
+    budgets = allocate_budget(selected, total_budget)
 
     result_races = []
     total_bet = 0
 
     for race_ev in selected:
         race_id = race_ev["race_id"]
-        budget = race_budget
+        budget = budgets.get(race_id, 2500)
 
         # レース情報取得
         c = conn.cursor()
@@ -1086,3 +1107,66 @@ def predict_day(conn, date, race_budget=RACE_BUDGET):
         "races": result_races,
         "total_bet": total_bet,
     }
+
+
+# ============================================================
+# 完全オッズ抜き（C5b）: NO_ODDSモデル + 自前value(モデル自信度) + free quality + flat
+# オッズ・人気を一切使わない朝予想モード用。2026-06-06 A/B検証で月別ロバスト性が最良。
+# ============================================================
+import statistics as _stats
+
+
+def evaluate_race_quality_no_odds(conn, race_id, scored_horses, race_info=None):
+    """オッズ/人気を使わない品質スコア（信頼度+頭数+上位スコアのみ・0-1再正規化）。"""
+    if len(scored_horses) < 5:
+        return {"race_id": race_id, "quality_score": 0, "reasons": [], "too_solid": False}
+    s = [h["total_score"] for h in scored_horses]
+    conf = min(1.0, ((s[0] - s[2]) / s[0] if s[0] > 0 else 0) * 3)
+    hc = len(scored_horses)
+    hcs = 1.0 if 10 <= hc <= 14 else (0.7 if 8 <= hc <= 16 else 0.3)
+    tq = min(1.0, s[0] / 0.7)
+    return {"race_id": race_id, "quality_score": (0.25 * conf + 0.15 * hcs + 0.25 * tq) / 0.65,
+            "reasons": [], "too_solid": False}
+
+
+def _build_combos_self_value(scored_horses, bet_type, budget):
+    """combo_score + 自前value(モデル自信度z-score)ボーナスで買い目構築。オッズ・人気不使用。"""
+    n = min(C5B_POOL_SAN if bet_type == "sanrenpuku" else C5B_POOL_UMAREN, len(scored_horses))
+    combos = []
+
+    def _add(hs):
+        cs = sum(h["total_score"] for h in hs)
+        bonus = sum(h.get("_selfval", 0.0) for h in hs) * 0.05
+        axis = 0.1 if any(scored_horses.index(h) <= 1 for h in hs) else 0.0
+        eo = _estimate_combo_odds(hs, bet_type)
+        combos.append({"horses": tuple(sorted(h["horse_number"] for h in hs)),
+                       "combo_score": cs, "ranking_score": cs + bonus + axis, "est_odds": eo})
+
+    if bet_type == "sanrenpuku":
+        for i in range(n):
+            for j in range(i + 1, n):
+                for k in range(j + 1, n):
+                    _add([scored_horses[i], scored_horses[j], scored_horses[k]])
+        cap, label = 8, "三連複"
+    else:
+        for i in range(n):
+            for j in range(i + 1, n):
+                _add([scored_horses[i], scored_horses[j]])
+        cap, label = 5, "馬連"
+    combos.sort(key=lambda x: -x["ranking_score"])
+    bets = _allocate_by_odds(combos[:cap], budget, bet_type)
+    return {"bet_type": label, "bets": bets}
+
+
+def generate_bets_c5b(scored_horses, race_info, budget):
+    """完全オッズ抜き買い目生成（C5b）。市場人気の代わりにモデル自信度(v2確率z-score)で妙味を付与。"""
+    if len(scored_horses) < 3:
+        return {"bet_type": None, "bets": []}
+    probs = [h.get("v2_prob", 0.0) or 0.0 for h in scored_horses]
+    mp = _stats.mean(probs) if probs else 0.0
+    sp = _stats.pstdev(probs) if len(probs) > 1 else 1.0
+    for h in scored_horses:
+        h["_selfval"] = max(0.0, ((h.get("v2_prob", 0.0) or 0.0) - mp) / sp if sp > 0 else 0.0)
+    s = [h["total_score"] for h in scored_horses]
+    ratio_3rd = s[2] / s[0] if s[0] > 0 else 0
+    return _build_combos_self_value(scored_horses, "sanrenpuku" if ratio_3rd >= 0.65 else "umaren", budget)

@@ -7,8 +7,8 @@
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $ErrorActionPreference = 'Stop'
 
-$TodosDir = 'C:\YNFactory-cc\.company\secretary\todos'
-$LogDir   = 'C:\YNFactory-cc\.company\secretary\scripts\logs'
+$TodosDir = 'G:\マイドライブ\YNFactory-cc\.company\secretary\todos'
+$LogDir   = 'G:\マイドライブ\YNFactory-cc\.company\secretary\scripts\logs'
 
 # Telegram config (kyoyaru_bot = 今日のやること)
 # 2026-05-30 ハードコード除去。User環境変数 TG_BOT_TOKEN / TG_CHAT_ID から取得する。

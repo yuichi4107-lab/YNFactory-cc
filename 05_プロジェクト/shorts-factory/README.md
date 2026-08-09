@@ -41,7 +41,7 @@ YouTube / TikTok は専用Chromeプロファイルへのログイン確認後に
 | SNS認証 | `~/shorts-factory/sns_credentials/.env`（mode `0600`） |
 | Driveミラー状態 | `~/shorts-factory/drive_mirror/status.json` |
 
-Driveへの反映は `com.ynfactory.shorts-drive-mirror` が5分間隔でローカル→Driveへ行う。ミラー失敗や遅延は、生成・承認・投稿の失敗を意味しない。Drive側の `.company/marketing/shorts-factory/` や `03_成果物/outputs/shorts-factory/` を手編集してもruntimeへは**自動importされず**、次のミラーでローカル正本に上書きされ得る。queue/topicsの修復はDrive側を編集せず、必ずruntime正本に対して行う。
+Driveへの反映は `com.ynfactory.shorts-drive-mirror` が5分間隔でローカル→Driveへ行う。ミラー失敗や遅延は、生成・承認・投稿の失敗を意味しない。Drive側の `.company/marketing/shorts-factory/` や `.company/outputs/shorts-factory/` を手編集してもruntimeへは**自動importされず**、次のミラーでローカル正本に上書きされ得る。queue/topicsの修復はDrive側を編集せず、必ずruntime正本に対して行う。
 
 ## セットアップ（済んでいるもの）
 
@@ -59,7 +59,7 @@ Driveへの反映は `com.ynfactory.shorts-drive-mirror` が5分間隔でロー�
 ## launchd 登録（初回）
 
 ```bash
-cd "<Drive>/YNFactory-cc/05_プロジェクト/shorts-factory/scripts" && ./deploy.sh install
+cd "<Drive>/YNFactory-cc/shorts-factory/scripts" && ./deploy.sh install
 ```
 
 | ジョブ | 役割 |
@@ -200,23 +200,20 @@ $PY scripts/retry_failed_posts.py <queue_id> --execute # 外部投稿。直前�
 - Telegramプレビューには `媒体別動画: x` のように対象SNSが表示される
 - 従来どおり共通動画を使いたい場合は `--single-video` または `content.platform_variant_videos: false` を使う
 
-### Atlas Cloud Seedance 2.0 統合（AI動画背景）
+### Topview書き出し素材の混在形式（現在の運用）
 
-週5枠だけ、静止画カード背景の代わりにSeedance AI動画背景を生成し、音声は日本語TTS（VOICEVOX）で差し替える（反応検証目的）。それ以外の枠は従来どおり静止画版。
+毎日9時・14時・19時の全枠で、Topviewから**手動で書き出した**実写クリップと既存の日本語カードを「実写（即発話）→日本語カード→実写→日本語カード」でつなぐ。音声はVOICEVOX男性話者（既定: 青山龍星）で差し替える。生成時にTopview API、Atlas Cloud、クレジットは使わない。
 
-- **対象枠**: `mon-09` / `wed-14` / `fri-19` / `sat-14` / `sun-09`（`config.yaml` の `seedance.slots`）。判定は「時」単位マッチ — 例えば `mon-09` は月曜09:00〜09:59台に実行されれば発火する（分は見ない）
-- **共通動画モード前提**: Seedance版は `content.platform_variant_videos: false`（共通動画1本、媒体別動画生成とは併用しない）。動画内CTAも「続きはプロフィールから」等の媒体非依存表現にする
-- **方式**: `bytedance/seedance-2.0-fast` を使い、カット1は text-to-video、カット2以降は前カットの最終フレームを `start_image` にした image-to-video で連鎖生成し人物・服装・部屋を統一する。Seedanceの外国語訛りを避けるため、`seedance.audio_mode: voicevox` ではSeedance音声を使わず、VOICEVOX男性話者（既定: 青山龍星）で日本語音声を合成して差し替える
-- **読み分離（漢字の誤読防止）**: VOICEVOX版と同じ「読み上げは読み仮名で保証・テロップは漢字表記」を採用。台本の各cueは `tts_text`（漢字仮名交じり。字幕・CER検証の基準）と `tts_kana`（tts_textの正確なカタカナ読み）を両方持つ。VOICEVOX合成では `tts_text` を基本にし、読みがずれた場合のみ `tts_kana` にフォールバックする。英語ツール名の読みは既存の `jp_text.TERM_READINGS`（ChatGPT→チャットジーピーティー等）で機械的に畳み込む
-- **字幕**: VOICEVOX差し替え音声を既存のwhisper.cpp基盤で文字起こしし、台本の `tts_text` と音韻CER突合して正確性を検証する。`native` 音声モード時のみ `seedance.cer_line_max` / `seedance.cer_avg_max` の緩い閾値を使う
-- **フォールバック条件**: APIキー未設定・API失敗/タイムアウト・月次予算超過・1本あたり上限超過・CER不合格継続のいずれでも、自動的に従来の静止画カード版へ切り替わり投稿を止めない
-- **コスト上限**: `seedance.monthly_budget_usd`（既定$130/月）・`seedance.max_cost_per_video_usd`（既定$10/本）。超過が見込まれる場合は生成前にフォールバックする
-- **コストログ**: `~/shorts-factory/logs/seedance_costs.jsonl`（1行1JSON、日時・動画ID・カット数・秒数・金額・成否を記録）。月次累計はこのログから毎回再計算する
-- APIキーは `secrets.yaml` の `atlas_cloud.api_key`（未設定なら常に静止画版）
+- **対象枠**: 月曜から日曜までの `09` / `14` / `19` 時（全21枠、`config.yaml` の `topview.slots`）。判定は「時」単位マッチ
+- **在庫の正本**: `~/shorts-factory/topview_assets/manifest.json`。9:16・読取可能・尺・メタデータ一致を実ファイルで検証し、使用済み時刻と回数を記録する
+- **消費と補充ペース**: 1本の生成で**未使用**クリップを2本消費し、使用済みは二度と再利用しない。9/14/19時の3枠を回すには**1日6本**の新規書き出しが要る。`topview.min_enabled_clips`（既定6）は有効本数の下限であって1日ぶんの在庫ではない
+- **安全停止**: 有効な実写が6本未満、未使用が2本未満、マニフェスト不正、カード/音声/合成/品質検証の失敗時は、ネタを消費せず旧カード版も作らず停止する。従来形式の予約済み動画もTopview枠には投入しない。停止したことはTelegramへ通知され、生成後に未使用が `topview.low_stock_warn_clips`（既定6）以下になった時点でも補充を促す通知が出る
+- **登録**: Topviewで書き出したmp4を `~/shorts-factory/topview_assets/` に置き、`$PY scripts/register_topview_assets.py <file1.mp4> ...` を実行して登録する。既存在庫への**追記**で、登録済みクリップの `use_count` / `last_used_at` は保持される（補充のたびに使用履歴が消えて公開済み実写が再利用されるのを防ぐ）
+- **Atlasの扱い**: `seedance.enabled: false` を維持する。Atlas Cloudの再有効化・新規Topview生成・投稿は、それぞれ直前の明示承認が必要
 
 ## 設定変更
 
-- 話者変更: `config.yaml` の `speaker_id`（一覧: `$PY -c "from src import tts_voicevox as t; print(t.speaker_names())"`）
+- 話者変更: `config.yaml` の `speaker_id` と `speaker_credit` をセットで変更する（既定: 青山龍星 / ID 13、一覧: `$PY -c "from src import tts_voicevox as t; print(t.speaker_names())"`）
 - 投稿先の追加: `queue.platforms` に `youtube` / `instagram` / `tiktok` を追加
 - 失敗時の自動再投稿: `queue.retry_failed_posts` / `queue.retry_max_attempts` / `queue.retry_delay_sec`
 - CTA先LP: `cta.lp_url` / `cta.campaign`

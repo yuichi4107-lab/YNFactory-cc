@@ -35,7 +35,7 @@ keiba-unified/
 | タスク | 頻度 | 時刻 |
 |--------|------|------|
 | KeibaUnified_JRA_Live | 毎週土日 | 09:30 |
-| KeibaUnified_JRA_Results | 毎週土日 | 17:30 |
+| KeibaUnified_JRA_Results | 毎週土日 | 19:30 |
 | KeibaUnified_JRA_Monthly | 毎月1日 | 10:00 |
 
 ## セットアップ

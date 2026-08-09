@@ -223,6 +223,73 @@ def render_background(images: list[Path], total_dur: float, work: Path) -> Path:
     return bg
 
 
+def render_hybrid_background(
+    live_clips: list[Path],
+    card_images: list[Path],
+    segment_durations: list[float],
+    work: Path,
+) -> Path:
+    """実写と日本語カードを交互に、指定尺ぴったりでつなぐ。
+
+    4つのキューを ``実写1 → カード1 → 実写2 → カード2`` に対応させる。
+    カードには小さなズームを付け、全区間を音声キューの切替位置で切るため、
+    途中で同じ「引き→寄り」の構図を繰り返さない。
+    """
+    if len(live_clips) != 2 or len(card_images) < 2 or len(segment_durations) != 4:
+        raise ValueError("hybrid背景には実写2本・カード2枚・4区間の尺が必要です")
+    if any(duration <= 0 for duration in segment_durations):
+        raise ValueError("hybrid背景の区間尺はすべて正数である必要があります")
+
+    sources: list[tuple[str, Path]] = [
+        ("live", live_clips[0]),
+        ("card", card_images[0]),
+        ("live", live_clips[1]),
+        ("card", card_images[1]),
+    ]
+    segments: list[Path] = []
+    for index, ((kind, source), duration) in enumerate(zip(sources, segment_durations)):
+        segment = work / f"hybrid_{index:02d}.mp4"
+        if kind == "live":
+            vf = (
+                f"scale={W}:{H}:force_original_aspect_ratio=increase,"
+                f"crop={W}:{H},setsar=1,fps={FPS},format=yuv420p"
+            )
+            cmd = [
+                FF, "-y", "-stream_loop", "-1", "-i", str(source), "-t", f"{duration:.3f}",
+                "-vf", vf, "-an", "-c:v", "libx264", "-crf", "18", "-preset", "fast", segment.name,
+            ]
+        else:
+            frames = max(1, int(round(duration * FPS)))
+            zoom = "1+0.04*on/" + str(frames)
+            vf = (
+                f"scale=1620:2880,zoompan=z='{zoom}':"
+                f"x='(iw-iw/zoom)/2':y='(ih-ih/zoom)/2':d={frames}:fps={FPS}:s={W}x{H},"
+                "format=yuv420p"
+            )
+            cmd = [
+                FF, "-y", "-loop", "1", "-i", str(source), "-frames:v", str(frames),
+                "-vf", vf, "-an", "-c:v", "libx264", "-crf", "18", "-preset", "fast", segment.name,
+            ]
+        _run(cmd, "render_hybrid", work)
+        segments.append(segment)
+
+    inputs: list[str] = []
+    for segment in segments:
+        inputs.extend(["-i", segment.name])
+    concat_inputs = "".join(f"[{i}:v]" for i in range(len(segments)))
+    bg = work / "bg_hybrid.mp4"
+    _run(
+        [
+            FF, "-y", *inputs,
+            "-filter_complex", f"{concat_inputs}concat=n={len(segments)}:v=1:a=0[v]",
+            "-map", "[v]", "-c:v", "libx264", "-crf", "18", "-preset", "fast", bg.name,
+        ],
+        "render_hybrid",
+        work,
+    )
+    return bg
+
+
 # ---------- 最終合成 ----------
 
 def measure_loudnorm(voice_wav: Path, work: Path) -> dict | None:

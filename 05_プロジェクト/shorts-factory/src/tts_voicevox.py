@@ -120,6 +120,7 @@ def synthesize_cues(
     *,
     speaker_id: int | None = None,
     speed_scale: float | None = None,
+    lead_in_sec: float | None = None,
 ) -> dict:
     """全キューを合成し、タイミング情報付きで返す。
 
@@ -178,7 +179,11 @@ def synthesize_cues(
         out_cues.append(out)
 
     # タイムライン確定（lead_in + Σ(dur+gap)）→ 字幕は次キュー開始まで表示
-    lead = float(CONFIG.get("video", "lead_in_sec", default=0.4))
+    lead = float(
+        CONFIG.get("video", "lead_in_sec", default=0.4)
+        if lead_in_sec is None
+        else max(0.0, lead_in_sec)
+    )
     gap = float(CONFIG.get("video", "cue_gap_sec", default=0.18))
     tail = float(CONFIG.get("video", "tail_sec", default=0.8))
     t = lead

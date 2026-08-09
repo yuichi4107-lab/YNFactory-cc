@@ -1,8 +1,8 @@
 # shorts-factory 設定（~/shorts-factory/config.yaml に置く。無ければ全てデフォルト）
 # ここにあるのは変更しそうな項目のみ。全項目は src/config.py の DEFAULTS を参照。
 
-speaker_id: 3                # VOICEVOX話者ID（3=ずんだもんノーマル。一覧: python -c "from src import tts_voicevox as t; print(t.speaker_names())"）
-speaker_credit: "VOICEVOX:ずんだもん"
+speaker_id: 13               # 青山龍星（ノーマル）。実写版・スライド版の既定を統一。一覧: python -c "from src import tts_voicevox as t; print(t.speaker_names())"
+speaker_credit: "VOICEVOX:青山龍星"
 speed_scale: 1.0             # 話速（尺超過時は自動で一時的に上がる）
 
 llm:
@@ -52,10 +52,12 @@ verify:
   auto_remake_on_fail: true  # 品質検証で不合格なら候補を作り直す
   remake_max_attempts: 2     # 候補生成の最大回数（2=1回作り直し）
 
-# Atlas Cloud Seedance 2.0 によるAI動画背景生成（週5枠のみ、他は静止画カード版）
+# Atlas Cloud Seedance 2.0（Topview運用では false のままにする）
 seedance:
-  enabled: true                 # false で完全無効化（常に静止画版）
-  slots: [mon-09, wed-14, fri-19, sat-14, sun-09]  # 対象枠（曜日-時、実行時刻のスロットと突合）
+  enabled: false                # Topview導入後はAtlas Cloudを呼ばない
+  slots: [mon-09, mon-14, mon-19, tue-09, tue-14, tue-19, wed-09, wed-14, wed-19, thu-09, thu-14, thu-19, fri-09, fri-14, fri-19, sat-09, sat-14, sat-19, sun-09, sun-14, sun-19]
+  hybrid_slots: [mon-09, mon-14, mon-19, tue-09, tue-14, tue-19, wed-09, wed-14, wed-19, thu-09, thu-14, thu-19, fri-09, fri-14, fri-19, sat-09, sat-14, sat-19, sun-09, sun-14, sun-19]  # 実写→日本語カード→実写→日本語カード。失敗時は従来カード版を作らず停止
+  hybrid_lead_in_sec: 0.0      # 冒頭の無音を入れず、最初のフレームから発話
   model: fast                   # std ($0.112/s) | fast ($0.09/s)
   resolution: 720p
   ratio: "9:16"
@@ -68,8 +70,23 @@ seedance:
   cut_duration_sec: 10
   poll_interval_sec: 15
   timeout_sec: 1800             # 1カットあたりのポーリングタイムアウト（秒）
-  monthly_budget_usd: 130.0     # 月間上限。超過したら自動でcard版へフォールバック
+  monthly_budget_usd: 130.0     # 月間上限。超過時は混在版の候補を作らず停止
   max_cost_per_video_usd: 10.0  # 1本あたりの上限（異常値の暴走防止）
   cer_line_max: 0.30            # native音声時の許容値。voicevox時は通常verify閾値を使う
   cer_avg_max: 0.18
-  remake_max_attempts: 1        # CER不合格時の再生成は1回のみ。それでも不合格ならフォールバック
+  remake_max_attempts: 1        # CER不合格時の再生成は1回のみ。それでも不合格なら停止
+
+# Topviewで手動書き出しした実写素材を使う混在形式。
+# この設定や登録スクリプトはTopviewの生成/API/課金を一切実行しない。
+# assets_dir に書き出しmp4を置き、以下で検証・登録する:
+#   python scripts/register_topview_assets.py <file1.mp4> <file2.mp4> ...
+topview:
+  enabled: true
+  slots: [mon-09, mon-14, mon-19, tue-09, tue-14, tue-19, wed-09, wed-14, wed-19, thu-09, thu-14, thu-19, fri-09, fri-14, fri-19, sat-09, sat-14, sat-19, sun-09, sun-14, sun-19]
+  assets_dir: "~/shorts-factory/topview_assets"
+  manifest: "~/shorts-factory/topview_assets/manifest.json"
+  min_enabled_clips: 6          # 不足時は旧カード版を作らず安全停止
+  low_stock_warn_clips: 6       # 未使用がこの本数以下になったら生成後に補充を通知
+  min_clip_duration_sec: 3.0
+  voicevox_speaker_id: 13       # 40代男性の青山龍星（ノーマル）
+  voicevox_speaker_credit: "VOICEVOX:青山龍星"

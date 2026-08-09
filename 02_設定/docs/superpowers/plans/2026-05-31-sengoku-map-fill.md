@@ -12,7 +12,7 @@
 
 ## 前提・規約（全タスク共通）
 
-- **ゲーム本体**: `g:\マイドライブ\YNFactory-cc\05_プロジェクト\sengoku-game`（独立gitリポ・依存ゼロ・テストは `node --test`）。コミット末尾に必ず:
+- **ゲーム本体**: `g:\マイドライブ\YNFactory-cc\sengoku-game`（独立gitリポ・依存ゼロ・テストは `node --test`）。コミット末尾に必ず:
   ```
   Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
   ```
@@ -251,7 +251,7 @@ Expected: `paths: 66 viewBox: ...`。66未満なら Task2/Step1 のmappingを修
 - [ ] **Step 1: 生成物をコピー**
 
 ```bash
-copy C:\dev\sengoku-geo\out\geo.js "g:\マイドライブ\YNFactory-cc\05_プロジェクト\sengoku-game\src\data\geo.js"
+copy C:\dev\sengoku-geo\out\geo.js "g:\マイドライブ\YNFactory-cc\sengoku-game\src\data\geo.js"
 ```
 
 - [ ] **Step 2: 網羅テストを書く**
@@ -295,7 +295,7 @@ describe('geo data', () => {
 - [ ] **Step 3: 実行（pass）**
 
 ```bash
-cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/sengoku-game" && node --test tests/geo.test.js
+cd "g:/マイドライブ/YNFactory-cc/sengoku-game" && node --test tests/geo.test.js
 ```
 Expected: pass 4 / fail 0。落ちる場合は geo.js（=前処理）側を修正。
 
@@ -362,7 +362,7 @@ export function renderMap(state, selectedId) {
 - [ ] **Step 3: 全テスト（回帰確認）＋コミット**
 
 ```bash
-cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/sengoku-game" && node --test
+cd "g:/マイドライブ/YNFactory-cc/sengoku-game" && node --test
 git add src/ui/render.js
 git commit -m "$(printf 'feat: render filled province polygons instead of nodes\n\nCo-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>')"
 ```
@@ -402,7 +402,7 @@ Expected: 全テスト pass（renderはDOM依存だがimport追加でエンジ�
 - [ ] **Step 3: コミット**
 
 ```bash
-cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/sengoku-game"
+cd "g:/マイドライブ/YNFactory-cc/sengoku-game"
 git add styles.css index.html
 git commit -m "$(printf 'feat: style filled map and show CC BY-NC credit\n\nCo-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>')"
 ```
@@ -417,7 +417,7 @@ git commit -m "$(printf 'feat: style filled map and show CC BY-NC credit\n\nCo-A
 - [ ] **Step 1: サーバ起動＆ブラウザ検証（Playwright）**
 
 ```bash
-cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/sengoku-game" && python -m http.server 8000   # 別ターミナル(background)
+cd "g:/マイドライブ/YNFactory-cc/sengoku-game" && python -m http.server 8000   # 別ターミナル(background)
 ```
 http://localhost:8000 を開き、大名を選んで以下を確認:
 - [ ] 地図が日本列島の形になり、66国が旧国境界で塗られている
@@ -443,7 +443,7 @@ http://localhost:8000 を開き、大名を選んで以下を確認:
 - [ ] **Step 4: コミット**
 
 ```bash
-cd "g:/マイドライブ/YNFactory-cc/05_プロジェクト/sengoku-game"
+cd "g:/マイドライブ/YNFactory-cc/sengoku-game"
 git add README.md
 git commit -m "$(printf 'docs: credit map data source and license in README\n\nCo-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>')"
 ```
