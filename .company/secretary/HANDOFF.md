@@ -1,8 +1,8 @@
 ---
 last_updated: "2026-08-09"
 last_device: "Mac"
-last_session_summary: "Topview実写素材を毎日04:00（Asia/Tokyo）に8本生成・書き出し・在庫登録するCodex定期処理を有効化。既存クレジットだけを使い、追加購入・プラン変更・投稿・既存素材再利用は行わない。人物・衣装・会議室を固定しつつ8種類の画角・動作で生成する。登録後に9:16・無字幕・重複なし・未使用在庫増加を検証する。runtime health ok=true（queue=243）。"
-next_action: "次回04:00のTopview定期補充が8本の生成・登録まで完了したか、実行結果と未使用在庫数を確認する。クレジット不足やログイン切れなら、追加購入せず安全停止した理由を確認する。"
+last_session_summary: "毎日04:00（Asia/Tokyo）にTopview実写素材を8本生成・登録し、当日の9/14/19時の3動画が当日分6素材を先に使い、残り2素材を予備として保持するよう設定。前日までの未使用素材は当日分が不足した時だけ使う。登録時刻をマニフェストへ記録して当日バッチ優先を実装し、runtimeへdeploy済み。対象テスト5件PASS、runtime health ok=true（queue=243）。"
+next_action: "次回04:00のTopview定期補充が8本の生成・登録まで完了し、9/14/19時の3動画が当日バッチから6素材を消費して予備2素材が残るかを実行結果で確認する。"
 ---
 
 # セッション引き継ぎ
@@ -23,7 +23,7 @@ next_action: "次回04:00のTopview定期補充が8本の生成・登録まで�
 ### shorts-factory — 定刻生成・Topview在庫 (最終更新: 2026-08-09)
 
 - **状態**: 8/9の09時・14時はTopview混在動画を生成し、19時は**未使用素材0本／必要2本**で安全停止した。動画・キュー・投稿は作成されていない。runtime healthは `ok=true`、queue=243、媒体欠損・台帳異常なし。
-- **定期補充**: Codex cron `topview-4-8` を有効化。毎日04:00（Asia/Tokyo）にTopviewで実写素材8本を生成・書き出し・登録する。既存クレジットのみを利用し、追加購入・プラン変更・投稿はしない。ログイン切れ、クレジット不足、重複、8本未完了では安全停止する。
+- **定期補充**: Codex cron `topview-4-8` を有効化。毎日04:00（Asia/Tokyo）にTopviewで実写素材8本を生成・書き出し・登録する。当日9/14/19時の3動画は登録時刻で当日バッチを優先し6素材を使い、残り2素材を予備として残す。前日以前の未使用素材は当日分が不足した時だけ使う。既存クレジットのみを利用し、追加購入・プラン変更・投稿はしない。ログイン切れ、クレジット不足、重複、8本未完了では安全停止する。
 - **通知**: TelegramはTopview在庫の安全停止だけを簡潔に伝え、生の外部応答・URL・旧経路名を転送しない。修正はMac runtimeへ `deploy.sh`（installなし）で反映済み。
 - **要対応**: 次枠の前にTopview素材を補充する。未使用素材は最低2本、3枠/日を安定運用するなら6本以上必要。720p素材を使う場合は初回の仕上がりを目視する。
 - **次の補充**: Canvas `654e5964324b4707b12c890e13249039` に未書き出しの Video 3〜7・10・11 が残る。まずここから確認し、足りなければ新規生成（1本約15クレジット）をオーナー承認のうえ実施。
@@ -31,14 +31,20 @@ next_action: "次回04:00のTopview定期補充が8本の生成・登録まで�
 - **注意**: Windowsからは `fcntl` 依存で pipeline 実行・deploy ともに不可。runtime操作はMacで行う。
 - **詳細**: `05_プロジェクト/shorts-factory/`、`.company/projects/shorts-factory/2026-07-16-drive-lock-root-fix-debug-log.md`
 
-### Drive↔GitHub の統一 — 完了 (最終更新: 2026-08-08)
+### Drive↔GitHub 同期の確立 — 完了 (最終更新: 2026-08-09)
 
-- **結果**: **Driveを正としてGitHub側を合わせた**。追跡2,384件で Driveに無い0件・内容相違0件を検証済み（施行前は追跡2,598件／Driveに無い544件・内容相違296件）。
-- **内訳**: 付け替え330件（2026-08-06のバケット再編で移動したパスをDrive現物のパスへ戻した。内容は同一）／削除215件（Drive上に対応物なし。一覧は `archive/2026-08-08-drive-mirror-deleted.md`）／上書き296件。`.gitignore` 対象10件（`03_成果物/outputs`・`_archive`）は追加せず削除のみ。Git未追跡のDriveファイル（成果物・バイナリ・.env）は方針どおり追加していない。
-- **復元点**: タグ `pre-drive-mirror-2026-08-08`（GitHubへpush済み）。commit `0b80c0f`。
-- **ルール層**: `CLAUDE.md`（14行版）・`AGENTS.md`・`.gitignore`・`02_設定/docs/*.md`・`01_コード/scripts/company/*.py` はDrive・GitHubとも同一。旧Drive版は `archive/CLAUDE-drive-old-2026-08-08.md` / `AGENTS-drive-old-2026-08-08.md`。
-- **注意**: `pull-sync` は「pullで新たに取得した差分」しかDriveへ流さない。ローカルが `origin/main` と同一なら何もしない。既存の乖離を埋めるときは `local-to-drive` にパスを明示する。
-- **廃止候補（未決）**: Driveのみに残る `.company/CLAUDE.md` と `.company/secretary/CLAUDE.md`。内容は `02_設定/docs/` 側へ一本化済みで、現状は規範が二重化している。
+- **到達点**: Drive を正として GitHub を合わせ、そのうえで **Drive も6バケット構成へ移行**して両者を一致させた。追跡2,384件で Driveに無い0件・内容相違0件（開始時は Driveに無い544件・内容相違296件）。
+- **運用サイクル（これが本題）**: **セッション開始時に `pull-sync`（GitHub→Drive）／終了時に `/handoff` で `commit-push`（Drive→GitHub）**。`CLAUDE.md`・`02_設定/docs/company-ops.md`・`multi-pc-rules.md` §5・handoffスキルに明記済み。
+  ```bash
+  cd C:\YNFactory-cc   # Mac は ~/YNFactory-cc
+  python 01_コード/scripts/company/sync_drive_git.py pull-sync
+  ```
+- **`.company/` の現在**: `secretary/`・`DASHBOARD.md`・`codex/`・`logs/` のみ。旧部署15フォルダは `99_その他/company-records/`、requirements は `02_設定/requirements/`、scripts は `01_コード/scripts/company/`、outputs は `03_成果物/outputs/` へ移動済み（Drive側の移動記録 `99_その他/2026-08-09-cleanup/MANIFEST.md`）。
+- **復元点**: タグ `pre-drive-mirror-2026-08-08` / `pre-bucket-remirror-2026-08-09`（いずれもGitHubへpush済み）。commit `0b80c0f` → `70c2a0b` → `72f7ec5`。
+- **注意1**: `pull-sync` は「pullで新たに取得した差分」しかDriveへ流さず、対象パスは**上書き**する。別PCがDrive上で同じファイルを編集中だと古い内容で潰れうる。実際 2026-08-09 に Windows 整理中と Mac セッションが `HANDOFF.md` と `shorts-factory/src/pipeline.py` で同時編集した。
+- **注意2**: shorts-factory の runtime は出力を `.company/outputs/shorts-factory` へ書く設定のままで、正規の置き場 `03_成果物/outputs/shorts-factory` と分かれる。今回6件を統合したが、runtime設定を直さない限り再発する。
+- **廃止候補（未決）**: Driveのみに残る `.company/CLAUDE.md` と `.company/secretary/CLAUDE.md`。内容は `02_設定/docs/` へ一本化済みで規範が二重化している。
+- **障害と復旧**: ローカルGitの `refs/heads/main` ほか3refがNUL埋めで破損（commitは成功済みでreflogから復旧）。破損refは `_archive/git-drive-quarantine/2026-08-09-broken-refs/` に隔離、`git fsck` クリーンを確認。
 
 ## ブロック中（オーナー操作・外部要因待ち）
 

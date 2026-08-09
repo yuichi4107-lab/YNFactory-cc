@@ -19,6 +19,16 @@
 
 ## セッション開始時
 
+**0. まず GitHub 最新を取り込む（必須）**
+
+```bash
+cd C:\YNFactory-cc   # Mac は ~/YNFactory-cc
+python 01_コード/scripts/company/sync_drive_git.py pull-sync
+```
+
+他PCが前回のセッション終了時にpushした内容がDriveへ反映される。
+GitHubに新着が無ければ `No GitHub updates to sync to Drive.` と出て何も起きない。
+
 1. `HANDOFF.md` を読む
 2. `todos/` の直近ファイルを読む
 3. 未完了項目があれば、進捗サマリーを報告して再開するか確認する

@@ -108,7 +108,7 @@ Windowsでは `cd C:\YNFactory-cc` に読み替える。
 
 ## 5. GitHubからDrive側へ反映する
 
-ローカルGit側で実行する。
+**セッション開始時に必ず実行する。** ローカルGit側で実行する。
 
 ```bash
 cd /Users/yuichi/YNFactory-cc
@@ -116,6 +116,30 @@ python3 01_コード/scripts/company/sync_drive_git.py pull-sync
 ```
 
 これにより、GitHubから取得したコード・ルール・手順書がDrive側へ戻る。
+
+### 基本サイクル（2026-08-09 確立）
+
+```
+セッション開始 → pull-sync（GitHub → Drive）
+       ↓
+   Drive側で作業
+       ↓
+セッション終了 → /handoff → commit-push（Drive → GitHub、パス明示）
+```
+
+`pull-sync` は **pullで新たに取得したパスだけ** をDriveへ書き戻す。
+ローカルGitが `origin/main` と同一なら何もしない（`No GitHub updates to sync to Drive.`）。
+既存の乖離をまとめて埋めたいときは `local-to-drive` にパスを明示する。
+
+**注意**: `pull-sync` は対象パスのDrive側ファイルを**上書きする**。
+Driveは全PCで即時共有されるため、別PCがDrive上で同じファイルを編集中だと、
+GitHub側の古い内容で上書きされうる。開始時pullの前に、GitHubへ未pushの変更が
+Drive側に無いか確認する。心配なら先に `commit-push` してから `pull-sync` する
+（毎日03:00の `daily_git_sync.py` も commit → push → pull の順）。
+
+**実例（2026-08-09）**: Windows側で整理作業中にMac側セッションが同じDriveの
+`HANDOFF.md` と `shorts-factory/src/pipeline.py` を更新した。§6の「その日の主担当PCだけが書く」
+を守れないと、この種の同時編集が起きる。
 
 ## 6. 同時編集ルール
 
