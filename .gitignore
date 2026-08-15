@@ -179,3 +179,5 @@ test-results/
 # 画像本体は上の *.png/*.jpg 等で除外済みだが、付随する svg/xhtml/pdf 等を取り込まないようディレクトリ単位で除外しDrive専用にする
 03_成果物/outputs/picture-books/
 03_成果物/outputs/ai-stock-investment/_archives/
+
+/04_インプット/
