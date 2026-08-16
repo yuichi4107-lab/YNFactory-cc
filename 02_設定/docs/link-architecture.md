@@ -188,6 +188,36 @@ Windows のジャンクションと Mac のシンボリックリンクは別物�
 Mac では `ln -s` になるが、Git がシンボリックリンクをリンクとして記録するため、
 `.gitignore` での除外が Windows 以上に重要になる。**未検証。**
 
+### 8-6. 05_プロジェクト の名前が2世代混在している（2026-08-16 発見・最優先）
+
+`C:\YNFactory-cc\05_プロジェクト` の中で、同じプロジェクトが2つずつ存在している。
+
+| | 名前 | 実体 | Git |
+|---|---|---|---|
+| 旧 | `ai-news-system` | C: の実体 | 追跡中 |
+| 新 | `20260813_ai-news-system` | Driveへのリンク | 除外 |
+
+該当は18件。
+
+```
+ai-news-system, ai-trade-system, biz_idea_generator, comicle-pipeline,
+gourmet-share, internal-tool-starter-kit, iphone-screenshot-share, jp-daytrade,
+notebooklm-sync, pdf-annotator, rakuten-room-auto, sales-ops, sengoku-game,
+voice-journal, voice-recorder, weather-nagoya-app, x-threads-auto-post, yn-tools
+```
+
+`keiba-unified` と `shorts-factory` は両側とも同名なので問題なし。
+
+**経緯の推測**: いつかの時点で Drive 側だけ日付プレフィックス付きにリネームされ、
+その変更が GitHub 側に反映されないまま両方が生き残った。
+`05_プロジェクト` 配下の Git 追跡1,214件のうち、Drive 側の実フォルダに対応するのは
+`keiba-unified`(353) と `shorts-factory`(57) の410件だけで、
+残り約800件はすべて旧名フォルダのものだった。
+
+**動作上の衝突はない**（git は旧名を追跡、リンクは新名で gitignore 済み）。
+ただし二重管理そのものなので、中身を突き合わせてどちらかに寄せる必要がある。
+C: 直下に残っている旧フォルダ8件（§8-3）も同じ現象の別世代とみられる。
+
 ### 8-5. 退避フォルダ
 
 `%USERPROFILE%\_pre_link_04_インプット` に移行前の実体が残してある。

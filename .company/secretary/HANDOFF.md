@@ -1,8 +1,8 @@
 ---
-last_updated: "2026-08-09"
+last_updated: "2026-08-16"
 last_device: "Windows"
-last_session_summary: "再編で移動した `.company/*` 参照を実行系101ファイル・約3,900箇所で正規パスへ統一し（shorts-factoryの出力先を 03_成果物/outputs/shorts-factory へ変更、壊れていたDriveミラーとSNS認証パスも修復）、廃止済み運用を記述していた `.company/CLAUDE.md`・`.company/secretary/CLAUDE.md` を 99_その他/company-records/ へ退避して規範を 02_設定/docs/ に一本化した（固有内容は owner-profile.md と company-ops.md へ移設、company スキルに廃止バナー）。さらに `/handoff` の対となる `/start` スキルと session_start.py を新設。pull-sync がDriveを上書きする危険に対し、pullで書き換わるパスだけを照合して別PCの未push編集を検出したら止まる仕組みにし、最新時・衝突時・正常pull時の3ケースを実機検証した。commit 8786c49 / aa6ce83 / ba563e2 / f6e40cd / f1c3c6e。"
-next_action: "Mac側で `bash 05_プロジェクト/shorts-factory/scripts/deploy.sh`（installなし）を実行し、shorts-factory の出力先変更とDriveミラー・SNS認証パスの修正を runtime へ反映する（未実行のうちは旧パスを見たまま動く）。あわせて04:00のTopview定期補充が8本完了し、3動画が当日バッチから6素材を消費して予備2素材が残るかを確認する。"
+last_session_summary: "リポジトリ構成をリンク方式へ移行し、約56.8GBをDrive側へ集約（03_成果物/outputs 55.6GB、04_インプット 502MB、05_プロジェクト31本 1.2GB）。04_インプットは素材376件をGit除外し取込スクリプト44件のみ追跡継続。ジャンクションはPythonのis_symlink()で検出できないためsync_drive_git.pyにis_link()を追加。移行中に05_プロジェクトの旧名/新名の二重化18件を発見。ファイルの移動・消失は0件、生成・投稿・削除は未実施。"
+next_action: "05_プロジェクトで二重化している18プロジェクト（旧名=C:実体でGit追跡／新名=Driveリンクでgitignore）の中身を突き合わせ、どちらへ寄せるかを決める。着手前に link-architecture.md §8-6 の未push分を commit-push する。"
 ---
 
 # セッション引き継ぎ
@@ -20,31 +20,28 @@ next_action: "Mac側で `bash 05_プロジェクト/shorts-factory/scripts/deplo
 
 ## 進行中（要アクション）
 
-### shorts-factory — 定刻生成・Topview在庫 (最終更新: 2026-08-09)
+### shorts-factory — 定刻生成・Topview在庫 (最終更新: 2026-08-15)
 
-- **状態**: 8/9の09時・14時はTopview混在動画を生成し、19時は**未使用素材0本／必要2本**で安全停止した。動画・キュー・投稿は作成されていない。runtime healthは `ok=true`、queue=243、媒体欠損・台帳異常なし。
-- **定期補充**: Codex cron `topview-4-8` を有効化。毎日04:00（Asia/Tokyo）にTopviewで実写素材8本を生成・書き出し・登録する。当日9/14/19時の3動画は登録時刻で当日バッチを優先し6素材を使い、残り2素材を予備として残す。前日以前の未使用素材は当日分が不足した時だけ使う。既存クレジットのみを利用し、追加購入・プラン変更・投稿はしない。ログイン切れ、クレジット不足、重複、8本未完了では安全停止する。
+- **状態**: 未使用`split_12s_v1`は0本／必要4本。runtime healthは`ok=true`（queue=255、媒体欠損・台帳異常なし）だが、次の定刻生成は安全停止する。動画・キュー・投稿は作成されない。
+- **定期補充**: Codex cron `topview-4-8` を有効化。毎日04:00（Asia/Tokyo）に12秒のTopview実写素材4本を生成・書き出し・登録する。当日9/14/19時の3動画は各1本を前半・後半に分けて使い、4本目を予備として残す。既存クレジットのみを利用し、追加購入・プラン変更・投稿はしない。ログイン切れ、クレジット不足、重複、4本未完了では安全停止する。
+- **合成**: 12秒素材は0秒付近と6秒以降を切り出し、「実写（即発話）→日本語カード1→日本語カード2→同じ実写の後半→日本語カード3→日本語カード4」の6区間で構成する。実写セリフは各5秒以内、11.5〜12.5秒・9:16・映像のみ・新形式の素材だけを使い、旧形式素材は履歴として残すが使用しない。
 - **通知**: TelegramはTopview在庫の安全停止だけを簡潔に伝え、生の外部応答・URL・旧経路名を転送しない。修正はMac runtimeへ `deploy.sh`（installなし）で反映済み。
-- **要対応**: 次枠の前にTopview素材を補充する。未使用素材は最低2本、3枠/日を安定運用するなら6本以上必要。720p素材を使う場合は初回の仕上がりを目視する。
-- **次の補充**: Canvas `654e5964324b4707b12c890e13249039` に未書き出しの Video 3〜7・10・11 が残る。まずここから確認し、足りなければ新規生成（1本約15クレジット）をオーナー承認のうえ実施。
-- **書き出し手順**: Canvasでクリップ選択 → ツールバーの ⬇ → 数十秒待って `~/Downloads` を確認 → `~/shorts-factory/topview_assets/` へ移動 → `cd ~/shorts-factory/app && ~/shorts-factory/.venv/bin/python scripts/register_topview_assets.py <file...>`。保存の反映に時間差があるので、直後にファイルが無くてもブロックと即断しない。投稿済み素材（`Video_12`）は再登録しない。
+- **要対応**: 2026-08-15の補充で確認した直接動画の最大12秒を、現行仕様へ採用した。補助アセットは使わない。
+- **次の補充**: 補助アセットなしで12秒・9:16・映像のみの動画4本を直接生成でき、既存クレジットで4本完了できることを生成前に確認する。確認できない場合は登録せず安全停止する。
 - **注意**: Windowsからは `fcntl` 依存で pipeline 実行・deploy ともに不可。runtime操作はMacで行う。
 - **詳細**: `05_プロジェクト/shorts-factory/`、`.company/projects/shorts-factory/2026-07-16-drive-lock-root-fix-debug-log.md`
 
-### Drive↔GitHub 同期の確立 — 完了 (最終更新: 2026-08-09)
+### リポジトリ構成 — リンク方式へ移行 (最終更新: 2026-08-16)
 
-- **到達点**: Drive を正として GitHub を合わせ、そのうえで **Drive も6バケット構成へ移行**して両者を一致させた。追跡2,384件で Driveに無い0件・内容相違0件（開始時は Driveに無い544件・内容相違296件）。
-- **運用サイクル（これが本題）**: **セッション開始時に `pull-sync`（GitHub→Drive）／終了時に `/handoff` で `commit-push`（Drive→GitHub）**。`CLAUDE.md`・`02_設定/docs/company-ops.md`・`multi-pc-rules.md` §5・handoffスキルに明記済み。
-  ```bash
-  cd C:\YNFactory-cc   # Mac は ~/YNFactory-cc
-  python 01_コード/scripts/company/sync_drive_git.py pull-sync
-  ```
-- **`.company/` の現在**: `secretary/`・`DASHBOARD.md`・`codex/`・`logs/` のみ。旧部署15フォルダは `99_その他/company-records/`、requirements は `02_設定/requirements/`、scripts は `01_コード/scripts/company/`、outputs は `03_成果物/outputs/` へ移動済み（Drive側の移動記録 `99_その他/2026-08-09-cleanup/MANIFEST.md`）。
-- **復元点**: タグ `pre-drive-mirror-2026-08-08` / `pre-bucket-remirror-2026-08-09`（いずれもGitHubへpush済み）。commit `0b80c0f` → `70c2a0b` → `72f7ec5`。
-- **注意1**: `pull-sync` は「pullで新たに取得した差分」しかDriveへ流さず、対象パスは**上書き**する。別PCがDrive上で同じファイルを編集中だと古い内容で潰れうる。実際 2026-08-09 に Windows 整理中と Mac セッションが `HANDOFF.md` と `shorts-factory/src/pipeline.py` で同時編集した。
-- **注意2（対応済み・Mac反映待ち）**: 再編で移動した `.company/*` 参照を、スキル・設定・コード計101ファイル／3,900箇所超で正規パスへ統一した（commit `8786c49`）。shorts-factory は `drive_outputs_dir` → `03_成果物/outputs/shorts-factory`、`drive_marketing_dir` → `99_その他/company-records/marketing/shorts-factory`、`drive_sns_env_path` → `99_その他/company-records/engineering/sns-credentials/.env`。**Mac runtime へ `deploy.sh`（installなし）を実行するまで実機の挙動は変わらない。**
-- **規範の一本化（完了 2026-08-09）**: 廃止済み運用を記述していた `.company/CLAUDE.md` と `.company/secretary/CLAUDE.md` を `99_その他/company-records/` へ退避（廃止注記つき）。固有内容は `02_設定/docs/owner-profile.md`（オーナー情報・対話スタイル）と `company-ops.md`（定期巡回）へ移設。両ファイルを前提にしていた `company` スキルにも廃止バナーと現行参照先の対応表を付けた。`.company/` は `secretary/`・`DASHBOARD.md`・`codex/`・`logs/`・`handoff/` のみ。
-- **障害と復旧**: ローカルGitの `refs/heads/main` ほか3refがNUL埋めで破損（commitは成功済みでreflogから復旧）。破損refは `_archive/git-drive-quarantine/2026-08-09-broken-refs/` に隔離、`git fsck` クリーンを確認。
+- **到達点**: `C:\YNFactory-cc` を本体とし、重い領域だけをジャンクションでDriveへ逃がす構成へ移行した。約56.8GBを集約（`03_成果物/outputs` 55.6GB、`04_インプット` 502MB、`05_プロジェクト` 31本 1.2GB）。commit `bcebff0`〜`8c0e854` push済み。仕様と判断基準は **`02_設定/docs/link-architecture.md`**。
+- **Git管理の変更**: `04_インプット` の素材データ376件をGit除外し、取込スクリプト44件のみ `git add -f` で追跡継続。Mac用 `.sh` 7件の実行権限（100755）も復元済み。ファイルの移動・消失は0件で、自動化のパスは無傷。
+- **落とし穴（重要）**: Windowsのジャンクションは Python の `Path.is_symlink()` も `os.path.islink()` も **False** を返す。リパースポイント属性（`0x400`）でしか判定できない。`sync_drive_git.py` に `is_link()` を追加して対応済み。未対応のままだと `shutil.rmtree` がリンクを貫通してDrive上の成果物を消しうる。
+- **リンクを外すとき**: `rmdir /s /q` を使わない。リンク先まで消える。PowerShellは `[IO.Directory]::Delete($path, $false)`（空でないと失敗するのでファイルは消えない）。
+- **要対応（最優先）**: `05_プロジェクト` で同じプロジェクトが2つずつ存在している。旧名（`ai-news-system` = C:実体・Git追跡）と新名（`20260813_ai-news-system` = Driveリンク・gitignore）で18件。**突き合わせが済むまで作業場所をC:へ切り替えられない**。詳細は `link-architecture.md` §8-6。
+- **未push**: `link-architecture.md` の §8-6 追記はDrive側にのみ存在。次セッション開始時に `commit-push` する。
+- **その他の未処理（すべて `link-architecture.md` §8）**: Drive上の入れ子 `.git`（`05_プロジェクト/20260511_yn-tools/.git` 1,402ファイル）、開発ゴミ約13,000ファイル/290MB（`.venv`・`node_modules`）、C:直下の旧フォルダ8件、Mac側のsymlink対応（未検証）。
+- **退避**: `%USERPROFILE%\_pre_link_04_インプット` は動作確認が済むまで削除しない。
+- **運用サイクルは不変**: セッション開始 `/start`（pull-sync）／終了 `/handoff`（commit-push）。
 
 ## ブロック中（オーナー操作・外部要因待ち）
 
