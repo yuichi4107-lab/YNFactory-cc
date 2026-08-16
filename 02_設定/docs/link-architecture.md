@@ -27,11 +27,13 @@ C:\YNFactory-cc\                    ← Gitリポジトリ本体・ここで作�
 ├── 04_インプット\    ──リンク──▶   Drive（502MB）
 └── 05_プロジェクト\                 実体
     ├── keiba-unified\               実体（Git管理）
+    │   └── jra\data\  ──リンク──▶   Drive（389MB）
     ├── shorts-factory\              実体（Git管理）
+    │   └── outputs\   ──リンク──▶   Drive（33MB）
     └── その他31プロジェクト ──リンク──▶ Drive（1.2GB）
 ```
 
-Drive 側へ逃がした合計は約 **56.8 GB**。
+Drive 側へ逃がした合計は約 **57.2 GB**。
 
 ## 1. なぜこの形か
 
@@ -171,7 +173,7 @@ git check-ignore -q "04_インプット/inputs/conversations"
 
 約13,000ファイル / 290MB。再生成できるので削除してよいはずだが、**未対応。**
 
-### 8-3. C: 直下の旧フォルダ
+### 8-3. C: 直下の旧フォルダ（2026-08-16 解決済み）
 
 6バケット構成になる前の残骸が8件、Git管理外で残っている。
 
@@ -180,7 +182,18 @@ git check-ignore -q "04_インプット/inputs/conversations"
 keiba-unified/     sales-ops/        sengoku-game/   yn-tools/
 ```
 
-`git status` が毎回8行汚れる。中身を突き合わせてから処理する。**未対応。**
+`compare_root_leftovers.py` で全件突き合わせた結果、6件は正規の置き場所に完全に含まれていた。
+`sengoku-game` と `yn-tools` は C: 側のほうが新しかったため、削除せず退避して保全した。
+8件すべて `%USERPROFILE%\_pre_link_root\` へ移動し、`git status` はクリーンになった。**解決済み。**
+
+退避先の内訳（動作確認が済むまで削除しないこと）:
+
+| 退避したもの | 容量 | 備考 |
+|---|---:|---|
+| `company_outputs` | 13.7 GB | 削除すればC:の容量が最も空く |
+| `sengoku-game` | 796 KB | **C:が本流**（master・8コミット・未コミットなし）。Driveは2週間古い |
+| `yn-tools` | 4.4 MB | Stripe商品IDはキー・値とも完全一致。差はインデントのみ |
+| その他5件 | — | 完全に含まれていた |
 
 ### 8-4. Mac 側
 
@@ -188,7 +201,17 @@ Windows のジャンクションと Mac のシンボリックリンクは別物�
 Mac では `ln -s` になるが、Git がシンボリックリンクをリンクとして記録するため、
 `.gitignore` での除外が Windows 以上に重要になる。**未検証。**
 
-### 8-6. 05_プロジェクト の名前が2世代混在している（2026-08-16 発見・最優先）
+### 8-5. 退避フォルダ（3か所）
+
+動作確認が済むまで削除しないこと。済んだら削除してC:の容量を空ける。
+
+```
+%USERPROFILE%\_pre_link_04_インプット     04_インプットの移行前の実体
+%USERPROFILE%\_pre_link_projects\        05_プロジェクトの旧名フォルダ18件
+%USERPROFILE%\_pre_link_root\            C:直下の旧フォルダ8件（13.7GB）
+```
+
+### 8-6. 05_プロジェクト の名前が2世代混在（2026-08-16 発見・同日解決済み）
 
 `C:\YNFactory-cc\05_プロジェクト` の中で、同じプロジェクトが2つずつ存在している。
 
@@ -214,11 +237,27 @@ voice-journal, voice-recorder, weather-nagoya-app, x-threads-auto-post, yn-tools
 `keiba-unified`(353) と `shorts-factory`(57) の410件だけで、
 残り約800件はすべて旧名フォルダのものだった。
 
-**動作上の衝突はない**（git は旧名を追跡、リンクは新名で gitignore 済み）。
-ただし二重管理そのものなので、中身を突き合わせてどちらかに寄せる必要がある。
-C: 直下に残っている旧フォルダ8件（§8-3）も同じ現象の別世代とみられる。
+**解決済み。** `compare_project_dupes.py` で18組を全件SHA-1照合した結果、
+旧のみ存在=0・内容相違=0 で、旧は新に完全に含まれることが確認できた。
+`relocate_project_tracking.py` で追跡802件を旧名から新名へ付け替え、旧名フォルダは
+`%USERPROFILE%\_pre_link_projects\` へ退避した。gitはこれをrenameとして認識している。
 
-### 8-5. 退避フォルダ
+`sengoku-game` と `yn-tools` の2件だけは gitlink（入れ子リポジトリの参照）として登録されており、
+GitHubにはコミットSHAしか入っていなかった。付け替え対象0件で参照だけが外れた。§8-1 と併せて扱う。
 
-`%USERPROFILE%\_pre_link_04_インプット` に移行前の実体が残してある。
-動作確認が済むまで削除しないこと。
+**教訓**: Drive側だけでフォルダをリネームすると、GitHubに反映されず両方が生き残る。
+`05_プロジェクト` は `YYYYMMDD_` プレフィックス付きで統一。リネームは必ずGitHubへ反映する。
+
+### 8-7. sengoku-game の置き場所（2026-08-16）
+
+`sengoku-game` は YNFactory-cc とは**別系統の独立したGitリポジトリ**（`master` ブランチ）。
+C: 側が本流で、Drive 側（`05_プロジェクト/20260601_sengoku-game`）は2週間古いコピー。
+現在 C: 側は `_pre_link_root\sengoku-game` に `.git` ごと退避してある。
+
+やるべきこと: Drive を C: の内容で更新するか、独立したGitHubリポジトリとして切り出すかを決める。
+Drive 上の `.git`（§8-1）とセットで扱う。
+
+### 8-8. keiba-unified/win5/data（2026-08-16）
+
+92.5MB / 438ファイル。うち1件だけGit追跡があるため、今回のリンク化から除外した。
+C: 側に無くても致命的ではないが、いずれ扱いを決める。

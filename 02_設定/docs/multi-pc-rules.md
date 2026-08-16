@@ -1,7 +1,7 @@
 ---
 title: マルチPC共有ルール
 status: active
-last_updated: "2026-08-06"
+last_updated: "2026-08-16"
 applies_to: "YNFactory-cc を複数PCと ClaudeCode / Codex で共有する全作業"
 ---
 
@@ -9,44 +9,37 @@ applies_to: "YNFactory-cc を複数PCと ClaudeCode / Codex で共有する全�
 
 ## 0. 結論
 
-`YNFactory-cc` は、Google Drive、GitHub、ZSlimバックアップの3層で運用する。
+**リポジトリ本体は `C:\YNFactory-cc`（Mac は `~/YNFactory-cc`）。**
+重い領域と Git 管理外の領域だけを、ジャンクション（Mac はシンボリックリンク）で Drive 側へ逃がす。
 
 | レイヤー | 役割 | 置き場 |
 |---|---|---|
-| Google Drive | 日常作業場、制作物、入力、生活ログ、ClaudeCode / Codex 共有作業場 | Drive側 `YNFactory-cc` |
+| ローカル（C: / ~） | Gitリポジトリ本体。ここで作業し、ここでgitを実行する | `C:\YNFactory-cc` |
+| Google Drive | 重い成果物・素材・Git管理外プロジェクトの実体。リンク先 | `G:\マイドライブ\YNFactory-cc` |
 | GitHub | コード、ルール、スキル、手順書の履歴 | `yuichi4107-lab/YNFactory-cc` |
 | ZSlim | Drive削除・上書き・破損から戻す世代バックアップ | `/Volumes/ZSlim/YNFactory-backups/restic` |
 
-Drive側ではGit操作しない。Git操作は各PCのローカルGit作業ディレクトリで行う。
+**リンクは「近道」であって「コピー」ではない。実体は世界に1つだけ。**
+どちらのパスで書いても同じ場所に保存されるので、「どっちが最新か」を考える必要はない。
+どこが実体でどこがリンクかは `docs/folder-structure.md`、仕組みと落とし穴は `docs/link-architecture.md`。
 
-Drive上に `.git` を置くと、残留ロック・0バイトオブジェクト・競合コピーによりGitは必ず壊れる。原因と復旧手順は `docs/git-drive-safety.md` を読む。各PCで初回に1回、ガードフックを入れる。
+Drive側で `git` を実行しない。Drive上に `.git` を置くと、残留ロック・0バイトオブジェクト・競合コピーによりGitは必ず壊れる。
+原因と復旧手順は `docs/git-drive-safety.md`。各PCで初回に1回、ガードフックを入れる。
 
 ```bash
-cd /Users/yuichi/YNFactory-cc
+cd ~/YNFactory-cc            # Windows は cd C:\YNFactory-cc
 python3 01_コード/scripts/company/git_drive_guard.py install-hooks
 ```
 
 ## 1. 作業場所
 
-### Drive側
+**作業もgit操作も、すべてローカル側で行う。**
 
-日常作業はDrive側で行う。
-
-Macの例:
+Windows:
 
 ```text
-/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc
+C:\YNFactory-cc
 ```
-
-Windowsの例:
-
-```text
-G:\マイドライブ\YNFactory-cc
-```
-
-### ローカルGit側
-
-GitHubへ送る変更はローカルGit側で扱う。
 
 Mac:
 
@@ -54,11 +47,13 @@ Mac:
 /Users/yuichi/YNFactory-cc
 ```
 
-Windows:
+Drive側のパス（`G:\マイドライブ\YNFactory-cc` / `~/Library/CloudStorage/...`）を直接開く必要はない。
+リンク経由で C: 側から見えるため、日常の作業では意識しなくてよい。
 
-```text
-C:\YNFactory-cc
-```
+> **移行中の注意（2026-08-16 時点）**
+> Cowork の接続フォルダはまだ Drive 側を指している場合がある。
+> デスクトップアプリの「フォルダを追加」で `C:\YNFactory-cc` に切り替えること。
+> Mac 側のリンクは未対応。Mac では従来どおり Drive 側で作業する。
 
 ## 2. Gitに入れるもの
 

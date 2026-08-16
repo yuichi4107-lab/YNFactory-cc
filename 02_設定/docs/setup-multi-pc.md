@@ -1,6 +1,6 @@
 ---
 title: YNFactory-cc 複数PCセットアップ手順
-date: "2026-06-15"
+date: "2026-08-16"
 status: active
 ---
 
@@ -8,90 +8,73 @@ status: active
 
 ## 基本方針
 
-`YNFactory-cc` は、2つの作業場所を役割で分ける。
+**リポジトリ本体はローカル（`C:\YNFactory-cc` / `~/YNFactory-cc`）。**
+重い領域と Git 管理外の領域だけを、リンクで Google Drive へ逃がす。
 
 | 場所 | 役割 |
 |---|---|
-| Google Drive側 `YNFactory-cc` | 日常作業、制作物、入力、生活ログ、ClaudeCode / Codex の共有作業場 |
-| ローカルGit側 `YNFactory-cc` | GitHubへ送るコード、ルール、スキル、手順書の履歴管理 |
+| ローカル | 作業場所・Gitリポジトリ本体。ここで作業し、ここでgitを実行する |
+| Google Drive | 成果物・素材・Git管理外プロジェクトの実体（リンク先） |
 
-Drive側では `git commit` / `git pull` / `git push` を実行しない。Git操作は必ずローカルGit側で行う。
+Drive側では `git commit` / `git pull` / `git push` を実行しない。
 
-## Mac
+## Windows のセットアップ
 
-### 1. Google Drive側を確認
-
-Google Drive for desktop を有効にし、Drive側の `YNFactory-cc` を確認する。
-
-```bash
-ls "$HOME/Library/CloudStorage"
-```
-
-このPCの現在のDrive側パス:
-
-```text
-/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc
-```
-
-ClaudeCode / Codex で日常作業をする場合は、このDrive側フォルダを開く。
-
-### 2. ローカルGit側を確認
-
-GitHubへ送る作業用に、ローカルGit作業ディレクトリを用意する。
-
-```bash
-cd ~
-git clone https://github.com/yuichi4107-lab/YNFactory-cc.git ~/YNFactory-cc
-cd ~/YNFactory-cc
-git pull --ff-only origin main
-git status --short --branch
-```
-
-このPCの標準ローカルGit側パス:
-
-```text
-/Users/yuichi/YNFactory-cc
-```
-
-### 3. 環境変数
-
-通常のスクリプトや説明では相対パスを使う。PC固有パスが必要な場合だけ環境変数に閉じ込める。
-
-```bash
-export YNFACTORY_DRIVE_ROOT="$HOME/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc"
-export YNFACTORY_ROOT="$HOME/YNFactory-cc"
-```
-
-## Windows
-
-### 1. Google Drive側を確認
-
-Google Drive for desktop を有効にし、Drive側の `YNFactory-cc` を確認する。
-
-例:
-
-```text
-G:\マイドライブ\YNFactory-cc
-```
-
-ClaudeCode / Codex で日常作業をする場合は、このDrive側フォルダを開く。
-
-### 2. ローカルGit側を確認
-
-GitHubへ送る作業用に、ローカルGit作業ディレクトリを用意する。
+### 1. リポジトリを clone
 
 ```powershell
 cd C:\
 git clone https://github.com/yuichi4107-lab/YNFactory-cc.git C:\YNFactory-cc
 cd C:\YNFactory-cc
 git pull --ff-only origin main
-git status --short --branch
 ```
 
-Windowsの標準ローカルGit側パス:
+### 2. Google Drive for desktop を有効にする
+
+`G:\マイドライブ\YNFactory-cc` が見えることを確認する。
+
+### 3. リンクを張る
+
+`mklink` は cmd の内部コマンド。PowerShell からは必ず `cmd /c` を付ける。
+
+```powershell
+cmd /c mklink /J "C:\YNFactory-cc\03_成果物\outputs" "G:\マイドライブ\YNFactory-cc\03_成果物\outputs"
+cmd /c mklink /J "C:\YNFactory-cc\04_インプット"     "G:\マイドライブ\YNFactory-cc\04_インプット"
+```
+
+`05_プロジェクト` 配下は、Git追跡ゼロのプロジェクトだけをリンクにする。
+判定と一括作成は `docs/link-architecture.md` の手順に従う。
+
+C: 側に同名フォルダが既にある場合、**中身を確認せずに消さない**。ファイルが1件でもあれば中断する形にする。
+
+### 4. Cowork の接続フォルダ
+
+デスクトップアプリの「フォルダを追加」で `C:\YNFactory-cc` を接続する。
+
+### 5. 確認
+
+```powershell
+cd C:\YNFactory-cc
+git status --short          # リンクした領域が出てこないこと
+dir "03_成果物\outputs"      # Drive側の中身が見えること
+```
+
+## Mac のセットアップ
+
+**Mac 側のリンク方式は未検証（2026-08-16 時点）。**
+Windows のジャンクションと Mac のシンボリックリンクは別物で、
+Git がシンボリックリンクをリンクとして記録するため、`.gitignore` での除外が Windows 以上に重要になる。
+
+検証が済むまで、Mac では従来どおり Drive 側で作業する。
 
 ```text
-C:\YNFactory-cc
+/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc
+```
+
+Git操作用のローカル作業ディレクトリは `~/YNFactory-cc`。
+
+```bash
+git clone https://github.com/yuichi4107-lab/YNFactory-cc.git ~/YNFactory-cc
 ```
 
 ## 日常作業
