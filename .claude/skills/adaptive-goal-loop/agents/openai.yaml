@@ -1,0 +1,4 @@
+interface:
+  display_name: "Adaptive Goal Loop"
+  short_description: "質問から長期目標と定期改善ループを安全に設計・実行"
+  default_prompt: "Use $adaptive-goal-loop to interview me and configure a safe recurring improvement loop."
