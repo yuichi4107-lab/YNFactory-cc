@@ -1,8 +1,8 @@
 ---
-last_updated: "2026-08-17"
+last_updated: "2026-08-18"
 last_device: "Windows"
-last_session_summary: "販売管理システム（社内の受注〜発注〜納品〜請求）をローカルへ取り込み、設計を1点変更した。PR #4（Draft・別リポジトリClaudeCode PR #8からの移行）に要件定義・画面・DB・帳票の設計書とUIモックアップが揃っており、gh pr checkout 4 で取得。モックアップ4画面をブラウザで実際に確認し、自社情報が全てプレースホルダ（登録番号T+13桁・振込先）である点を検出。次に『汎用品として実装すべきか』を検討し、現時点では反対と結論——中核が1受注=1品目（sales_ordersに品目カラム直付け、明細テーブルなし）で汎用と非互換、非機能要件（LAN限定・認証なし・コストゼロ）が汎用品と正反対、かつ未使用で検証がない。ただし『作る前でないと高くつく』1点として受注明細の親子分離のみ実施し、PR #4へpush（a19bde3）。あわせて業務担当者向けの説明資料をArtifactで公開。"
-next_action: "販売管理システムは業務担当者の合意待ちが唯一のボトルネック。説明資料（https://claude.ai/code/artifact/19596d57-51db-411e-8ce8-4d093dead275）と要件定義書を渡して確認を取る。並行して自社情報の実値（適格請求書発行事業者の登録番号T+13桁、振込先口座）を集める——これが無いと請求書が完成しない。合意が取れたらPR #4をReadyにしてマージ、フェーズ2（受注・発注管理＋納品書発行）着手。shorts-factoryの補充停止（出力は2026-08-14 09:06が最後）は未着手のまま残っており、Mac側でTopviewのログイン可否と残クレジットの確認が必要。"
+last_session_summary: "Drive側にしか無かったスキル51個をローカルへ取り込み、Claude Code と Codex の双方から全スキルを使える状態にした。`.claude/skills` 21→72、`.agents/skills` 21→72、`.codex/skills` 5→72の3か所を構成一致（72スキル・199ファイル・SKILL.md欠落0）まで揃え、Drive側3か所も追加のみで72個へ同期。発端は『nagameスキルってありましたよね？』で、実体は `nagame-dev`（要件定義→設計→実装→本番移行の全自動パイプライン）がDrive側にのみ存在していた。途中、robocopyが既存6ファイルを上書きし、`.codex/skills/ebook-to-manga/SKILL.md`（Codex専用版113KB）が `.claude` 版27KB で潰れて1,819行が消える事故が発生。push前に検知して `git checkout` でHEADから復旧し、Drive原本と全ファイル一致を検証してからコミット `04de5d1` を push（新規477ファイル・変更0・削除0）。同名スキルに Claude版/Codex版の別バージョンが存在することが原因。"
+next_action: "販売管理システムは業務担当者の合意待ちが唯一のボトルネック。説明資料（https://claude.ai/code/artifact/19596d57-51db-411e-8ce8-4d093dead275）と要件定義書を渡して確認を取る。並行して自社情報の実値（適格請求書発行事業者の登録番号T+13桁、振込先口座）を集める——これが無いと請求書が完成しない。合意が取れたらPR #4をReadyにしてマージ、フェーズ2（受注・発注管理＋納品書発行）着手。shorts-factoryの補充停止（出力は2026-08-14 09:06が最後）は3日目に入っても未着手で、Mac側でTopviewのログイン可否と残クレジットの確認が必要。あわせて `link-architecture.md` へ『スキル同期は不足分の追加のみ・既存を上書きしない』を追記する。"
 ---
 
 # セッション引き継ぎ
@@ -44,13 +44,14 @@ next_action: "販売管理システムは業務担当者の合意待ちが唯一
 - **注意**: Windowsからは `fcntl` 依存で pipeline 実行・deploy ともに不可。runtime操作はMacで行う。
 - **詳細**: `05_プロジェクト/shorts-factory/`、`.company/projects/shorts-factory/2026-07-16-drive-lock-root-fix-debug-log.md`
 
-### リポジトリ構成 — リンク方式へ移行 (最終更新: 2026-08-16)
+### リポジトリ構成 — リンク方式へ移行 (最終更新: 2026-08-18)
 
 - **到達点**: `C:\YNFactory-cc` を本体とし、重い領域だけをジャンクションでDriveへ逃がす構成へ移行完了。約57.2GBを集約。`git status` はクリーン。仕様と判断基準は **`02_設定/docs/link-architecture.md`**（未処理課題は §8 に集約）。
 - **残る作業はCoworkの接続先切替のみ**: デスクトップアプリの「フォルダを追加」で `C:\YNFactory-cc` を接続する。切替後、`multi-pc-rules.md` §1 と `setup-multi-pc.md` の「移行中の注意」段落を削除する。
 - **落とし穴（重要）**: Windowsのジャンクションは Python の `Path.is_symlink()` も `os.path.islink()` も **False** を返す。リパースポイント属性（`0x400`）でしか判定できない。`sync_drive_git.py` に `is_link()` を追加して対応済み。未対応だと `shutil.rmtree` がリンクを貫通してDrive上の成果物を消しうる。
 - **リンクを外すとき**: `rmdir /s /q` を使わない。リンク先まで消える。PowerShellは `[IO.Directory]::Delete($path, $false)`。
 - **命名ルール**: `05_プロジェクト` は `YYYYMMDD_` プレフィックス付きで統一。**Drive側だけでリネームするとGitHubに反映されず両方が生き残る**（今回18組の二重化の原因）。
+- **スキルは3か所に実体を置く (2026-08-18)**: `.claude/skills`（Claude Code）／`.codex/skills`（Codex）／`.agents/skills`（共通ミラー）に各72スキル。Drive側3か所も同数。**同名スキルでも Claude版と Codex版で中身が違うものがある**（例: `ebook-to-manga` は `.codex` 版113KB / `.claude` 版27KB）。**Drive↔ローカルのスキル同期は「不足分の追加のみ」で行い、既存ファイルを上書きしない**（`robocopy /XC /XN /XO`）。2026-08-18に上書き事故を起こし1,819行を消したが、push前に `git checkout` で復旧している。`link-architecture.md` への明文化は未了。
 - **退避（未削除・3か所）**: `%USERPROFILE%\_pre_link_04_インプット` / `_pre_link_projects\` / `_pre_link_root\`（13.7GB）。動作確認が済むまで消さない。済んだら削除してC:の容量を空ける。
 - **`sengoku-game` に注意**: 退避した `_pre_link_root\sengoku-game` が**本流**（独立リポジトリ・master・8コミット）。Drive側は2週間古い。捨てないこと。詳細は `link-architecture.md` §8-7。
 - **未処理5件（`link-architecture.md` §8）**: Drive上の入れ子`.git`（8-1）、開発ゴミ290MB（8-2）、Mac側symlink未検証（8-4）、sengoku-gameの置き場所（8-7）、win5/data 92.5MB（8-8）。
