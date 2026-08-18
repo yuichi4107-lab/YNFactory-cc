@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>販売管理システム UIモックアップ</title>
+<style>
+  :root {
+    --page-bg: #eef1f4; --page-text: #1f2933; --note-bg: #fef9c3; --note-border: #eab308; --note-text: #713f12;
+    --bg: #f4f6f8; --card: #ffffff; --border: #d5dbe1;
+    --text: #1f2933; --sub: #6b7280; --accent: #2563eb; --accent-soft: #eff6ff;
+    --green: #16a34a; --orange: #ea580c; --gray: #6b7280; --blue: #2563eb; --dgreen: #166534;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --page-bg: #14181d; --page-text: #d7dce2; --note-bg: #2c2612; --note-border: #a16207; --note-text: #fde68a; }
+  }
+  :root[data-theme="dark"] { --page-bg: #14181d; --page-text: #d7dce2; --note-bg: #2c2612; --note-border: #a16207; --note-text: #fde68a; }
+  :root[data-theme="light"] { --page-bg: #eef1f4; --page-text: #1f2933; --note-bg: #fef9c3; --note-border: #eab308; --note-text: #713f12; }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+         background: var(--page-bg); color: var(--page-text); font-size: 15px; }
+  .page-head { max-width: 1080px; margin: 28px auto 0; padding: 0 16px; }
+  .page-head h1 { font-size: 20px; margin: 0 0 6px; }
+  .page-head p { margin: 0; font-size: 13px; opacity: .75; }
+  .note { max-width: 1080px; margin: 14px auto 0; padding: 10px 16px; background: var(--note-bg);
+          border: 1px solid var(--note-border); border-radius: 8px; font-size: 13px; color: var(--note-text); }
+
+  /* ---- モックアップ用の画面切替タブ(実アプリにはない確認用UI) ---- */
+  .mock-tabs { max-width: 1080px; margin: 16px auto 0; padding: 0 16px; display: flex; gap: 8px;
+               flex-wrap: wrap; }
+  .mock-tabs button { padding: 9px 18px; border-radius: 8px 8px 0 0; border: 1px solid var(--border);
+                      border-bottom: none; background: #dde3ea; color: #475569; cursor: pointer;
+                      font-size: 14px; }
+  .mock-tabs button.active { background: #1e3a5f; color: #fff; border-color: #1e3a5f; font-weight: 600; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* 以下はアプリ画面のモック(アプリ自体はライト基調のデザインで固定) */
+  header.app { background: #1e3a5f; color: #fff; padding: 10px 20px; display: flex;
+               align-items: center; gap: 24px; }
+  header.app h1 { font-size: 16px; margin: 0 24px 0 0; color: #fff; }
+  header.app nav a { color: #cbd5e1; text-decoration: none; margin-right: 18px; font-size: 14px;
+                     padding: 6px 2px; }
+  header.app nav a.active { color: #fff; border-bottom: 2px solid #60a5fa; }
+  .screen { max-width: 1080px; margin: 24px auto; background: var(--card); color: var(--text);
+            border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+            box-shadow: 0 2px 10px rgba(15, 30, 50, .12); }
+  .screen-label { background: #e2e8f0; padding: 6px 16px; font-size: 12px; color: #475569;
+                  letter-spacing: .05em; }
+  .screen-body { padding: 18px 20px; }
+  .scroll-x { overflow-x: auto; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+  .toolbar label { font-size: 13px; color: var(--sub); }
+  input, select, button { font: inherit; padding: 7px 10px; border: 1px solid var(--border);
+                          border-radius: 6px; background: #fff; color: var(--text); }
+  input[readonly] { background: #f1f5f9; color: var(--sub); }
+  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); cursor: pointer; }
+  button.ghost { background: #fff; color: var(--accent); border-color: var(--accent); cursor: pointer; }
+  button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible {
+    outline: 2px solid #60a5fa; outline-offset: 1px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { border-bottom: 1px solid var(--border); padding: 8px 10px; text-align: left; white-space: nowrap; }
+  th { background: #f8fafc; font-weight: 600; font-size: 13px; color: #475569; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tbody tr:hover td { background: var(--accent-soft); cursor: pointer; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; color: #fff; }
+  .b-gray { background: var(--gray); } .b-blue { background: var(--blue); }
+  .b-green { background: var(--green); } .b-orange { background: var(--orange); }
+  .b-dgreen { background: var(--dgreen); }
+  .sumrow { background: #f8fafc; border-top: 2px solid var(--border); padding: 10px 12px;
+            display: flex; gap: 28px; font-size: 14px; flex-wrap: wrap; }
+  .sumrow b { font-size: 15px; font-variant-numeric: tabular-nums; }
+  .subhead { margin: 20px 0 8px; font-size: 14px; color: #475569; }
+  table.plain tbody tr:hover td { background: transparent; cursor: default; }
+  table.plain td button { padding: 4px 10px; font-size: 13px; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 760px) { .cards { grid-template-columns: 1fr; } }
+  .card { border: 1px solid var(--border); border-radius: 8px; background: #fff; }
+  .card h3 { margin: 0; padding: 10px 14px; font-size: 14px; background: #f1f5f9;
+             border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .card .rows { padding: 10px 14px; display: grid; grid-template-columns: 96px 1fr; gap: 8px 10px;
+                align-items: center; }
+  .card .rows label { font-size: 13px; color: var(--sub); }
+  .profit { margin: 0 14px 12px; padding: 8px 12px; background: #f0fdf4; border: 1px solid #bbf7d0;
+            border-radius: 6px; font-size: 14px; color: #14532d; }
+  .head-info { display: flex; gap: 16px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+  .head-info .mno { font-size: 20px; font-weight: 700; }
+  .section { margin-top: 16px; padding: 12px 14px; border: 1px dashed var(--border); border-radius: 8px;
+             display: flex; gap: 12px; align-items: center; flex-wrap: wrap; font-size: 14px; }
+  .actions { margin-top: 18px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .spacer { flex: 1; }
+
+  /* ---- 帳票プレビュー(A4シート: 210mm×297mm = 794px×1123px @96dpi) ---- */
+  .preview-toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 16px;
+                     font-size: 13px; color: var(--sub); }
+  .sheet-wrap { overflow-x: auto; }
+  .sheet { background: #fff; color: #111; width: 794px; min-height: 1123px; margin: 0 auto;
+           padding: 75px 57px; /* 余白 上下20mm・左右15mm 相当 */
+           border: 1px solid var(--border); box-shadow: 0 2px 12px rgba(15,30,50,.15); font-size: 14px; }
+  .sheet h2 { text-align: center; font-size: 24px; letter-spacing: .9em; text-indent: .9em;
+              margin: 0 0 20px; font-weight: 700; }
+  .sheet .meta { text-align: right; font-size: 13px; margin-bottom: 8px; }
+  .sheet .parties { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+  .sheet .to { font-size: 17px; border-bottom: 1px solid #111; padding-bottom: 4px; }
+  .sheet .from { font-size: 12px; text-align: right; line-height: 1.7; }
+  .sheet .greet { margin: 10px 0 14px; }
+  .sheet table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .sheet th, .sheet td { border: 1px solid #333; padding: 7px 8px; white-space: normal; }
+  .sheet th { background: #f1f5f9; text-align: center; font-weight: 600; }
+  .sheet td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .sheet tbody tr:hover td { background: transparent; cursor: default; }
+  .sheet .total td { font-weight: 700; }
+
+  /* ---- 請求書シート用 ---- */
+  .sheet .amount-box { display: inline-block; margin: 6px 0 14px; padding: 10px 26px;
+                       border: 2px solid #111; font-size: 18px; font-weight: 700; }
+  .sheet .totals { width: 320px; margin: 10px 0 14px auto; }
+  .sheet .totals td { border: 1px solid #333; padding: 6px 10px; }
+  .sheet .pay { font-size: 13px; line-height: 1.8; margin-top: 6px; }
+
+  /* ---- 印刷時: 押した印刷ボタンの帳票シートのみをA4で出力 ---- */
+  @page { size: A4 portrait; margin: 20mm 15mm; }
+  @media print {
+    body { background: #fff; }
+    body[data-print] .page-head, body[data-print] .note, body[data-print] .mock-tabs,
+    body[data-print] .screen { display: none; }
+    body[data-print="delivery"] #pv-delivery, body[data-print="invoice"] #pv-invoice {
+      display: block; border: none; box-shadow: none; border-radius: 0; margin: 0; max-width: none; }
+    .print-target .screen-label, .print-target header.app, .print-target .preview-toolbar { display: none; }
+    .print-target .screen-body { padding: 0; }
+    .sheet { border: none; box-shadow: none; width: auto; min-height: 0; padding: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>販売管理システム UIモックアップ</h1>
+  <p>実際のアプリの4つのページを、下のタブで切り替えて1画面ずつ確認できます。紺色のバー「販売管理」は各画面共通のアプリヘッダーです。</p>
+</div>
+<div class="note">⚠ これは<b>画面イメージ確認用のモックアップ</b>です(検索・保存などは動作しません)。③④の「🖨 印刷」ボタンだけは実際に動き、その帳票だけがA4で印刷されます。</div>
+
+<div class="mock-tabs">
+  <button class="active" data-target="scr-list" onclick="showScreen('scr-list', this)">① 案件一覧</button>
+  <button data-target="scr-detail" onclick="showScreen('scr-detail', this)">② 案件詳細</button>
+  <button data-target="pv-delivery" onclick="showScreen('pv-delivery', this)">③ 納品書(印刷)</button>
+  <button data-target="pv-invoice" onclick="showScreen('pv-invoice', this)">④ 請求書(印刷)</button>
+</div>
+
+<!-- ========== ① 案件一覧 ========== -->
+<div class="screen active" id="scr-list">
+  <div class="screen-label">画面① 案件一覧 — アプリを開くと最初に表示されるホーム画面</div>
+  <header class="app">
+    <h1>販売管理</h1>
+    <nav>
+      <a class="active" href="#">案件一覧</a><a href="#">締め処理</a><a href="#">請求一覧</a><a href="#">マスタ</a>
+    </nav>
+  </header>
+  <div class="screen-body">
+    <div class="toolbar">
+      <label>期間</label>
+      <select><option>受注日</option><option>納品日</option></select>
+      <input type="date" value="2026-07-01"> 〜 <input type="date" value="2026-07-31">
+      <label>客先</label><select><option>すべて</option><option>ダイゴテック</option></select>
+      <label>状態</label><select><option>すべて</option><option>納品済</option></select>
+      <button class="primary">検索</button>
+      <span class="spacer"></span>
+      <button class="primary">+ 新規受注</button>
+      <button class="ghost" onclick="downloadCsv()">⬇ CSVダウンロード</button>
+    </div>
+    <div class="scroll-x">
+      <table>
+        <thead><tr>
+          <th>管理No.</th><th>受注日</th><th>客先</th><th>品名</th><th>型式・図番</th>
+          <th class="num">数量</th><th class="num">受注額</th><th class="num">発注額</th><th class="num">粗利</th>
+          <th>客先納期</th><th>状態</th>
+        </tr></thead>
+        <tbody>
+          <tr onclick="showScreen('scr-detail')"><td>10102</td><td>07/15</td><td>ダイゴテック</td><td>ブラケット</td><td>B0021</td>
+              <td class="num">10</td><td class="num">55,000</td><td class="num">40,000</td><td class="num">15,000</td>
+              <td>08/10</td><td><span class="badge b-blue">発注済</span></td></tr>
+          <tr onclick="showScreen('scr-detail')"><td>10101</td><td>07/12</td><td>山本精機</td><td>プレート</td><td>P-115</td>
+              <td class="num">4</td><td class="num">32,000</td><td class="num">24,000</td><td class="num">8,000</td>
+              <td>07/25</td><td><span class="badge b-gray">受注済</span></td></tr>
+          <tr onclick="showScreen('scr-detail')"><td>10100</td><td>07/10</td><td>ダイゴテック</td><td>シャフト</td><td>A0010</td>
+              <td class="num">2</td><td class="num">20,000</td><td class="num">16,000</td><td class="num">4,000</td>
+              <td>07/31</td><td><span class="badge b-green">納品済</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="sumrow">
+      <span>期間合計(2026-07-01〜2026-07-31)</span>
+      <span>受注額 <b>107,000</b></span><span>発注額 <b>80,000</b></span><span>粗利 <b>27,000</b></span>
+    </div>
+    <h3 class="subhead">■ 客先別集計(指定期間) — 帳票は明細単位ではなく客先単位でまとめて発行します</h3>
+    <div class="scroll-x">
+      <table class="plain">
+        <thead><tr>
+          <th>客先</th><th class="num">件数</th><th class="num">受注額</th><th class="num">発注額</th>
+          <th class="num">粗利</th><th>帳票発行(客先単位)</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td>ダイゴテック</td><td class="num">2</td><td class="num">75,000</td><td class="num">56,000</td><td class="num">19,000</td>
+            <td><button class="ghost" onclick="showScreen('pv-delivery')">納品書発行</button>
+                <button class="ghost" onclick="showScreen('pv-invoice')">請求書発行</button></td>
+          </tr>
+          <tr>
+            <td>山本精機</td><td class="num">1</td><td class="num">32,000</td><td class="num">24,000</td><td class="num">8,000</td>
+            <td><button class="ghost" onclick="showScreen('pv-delivery')">納品書発行</button>
+                <button class="ghost" onclick="showScreen('pv-invoice')">請求書発行</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ========== ② 案件詳細 ========== -->
+<div class="screen" id="scr-detail">
+  <div class="screen-label">画面② 案件詳細 — 受注(左)と発注(右)を並べたカード形式。Excelイメージのレイアウトを踏襲</div>
+  <header class="app">
+    <h1>販売管理</h1>
+    <nav><a href="#">案件一覧</a><a class="active" href="#">案件詳細</a></nav>
+  </header>
+  <div class="screen-body">
+    <div class="head-info">
+      <span class="mno">管理No. 10100</span>
+      <span class="badge b-green">納品済</span>
+      <span class="spacer"></span>
+      <button class="ghost" onclick="showScreen('scr-list')">← 一覧へ戻る</button>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <h3>受注(客先側)</h3>
+        <div class="rows">
+          <label>受注日</label><input type="date" value="2026-07-10">
+          <label>客先納期</label><input type="date" value="2026-07-31">
+          <label>客先</label><select><option>ダイゴテック</option></select>
+          <label>客先担当者</label><input value="山田">
+          <label>客先管理No.</label><input value="">
+          <label>品名</label><input value="シャフト">
+          <label>型式・図番</label><input value="A0010">
+          <label>数量 / 単位</label><span><input value="2" style="width:70px"> <input value="ヶ" style="width:56px"></span>
+          <label>単価</label><input value="10,000">
+          <label>小計(自動)</label><input value="20,000" readonly>
+          <label>備考</label><input value="表面処理注意">
+        </div>
+      </div>
+      <div class="card">
+        <h3><span>発注(仕入先側)</span> <button class="ghost" style="font-size:12px;padding:3px 8px">+ 発注を追加</button></h3>
+        <div class="rows">
+          <label>仕入先</label><select><option>ゆーいち工業</option></select>
+          <label>発注日</label><input type="date" value="2026-07-11">
+          <label>発注納期</label><input type="date" value="2026-07-29">
+          <label>品名</label><input value="シャフト">
+          <label>型式・図番</label><input value="A0010">
+          <label>数量 / 単位</label><span><input value="2" style="width:70px"> <input value="ヶ" style="width:56px"></span>
+          <label>単価</label><input value="8,000">
+          <label>小計(自動)</label><input value="16,000" readonly>
+          <label>備考</label><input value="">
+        </div>
+        <div class="profit">粗利: <b>4,000</b>(受注 20,000 − 発注 16,000)</div>
+      </div>
+    </div>
+    <div class="section">
+      <b>納品</b> 納品日 <input type="date" value="2026-07-29">
+      <button class="primary">納品登録</button>
+      <button class="ghost" onclick="showScreen('pv-delivery')">納品書印刷</button>
+    </div>
+    <div class="actions">
+      <button class="primary" style="padding:9px 28px">保存</button>
+      <button style="color:#b91c1c;border-color:#fca5a5">受注キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== ③ 納品書 印刷プレビュー ========== -->
+<div class="screen print-target" id="pv-delivery">
+  <div class="screen-label">画面③ 納品書 印刷プレビュー — A4サイズの用紙イメージ。「🖨 印刷」でこの帳票だけがA4印刷されます(実際に動きます)</div>
+  <header class="app">
+    <h1>販売管理</h1>
+    <nav><a href="#">案件一覧</a><a href="#">案件詳細</a><a class="active" href="#">納品書プレビュー</a></nav>
+  </header>
+  <div class="screen-body">
+    <div class="preview-toolbar">
+      <label>発行単位</label>
+      <select><option>この案件のみ</option><option>客先でまとめる(複数案件を1枚に)</option></select>
+      <button class="primary" onclick="printSheet('delivery')">🖨 印刷</button>
+      <button class="ghost" onclick="showScreen('scr-detail')">← 案件詳細へ戻る</button>
+      <span>PDFにしたい場合は、印刷ダイアログで「PDFとして保存」を選択(オプション運用)</span>
+    </div>
+    <div class="sheet-wrap"><div class="sheet">
+      <h2>納品書</h2>
+      <div class="meta">納品日: 2026年7月29日<br>管理No.: 10100</div>
+      <div class="parties">
+        <div class="to">ダイゴテック 御中</div>
+        <div class="from">
+          株式会社◯◯◯◯<br>
+          〒XXX-XXXX ◯◯県◯◯市◯◯ 1-2-3<br>
+          TEL: XX-XXXX-XXXX
+        </div>
+      </div>
+      <p class="greet">下記の通り納品いたします。</p>
+      <table>
+        <thead>
+          <tr><th>品名</th><th>型式・図番</th><th>客先管理No.</th><th>数量</th><th>単位</th><th>単価</th><th>金額</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>シャフト</td><td>A0010</td><td></td>
+            <td class="num">2</td><td style="text-align:center">ヶ</td>
+            <td class="num">10,000</td><td class="num">20,000</td>
+          </tr>
+          <tr><td colspan="7" style="color:#888;font-size:12px">(同一客先の納品対象案件が複数ある場合は、ここに明細行が追加されます — 客先単位まとめ発行)</td></tr>
+          <tr class="total">
+            <td colspan="5">備考: 表面処理注意</td>
+            <td style="text-align:center">合計</td><td class="num">¥20,000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div></div>
+  </div>
+</div>
+
+<!-- ========== ④ 請求書 印刷プレビュー ========== -->
+<div class="screen print-target" id="pv-invoice">
+  <div class="screen-label">画面④ 請求書 印刷プレビュー — A4サイズの用紙イメージ(適格請求書対応)。「🖨 印刷」でこの帳票だけがA4印刷されます</div>
+  <header class="app">
+    <h1>販売管理</h1>
+    <nav><a href="#">案件一覧</a><a href="#">締め処理</a><a class="active" href="#">請求書プレビュー</a></nav>
+  </header>
+  <div class="screen-body">
+    <div class="preview-toolbar">
+      <label>対象</label>
+      <select><option>ダイゴテック</option><option>全客先まとめて(客先ごとに1枚ずつ連続印刷)</option></select>
+      <button class="primary" onclick="printSheet('invoice')">🖨 印刷</button>
+      <button class="ghost" onclick="showScreen('scr-list')">← 一覧へ戻る</button>
+      <span>PDFにしたい場合は、印刷ダイアログで「PDFとして保存」を選択(オプション運用)</span>
+    </div>
+    <div class="sheet-wrap"><div class="sheet">
+      <h2>請求書</h2>
+      <div class="meta">請求日: 2026年7月31日<br>請求No.: INV-202607-001</div>
+      <div class="parties">
+        <div class="to">ダイゴテック 御中</div>
+        <div class="from">
+          株式会社◯◯◯◯<br>
+          登録番号: T1234567890123<br>
+          〒XXX-XXXX ◯◯県◯◯市◯◯ 1-2-3<br>
+          TEL: XX-XXXX-XXXX
+        </div>
+      </div>
+      <p class="greet">下記の通りご請求申し上げます。(請求期間: 2026年7月1日〜2026年7月31日)</p>
+      <div class="amount-box">ご請求金額　¥22,000(税込)</div>
+      <table>
+        <thead>
+          <tr><th>管理No.</th><th>受注日</th><th>納品日</th><th>品名</th><th>型式・図番</th><th>数量</th><th>単位</th><th>単価</th><th>小計</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>10100</td><td>07/10</td><td>07/29</td><td>シャフト</td><td>A0010</td>
+            <td class="num">2</td><td style="text-align:center">ヶ</td>
+            <td class="num">10,000</td><td class="num">20,000</td>
+          </tr>
+          <tr><td colspan="9" style="color:#888;font-size:12px">(請求期間内に同一客先の案件が複数ある場合は、ここに明細行が追加され、合計に合算されます — 客先単位で1枚)</td></tr>
+        </tbody>
+      </table>
+      <table class="totals">
+        <tbody>
+          <tr><td>税抜合計(10%対象)</td><td class="num">20,000</td></tr>
+          <tr><td>消費税(10%)</td><td class="num">2,000</td></tr>
+          <tr class="total"><td>ご請求額</td><td class="num">¥22,000</td></tr>
+        </tbody>
+      </table>
+      <div class="pay">
+        お振込先: ◯◯銀行 ◯◯支店 普通 1234567 カ)◯◯◯◯<br>
+        お支払期限: 2026年8月31日
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<script>
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(function (s) {
+      s.classList.toggle('active', s.id === id);
+    });
+    document.querySelectorAll('.mock-tabs button').forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-target') === id);
+    });
+    window.scrollTo(0, 0);
+  }
+  function printSheet(kind) {
+    document.body.setAttribute('data-print', kind);
+    window.print();
+  }
+  function csvEscape(v) {
+    return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+  }
+  function downloadCsv() {
+    var rows = [];
+    document.querySelector('#scr-list table').querySelectorAll('tr').forEach(function (tr) {
+      var cells = [];
+      tr.querySelectorAll('th, td').forEach(function (c) {
+        cells.push(csvEscape(c.innerText.trim()));
+      });
+      if (cells.length) rows.push(cells.join(','));
+    });
+    rows.push('');
+    rows.push(csvEscape(document.querySelector('#scr-list .sumrow').innerText.replace(/\s+/g, ' ').trim()));
+    var blob = new Blob(['﻿' + rows.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '案件一覧_20260701-20260731.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  }
+  window.addEventListener('afterprint', function () {
+    document.body.removeAttribute('data-print');
+  });
+</script>
+</body>
+</html>
