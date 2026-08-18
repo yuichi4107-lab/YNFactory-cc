@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% set nav = 'invoices' %}
+{% block title %}請求一覧 | 販売管理システム{% endblock %}
+{% block content %}
+<div class="panel">
+  <div class="panel-head"><span>S-05 請求一覧</span></div>
+  <div class="panel-body scroll-x">
+    <table>
+      <thead><tr>
+        <th>請求No.</th><th>請求日</th><th>請求期間</th><th>客先</th>
+        <th class="num">税抜合計</th><th class="num">消費税</th><th class="num">請求額</th>
+        <th>状態</th><th>操作</th>
+      </tr></thead>
+      <tbody>
+      {% for i in invoices %}
+        <tr class="{{ 'cancelled' if i.status == 'cancelled' }}">
+          <td>{{ i.invoice_no }}</td>
+          <td>{{ i.issue_date }}</td>
+          <td>{{ i.period_start }}〜{{ i.period_end }}</td>
+          <td>{{ i.customer_name }}</td>
+          <td class="num">{{ i.subtotal | yen }}</td>
+          <td class="num">{{ i.tax | yen }}</td>
+          <td class="num">{{ i.total | yen }}</td>
+          <td><span class="badge s-{{ i.status }}">{{ i.status | invoice_status_label }}</span></td>
+          <td>
+            <a class="btn ghost" target="_blank"
+               href="{{ url_for('invoice_print', ids=i.id) }}">再印刷</a>
+            {% if i.status == 'issued' %}
+              <form method="post" action="{{ url_for('invoice_paid', invoice_id=i.id) }}"
+                    style="display:inline">
+                <button class="ghost" type="submit">入金済にする</button>
+              </form>
+              <form method="post" action="{{ url_for('invoice_cancel', invoice_id=i.id) }}"
+                    style="display:inline">
+                <button class="danger" type="submit"
+                        onclick="return confirm('請求を取り消すと対象案件は納品済に戻ります。よろしいですか？')">請求取消</button>
+              </form>
+            {% endif %}
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="9">発行済みの請求書はありません</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

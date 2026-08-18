@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% set nav = 'masters' %}
+{% block title %}マスタ管理 | 販売管理システム{% endblock %}
+{% block content %}
+<div class="panel">
+  <div class="panel-head"><span>S-06 マスタ管理</span>
+    <span>
+      <a class="btn ghost" href="{{ url_for('masters', tab='customers') }}">客先</a>
+      <a class="btn ghost" href="{{ url_for('masters', tab='suppliers') }}">仕入先</a>
+      <a class="btn ghost" href="{{ url_for('masters', tab='company') }}">自社情報</a>
+    </span>
+  </div>
+  <div class="panel-body">
+
+  {% if tab == 'customers' %}
+    <div class="scroll-x">
+    <table>
+      <thead><tr><th>客先名</th><th>敬称</th><th>郵便番号</th><th>住所</th><th>電話</th>
+        <th>既定担当者</th><th>締め日</th><th>備考</th><th>操作</th></tr></thead>
+      <tbody>
+      {% for c in customers %}
+        <tr>
+          <form method="post" action="{{ url_for('customer_save') }}">
+            <input type="hidden" name="id" value="{{ c.id }}">
+            <td><input name="name" required value="{{ c.name }}"></td>
+            <td><select name="honorific">
+              <option {{ 'selected' if c.honorific == '御中' }}>御中</option>
+              <option {{ 'selected' if c.honorific == '様' }}>様</option></select></td>
+            <td><input name="postal_code" style="width:100px" value="{{ c.postal_code or '' }}"></td>
+            <td><input name="address" value="{{ c.address or '' }}"></td>
+            <td><input name="phone" style="width:130px" value="{{ c.phone or '' }}"></td>
+            <td><input name="default_contact" style="width:100px" value="{{ c.default_contact or '' }}"></td>
+            <td><select name="closing_day">
+              <option value="99" {{ 'selected' if c.closing_day == 99 }}>月末</option>
+              {% for d in range(1, 32) %}
+                <option value="{{ d }}" {{ 'selected' if c.closing_day == d }}>{{ d }}日</option>
+              {% endfor %}</select></td>
+            <td><input name="note" value="{{ c.note or '' }}"></td>
+            <td><button class="ghost" type="submit">保存</button>
+              <button class="danger" type="submit" name="action" value="delete"
+                      onclick="return confirm('この客先を削除しますか？')">削除</button></td>
+          </form>
+        </tr>
+      {% endfor %}
+        <tr>
+          <form method="post" action="{{ url_for('customer_save') }}">
+            <td><input name="name" required placeholder="新規客先名"></td>
+            <td><select name="honorific"><option>御中</option><option>様</option></select></td>
+            <td><input name="postal_code" style="width:100px"></td>
+            <td><input name="address"></td>
+            <td><input name="phone" style="width:130px"></td>
+            <td><input name="default_contact" style="width:100px"></td>
+            <td><select name="closing_day">
+              <option value="99">月末</option>
+              {% for d in range(1, 32) %}<option value="{{ d }}">{{ d }}日</option>{% endfor %}
+            </select></td>
+            <td><input name="note"></td>
+            <td><button class="primary" type="submit">追加</button></td>
+          </form>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+  {% elif tab == 'suppliers' %}
+    <div class="scroll-x">
+    <table>
+      <thead><tr><th>仕入先名</th><th>郵便番号</th><th>住所</th><th>電話</th><th>備考</th>
+        <th>操作</th></tr></thead>
+      <tbody>
+      {% for s in suppliers %}
+        <tr>
+          <form method="post" action="{{ url_for('supplier_save') }}">
+            <input type="hidden" name="id" value="{{ s.id }}">
+            <td><input name="name" required value="{{ s.name }}"></td>
+            <td><input name="postal_code" style="width:100px" value="{{ s.postal_code or '' }}"></td>
+            <td><input name="address" value="{{ s.address or '' }}"></td>
+            <td><input name="phone" style="width:130px" value="{{ s.phone or '' }}"></td>
+            <td><input name="note" value="{{ s.note or '' }}"></td>
+            <td><button class="ghost" type="submit">保存</button>
+              <button class="danger" type="submit" name="action" value="delete"
+                      onclick="return confirm('この仕入先を削除しますか？')">削除</button></td>
+          </form>
+        </tr>
+      {% endfor %}
+        <tr>
+          <form method="post" action="{{ url_for('supplier_save') }}">
+            <td><input name="name" required placeholder="新規仕入先名"></td>
+            <td><input name="postal_code" style="width:100px"></td>
+            <td><input name="address"></td>
+            <td><input name="phone" style="width:130px"></td>
+            <td><input name="note"></td>
+            <td><button class="primary" type="submit">追加</button></td>
+          </form>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+  {% else %}
+    <form method="post" action="{{ url_for('company_save') }}" style="max-width:620px">
+      <div class="field"><label>社名</label>
+        <input name="company_name" value="{{ company.company_name or '' }}"></div>
+      <div class="field"><label>郵便番号</label>
+        <input name="postal_code" value="{{ company.postal_code or '' }}"></div>
+      <div class="field"><label>住所</label>
+        <input name="address" value="{{ company.address or '' }}"></div>
+      <div class="field"><label>電話</label>
+        <input name="phone" value="{{ company.phone or '' }}"></div>
+      <div class="field"><label>登録番号</label>
+        <input name="invoice_reg_no" placeholder="T1234567890123"
+               value="{{ company.invoice_reg_no or '' }}"></div>
+      <div class="field"><label>振込先</label>
+        <input name="bank_info" placeholder="◯◯銀行 ◯◯支店 普通 1234567 カ)◯◯◯◯"
+               value="{{ company.bank_info or '' }}"></div>
+      <div class="field"><label>消費税率(%)</label>
+        <input type="number" name="tax_rate" min="0" max="99" value="{{ company.tax_rate }}"></div>
+      <div class="field"><label>次の管理No.</label>
+        <input value="{{ company.next_order_no }}" readonly></div>
+      <button class="primary" type="submit">保存</button>
+      <p class="hint">帳票に印字されます。適格請求書の要件のため、登録番号は必ず設定してください。</p>
+    </form>
+  {% endif %}
+  </div>
+</div>
+{% endblock %}

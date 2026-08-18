@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% set nav = 'orders' %}
+{% block title %}案件一覧 | 販売管理システム{% endblock %}
+{% block content %}
+<div class="panel">
+  <div class="panel-head"><span>S-02 案件一覧</span>
+    <span><a class="btn primary" href="{{ url_for('order_new') }}">新規受注</a></span>
+  </div>
+  <div class="panel-body">
+    <form class="toolbar" method="get" action="{{ url_for('order_list') }}">
+      <label>期間</label>
+      <select name="date_field">
+        <option value="order_date" {{ 'selected' if f.date_field == 'order_date' }}>受注日</option>
+        <option value="delivery_date" {{ 'selected' if f.date_field == 'delivery_date' }}>納品日</option>
+      </select>
+      <input type="date" name="date_from" value="{{ f.date_from }}">
+      〜
+      <input type="date" name="date_to" value="{{ f.date_to }}">
+      <label>客先</label>
+      <select name="customer_id">
+        <option value="">すべて</option>
+        {% for c in customers %}
+          <option value="{{ c.id }}" {{ 'selected' if f.customer_id == c.id }}>{{ c.name }}</option>
+        {% endfor %}
+      </select>
+      <label>仕入先</label>
+      <select name="supplier_id">
+        <option value="">すべて</option>
+        {% for s in suppliers %}
+          <option value="{{ s.id }}" {{ 'selected' if f.supplier_id == s.id }}>{{ s.name }}</option>
+        {% endfor %}
+      </select>
+      <label>状態</label>
+      <select name="status">
+        <option value="">すべて</option>
+        {% for key, label in statuses.items() %}
+          <option value="{{ key }}" {{ 'selected' if f.status == key }}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <input type="search" name="keyword" value="{{ f.keyword }}" placeholder="品名・型式">
+      <button class="primary" type="submit">検索</button>
+      <a class="btn ghost" href="{{ url_for('order_list') }}">クリア</a>
+      <a class="btn ghost" href="{{ url_for('order_list_csv', **request.args) }}">⬇ CSVダウンロード</a>
+    </form>
+
+    <div class="scroll-x">
+    <table>
+      <thead><tr>
+        <th>管理No.</th><th>受注日</th><th>客先</th><th>品名</th><th>型式・図番</th>
+        <th class="num">数量</th><th class="num">受注額</th><th class="num">発注額</th>
+        <th class="num">粗利</th><th>客先納期</th><th>納品日</th><th>状態</th>
+      </tr></thead>
+      <tbody>
+      {% for r in rows %}
+        <tr class="row-link {{ 'cancelled' if r.status == 'cancelled' }}"
+            onclick="location.href='{{ url_for('order_detail', order_id=r.id) }}'">
+          <td>{{ r.order_no }}</td>
+          <td>{{ r.order_date | md }}</td>
+          <td>{{ r.customer_name }}</td>
+          <td>{{ r.product_name }}{% if r.line_count > 1 %} 他{{ r.line_count - 1 }}件{% endif %}</td>
+          <td>{{ r.model_no or '' }}</td>
+          <td class="num">{% if r.line_count == 1 %}{{ r.quantity }}{% endif %}</td>
+          <td class="num">{{ r.order_amount | yen }}</td>
+          <td class="num">{{ r.purchase_amount | yen }}</td>
+          <td class="num">{{ (r.order_amount - r.purchase_amount) | yen }}</td>
+          <td>{{ r.customer_due_date | md }}</td>
+          <td>{{ r.delivery_date | md }}</td>
+          <td><span class="badge s-{{ r.status }}">{{ r.status | status_label }}</span></td>
+        </tr>
+      {% else %}
+        <tr><td colspan="12">該当する案件がありません</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </div>
+  <div class="sumrow">
+    <span>期間合計({{ f.date_from }}〜{{ f.date_to }})</span>
+    <span>件数 <b>{{ total.count }}</b></span>
+    <span>受注額 <b>{{ total.order_amount | yen }}</b></span>
+    <span>発注額 <b>{{ total.purchase_amount | yen }}</b></span>
+    <span>粗利 <b>{{ total.profit | yen }}</b></span>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-head"><span>客先別集計(指定期間)</span></div>
+  <div class="panel-body scroll-x">
+    <table>
+      <thead><tr>
+        <th>客先</th><th class="num">件数</th><th class="num">受注額</th><th class="num">発注額</th>
+        <th class="num">粗利</th><th>帳票発行(客先単位)</th>
+      </tr></thead>
+      <tbody>
+      {% for c in by_customer %}
+        <tr>
+          <td>{{ c.customer_name }}</td>
+          <td class="num">{{ c.count }}</td>
+          <td class="num">{{ c.order_amount | yen }}</td>
+          <td class="num">{{ c.purchase_amount | yen }}</td>
+          <td class="num">{{ c.profit | yen }}</td>
+          <td>
+            <a class="btn ghost" target="_blank"
+               href="{{ url_for('delivery_note', scope='customer', customer_id=c.customer_id,
+                                date_from=f.date_from, date_to=f.date_to) }}">納品書発行</a>
+            <a class="btn ghost"
+               href="{{ url_for('closing', customer_id=c.customer_id) }}">請求書発行</a>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6">対象がありません</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
