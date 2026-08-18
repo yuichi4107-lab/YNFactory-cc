@@ -9,6 +9,7 @@
 set -e
 cd /opt/keiba-unified/keiba-ai-system
 export PYTHONPATH=.
+set -a; source /opt/keiba-unified/keiba-ai-system/.env; set +a
 
 HALF="${1:-first}"
 EXPECTED_TYPE="${2:-}"
@@ -18,7 +19,7 @@ LOGPREFIX="[$(date '+%Y-%m-%d %H:%M:%S')]"
 echo "$LOGPREFIX run_banei.sh HALF=$HALF EXPECTED_TYPE=$EXPECTED_TYPE DATE=$TODAY"
 
 # --- 開催日・race_type確認 ---
-ACTUAL_TYPE=$(./venv/bin/python - <<'PYEOF'
+ACTUAL_TYPE=$(/opt/keiba-unified/keiba-ai-system/venv/bin/python - <<'PYEOF'
 import sys
 sys.path.insert(0, '.')
 from scripts.check_race_day import get_race_type
@@ -46,15 +47,15 @@ fi
 case "$HALF" in
     first)
         echo "$LOGPREFIX 前半予想（1R〜5R）開始"
-        ./venv/bin/python scripts/daily_predict.py --date "$TODAY" --race-from 1 --race-to 5
+        /opt/keiba-unified/keiba-ai-system/venv/bin/python scripts/daily_predict.py --date "$TODAY" --race-from 1 --race-to 5
         ;;
     second)
         echo "$LOGPREFIX 後半予想（6R〜12R）開始"
-        ./venv/bin/python scripts/daily_predict.py --date "$TODAY" --race-from 6 --race-to 12
+        /opt/keiba-unified/keiba-ai-system/venv/bin/python scripts/daily_predict.py --date "$TODAY" --race-from 6 --race-to 12
         ;;
     collect)
         echo "$LOGPREFIX 結果収集開始"
-        ./venv/bin/python scripts/collect_results.py --date "$TODAY"
+        /opt/keiba-unified/keiba-ai-system/venv/bin/python scripts/collect_results.py --date "$TODAY"
         ;;
     *)
         echo "$LOGPREFIX エラー: 不明なhalf指定: $HALF"
