@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% set nav = 'orders' %}
+{% set line = lines[0] if lines else None %}
+{% set ro = ' readonly' if order and not editable else '' %}
+{% block title %}案件詳細 | 販売管理システム{% endblock %}
+{% block content %}
+<div class="panel">
+  <div class="panel-head">
+    <span>S-03 案件詳細　管理No. {{ order.order_no if order else '(登録時に自動採番)' }}</span>
+    <span>
+      {% if order %}<span class="badge s-{{ order.status }}">{{ order.status | status_label }}</span>{% endif %}
+      <a class="btn ghost" href="{{ url_for('order_list') }}">一覧へ戻る</a>
+    </span>
+  </div>
+  <div class="panel-body">
+    {% if order and not editable %}
+      <div class="flash warn">請求済以降のため、金額・数量は編集できません（請求一覧から請求を取り消すと編集できます）。</div>
+    {% endif %}
+    <div class="cards">
+      <!-- 受注（客先側） -->
+      <form class="card" method="post"
+            action="{{ url_for('order_update', order_id=order.id) if order else url_for('order_create') }}">
+        <h3>■ 受注(客先側)</h3>
+        <div class="card-body">
+          <div class="field"><label>受注日</label>
+            <input type="date" name="order_date" required
+                   value="{{ order.order_date if order else today() }}"></div>
+          <div class="field"><label>客先納期</label>
+            <input type="date" name="customer_due_date" required
+                   value="{{ order.customer_due_date if order else '' }}"></div>
+          <div class="field"><label>客先</label>
+            <select name="customer_id" required>
+              {% for c in customers %}
+                <option value="{{ c.id }}" {{ 'selected' if order and order.customer_id == c.id }}>{{ c.name }}</option>
+              {% endfor %}
+            </select></div>
+          <div class="field"><label>客先担当者</label>
+            <input name="customer_contact" value="{{ order.customer_contact or '' if order else '' }}"></div>
+          <div class="field"><label>客先管理No.</label>
+            <input name="customer_order_no" value="{{ order.customer_order_no or '' if order else '' }}"></div>
+          <div class="field"><label>品名</label>
+            <input name="product_name" required value="{{ line.product_name if line else '' }}"{{ ro }}></div>
+          <div class="field"><label>型式・図番</label>
+            <input name="model_no" value="{{ line.model_no or '' if line else '' }}"{{ ro }}></div>
+          <div class="field"><label>数量 / 単位</label>
+            <span><input type="number" name="quantity" min="1" required style="width:90px"
+                         value="{{ line.quantity if line else 1 }}" data-calc="so"{{ ro }}>
+              <input name="unit" style="width:70px" value="{{ line.unit if line else 'ヶ' }}"{{ ro }}></span></div>
+          <div class="field"><label>単価</label>
+            <input type="number" name="unit_price" min="0" required
+                   value="{{ line.unit_price if line else 0 }}" data-calc="so"{{ ro }}></div>
+          <div class="field"><label>小計</label><span class="calc" id="so-amount">0</span></div>
+          <div class="field"><label>備考</label>
+            <input name="note" value="{{ line.note or '' if line else '' }}"{{ ro }}></div>
+          <div style="margin-top:12px">
+            <button class="primary" type="submit">保存</button>
+          </div>
+        </div>
+      </form>
+
+      <!-- 発注（仕入先側） -->
+      <div class="card">
+        <h3>■ 発注(仕入先側)</h3>
+        <div class="card-body">
+          {% if order %}
+            {% for p in pos %}
+              <form method="post" action="{{ url_for('purchase_order_update', po_id=p.id) }}"
+                    style="border-bottom:1px solid #e2e8f0;padding-bottom:10px;margin-bottom:10px">
+                <div class="field"><label>仕入先</label>
+                  <select name="supplier_id" required>
+                    {% for s in suppliers %}
+                      <option value="{{ s.id }}" {{ 'selected' if p.supplier_id == s.id }}>{{ s.name }}</option>
+                    {% endfor %}
+                  </select></div>
+                <div class="field"><label>発注日</label>
+                  <input type="date" name="po_date" required value="{{ p.po_date }}"></div>
+                <div class="field"><label>発注納期</label>
+                  <input type="date" name="supplier_due_date" required value="{{ p.supplier_due_date }}"></div>
+                <div class="field"><label>品名</label>
+                  <input name="product_name" required value="{{ p.product_name }}"{{ ro }}></div>
+                <div class="field"><label>型式・図番</label>
+                  <input name="model_no" value="{{ p.model_no or '' }}"{{ ro }}></div>
+                <div class="field"><label>数量 / 単位</label>
+                  <span><input type="number" name="quantity" min="1" required style="width:90px"
+                               value="{{ p.quantity }}"{{ ro }}>
+                    <input name="unit" style="width:70px" value="{{ p.unit }}"{{ ro }}></span></div>
+                <div class="field"><label>単価</label>
+                  <input type="number" name="unit_price" min="0" required value="{{ p.unit_price }}"{{ ro }}></div>
+                <div class="field"><label>小計</label>
+                  <span class="calc">{{ (p.quantity * p.unit_price) | yen }}</span></div>
+                <div class="field"><label>備考</label>
+                  <input name="note" value="{{ p.note or '' }}"{{ ro }}></div>
+                <button class="ghost" type="submit">保存</button>
+                <button class="danger" type="submit" name="action" value="delete"
+                        onclick="return confirm('この発注を削除しますか？')">削除</button>
+              </form>
+            {% endfor %}
+
+            <details {{ 'open' if not pos }}>
+              <summary>＋発注を追加</summary>
+              <form method="post" action="{{ url_for('purchase_order_add', order_id=order.id) }}"
+                    style="margin-top:10px">
+                <div class="field"><label>仕入先</label>
+                  <select name="supplier_id" required>
+                    {% for s in suppliers %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+                  </select></div>
+                <div class="field"><label>発注日</label>
+                  <input type="date" name="po_date" required value="{{ today() }}"></div>
+                <div class="field"><label>発注納期</label>
+                  <input type="date" name="supplier_due_date" required
+                         value="{{ order.customer_due_date }}"></div>
+                <div class="field"><label>品名</label>
+                  <input name="product_name" required value="{{ line.product_name if line else '' }}"></div>
+                <div class="field"><label>型式・図番</label>
+                  <input name="model_no" value="{{ line.model_no or '' if line else '' }}"></div>
+                <div class="field"><label>数量 / 単位</label>
+                  <span><input type="number" name="quantity" min="1" required style="width:90px"
+                               value="{{ line.quantity if line else 1 }}">
+                    <input name="unit" style="width:70px" value="{{ line.unit if line else 'ヶ' }}"></span></div>
+                <div class="field"><label>単価</label>
+                  <input type="number" name="unit_price" min="0" required value="0"></div>
+                <div class="field"><label>備考</label>
+                  <input name="note" value="{{ line.note or '' if line else '' }}"></div>
+                <button class="primary" type="submit">発注を追加</button>
+              </form>
+            </details>
+
+            <div class="profit">粗利: <b>{{ (order.order_amount - order.purchase_amount) | yen }}</b>
+              (受注 {{ order.order_amount | yen }} − 発注 {{ order.purchase_amount | yen }})</div>
+          {% else %}
+            <p class="hint">受注を保存すると発注を追加できます。</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if order %}
+    <div class="card" style="margin-top:16px">
+      <h3>■ 納品</h3>
+      <div class="card-body">
+        <form method="post" action="{{ url_for('delivery_save', order_id=order.id) }}"
+              style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <label>納品日</label>
+          <input type="date" name="delivery_date" required value="{{ order.delivery_date or today() }}">
+          <button class="primary" type="submit">納品登録</button>
+        </form>
+        <div style="margin-top:10px">
+          {% if order.delivery_date %}
+            <a class="btn ghost" target="_blank"
+               href="{{ url_for('delivery_note', scope='order', order_id=order.id) }}">納品書印刷</a>
+          {% else %}
+            <span class="hint">納品日を登録すると納品書を印刷できます。</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if cancellable %}
+      <form method="post" action="{{ url_for('order_cancel', order_id=order.id) }}" style="margin-top:14px">
+        <button class="danger" type="submit"
+                onclick="return confirm('この受注を取り消しますか？')">受注キャンセル</button>
+      </form>
+    {% endif %}
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  // 小計の自動計算（受注側）
+  function recalc() {
+    var q = document.querySelector('input[name="quantity"][data-calc="so"]');
+    var p = document.querySelector('input[name="unit_price"][data-calc="so"]');
+    var out = document.getElementById('so-amount');
+    if (!q || !p || !out) return;
+    out.textContent = ((Number(q.value) || 0) * (Number(p.value) || 0)).toLocaleString('ja-JP');
+  }
+  document.querySelectorAll('[data-calc="so"]').forEach(function (el) {
+    el.addEventListener('input', recalc);
+  });
+  recalc();
+</script>
+{% endblock %}

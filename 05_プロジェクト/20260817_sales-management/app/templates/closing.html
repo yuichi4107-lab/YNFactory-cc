@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% set nav = 'closing' %}
+{% block title %}締め処理 | 販売管理システム{% endblock %}
+{% block content %}
+<div class="panel">
+  <div class="panel-head"><span>S-04 締め処理(請求書作成)</span></div>
+  <div class="panel-body">
+    <form class="toolbar" method="get" action="{{ url_for('closing') }}">
+      <label>客先</label>
+      <select name="customer_id">
+        <option value="">選択してください</option>
+        <option value="all" {{ 'selected' if bulk }}>全客先(一括)</option>
+        {% for c in customers %}
+          <option value="{{ c.id }}" {{ 'selected' if customer_id == c.id }}>
+            {{ c.name }}（締め {{ closing_label(c.closing_day) }}）</option>
+        {% endfor %}
+      </select>
+      <label>締め対象</label>
+      <input type="number" name="year" style="width:100px" value="{{ year }}">年
+      <input type="number" name="month" style="width:80px" min="1" max="12" value="{{ month }}">月
+      {% if not bulk %}
+        <label>請求期間</label>
+        <input type="date" name="period_start"
+               value="{{ groups[0].period_start if groups else '' }}">
+        〜
+        <input type="date" name="period_end"
+               value="{{ groups[0].period_end if groups else '' }}">
+        <span class="hint">空欄なら締め日から自動計算</span>
+      {% endif %}
+      <button class="primary" type="submit">請求対象を抽出</button>
+    </form>
+
+    {% if groups %}
+    <form method="post" action="{{ url_for('closing_confirm') }}">
+      <div class="toolbar">
+        <label>請求日</label><input type="date" name="issue_date" value="{{ today() }}">
+      </div>
+      {% for g in groups %}
+        <input type="hidden" name="customer_ids" value="{{ g.customer.id }}">
+        <div class="subhead">{{ g.customer.name }}（締め日 {{ closing_label(g.customer.closing_day) }}）</div>
+        <div class="toolbar">
+          <label>請求期間</label>
+          <input type="date" name="period_start_{{ g.customer.id }}" value="{{ g.period_start }}">
+          〜
+          <input type="date" name="period_end_{{ g.customer.id }}" value="{{ g.period_end }}">
+          <span class="hint">締め日から自動計算。上の検索欄で期間を変えて「請求対象を抽出」すると明細が再表示されます</span>
+        </div>
+        <div class="scroll-x">
+        <table>
+          <thead><tr>
+            <th>選択</th><th>注文管理No.</th><th>受注日</th><th>納品日</th><th>品名</th>
+            <th>型式・図番</th><th class="num">数量</th><th>単位</th><th class="num">単価</th>
+            <th class="num">小計</th><th>備考</th>
+          </tr></thead>
+          <tbody>
+          {% for l in g.lines %}
+            <tr>
+              <td><input type="checkbox" name="line_ids" value="{{ l.line_id }}" checked></td>
+              <td>{{ l.order_no }}</td>
+              <td>{{ l.order_date | md }}</td>
+              <td>{{ l.delivery_date | md }}</td>
+              <td>{{ l.product_name }}</td>
+              <td>{{ l.model_no or '' }}</td>
+              <td class="num">{{ l.quantity }}</td>
+              <td>{{ l.unit }}</td>
+              <td class="num">{{ l.unit_price | yen }}</td>
+              <td class="num">{{ l.amount | yen }}</td>
+              <td>{{ l.note or '' }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="11">請求対象がありません</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        </div>
+        <div class="sumrow">
+          <span>税抜合計 <b>{{ g.subtotal | yen }}</b></span>
+          <span>消費税({{ company.tax_rate }}%) <b>{{ g.tax | yen }}</b></span>
+          <span>ご請求額 <b>¥{{ g.total | yen }}</b></span>
+        </div>
+      {% endfor %}
+      <div style="margin-top:14px">
+        <button class="primary" type="submit"
+                onclick="return confirm('請求書を確定します。よろしいですか？')">請求書を確定して印刷</button>
+      </div>
+    </form>
+    {% elif customer_id or bulk %}
+      <p class="hint">請求対象（期間内に納品済みかつ未請求）の明細がありません。</p>
+    {% else %}
+      <p class="hint">客先と締め対象の年月を選んで「請求対象を抽出」を押してください。</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

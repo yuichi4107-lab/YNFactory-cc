@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>納品書</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='print.css') }}">
+</head>
+<body>
+<div class="print-bar">
+  <button onclick="window.print()">印刷</button>
+  <label>発行単位</label>
+  <select onchange="location.href = this.value">
+    <option value="{{ url_for('delivery_note', scope='order', order_id=order_id) }}"
+            {{ 'selected' if scope == 'order' }} {{ 'disabled' if not order_id }}>この案件のみ</option>
+    <option value="{{ url_for('delivery_note', scope='customer', customer_id=customer.id) }}"
+            {{ 'selected' if scope == 'customer' }}>客先でまとめる</option>
+  </select>
+  <span>PDFが必要な場合は印刷ダイアログで「PDFとして保存」を選んでください。</span>
+</div>
+
+{% for page in items | batch(10) %}
+<div class="sheet">
+  <h1 class="title">納品書</h1>
+  <div class="meta">
+    納品日: {{ delivery_date | jpdate }}<br>
+    {% if scope == 'order' and items %}管理No.: {{ items[0].order.order_no }}{% endif %}
+  </div>
+  <div class="head-grid">
+    <div class="to">
+      <div class="name">{{ customer.name }} {{ customer.honorific or '御中' }}</div>
+      <div class="addr">{% if customer.postal_code %}〒{{ customer.postal_code }}
+{% endif %}{{ customer.address or '' }}</div>
+    </div>
+    <div class="from">
+      <div class="company">{{ company.company_name or '（自社情報を登録してください）' }}</div>
+      {% if company.postal_code %}〒{{ company.postal_code }}<br>{% endif %}
+      {{ company.address or '' }}<br>
+      {% if company.phone %}TEL: {{ company.phone }}{% endif %}
+    </div>
+  </div>
+  <p class="lead">下記の通り納品いたします。</p>
+  <table class="items">
+    <thead><tr>
+      <th style="width:22%">品名</th><th style="width:16%">型式・図番</th>
+      <th style="width:16%">客先管理No.</th><th style="width:8%">数量</th><th style="width:8%">単位</th>
+      <th style="width:15%">単価</th><th style="width:15%">金額</th>
+    </tr></thead>
+    <tbody>
+    {% for it in page %}
+      <tr>
+        <td>{{ it.line.product_name }}</td>
+        <td>{{ it.line.model_no or '' }}</td>
+        <td>{{ it.order.customer_order_no or '' }}</td>
+        <td class="num">{{ it.line.quantity }}</td>
+        <td style="text-align:center">{{ it.line.unit or '' }}</td>
+        <td class="num">{{ it.line.unit_price | yen }}</td>
+        <td class="num">{{ it.amount | yen }}</td>
+      </tr>
+      {% if it.line.note %}
+        <tr><td class="note" colspan="7">備考: {{ it.line.note }}</td></tr>
+      {% endif %}
+    {% endfor %}
+    {% for _ in range(10 - page | length) %}
+      <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% if loop.last %}
+    <table class="totals">
+      <tr><th>合計</th><td>¥{{ total | yen }}</td></tr>
+    </table>
+  {% endif %}
+</div>
+{% endfor %}
+</body>
+</html>

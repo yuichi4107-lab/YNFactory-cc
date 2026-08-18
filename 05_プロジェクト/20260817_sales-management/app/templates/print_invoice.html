@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>請求書</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='print.css') }}">
+</head>
+<body>
+<div class="print-bar">
+  <button onclick="window.print()">印刷</button>
+  <span>{{ docs | length }}件の請求書（客先ごとに改ページ）</span>
+  <span>PDFが必要な場合は印刷ダイアログで「PDFとして保存」を選んでください。</span>
+</div>
+
+{% for doc in docs %}
+{% set inv = doc.invoice %}
+{% for page in doc.lines | batch(15) %}
+<div class="sheet">
+  <h1 class="title">請求書</h1>
+  <div class="meta">
+    請求日: {{ inv.issue_date | jpdate }}<br>
+    請求No.: {{ inv.invoice_no }}
+  </div>
+  <div class="head-grid">
+    <div class="to">
+      <div class="name">{{ inv.customer_name }} {{ inv.honorific or '御中' }}</div>
+      <div class="addr">{% if inv.postal_code %}〒{{ inv.postal_code }}
+{% endif %}{{ inv.address or '' }}</div>
+    </div>
+    <div class="from">
+      <div class="company">{{ company.company_name or '（自社情報を登録してください）' }}</div>
+      登録番号: {{ company.invoice_reg_no or '（未登録）' }}<br>
+      {% if company.postal_code %}〒{{ company.postal_code }}<br>{% endif %}
+      {{ company.address or '' }}<br>
+      {% if company.phone %}TEL: {{ company.phone }}{% endif %}
+    </div>
+  </div>
+  <p class="lead">下記の通りご請求申し上げます。<br>
+    <span style="font-size:9.5pt">（請求期間: {{ inv.period_start | jpdate }}〜{{ inv.period_end | jpdate }}）</span>
+  </p>
+  {% if loop.first %}
+    <div class="billed">ご請求金額　¥{{ inv.total | yen }}（税込）</div>
+  {% endif %}
+  <table class="items">
+    <thead><tr>
+      <th style="width:10%">管理No.</th><th style="width:9%">受注日</th><th style="width:9%">納品日</th>
+      <th style="width:20%">品名</th><th style="width:14%">型式・図番</th>
+      <th style="width:7%">数量</th><th style="width:6%">単位</th>
+      <th style="width:12%">単価</th><th style="width:13%">小計</th>
+    </tr></thead>
+    <tbody>
+    {% for l in page %}
+      <tr>
+        <td>{{ l.order_no }}</td>
+        <td>{{ l.order_date | md }}</td>
+        <td>{{ l.delivery_date | md }}</td>
+        <td>{{ l.product_name }}</td>
+        <td>{{ l.model_no or '' }}</td>
+        <td class="num">{{ l.quantity }}</td>
+        <td style="text-align:center">{{ l.unit or '' }}</td>
+        <td class="num">{{ l.unit_price | yen }}</td>
+        <td class="num">{{ l.amount | yen }}</td>
+      </tr>
+      {% if l.note %}
+        <tr><td class="note" colspan="9">備考: {{ l.note }}</td></tr>
+      {% endif %}
+    {% endfor %}
+    {% for _ in range(15 - page | length) %}
+      <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% if loop.last %}
+    <table class="totals">
+      <tr><th>税抜合計（{{ company.tax_rate }}%対象）</th><td>{{ inv.subtotal | yen }}</td></tr>
+      <tr><th>消費税（{{ company.tax_rate }}%）</th><td>{{ inv.tax | yen }}</td></tr>
+      <tr><th>ご請求額</th><td>¥{{ inv.total | yen }}</td></tr>
+    </table>
+    <div class="footer-note">
+      お振込先: {{ company.bank_info or '（未登録）' }}<br>
+      お支払期限: {{ doc.due | jpdate }}
+    </div>
+  {% endif %}
+</div>
+{% endfor %}
+{% endfor %}
+</body>
+</html>
