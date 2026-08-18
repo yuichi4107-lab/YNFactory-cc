@@ -199,7 +199,13 @@ keiba-unified/     sales-ops/        sengoku-game/   yn-tools/
 
 Windows のジャンクションと Mac のシンボリックリンクは別物。
 Mac では `ln -s` になるが、Git がシンボリックリンクをリンクとして記録するため、
-`.gitignore` での除外が Windows 以上に重要になる。**未検証。**
+`.gitignore` での除外が Windows 以上に重要になる。
+
+**2026-08-17に検証済み。** fresh clone の index で追跡件数を再計測し、
+`03_成果物/outputs` と `05_プロジェクト` 直下の追跡0件かつDrive実体ありの領域だけを
+シンボリックリンク化した。`04_インプット` は追跡44件を含むため、Macでは全体リンク不可。
+再現手順と現在のリンク一覧は `setup-multi-pc.md` と
+`02_設定/config/mac-drive-links.txt` を参照する。
 
 ### 8-5. 退避フォルダ（3か所）
 

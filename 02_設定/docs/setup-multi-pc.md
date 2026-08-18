@@ -1,6 +1,6 @@
 ---
 title: YNFactory-cc 複数PCセットアップ手順
-date: "2026-08-16"
+date: "2026-08-17"
 status: active
 ---
 
@@ -61,21 +61,33 @@ dir "03_成果物\outputs"      # Drive側の中身が見えること
 
 ## Mac のセットアップ
 
-**Mac 側のリンク方式は未検証（2026-08-16 時点）。**
-Windows のジャンクションと Mac のシンボリックリンクは別物で、
-Git がシンボリックリンクをリンクとして記録するため、`.gitignore` での除外が Windows 以上に重要になる。
+Macでは、Git追跡ファイルを含むディレクトリをシンボリックリンクに置き換えると、
+追跡ファイルが削除扱いになる。したがって、追跡0件の領域だけをリンクする。
+`04_インプット` は追跡ファイルを含むため、全体をリンクしない。
 
-検証が済むまで、Mac では従来どおり Drive 側で作業する。
-
-```text
-/Users/yuichi/Library/CloudStorage/GoogleDrive-yuichi4107@gmail.com/マイドライブ/YNFactory-cc
-```
-
-Git操作用のローカル作業ディレクトリは `~/YNFactory-cc`。
+Git操作用のローカル作業ディレクトリは `~/YNFactory-cc` とする。
 
 ```bash
 git clone https://github.com/yuichi4107-lab/YNFactory-cc.git ~/YNFactory-cc
+cd ~/YNFactory-cc
+python3 01_コード/scripts/company/git_drive_guard.py install-hooks
+git config core.autocrlf input
+python3 01_コード/scripts/company/setup_mac_drive_links.py
+python3 01_コード/scripts/company/setup_mac_drive_links.py --apply
 ```
+
+リンク一覧は `02_設定/config/mac-drive-links.txt` で管理する。スクリプトは実行のたびに
+Git追跡0件、Drive実体の存在、ローカル同名パスの不存在を確認し、条件外なら作成前に停止する。
+同じ正しいリンクが既にある場合は何も変更しないため、再実行できる。
+
+確認:
+
+```bash
+git status --short
+python3 01_コード/scripts/company/setup_mac_drive_links.py
+```
+
+リンク一覧の変更前には、必ず `git ls-files '<相対パス>/**'` が0件であることを確認する。
 
 ## 日常作業
 
