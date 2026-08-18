@@ -2,13 +2,30 @@ from __future__ import annotations
 
 from dataclasses import replace
 
+import pytest
+
 from rakuten_room_auto import runner as runner_module
+from rakuten_room_auto import selection as selection_module
 from rakuten_room_auto.browser import BrowserAutomationError
 from rakuten_room_auto.config import ReplenishConfig, load_config
 from rakuten_room_auto.ledger import Ledger
-from rakuten_room_auto.replenish import contains_exaggerated_claim
+from rakuten_room_auto.replenish import (
+    SIMILARITY_THRESHOLD,
+    build_varied_description,
+    contains_exaggerated_claim,
+    product_similarity,
+)
 from rakuten_room_auto.runner import RoomAutomationRunner
+from rakuten_room_auto.selection import SelectionError
 from rakuten_room_auto.sheets import SheetTable
+
+
+@pytest.fixture(autouse=True)
+def disable_api_selection(monkeypatch):
+    """既定ではAPI選定を無効化してブラウザ方式の挙動をテストする。
+    実行環境の ~/.env にAPI認証情報があってもテストが外部通信しないようにする。
+    API選定のテストでは個別に monkeypatch で上書きする。"""
+    monkeypatch.setattr(runner_module.selection, "api_credentials_available", lambda: False)
 
 
 class FakeSheet:
@@ -222,3 +239,78 @@ def test_replenish_records_error_on_empty_ranking(tmp_path, monkeypatch):
     summary = instance.replenish()
     assert summary.errors == 1
     assert sheet.appended == []
+
+
+def test_build_varied_description_is_safe_and_deterministic():
+    title = "【楽天1位】すべらないハンガー 10本セット クローゼット 収納"
+    text = build_varied_description(title, review_count=1200, review_average=4.5, key="https://a/")
+    assert not contains_exaggerated_claim(text)
+    assert len(text) <= 180
+    assert "1,200" in text and "4.5" in text
+    # 同じキーなら常に同じ文になる
+    assert text == build_varied_description(title, review_count=1200, review_average=4.5, key="https://a/")
+
+
+def test_build_varied_description_skips_review_when_few():
+    text = build_varied_description("ハンガー 収納", review_count=10, review_average=4.0, key="k")
+    assert "10" not in text
+
+
+def test_varied_descriptions_do_not_trigger_similarity_false_positive():
+    # 同じ文面パターン(同じキー由来)でも、別商品なら類似度が閾値未満になること
+    text_a = build_varied_description("すべらないハンガー 10本セット 収納", key="same-key")
+    text_b = build_varied_description("電気ケトル コーヒー 細口 ステンレス", key="same-key")
+    assert product_similarity(text_a, text_b) < SIMILARITY_THRESHOLD
+
+
+API_CANDIDATES = [
+    {
+        "url": f"https://item.rakuten.co.jp/shop{index}/api-{index}/",
+        "title": DISTINCT_TITLES[index % len(DISTINCT_TITLES)],
+        "review_count": 500,
+        "review_average": 4.5,
+        "surge": index == 0,
+        "score": 1.0 - index * 0.01,
+    }
+    for index in range(10)
+]
+
+
+def test_replenish_uses_api_selection_when_credentials_available(tmp_path, monkeypatch):
+    config = replace(
+        load_config(), replenish=ReplenishConfig(enabled=True, threshold=5, batch=3, ranking_urls=("https://ranking.rakuten.co.jp/daily/215783/",))
+    )
+    table = make_table(config, [config.statuses.approved])
+    instance, sheet = make_runner(config, table, tmp_path)
+    monkeypatch.setattr(runner_module.selection, "api_credentials_available", lambda: True)
+    monkeypatch.setattr(runner_module.selection, "fetch_scored_candidates", lambda genre_ids, data_dir: list(API_CANDIDATES))
+    summary = instance.replenish()
+    assert summary.changed == 3
+    assert len(sheet.appended) == 3
+    # スコア順(先頭から)に採用される
+    assert sheet.appended[0]["product_url"] == "https://item.rakuten.co.jp/shop0/api-0/"
+    for fields in sheet.appended:
+        assert fields["status"] == config.statuses.unposted
+        assert fields["description"]
+        assert not contains_exaggerated_claim(fields["description"])
+
+
+def test_replenish_falls_back_to_browser_on_api_error(tmp_path, monkeypatch):
+    config = replace(
+        load_config(), replenish=ReplenishConfig(enabled=True, threshold=5, batch=2, ranking_urls=("https://ranking.rakuten.co.jp/daily/215783/",))
+    )
+    table = make_table(config, [config.statuses.approved])
+    instance, sheet = make_runner(config, table, tmp_path)
+    monkeypatch.setattr(runner_module.selection, "api_credentials_available", lambda: True)
+
+    def raise_selection_error(genre_ids, data_dir):
+        raise SelectionError("API障害")
+
+    monkeypatch.setattr(runner_module.selection, "fetch_scored_candidates", raise_selection_error)
+    FakeBrowser.items_by_url = {"https://ranking.rakuten.co.jp/daily/215783/": ranking_items(5)}
+    FakeBrowser.fail_urls = set()
+    monkeypatch.setattr(runner_module, "RakutenRoomBrowser", FakeBrowser)
+    summary = instance.replenish()
+    assert summary.errors == 1  # API失敗が記録される
+    assert summary.changed == 2  # ブラウザ方式で補充は成立する
+    assert len(sheet.appended) == 2

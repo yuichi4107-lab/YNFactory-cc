@@ -8,10 +8,12 @@ from .browser import (
     LoginRequiredError,
     RakutenRoomBrowser,
 )
+from . import selection
 from .config import AppConfig
 from .ledger import Ledger, LedgerEvent
 from .llm import DescriptionError, DescriptionGenerator
-from .replenish import build_description, is_duplicate_product
+from .replenish import build_description, build_varied_description, is_duplicate_product
+from .selection import SelectionError
 from .sheets import GoogleSheetClient, SheetRow, now_jst_iso, parse_attempts, select_rows
 
 DUPLICATE_PRODUCT_MESSAGE = "同一とみられる商品が既に投稿済み（または投稿待ち）のためスキップしました。"
@@ -149,7 +151,12 @@ class RoomAutomationRunner:
         return summary
 
     def replenish(self, dry_run: bool = False) -> RunSummary:
-        """残りネタが閾値以下なら、楽天ランキングから実在商品を取得してシートへ補充する。"""
+        """残りネタが閾値以下なら、楽天ランキングから実在商品を取得してシートへ補充する。
+
+        楽天ウェブサービスの認証情報(RAKUTEN_APP_ID / RAKUTEN_ACCESS_KEY)があれば
+        公式APIでスコアリング選定した候補を優先し、無ければ従来のランキングページ
+        スクレイピングにフォールバックする。
+        """
         summary = RunSummary()
         cfg = self.config.replenish
         if not cfg.enabled or not cfg.ranking_urls:
@@ -160,6 +167,14 @@ class RoomAutomationRunner:
             return summary
         existing_urls = collect_all_urls(table, self.config)
         existing_items = collect_items(table, self.config)
+
+        if selection.api_credentials_available():
+            api_summary = self._replenish_from_api(table, existing_urls, existing_items, dry_run)
+            if api_summary is not None:
+                return api_summary
+            # API失敗時は従来方式にフォールバックする(エラーは台帳に記録済み)
+            summary.errors += 1
+
         added = 0
         with RakutenRoomBrowser(self.config.browser) as browser:
             for ranking_url in cfg.ranking_urls:
@@ -215,6 +230,70 @@ class RoomAutomationRunner:
                     existing_items.append((product_url, title))
                     added += 1
                     summary.changed += 1
+        return summary
+
+    def _replenish_from_api(
+        self,
+        table,
+        existing_urls: set[str],
+        existing_items: list[tuple[str, str]],
+        dry_run: bool,
+    ) -> RunSummary | None:
+        """公式APIのスコアリング選定で補充する。API障害時はNoneを返して呼び出し側でフォールバック。"""
+        cfg = self.config.replenish
+        genre_ids = selection.genre_ids_from_urls(cfg.ranking_urls)
+        if not genre_ids:
+            return None
+        try:
+            candidates = selection.fetch_scored_candidates(genre_ids, self.config.runtime.root_dir / "data")
+        except SelectionError as exc:
+            self.ledger.append(
+                LedgerEvent.create("replenish_error", "rakuten-api", None, self.config.statuses.error, short_error(exc))
+            )
+            return None
+
+        summary = RunSummary()
+        added = 0
+        for candidate in candidates:
+            if added >= cfg.batch:
+                break
+            product_url = candidate["url"]
+            title = candidate["title"]
+            if not product_url or product_url in existing_urls:
+                continue
+            if is_duplicate_product(product_url, title, existing_items):
+                continue
+            summary.seen += 1
+            description = build_varied_description(
+                title,
+                review_count=candidate.get("review_count", 0),
+                review_average=candidate.get("review_average", 0.0),
+                surge=candidate.get("surge", False),
+                key=product_url,
+                max_chars=self.config.llm.max_chars,
+            )
+            if not dry_run:
+                self.sheet.append_row_fields(
+                    table.header,
+                    {
+                        "product_url": product_url,
+                        "description": description,
+                        "status": self.config.statuses.unposted,
+                    },
+                )
+                self.ledger.append(
+                    LedgerEvent.create(
+                        "replenish",
+                        product_url,
+                        None,
+                        self.config.statuses.unposted,
+                        f"APIランキングからスコア選定で補充(score={candidate['score']:.2f}): {title[:60]}",
+                    )
+                )
+            existing_urls.add(product_url)
+            existing_items.append((product_url, title))
+            added += 1
+            summary.changed += 1
         return summary
 
     def approve(self, limit: int | None = None, dry_run: bool = False) -> RunSummary:
