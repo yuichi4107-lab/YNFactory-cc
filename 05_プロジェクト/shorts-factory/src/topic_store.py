@@ -73,6 +73,26 @@ _BEGINNER_REPLENISH_TASKS = [
     ("SNS投稿文を仕事向けに言い換える", "marketing", "発信改善"),
     ("問い合わせ返信の下書きを丁寧に作る", "customer_support", "顧客対応"),
     ("研修メモから復習クイズを作る", "training", "学習定着"),
+    ("音声メモを箇条書きの作業メモにする", "operations", "情報整理"),
+    ("見積依頼に必要な情報をチェック項目にする", "sales", "見積準備"),
+    ("日報から明日の優先順位を3つに絞る", "operations", "優先順位付け"),
+    ("定例会議のアジェンダを短く作る", "meeting", "会議準備"),
+    ("顧客ヒアリングの質問を目的別に整理する", "sales", "ヒアリング準備"),
+    ("社内連絡を読みやすい箇条書きに整える", "communication", "文章改善"),
+    ("商品説明の誤解されやすい表現を直す", "marketing", "表現改善"),
+    ("請求前の確認項目を一覧にする", "finance", "確認業務"),
+    ("手順書の専門用語を新人向けに言い換える", "training", "教育支援"),
+    ("アンケート回答からよくある質問を拾う", "customer_support", "FAQ準備"),
+    ("依頼内容を期限・担当・目的に整理する", "operations", "依頼整理"),
+    ("今日のタスクから後回しにする仕事を見分ける", "operations", "優先順位付け"),
+    ("社内報告を3行の要約にまとめる", "communication", "報告改善"),
+    ("商談メモから次の連絡文を作る", "sales", "商談フォロー"),
+    ("写真付きメモから作業記録を作る", "operations", "記録作成"),
+    ("業務の手戻り理由を1行ずつ分類する", "quality", "原因整理"),
+    ("価格表を説明しやすい順に並べ替える", "sales", "提案準備"),
+    ("クレーム内容に対する落ち着いた返信下書きを作る", "customer_support", "顧客対応"),
+    ("問い合わせ履歴から引き継ぎメモを作る", "customer_support", "引き継ぎ"),
+    ("納品前の確認事項を担当者別に分ける", "operations", "品質確認"),
 ]
 _BEGINNER_TOOLS = ["ChatGPT", "Claude", "Gemini", "NotebookLM"]
 
@@ -93,6 +113,26 @@ _INTERMEDIATE_REPLENISH_TASKS = [
     ("MakeやZapierの自動化前に、例外処理と人の確認点を洗い出す", "automation", "自動化設計"),
     ("AIの出力をそのまま使わず、事実確認の観点を3つに絞る", "quality", "品質管理"),
     ("複数AIの回答差分から、仕事で採用する案を選ぶ", "ai_tool_comparison", "AI比較"),
+    ("受注データから利益が薄い案件の共通点を見つける", "sales", "収益分析"),
+    ("部門横断の依頼フローを整理し、滞留ポイントを見つける", "operations", "業務設計"),
+    ("既存顧客の利用状況を分類し、フォロー順を決める", "customer_success", "顧客分析"),
+    ("採用面接の評価メモを比較し、確認質問を設計する", "hr", "採用判断"),
+    ("問い合わせ分類から、先に直す業務ルールを決める", "customer_support", "改善企画"),
+    ("プロジェクトの遅延要因を整理し、次週の対策に変える", "operations", "進行管理"),
+    ("見積書の条件差を比較し、利益を守る確認項目を作る", "sales", "見積品質"),
+    ("社内資料を横断して、新人向けの学習順を設計する", "training", "教育設計"),
+    ("広告文の反応差を整理し、次の検証仮説を作る", "marketing", "施策改善"),
+    ("会議記録から未決事項を抽出し、担当別に追跡する", "meeting", "会議運営"),
+    ("作業時間の記録から、自動化すべき業務を選ぶ", "automation", "自動化判断"),
+    ("顧客ヒアリングを要約し、提案の優先条件を決める", "sales", "提案設計"),
+    ("契約前の確認事項を整理し、リスクの見落としを減らす", "operations", "リスク管理"),
+    ("商品レビューを分類し、改善要望を開発順に並べる", "product", "改善企画"),
+    ("予算実績の差額から、追加確認が必要な項目を選ぶ", "finance", "予実管理"),
+    ("営業活動の記録から、商談化しやすい行動を見つける", "sales", "営業改善"),
+    ("社内ナレッジを整理し、検索しやすい見出し構成に直す", "knowledge", "ナレッジ整備"),
+    ("複数の提案案を比較し、決裁者向けの判断材料にまとめる", "presentation", "意思決定支援"),
+    ("運用ルールの例外を洗い出し、確認手順を標準化する", "operations", "標準化"),
+    ("月次の問い合わせ傾向から、先回りする案内文を設計する", "customer_support", "顧客対応"),
 ]
 _INTERMEDIATE_TOOL_SETS = [
     ["ChatGPT", "Claude"],
@@ -514,7 +554,9 @@ def _replenish_topics_locked(difficulty: str | None = None, *, force: bool = Fal
     normalized = normalize_difficulty(difficulty)
     targets = [normalized] if normalized else sorted(VALID_DIFFICULTIES)
     data = _load()
-    reserved = _reserved_topics(data)
+    # backlog・使用済みに加え、直近queueで予約済みのネタとも重複させない。
+    # 補充直後に定刻生成が走っても同じ切り口を選ばないためのruntime側ガード。
+    reserved = _reserved_topics(data, include_queue=True)
     existing = [
         str(entry.get("topic") or "")
         for entry in data.get("backlog", [])
