@@ -95,6 +95,20 @@ def _start_watchdog() -> None:
     threading.Thread(target=_watchdog_loop, name="approval-bot-watchdog", daemon=True).start()
 
 
+def _is_approval_bot_process(pid: int) -> bool:
+    """PID再利用で無関係な常駐プロセスをボットと誤認しない。"""
+    try:
+        proc = subprocess.run(
+            ["/bin/ps", "-p", str(pid), "-o", "command="],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except OSError:
+        return False
+    return proc.returncode == 0 and "src.approval_bot" in proc.stdout
+
+
 def _acquire_lock() -> None:
     LOCK_FILE.parent.mkdir(parents=True, exist_ok=True)
     while True:
@@ -103,8 +117,10 @@ def _acquire_lock() -> None:
         except FileExistsError:
             try:
                 pid = int(LOCK_FILE.read_text().strip())
-                os.kill(pid, 0)
-                raise SystemExit(f"approval_bot は既に稼働中です (pid={pid})")
+                if _is_approval_bot_process(pid):
+                    raise SystemExit(f"approval_bot は既に稼働中です (pid={pid})")
+                LOCK_FILE.unlink(missing_ok=True)
+                continue
             except (ValueError, ProcessLookupError, PermissionError, OSError):
                 LOCK_FILE.unlink(missing_ok=True)
                 continue
@@ -112,7 +128,8 @@ def _acquire_lock() -> None:
             os.write(fd, str(os.getpid()).encode("utf-8"))
             os.close(fd)
             break
-    atexit.register(lambda: LOCK_FILE.unlink(missing_ok=True))
+    lock_path = LOCK_FILE
+    atexit.register(lambda: lock_path.unlink(missing_ok=True))
 
 
 def _api(method: str) -> str:

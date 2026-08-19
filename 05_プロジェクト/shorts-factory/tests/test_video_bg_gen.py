@@ -114,7 +114,7 @@ class TopviewRegisterMergeTest(unittest.TestCase):
     def _register(self, tmp: Path, names: list[str]) -> dict:
         for name in names:
             (tmp / name).write_bytes(b"stub")
-        meta = {"duration_sec": 5.0, "width": 1080, "height": 1920}
+        meta = {"duration_sec": 12.0, "width": 1080, "height": 1920}
         with patch.object(topview_inventory, "_probe_clip", return_value=meta):
             path = topview_inventory.register_files(self._Config(tmp), names)
         return json.loads(Path(path).read_text(encoding="utf-8"))
@@ -137,6 +137,7 @@ class TopviewRegisterMergeTest(unittest.TestCase):
         self.assertEqual(by_id["topview-old"]["last_used_at"], "2026-08-08T01:00:00+09:00")
         self.assertEqual(by_id["topview-new"]["use_count"], 0)
         self.assertIn("registered_at", by_id["topview-new"])
+        self.assertEqual(by_id["topview-new"]["format"], "split_12s_v1")
 
     def test_reregistering_a_used_clip_does_not_reset_it_to_unused(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -151,6 +152,57 @@ class TopviewRegisterMergeTest(unittest.TestCase):
 
         self.assertEqual(len(merged["clips"]), 1)
         self.assertEqual(merged["clips"][0]["use_count"], 2)
+
+
+class TopviewTwelveSecondSplitTest(unittest.TestCase):
+    """12秒の実写素材1本を、前後の実写区間へ安全に分ける。"""
+
+    def test_offsets_use_start_and_later_part_of_one_twelve_second_clip(self):
+        clip = {"id": "split", "duration_sec": 12.0}
+        topview = {**CONFIG.cfg["topview"], "second_segment_start_sec": 6.0, "max_live_segment_sec": 5.0}
+        with patch.object(CONFIG, "cfg", {**CONFIG.cfg, "topview": topview}):
+            self.assertEqual(
+                pipeline._topview_split_clip_offsets(clip, [4.0, 3.0, 3.0, 4.0, 3.0, 3.0]),
+                [0.0, 6.0],
+            )
+
+    def test_offsets_stop_when_two_live_sections_do_not_fit(self):
+        clip = {"id": "too-short-for-script", "duration_sec": 12.0}
+        with self.assertRaisesRegex(pipeline.TopviewInventoryError, "12秒素材"):
+            pipeline._topview_split_clip_offsets(clip, [5.1, 2.0, 2.0, 4.0, 2.0, 2.0])
+
+    def test_renderer_cuts_two_offsets_from_the_same_source(self):
+        calls: list[list[str]] = []
+        with tempfile.TemporaryDirectory() as tmpdir:
+            work = Path(tmpdir)
+            source = work / "long.mp4"
+            cards = [work / "card-a.png", work / "card-b.png"]
+            with patch.object(renderer, "_run", side_effect=lambda cmd, *_: calls.append(cmd)):
+                renderer.render_hybrid_background(
+                    [source, source], cards, [5.0, 4.0, 6.0, 5.0], work,
+                    live_start_offsets=[0.0, 12.0],
+                )
+
+        live_calls = [cmd for cmd in calls if "-ss" in cmd]
+        self.assertEqual(len(live_calls), 2)
+        self.assertEqual([cmd[cmd.index("-ss") + 1] for cmd in live_calls], ["0.000", "12.000"])
+        self.assertTrue(all("-stream_loop" not in cmd for cmd in live_calls))
+
+    def test_renderer_keeps_four_cards_between_twelve_second_clip_parts(self):
+        calls: list[list[str]] = []
+        with tempfile.TemporaryDirectory() as tmpdir:
+            work = Path(tmpdir)
+            source = work / "split.mp4"
+            cards = [work / f"card-{i}.png" for i in range(4)]
+            with patch.object(renderer, "_run", side_effect=lambda cmd, *_: calls.append(cmd)):
+                renderer.render_hybrid_background(
+                    [source, source], cards, [4.0, 2.0, 2.0, 4.0, 2.0, 2.0], work,
+                    live_start_offsets=[0.0, 6.0],
+                )
+
+        live_calls = [cmd for cmd in calls if "-ss" in cmd]
+        self.assertEqual(len(live_calls), 2)
+        self.assertEqual([cmd[cmd.index("-ss") + 1] for cmd in live_calls], ["0.000", "6.000"])
 
 
 class VideoBgGenCostTest(unittest.TestCase):
@@ -284,6 +336,10 @@ class SeedanceSlotTest(unittest.TestCase):
     def test_hybrid_segment_durations_follow_tts_boundaries(self):
         cues = [{"start": start} for start in (0.0, 5.2, 10.0, 15.6)]
         self.assertEqual(pipeline._hybrid_segment_durations(cues, 21.0), [5.2, 4.8, 5.6, 5.4])
+
+    def test_topview_segment_durations_follow_six_tts_boundaries(self):
+        cues = [{"start": start} for start in (0.0, 4.0, 7.0, 10.0, 14.0, 17.0)]
+        self.assertEqual(pipeline._topview_segment_durations(cues, 20.0), [4.0, 3.0, 3.0, 4.0, 3.0, 3.0])
 
 
 class SeedanceSecretRedactionTest(unittest.TestCase):
@@ -523,6 +579,12 @@ class SeedanceFallbackScriptTest(unittest.TestCase):
         for cue in data["cues"]:
             mismatch = script_gen.phonetic_cer(cue["tts_text"], cue["tts_kana"])
             self.assertLessEqual(mismatch, script_gen.SEEDANCE_KANA_MISMATCH_CER_MAX)
+
+    def test_six_cue_fallback_shortens_a_long_topic_title(self):
+        topic = "Claude・Make・Zapierで提案書の弱点を抽出し、反論対策まで整える方法"
+        data = script_gen._fallback_seedance_script(topic, "intermediate", ["test error"], cut_count=6)
+        self.assertEqual(len(data["cues"]), 6)
+        self.assertEqual(script_gen.validate_seedance_script(data, 6), [])
 
     def test_generate_seedance_script_falls_back_without_duplicate_check_blocking_it(self):
         # 実E2Eで発覚した不具合の回帰防止: LLM呼び出しが常に失敗する状況でも、
@@ -889,7 +951,7 @@ class TopviewLowStockWarningTest(unittest.TestCase):
         sent = self._run([0, 0, 1, 1, 1, 1])
         self.assertEqual(len(sent), 1)
         self.assertIn("未使用 2 本", sent[0])
-        self.assertIn("残り約 1 本ぶん", sent[0])
+        self.assertIn("残り約 2 本ぶん", sent[0])
 
     def test_no_warning_while_stock_is_sufficient(self):
         self.assertEqual(self._run([0] * 10), [])

@@ -14,7 +14,7 @@ APP_ROOT = Path(__file__).resolve().parents[1]
 if str(APP_ROOT) not in sys.path:
     sys.path.insert(0, str(APP_ROOT))
 
-from src import drive_mirror, pipeline, post_lock, queue_lib, topic_store
+from src import approval_bot, drive_mirror, pipeline, post_lock, queue_lib, topic_store
 from src.config import CONFIG, Config
 from src.state_io import file_lock
 import src.config as config_module
@@ -34,6 +34,18 @@ def _select_and_consume_in_child(result_queue) -> None:
 
 
 class LocalControlPlaneTest(unittest.TestCase):
+    def test_approval_lock_replaces_a_reused_unrelated_pid(self):
+        with tempfile.TemporaryDirectory() as td:
+            lock = Path(td) / "approval_bot.pid"
+            lock.write_text("610", encoding="utf-8")
+            with (
+                patch.object(approval_bot, "LOCK_FILE", lock),
+                patch.object(approval_bot, "_is_approval_bot_process", return_value=False),
+            ):
+                approval_bot._acquire_lock()
+            self.assertEqual(lock.read_text(encoding="utf-8"), str(__import__("os").getpid()))
+            lock.unlink()
+
     def test_config_keeps_hot_paths_under_runtime(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)

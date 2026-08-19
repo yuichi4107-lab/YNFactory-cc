@@ -1512,6 +1512,7 @@ def _fallback_seedance_script(
     difficulty: str,
     last_errs: list[str],
     variant: int | None = None,
+    cut_count: int = 4,
 ) -> dict:
     """Seedance生成もLLM生成も失敗した場合の最終フォールバック台本。
 
@@ -1525,7 +1526,7 @@ def _fallback_seedance_script(
     camera = SEEDANCE_FIXED_CAMERA_DESCRIPTION
     selected = variant or _fallback_variant_order(topic_text, difficulty)[0]
     opening = _fallback_opening_cue(topic_text, selected)
-    lines = [
+    four_lines = [
         (
             opening["tts_text"],
             opening["reading_kana"],
@@ -1551,6 +1552,27 @@ def _fallback_seedance_script(
             False,
         ),
     ]
+    if cut_count == 6:
+        lines = [
+            four_lines[0],
+            four_lines[1],
+            four_lines[2],
+            (
+                "ここからは、実際に迷わず進めるための順番を確認します。",
+                "ココカラハ、ジッサイニマヨワズススメルタメノジュンバンヲカクニンシマス。",
+                ["迷わない進め方"],
+                False,
+            ),
+            (
+                "最後は週に一度振り返り、次に直す一つを決めることです。",
+                "サイゴハシュウニイチドフリカエリ、ツギニナオスヒトツヲキメルコトデス。",
+                ["週1回の振り返り"],
+                False,
+            ),
+            four_lines[3],
+        ]
+    else:
+        lines = four_lines
     cues = []
     for text, kana, disp, emph in lines:
         cues.append(
@@ -1566,7 +1588,7 @@ def _fallback_seedance_script(
             }
         )
     data = {
-        "title": f"{topic_text}の実務ポイント",
+        "title": f"{topic_text[:24]}の実務ポイント",
         "character_description": character,
         "room_description": room,
         "camera_description": camera,
@@ -1577,7 +1599,12 @@ def _fallback_seedance_script(
             "続きはプロフィールから見てください。"
         ),
         "hashtags": ["#生成AI", "#AI活用", "#AI導入", "#仕事術", "#業務効率化"],
-        "card_keywords": _fallback_card_keywords(topic_text, difficulty, selected),
+        "card_keywords": (
+            _fallback_card_keywords(topic_text, difficulty, selected)
+            + ["進め方", "振り返り"]
+            if cut_count == 6
+            else _fallback_card_keywords(topic_text, difficulty, selected)
+        ),
         "topic": topic_text,
         "difficulty": difficulty,
         "target_platform": "common",
@@ -1655,9 +1682,9 @@ def generate_seedance_script(topic: str | dict, difficulty: str = "beginner", cu
         last_errs = errs
     fallback_errs: list[str] = []
     for variant in _fallback_variant_order(topic_text, difficulty):
-        data = _fallback_seedance_script(topic, difficulty, last_errs, variant)
+        data = _fallback_seedance_script(topic, difficulty, last_errs, variant, cut_count)
         errs = validate_seedance_script(data, cut_count)
-        if not errs:
+        if not errs and not data.get("is_fallback"):
             errs = recent_duplicate_errors(data)
         if not errs:
             return data
