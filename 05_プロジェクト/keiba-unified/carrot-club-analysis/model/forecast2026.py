@@ -72,6 +72,16 @@ SIGMA_F = SIGMA_TOT * math.sqrt(1 - RHO)
 LAMBDA = 0.085
 GROWTH = 3.2
 SIGMA_M = 0.35
+# 馬体重の効き。2021・2022年度の母馬優先対象92頭（母年齢と馬体重の相関は+0.29しかなく、
+# 母馬側の要因とは独立に効く）をプロビットで当てた。
+#   線形（全域）        β=+0.123/10kg (z=+2.32)  AIC 104.88
+#   下方向だけ線形       β=+0.195/10kg (z=+2.27)  AIC 105.05  ← 採用
+#   軽い馬ダミー(−30kg)  β=−0.840      (z=−2.00)  AIC 106.32
+# 線形が僅差で最良だが、生の分布は「平均より+10kg以上」の帯で 38%→41%→42% と
+# ほぼ横ばいで、重い側に上乗せする根拠がない。一方 −30kg以下の帯だけが 27% と落ちる。
+# AIC差0.2は誤差なので、外挿の危険が小さい「軽い馬だけ減点」を採る。
+BETA_WT = 0.1945        # 年内平均より軽い側にだけ効かせる（10kgあたり、log D）
+SE_WT = 0.0859          # その係数の標準誤差。予測の不確実性に足し込む
 POOL_CHUO = 200
 POOL_CHIHO = 50
 YEAR = 2026
@@ -105,7 +115,16 @@ def load():
             r["age"] = int(r["母馬の馬齢"])
             r["t"] = int(r["経過年数t"])
             r["pool"] = POOL_CHIHO if r["入厩"] == "地方" else POOL_CHUO
+            dev = r.get("年内平均からの馬体重差") or ""
+            r["wt_dev"] = float(dev) if dev else 0.0
             horses.append(r)
+
+    # 馬体重補正は「軽い側だけ減点」なので、そのままだと全体が下へずれて
+    # バックテストで合わせた全体較正が崩れる。対象馬の中で平均ゼロになるよう中心化する。
+    pen = [min(h["wt_dev"], 0.0) for h in horses]
+    base_pen = sum(pen) / len(pen) if pen else 0.0
+    for h, q in zip(horses, pen):
+        h["wt_adj"] = BETA_WT * (q - base_pen) / 10.0
 
     ranks = defaultdict(list)
     with open(D_RANK, encoding="utf-8") as f:
@@ -188,15 +207,23 @@ def posterior(h, ranks, inter, lam: float, year: int = YEAR, upto: int | None = 
 
 def predict(h, ranks, inter, lam: float, year: int = YEAR, upto=None):
     mu, sd, n_int, n_rank = posterior(h, ranks, inter, lam, year, upto)
-    sd_pred = math.sqrt(sd ** 2 + SIGMA_F ** 2)
+    mu_nowt = mu
+    mu += h.get("wt_adj", 0.0)          # その年の産駒の馬体重ぶんの補正
+    # 馬体重の係数自体が n=92 の推定値なので、その不確実性も予測幅に足す
+    var_wt = (min(h.get("wt_dev", 0.0), 0.0) / 10.0) ** 2 * SE_WT ** 2
+    sd_pred = math.sqrt(sd ** 2 + SIGMA_F ** 2 + var_wt)
+    p_nowt = 1 - Phi((math.log(h["pool"]) - mu_nowt)
+                     / math.sqrt(sd ** 2 + SIGMA_F ** 2))
     p_fill = 1 - Phi((math.log(h["pool"]) - mu) / sd_pred)
     return {
         "dam": h["dam"], "age": h["age"], "t": h["t"], "pool": h["pool"],
         "sire": h["父"], "sex": h["性別"], "price": h["募集総額_万円"],
         "stable": h["厩舎"], "east": h["入厩"],
         "mu": mu, "sd": sd_pred, "D": math.exp(mu),
+        "wt": h.get("馬体重", ""), "wt_dev": h.get("wt_dev", 0.0),
+        "wt_adj": h.get("wt_adj", 0.0), "parity": h.get("産駒数", ""),
         "lo": math.exp(mu - 1.28 * sd_pred), "hi": math.exp(mu + 1.28 * sd_pred),
-        "p": p_fill, "n_int": n_int, "n_rank": n_rank,
+        "p": p_fill, "p_nowt": p_nowt, "n_int": n_int, "n_rank": n_rank,
     }
 
 
@@ -241,12 +268,15 @@ def main() -> None:
         cw.writerow(["母馬名", "母馬の馬齢", "経過年数t", "入厩", "父", "性別",
                      "募集総額_万円", "厩舎", "枠の口数", "予測D_口",
                      "予測D_下位10%", "予測D_上位10%", "枠が埋まる確率",
-                     "中間発表の観測年数", "抽選ランクの観測年数"])
+                     "中間発表の観測年数", "抽選ランクの観測年数",
+                     "産駒数", "馬体重", "馬体重補正_倍", "馬体重を使わない確率"])
         for r in res:
             cw.writerow([r["dam"], r["age"], r["t"], r["east"], r["sire"],
                          r["sex"], r["price"], r["stable"], r["pool"],
                          f"{r['D']:.0f}", f"{r['lo']:.0f}", f"{r['hi']:.0f}",
-                         f"{r['p']:.3f}", r["n_int"], r["n_rank"]])
+                         f"{r['p']:.3f}", r["n_int"], r["n_rank"],
+                         r["parity"], r["wt"], f"{math.exp(r['wt_adj']):.2f}",
+                         f"{r['p_nowt']:.3f}"])
     exp = sum(r["p"] for r in res)
     print(f"  枠が埋まる（母馬優先者どうしの抽選になる）と見込まれる頭数 "
           f"= {exp:.1f}頭 / {len(res)}頭 = {exp/len(res):.0%}")
