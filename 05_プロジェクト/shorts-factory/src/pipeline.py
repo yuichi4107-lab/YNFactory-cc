@@ -55,8 +55,9 @@ class HybridGenerationBlocked(RuntimeError):
 
 TopviewInventoryError = topview_inventory.TopviewInventoryError
 
-# 混在1本あたりに使う実写クリップ数。使用済みは再利用しない。
-TOPVIEW_CLIPS_PER_VIDEO = 2
+# 混在1本あたりに使う長尺実写クリップ数。前後の2区間へ切り出すが、
+# 素材自体は最終ショート間で再利用しない。
+TOPVIEW_CLIPS_PER_VIDEO = 1
 
 
 def make_slug(title: str) -> str:
@@ -503,6 +504,43 @@ def _hybrid_segment_durations(cues: list[dict], total_dur: float) -> list[float]
     return durations
 
 
+def _topview_split_clip_offsets(clip: dict, segment_durations: list[float]) -> list[float]:
+    """1本の12秒素材から、第1・第4区間の実写を安全に切り出す。"""
+    if len(segment_durations) != 6:
+        raise TopviewInventoryError("Topview長尺素材の区間数が不正です")
+    clip_duration = float(clip["duration_sec"])
+    first_duration = float(segment_durations[0])
+    second_duration = float(segment_durations[3])
+    max_live_duration = float(CONFIG.get("topview", "max_live_segment_sec", default=5.0))
+    if first_duration > max_live_duration or second_duration > max_live_duration:
+        raise TopviewInventoryError(
+            "Topview 12秒素材へ収まらない実写セリフ尺です。台本を短くして再生成してください。"
+        )
+    desired = float(CONFIG.get("topview", "second_segment_start_sec", default=6.0))
+    min_gap = float(CONFIG.get("topview", "min_segment_gap_sec", default=1.0))
+    latest_start = clip_duration - second_duration
+    earliest_late_start = first_duration + min_gap
+    if latest_start < earliest_late_start:
+        raise TopviewInventoryError(
+            "Topview 12秒素材から前後2区間を切り出せません。素材尺または台本尺を確認してください。"
+        )
+    return [0.0, min(desired, latest_start)]
+
+
+def _topview_segment_durations(cues: list[dict], total_dur: float) -> list[float]:
+    """6つのTTSキューを、実写・カード4枚の6区間へ対応付ける。"""
+    if len(cues) != 6:
+        raise video_bg_gen.SeedanceError("Topview混在版は6つのセリフキューが必要です")
+    starts = [float(cue["start"]) for cue in cues]
+    boundaries = starts[1:] + [float(total_dur)]
+    durations = [round(end - start, 3) for start, end in zip(starts, boundaries)]
+    if any(duration <= 0 for duration in durations):
+        raise video_bg_gen.SeedanceError("Topview混在版のセリフ尺を確定できませんでした")
+    if starts[0] > 0.05:
+        raise video_bg_gen.SeedanceError("Topview混在版の冒頭発話に無音が残っています")
+    return durations
+
+
 def _build_topview_candidate(
     topic_entry: str | dict, selected_difficulty: str, attempt: int = 1,
 ) -> dict:
@@ -512,7 +550,7 @@ def _build_topview_candidate(
     停止し、呼び出し元は旧カード版へフォールバックしない。
     """
     topic = _topic_text(topic_entry)
-    script = script_gen.generate_seedance_script(topic_entry, selected_difficulty, 4)
+    script = script_gen.generate_seedance_script(topic_entry, selected_difficulty, 6)
     title = script["title"]
     suffix = "topview" if attempt == 1 else f"topview-try{attempt}"
     item_id = make_item_id(title, suffix=suffix)
@@ -530,17 +568,31 @@ def _build_topview_candidate(
     master_wav = Path(tts["master_wav"])
     final_cues = tts["cues"]
     total_dur = tts["total_dur"]
-    images, image_provider = image_gen.generate_images(script, work / "images")
-    if len(images) < 2:
-        raise TopviewInventoryError("混在版用の日本語カードを2枚用意できませんでした")
+    card_indices = (1, 2, 4, 5)
+    card_script = dict(script)
+    keywords = list(script.get("card_keywords", []))
+    card_script["card_keywords"] = [
+        keywords[index] if index < len(keywords) else script["title"]
+        for index in card_indices
+    ]
+    images, image_provider = image_gen.generate_images(card_script, work / "images")
+    if len(images) < 4:
+        raise TopviewInventoryError("混在版用の日本語カードを4枚用意できませんでした")
+    segment_durations = _topview_segment_durations(final_cues, total_dur)
+    clip = selected_clips[0]
+    live_offsets = _topview_split_clip_offsets(clip, segment_durations)
     bg = renderer.render_hybrid_background(
-        [Path(clip["path"]) for clip in selected_clips], images[:2],
-        _hybrid_segment_durations(final_cues, total_dur), work,
+        [Path(clip["path"]), Path(clip["path"])], images[:4], segment_durations, work,
+        live_start_offsets=live_offsets,
     )
     script.update({
-        "presentation_mode": "hybrid_topview_card",
+        "presentation_mode": "hybrid_topview_card_6",
         "video_provider": "topview_manual_export",
         "topview_assets": [clip["id"] for clip in selected_clips],
+        "topview_segments": [
+            {"asset_id": clip["id"], "start_sec": live_offsets[0], "duration_sec": segment_durations[0]},
+            {"asset_id": clip["id"], "start_sec": live_offsets[1], "duration_sec": segment_durations[3]},
+        ],
         "image_provider": image_provider,
         "speaker_credit": speaker_credit,
         "audio_mode": "voicevox",
@@ -560,9 +612,15 @@ def _build_topview_candidate(
         item_id, final, ass, work, images, previews, title, script,
         credit=f"{speaker_credit}／実写映像はTopview書き出し素材",
     )
-    topview_inventory.record_usage(CONFIG, [clip["id"] for clip in selected_clips])
-    log(f"Topview混在成果物保存: {out_dir}; assets={[clip['id'] for clip in selected_clips]}")
-    warn_topview_stock_running_out()
+    if report["pass"]:
+        topview_inventory.record_usage(CONFIG, [clip["id"] for clip in selected_clips])
+        log(f"Topview混在成果物保存: {out_dir}; assets={[clip['id'] for clip in selected_clips]}")
+        warn_topview_stock_running_out()
+    else:
+        log(
+            "Topview混在候補は品質不合格のため素材を消費せず再生成対象にする: "
+            f"{out_dir}"
+        )
     return {
         "item_id": item_id, "output_dir": str(out_dir), "out_dir": out_dir,
         "report": report, "title": title, "topic": topic, "script": script,
@@ -572,8 +630,34 @@ def _build_topview_candidate(
 
 
 def _generate_passable_topview_candidate(topic_entry: str | dict, selected_difficulty: str) -> tuple[dict, int]:
-    """Topview在庫は作り直さない。検証不合格なら呼び出し元で安全停止する。"""
-    return _build_topview_candidate(topic_entry, selected_difficulty), 0
+    """品質不合格なら、未消費の同一素材を使って安全に再生成する。
+
+    素材不足・台本尺超過など候補を組み立てられない失敗は隠さず上位へ渡す。
+    一方、完成後のCERなど品質だけの不合格は、外部投稿も新規素材消費もせず、
+    verify設定の上限まで別台本で作り直す。
+    """
+    remake_enabled, remake_max_attempts = _quality_remake_settings()
+    candidate = None
+    discarded_count = 0
+    for attempt in range(1, remake_max_attempts + 1):
+        candidate = _build_topview_candidate(topic_entry, selected_difficulty, attempt)
+        report = candidate["report"]
+        if report["pass"]:
+            break
+        if not remake_enabled or attempt >= remake_max_attempts:
+            break
+        discarded_count += 1
+        _mark_discarded_candidate(candidate, attempt + 1)
+        failed_checks = ", ".join(
+            check["name"] for check in report.get("checks", []) if not check.get("pass")
+        )
+        log(
+            "Topview混在品質検証不合格のため自動再生成: "
+            f"{candidate['item_id']} → attempt {attempt + 1}/{remake_max_attempts}"
+            + (f" failed={failed_checks}" if failed_checks else "")
+        )
+    assert candidate is not None
+    return candidate, discarded_count
 
 
 def _build_seedance_candidate(
@@ -1308,7 +1392,7 @@ def _topview_inventory_summary() -> str:
 def warn_topview_stock_running_out() -> None:
     """未使用の実写在庫が次の定刻枠で尽きる前にオーナーへ補充を促す。
 
-    1本の生成で未使用素材を2本消費し、使用済みは再利用しない。枯渇してから
+    1本の生成で未使用の12秒素材を1本消費し、使用済みは再利用しない。枯渇してから
     安全停止で気づくと、その枠の投稿がそのまま失われる。
     """
     counts = _topview_stock_counts()
@@ -1323,7 +1407,7 @@ def warn_topview_stock_running_out() -> None:
         notify.send_message(
             "⚠️ shorts-factory: Topview実写素材の残りが少なくなっています。\n"
             f"未使用 {unused} 本（残り約 {remaining_videos} 本ぶん）\n"
-            "1本の生成で未使用2本を消費し、使用済みは再利用しません。\n"
+            "1本の生成で未使用の12秒素材1本を消費し、使用済みは再利用しません。\n"
             "補充: Topviewで9:16・無字幕の素材を書き出し、"
             "scripts/register_topview_assets.py で登録する"
         )

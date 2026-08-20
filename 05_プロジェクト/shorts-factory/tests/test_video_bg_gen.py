@@ -566,6 +566,17 @@ class SeedanceFallbackScriptTest(unittest.TestCase):
         errs = script_gen.validate_seedance_script(data, 4)
         self.assertEqual(errs, [])
 
+    def test_normalize_generated_script_expands_ambiguous_tts_abbreviation(self):
+        data = _fixed_seedance_data(
+            {
+                "tts_text": "コミュ力を面接で見極めます。",
+                "tts_kana": "コミュリョクヲメンセツデミキワメマス。",
+            }
+        )
+        normalized = script_gen.normalize_generated_script(data)
+        self.assertEqual(normalized["cues"][0]["tts_text"], "コミュニケーション力を面接で見極めます。")
+        self.assertEqual(normalized["cues"][0]["tts_kana"], "コミュニケーションリョクヲメンセツデミキワメマス。")
+
     def test_fallback_script_tts_kana_is_katakana_only(self):
         data = script_gen._fallback_seedance_script("AI導入の始め方", "beginner", ["test error"])
         for cue in data["cues"]:
@@ -872,6 +883,36 @@ class ProduceTopviewRouteTest(unittest.TestCase):
 
         self.assertFalse(called["seedance"])
         self.assertEqual(result["id"], "fake-id")
+
+
+class TopviewQualityAutoRepairTest(unittest.TestCase):
+    def test_quality_failure_is_remade_once_before_safe_stop(self):
+        failed = {
+            "item_id": "topview-try1",
+            "out_dir": Path("/tmp/topview-try1"),
+            "report": {"pass": False, "checks": [{"name": "subtitle_accuracy_lines", "pass": False}]},
+        }
+        repaired = {
+            "item_id": "topview-try2",
+            "out_dir": Path("/tmp/topview-try2"),
+            "report": {"pass": True, "checks": []},
+        }
+        config = {
+            **CONFIG.cfg,
+            "verify": {**CONFIG.cfg["verify"], "auto_remake_on_fail": True, "remake_max_attempts": 2},
+        }
+        with (
+            patch.object(CONFIG, "cfg", config),
+            patch.object(pipeline, "_build_topview_candidate", side_effect=[failed, repaired]) as build,
+            patch.object(pipeline, "_mark_discarded_candidate") as mark_discarded,
+        ):
+            candidate, discarded = pipeline._generate_passable_topview_candidate("テストテーマ", "beginner")
+
+        self.assertEqual(candidate["item_id"], "topview-try2")
+        self.assertEqual(discarded, 1)
+        self.assertEqual(build.call_args_list[0].args, ("テストテーマ", "beginner", 1))
+        self.assertEqual(build.call_args_list[1].args, ("テストテーマ", "beginner", 2))
+        mark_discarded.assert_called_once_with(failed, 2)
 
 
 class SafeStopNotificationTest(unittest.TestCase):

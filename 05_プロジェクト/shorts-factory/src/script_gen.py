@@ -25,6 +25,12 @@ from . import topic_store
 SCRIPT_SCHEMA_KEYS = {"title", "cues", "caption", "hashtags", "card_keywords"}
 _KANA_RE = re.compile(r"^[ァ-ヶー、。・\s０-９0-9？?！!]+$")
 _UNSTABLE_SPEECH_RE = re.compile(r"[A-Za-z%％]")
+# 音声認識で「小魅力」などに誤認されやすい略語は、表示を変えず読み上げだけを
+# 明示的な語へ寄せる。品質検証の不要な停止を避けるためのTTS正規化である。
+_TTS_AMBIGUOUS_TERM_REPLACEMENTS = {
+    "コミュ力": "コミュニケーション力",
+    "コミュリョク": "コミュニケーションリョク",
+}
 _SPEECH_TERM_REPLACEMENTS = {
     "chatgpt": "チャットジーピーティー",
     "claude": "クロード",
@@ -227,6 +233,12 @@ def _replace_unstable_terms(text: str) -> str:
     )
 
 
+def _replace_tts_ambiguous_terms(text: str) -> str:
+    for source, replacement in _TTS_AMBIGUOUS_TERM_REPLACEMENTS.items():
+        text = text.replace(source, replacement)
+    return text
+
+
 def _normalize_display_terms(text: str) -> str:
     text = unicodedata.normalize("NFKC", _replace_unstable_terms(text))
     return _DISPLAY_CANONICAL_TERM_RE.sub(
@@ -258,12 +270,12 @@ def normalize_generated_script(data: dict) -> dict:
             ]
         for key in ("tts_text", "reading_kana"):
             if isinstance(cue.get(key), str):
-                cue[key] = _replace_unstable_terms(cue[key])
+                cue[key] = _replace_tts_ambiguous_terms(_replace_unstable_terms(cue[key]))
         # tts_kana（Seedance版のカタカナ読み）は jp_text.TERM_READINGS
         # （ChatGPT→チャットジーピーティー等、既存のVOICEVOXユーザー辞書と
         # 共通の読み辞書）で英字残存を機械的にカタカナへ畳み込む。
         if isinstance(cue.get("tts_kana"), str):
-            cue["tts_kana"] = fold_aliases(cue["tts_kana"])
+            cue["tts_kana"] = _replace_tts_ambiguous_terms(fold_aliases(cue["tts_kana"]))
     return data
 
 
