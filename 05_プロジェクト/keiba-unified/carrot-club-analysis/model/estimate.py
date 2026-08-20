@@ -120,8 +120,8 @@ class Params:
     budget_growth: float = 0.03
     # 予算のばらつき（対数正規のσ）
     budget_sigma: float = 0.62
-    # 年間退会率
-    churn: float = 0.07
+    # 年間退会率（members.py の逆算で 3〜6% と判明。中位は 4.5%）
+    churn: float = 0.045
     # 遅延歴などで母馬優先権を行使できない会員の割合
     inactive_rate: float = 0.03
     n_sim: int = 200_000
@@ -178,9 +178,9 @@ def eligible(dam_season: int, foal_season: int, popularity: str,
 def eligible_range(dam_season: int, foal_season: int, popularity: str,
                    units: int = UNITS_CENTRAL) -> tuple[float, float, float]:
     """低位・中位・高位シナリオの有資格者数を返す。"""
-    low = Params(churn=0.10, budget_median_2025=25.0, budget_growth=0.045)
+    low = Params(churn=0.06, budget_median_2025=25.0, budget_growth=0.045)
     mid = Params()
-    high = Params(churn=0.05, budget_median_2025=16.0, budget_growth=0.015)
+    high = Params(churn=0.03, budget_median_2025=16.0, budget_growth=0.015)
     return (
         eligible(dam_season, foal_season, popularity, low, units),
         eligible(dam_season, foal_season, popularity, mid, units),
@@ -238,7 +238,7 @@ def print_investor_table() -> None:
 
 def print_eligible_table() -> None:
     print("■ 母馬優先 有資格者数 E の推計（中央400口の母馬）")
-    print("   低位＝退会率10%/予算高め、中位＝退会率7%、高位＝退会率5%/予算低め")
+    print("   低位＝退会率6%/予算高め、中位＝退会率4.5%、高位＝退会率3%/予算低め")
     print()
     rows = [
         ("2016年度募集の人気牝馬", 2016, "lottery"),
