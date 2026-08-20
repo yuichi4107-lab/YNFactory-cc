@@ -13,7 +13,7 @@
 データ
 ------
 `data/dam_age_rank.csv`
-  2024年度・2025年度 第1次募集の母馬優先対象馬 112頭について
+  2021〜2025年度 第1次募集の母馬優先対象馬 253頭について
     ・クラブ公表の抽選ランク（数字＝母馬優先枠がどの段階で埋まったか）
     ・母馬の生年（一口馬主DBのキャロット所属馬一覧を年産別に突き合わせて特定）
 
@@ -142,8 +142,14 @@ def main() -> None:
         hit = sum(r["hit"] for r in sub)
         print(f"  {lab:<16}{len(sub):>4}頭中 {hit:>3}頭 = {hit/len(sub):>4.0%}")
     old = [r for r in rows if r["age"] >= 14]
-    print(f"\n  ※ 14歳以上の母馬は {len(old)}頭すべてで母馬優先枠が余っている"
-          f"（枠内抽選 {sum(r['hit'] for r in old)}頭）")
+    oh = [r for r in old if r["hit"]]
+    print(f"\n  ※ 14歳以上の母馬 {len(old)}頭のうち枠内抽選になったのは {len(oh)}頭だけ"
+          f"（{len(oh)/len(old):.0%}）")
+    for r in oh:
+        print(f"      {r['dam']}（{r['foal_year']}年産・{r['season']}年度募集・母馬{r['age']}歳）")
+    late = [r for r in old if r["season"] >= 2022]
+    print(f"    2022年度以降に限れば 14歳以上 {len(late)}頭中 "
+          f"{sum(r['hit'] for r in late)}頭。例外は2021年度に集中している。")
     print()
 
     print("=" * 74)
@@ -180,22 +186,26 @@ def main() -> None:
     by = defaultdict(dict)
     for r in rows:
         by[r["dam"]][r["season"]] = r
-    pairs = {k: v for k, v in by.items() if len(v) == 2}
+    seasons = sorted({r["season"] for r in rows})
     up = down = same = 0
-    for k, v in sorted(pairs.items(), key=lambda x: -x[1][2024]["foal_year"]):
-        p, q = v[2024], v[2025]
+    pairs = []
+    for dam, v in by.items():
+        for y in seasons[:-1]:
+            if y in v and y + 1 in v:
+                pairs.append((dam, y, v[y], v[y + 1]))
+    for dam, y, p, q in pairs:
         if p["hit"] == 1 and q["hit"] == 0:
             down += 1
         elif p["hit"] == 0 and q["hit"] == 1:
             up += 1
         else:
             same += 1
-    n1 = sum(v[2024]["hit"] for v in pairs.values())
-    n2 = sum(v[2025]["hit"] for v in pairs.values())
-    print(f"  2年連続で産駒が募集された母馬 {len(pairs)}頭")
-    print(f"    枠内抽選になった数：2024年度 {n1}頭 → 2025年度 {n2}頭")
-    print(f"    悪化（枠内→枠余り）{down}頭 / 改善（枠余り→枠内）{up}頭 / 変化なし {same}頭")
+    multi = sum(1 for v in by.values() if len(v) >= 2)
+    print(f"  実母馬 {len(by)}頭、うち2年以上に産駒が募集された母馬 {multi}頭")
+    print(f"  連年ペア {len(pairs)}組")
+    print(f"    悪化（枠内→枠余り）{down}組 / 改善（枠余り→枠内）{up}組 / 変化なし {same}組")
     print("  ※ 1年の経過に加えて産次も1つ進むので、退会だけの効果ではない。")
+    print("  ※ 反転（枠余り→枠内）の詳しい分析は model/reversal.py / docs/07 を参照。")
 
 
 if __name__ == "__main__":
