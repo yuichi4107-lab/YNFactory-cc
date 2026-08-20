@@ -586,6 +586,18 @@ class SeedanceFallbackScriptTest(unittest.TestCase):
         self.assertEqual(len(data["cues"]), 6)
         self.assertEqual(script_gen.validate_seedance_script(data, 6), [])
 
+    def test_six_cue_fallback_keeps_live_sections_within_topview_limit(self):
+        data = script_gen._fallback_seedance_script(
+            "ChatGPTで音声メモを箇条書きの作業メモにする方法",
+            "beginner",
+            ["test error"],
+            cut_count=6,
+        )
+        maximum = int(CONFIG.get("topview", "max_live_tts_kana_chars", default=35))
+        for cue_index in script_gen.TOPVIEW_LIVE_CUE_INDICES:
+            kana = data["cues"][cue_index]["tts_kana"]
+            self.assertLessEqual(len(kana.replace(" ", "")), maximum)
+
     def test_generate_seedance_script_falls_back_without_duplicate_check_blocking_it(self):
         # 実E2Eで発覚した不具合の回帰防止: LLM呼び出しが常に失敗する状況でも、
         # フォールバック台本が「過去動画と同一」判定に引っかかって

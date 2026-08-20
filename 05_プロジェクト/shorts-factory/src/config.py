@@ -177,7 +177,8 @@ DEFAULTS: dict = {
         "cer_avg_max": 0.18,
         "remake_max_attempts": 1,  # CER不合格時、再生成は1回だけ（混在枠は失敗なら停止）
     },
-    # Topviewで手動書き出しした実写素材だけを使う。Topview API/新規生成はしない。
+    # Topviewで手動書き出しした12秒実写素材だけを使う。1本を前後に分けて
+    # 実写→カード→カード→実写→カード→カードへ構成する。Topview API/新規生成はしない。
     "topview": {
         "enabled": False,
         "slots": [
@@ -187,8 +188,17 @@ DEFAULTS: dict = {
         ],
         "assets_dir": "~/shorts-factory/topview_assets",
         "manifest": "~/shorts-factory/topview_assets/manifest.json",
-        "min_enabled_clips": 6,
-        "min_clip_duration_sec": 3.0,
+        "min_enabled_clips": 4,
+        "min_clip_duration_sec": 11.5,
+        "max_clip_duration_sec": 12.5,
+        "required_format": "split_12s_v1",
+        "second_segment_start_sec": 6.0,
+        "min_segment_gap_sec": 1.0,
+        "max_live_segment_sec": 5.0,
+        # 12秒素材の前後へ分割する実写区間は、VOICEVOX実測で約4秒に収まる
+        # 読み長へ制限する（cue 0 / 3のみ）。
+        "max_live_tts_kana_chars": 35,
+        "low_stock_warn_clips": 4,
         "voicevox_speaker_id": 13,
         "voicevox_speaker_credit": "VOICEVOX:青山龍星",
     },

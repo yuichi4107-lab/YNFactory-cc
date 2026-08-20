@@ -1294,6 +1294,7 @@ _SEEDANCE_KANA_RE = _KANA_RE
 # pykakasiの漢字→ひらがな変換は完全ではない（複合語・固有名詞等でずれる）ため、
 # VOICEVOX側のreading_kana突合（kana_mismatch_cer=0.15）よりやや緩める。
 SEEDANCE_KANA_MISMATCH_CER_MAX = 0.35
+TOPVIEW_LIVE_CUE_INDICES = frozenset((0, 3))
 
 
 def inject_tts_line_into_prompt(video_prompt: str, tts_kana: str) -> str:
@@ -1392,12 +1393,26 @@ def _build_seedance_prompt(topic: str | dict, difficulty: str, cut_count: int) -
     recent_str = "\n".join(f"- {t}" for t in recent) if recent else "（まだ無し）"
     difficulty = topic_store.normalize_difficulty(difficulty) or "beginner"
     topic_text = _topic_text(topic)
+    topview_timing_rules = ""
+    if cut_count == 6:
+        max_kana = int(CONFIG.get("topview", "max_live_tts_kana_chars", default=35))
+        topview_timing_rules = (
+            "\n\n## 12秒実写素材の尺制約（最優先・厳守）\n"
+            "- この台本は6区間構成で、cue[0]とcue[3]だけが実写映像に載る。"
+            "この2つは動画開始と同時に発話し、`tts_kana` を"
+            f"{max_kana}文字以内（約4秒）にすること。\n"
+            "- cue[0]は短い問いかけまたは結論、cue[3]は短い切り替え・要点にする。"
+            "長い手順説明やCTAを実写区間へ入れない。\n"
+            "- cue[1]、cue[2]、cue[4]、cue[5]は日本語カード区間なので、"
+            "詳しい説明とCTAはそちらへ置くこと。\n"
+        )
     return (
         tpl.replace("{topic}", topic_text)
         .replace("{difficulty}", difficulty)
         .replace("{difficulty_guidance}", DIFFICULTY_GUIDANCE[difficulty])
         .replace("{cut_count}", str(cut_count))
         .replace("{recent_titles}", recent_str)
+        .replace("{topview_timing_rules}", topview_timing_rules)
     )
 
 
@@ -1459,6 +1474,14 @@ def validate_seedance_script(data: dict, cut_count: int) -> list[str]:
                     f"cue[{i}].tts_kana「{kana}」が tts_text「{tts}」と読みが一致しない"
                     f"（音韻CER={mismatch:.2f} > 上限{SEEDANCE_KANA_MISMATCH_CER_MAX}）。"
                     "tts_textの正確な読みをカタカナで書き直すこと"
+                )
+        if cut_count == 6 and i in TOPVIEW_LIVE_CUE_INDICES and isinstance(kana, str):
+            max_kana = int(CONFIG.get("topview", "max_live_tts_kana_chars", default=35))
+            kana_length = len(re.sub(r"\s+", "", kana))
+            if kana_length > max_kana:
+                errs.append(
+                    f"cue[{i}].tts_kana が{kana_length}文字で、12秒素材の実写区間上限"
+                    f"{max_kana}文字を超えています。短い即発話にすること"
                 )
         disp = cue.get("display")
         if not isinstance(disp, list) or not (1 <= len(disp) <= 2):
@@ -1553,13 +1576,19 @@ def _fallback_seedance_script(
         ),
     ]
     if cut_count == 6:
+        focus, focus_kana = _fallback_topic_focus(topic_text)
         lines = [
-            four_lines[0],
+            (
+                f"{focus}、放置すると仕事が埋もれます。",
+                f"{focus_kana}、ホウチスルトシゴトガウモレマス。",
+                [focus, "放置は損です"],
+                True,
+            ),
             four_lines[1],
             four_lines[2],
             (
-                "ここからは、実際に迷わず進めるための順番を確認します。",
-                "ココカラハ、ジッサイニマヨワズススメルタメノジュンバンヲカクニンシマス。",
+                "次にやることを、一つに絞ります。",
+                "ツギニヤルコトヲ、ヒトツニシボリマス。",
                 ["迷わない進め方"],
                 False,
             ),
