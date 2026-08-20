@@ -265,6 +265,7 @@ python3 model/dam_age.py           # 母馬の馬齢別の枠内抽選率
 python3 model/reversal.py          # 反転（枠余り→枠内抽選）の分析
 python3 model/interim.py           # 中間発表の申込口数から直接検証
 python3 model/forecast2026.py      # 2026年度募集の予測
+python3 model/make_xlsx.py         # 予測を配布用Excelに書き出す（要 openpyxl）
 ```
 
 出力は `data/members_output.txt` / `data/model_output.txt` / `data/dam_age_output.txt` /
@@ -329,7 +330,8 @@ carrot-club-analysis/
 │   ├── dam_age.py                 … 母馬の馬齢と枠内抽選の関係
 │   ├── reversal.py                … 反転ケースの分析
 │   ├── interim.py                 … 中間発表の申込口数の分析
-│   └── forecast2026.py            … 2026年度募集の予測（バックテスト付き）
+│   ├── forecast2026.py            … 2026年度募集の予測（バックテスト付き）
+│   └── make_xlsx.py               … 予測を配布用Excelに書き出す
 └── data/
     ├── carrot_unit_prices.csv     … 1口価格の推移（実測＋後方推計）
     ├── carrot_1ji_result.csv      … 1次募集の満口率
