@@ -97,6 +97,7 @@ temp/
 .claude/worktrees/
 .claude/cache/
 .claude/tmp/
+.claude/skill-sync-state.json
 
 # ─── プロジェクト固有 ───
 # ルート直下の雑多なログ・一時ファイル
