@@ -28,7 +28,7 @@
 
 | ID | コンポーネント | 責務 | 依存先 | 対応要件 |
 |---|---|---|---|---|
-| C-01 | DataIngestor | 提供元別アダプタでデータを取得し正規化する | 外部API | FR-DATA-001, 004, 006 |
+| C-01 | DataIngestor | 提供元別アダプタでデータを取得し正規化する | 外部API | FR-DATA-001, 004, 007, 008, 010 |
 | C-02 | DataQualityChecker | 品質チェック6項目と提供元間の差分実測 | C-01 | FR-DATA-002, 005 |
 | C-03 | DataStore | 時系列（Parquet）と状態（SQLite）の永続化 | — | FR-DATA-003, FR-REC-001 |
 | C-04 | StrategyEngine | 戦略プラグインを読み込みシグナルを算出する | C-03 | FR-SIG-001, 002 |
@@ -170,13 +170,36 @@ NEW ──submit──> SUBMITTED ──> FILLED
 
 **格納先は同期フォルダ配下を禁止する**（FR-DATA-003・FP-008）。起動時に ConfigManager が検査する。
 
+### 3.1.1 スワップの二層構成（v1.2で追加）
+
+FXのスワップは、**公正値と業者マージンを分離して保持する**。
+
+| レイヤー | 提供元 | 期間 | 役割 |
+|---|---|---|---|
+| `fair_swap` | 東京金融取引所（TFX） | 2005年7月〜（21年） | 市場の公正なスワップ水準 |
+| `broker_margin` | GMOコイン外国為替FX | 2023年4月〜 | 執行先が上乗せするマージン |
+
+検証時のスワップ = `fair_swap` − `broker_margin`（マージンは片側22〜28円/万通貨/日、年率0.5〜0.7%で安定）。
+
+**この分離が必要な理由**: 執行先の実績は3年分しかなく10年の検証要求を満たせない。一方TFXは21年分あるが
+業者のマージンを含まない。両者を掛け合わせて初めて、規約上クリーンなまま長期のキャリー検証が成立する。
+
+**最大のバグ源は付与日数である。** TFXのデータは付与日数の列を持たないため、週末・祝日をまたぐ日の
+3日分付与などを自前で判定する必要がある。この判定は**単一の関数に集約し、検証と実行の両方から
+同じ関数を呼ぶ**（FR-DATA-009）。ここが二重実装になると、バックテストと実運用で損益が静かにずれる。
+
+**TFXは「予告なく変更・削除」と明記しているため、取得したデータはスナップショットとして保存する**
+（FR-DATA-010）。保存しないと、提供元の更新で過去の検証結果が再現できなくなる。
+
 ### 3.2 データモデル（主要テーブル）
 
 | テーブル | 主なカラム | 制約 |
 |---|---|---|
 | instruments | symbol(PK), market, tick_size, qty_step, min_qty | — |
 | ohlcv | symbol, ts, o, h, l, c, v, source | PK(symbol, ts, source) |
-| funding_rates | symbol, ts, rate | PK(symbol, ts) |
+| fair_swap | pair, ts, swap_buy, swap_sell, source | PK(pair, ts) |
+| broker_margin | pair, ts, margin_buy, margin_sell | PK(pair, ts) |
+| snapshots | source, period, file_path, fetched_at, hash | 取得時のまま保存し変更しない |
 | signals | id(PK), strategy_id, symbol, ts, side, size_ratio, inputs(JSON) | — |
 | orders | idempotency_key(PK), strategy_id, symbol, side, qty, price, state, submitted_at | **追記のみ**。状態遷移は order_events で表現 |
 | order_events | id(PK), idempotency_key(FK), from_state, to_state, reason, ts | 追記のみ |
@@ -258,7 +281,7 @@ mmat/
 | Time-series Store | Parquet | 検証用データの保持 |
 | State Store | SQLite | 注文・約定・ポジション・損益の記録 |
 | Exchange APIs | GMOコイン（現物・FX） | 発注・残高照会・約定取得 |
-| Data Sources | Binance公開バルク / HistData / 野村AM | 検証用データの提供 |
+| Data Sources | GMOコイン公開API（暗号資産） / HistData（FX価格） / TFX（FXスワップ公正値） | 検証用データの提供 |
 | Notification | Telegram Bot API | 通知の送信 |
 
 ### 5.2 Component（MMAT Daemon の内部）
@@ -403,6 +426,16 @@ mmat/
 
 | # | 未解決 | 設計への影響 |
 |---|---|---|
-| U1 | FXのスワップ実績データの入手可否 | 入手不可なら C-01 のスワップ取得アダプタが不要になり、対象戦略が6件から2件へ減る。**設計の骨格は変わらないが、strategies/ の中身が変わる** |
-| U2 | 野村AM CSV の自動取得の可否 | 不可なら C-01 の該当アダプタと日本株のペーパー検証を取りやめる。実弾に影響しない |
-| U3 | 執行先データでの検証完結の可否 | GMOコインの過去データで検証が完結できるなら、FR-DATA-005（提供元間の差分実測）とR2が不要になり、C-02 が簡素化される |
+| U1 | ~~FXのスワップ実績データの入手可否~~ | **解決**。TFXを公正値レイヤーとして採用し、GMOコイン実績でマージンを校正する二層構成とした（§3.1.1）。対象戦略6件はすべて維持 |
+| U2 | 野村AM CSV の自動取得の可否 | **不採用と判断**。C-01 の該当アダプタを実装せず、日本株のペーパー検証を保留する。実弾に影響しない |
+| U3 | 執行先データでの検証完結の可否 | **暗号資産は完結できる**（GMOコイン日足2018年9月〜）。FR-DATA-005 の対象はFXのみとなり、暗号資産についてR2が消滅した。FXは価格の提供元が別のため差分実測を継続する |
+
+
+---
+
+## 10. 変更履歴
+
+| 日付 | 版 | 内容 |
+|---|---|---|
+| 2026-08-21 | 1.0 | 初版。4ビュー・C4・ADR 13件 |
+| 2026-08-21 | 1.1 | SRS v1.2 を反映。スワップの二層構成（§3.1.1）を追加し、暗号資産の検証データ提供元を執行先自身へ変更。これにより検証と実行のズレ（R2）が暗号資産については消滅した |
