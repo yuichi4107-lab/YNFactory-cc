@@ -1,0 +1,5 @@
+# netkeiba・外部サイトのHTMLキャッシュ（再取得できるのでコミットしない）
+scripts/nk_cache/
+scripts/src_cache/
+scripts/results.jsonl
+scripts/scrape.log
