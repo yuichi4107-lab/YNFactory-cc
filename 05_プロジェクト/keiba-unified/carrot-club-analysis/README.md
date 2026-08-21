@@ -349,3 +349,16 @@ carrot-club-analysis/
     ├── forecast2026_output.txt    … forecast2026.py の出力
     └── model_output.txt           … estimate.py の出力
 ```
+
+---
+
+## 関連：`2026-review/`
+
+2026年度確定募集馬94頭の **出資検討スコア（6点満点）** の分析一式。
+過去3年（2020〜2022年募集）276頭のデビュー後成績をnetkeibaで検証し、そこから
+スコア基準を導出したもの。会員数・抽選ランクの推計を扱う本ディレクトリとは
+別の切り口（馬の成績側からの検討）。詳細は `2026-review/README.md`。
+
+- `キャロット2026検討.xlsx` … 確定94頭の一覧・検討基準・過去276頭の成績
+- `scripts/` … netkeiba照会・Excel生成スクリプト
+- `datasets/` … 照会・検証済みデータ
