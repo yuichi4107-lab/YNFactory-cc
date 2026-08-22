@@ -1,0 +1,15 @@
+[project]
+name = "ai-collab-planner"
+version = "0.14.0"
+description = "Claude Code CLIとCodex CLIで2つの立場を議論・統合し、要件定義書と実装プランを作るWindows向けツール"
+requires-python = ">=3.11"
+
+[project.optional-dependencies]
+voice = [
+  "faster-whisper>=1.1,<2",
+  "numpy>=1.26,<3",
+  "sounddevice>=0.5,<1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
