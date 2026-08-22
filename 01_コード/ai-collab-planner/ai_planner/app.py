@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import shutil
 import sys
 from pathlib import Path
@@ -11,6 +12,7 @@ from .domain import ModelTeam, RoutingDecision
 from .project import (
     archive_legacy_source,
     copy_legacy_workflow,
+    goal_path,
     initialize_project_files,
     inspect_project,
     model_selection_path,
@@ -22,7 +24,7 @@ from .project import (
 )
 from .router import decide_level
 from .voice import WindowsVoiceIO, parse_yes_no
-from .workflow import CollaborationWorkflow
+from .workflow import CollaborationWorkflow, classify_forks_document
 
 
 APP_ROOT = Path(__file__).resolve().parent.parent
@@ -35,11 +37,27 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--voice", action="store_true", help="Windowsの音声入力と読み上げを使用")
     parser.add_argument("--whisper-model", help="音声認識モデルを一時的に変更（例: medium）")
     parser.add_argument("--project", type=Path, help="YNFactory-cc等の作業ディレクトリを直接指定")
+    parser.add_argument("--goal", help="依頼文。渡すと自動起動モードになる（人の入力を求めない）")
+    parser.add_argument("--name", help="プロジェクト名。省略時は依頼文から自動提案")
+    parser.add_argument(
+        "--level",
+        choices=["light", "standard", "complex", "critical"],
+        help="作業レベル。省略時は依頼文のキーワードで判定",
+    )
+    parser.add_argument("--resume", type=Path, help="承認待ちで停止した実行記録から再開する")
+    parser.add_argument("--json", action="store_true", help="結果をJSONで出力")
+    parser.add_argument(
+        "--print-project-path", action="store_true",
+        help="プロジェクトの保存先を出力して終了する（AIを呼ばない）",
+    )
     args = parser.parse_args(argv)
 
     settings = load_settings(APP_ROOT / "config.toml")
     if args.check:
         return run_check(settings)
+
+    if args.goal or args.resume:
+        return run_headless(args, settings)
 
     voice = create_voice_io(settings, args.whisper_model) if args.voice else None
     if voice is not None and not voice.available():
@@ -206,6 +224,169 @@ def run_check(settings: AppSettings) -> int:
     print("音声入力は任意です。未設定でもキーボード版は動作します。")
     print("CLIを使わず試す場合は `python main.py --demo` を実行してください。")
     return 0 if required_ok else 2
+
+
+HEADLESS_NEEDS_APPROVAL = 10
+
+
+class _HeadlessApprover:
+    """自動起動モードの承認。原則True、例外のみFalse。
+
+    議論そのものはAI同士で行われる。ここが判定するのは
+    「その議論を始めてよい状態か」だけ。
+    """
+
+    def __init__(self, auto_approve: bool = False):
+        self.auto_approve = auto_approve
+        self.pending_reason: str | None = None
+
+    def __call__(self, document: str) -> bool:
+        if self.auto_approve:
+            return True
+        verdict = classify_forks_document(document)
+        if verdict == "ok":
+            return True
+        self.pending_reason = verdict
+        return False
+
+
+def _team_summary(team: ModelTeam) -> dict:
+    return {
+        "fork_extractor": display_role(team.fork_extractor),
+        "fork_auditor": display_role(team.fork_auditor),
+        "primary_planner": display_role(team.primary_planner),
+        "secondary_planner": display_role(team.secondary_planner),
+        "plan_reviewer": display_role(team.plan_reviewer),
+        "final_decider": display_role(team.final_decider),
+        "requirements_final_checker": display_role(team.requirements_final_checker),
+    }
+
+
+def _emit(payload: dict, as_json: bool) -> None:
+    if as_json:
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
+        return
+    for key, value in payload.items():
+        print(f"{key}: {value}")
+
+
+def run_headless(args: argparse.Namespace, settings: AppSettings) -> int:
+    """人の入力を求めずに実行する。AI同士の議論工程は対話モードと同一。"""
+    if args.project:
+        workspace_root = args.project.resolve()
+    elif settings.default_workspace and Path(settings.default_workspace).is_dir():
+        workspace_root = Path(settings.default_workspace).resolve()
+    else:
+        _emit({"ok": False, "exit_reason": "no_workspace",
+               "detail": "作業ディレクトリを解決できません。--project で指定してください。"},
+              args.json)
+        return 2
+
+    forks_override: str | None = None
+    run_dir_override: Path | None = None
+    if args.resume:
+        run_dir_override = args.resume.resolve()
+        forks_file = run_dir_override / "01_forks_and_stances.md"
+        if not forks_file.exists():
+            _emit({"ok": False, "exit_reason": "resume_failed",
+                   "detail": f"分岐点の記録が見つかりません: {forks_file}"}, args.json)
+            return 1
+        forks_override = forks_file.read_text(encoding="utf-8")
+        project_root = run_dir_override.parent.parent
+        goal_file = goal_path(project_root)
+        goal = args.goal or (
+            goal_file.read_text(encoding="utf-8").split("\n\n", 1)[-1].strip()
+            if goal_file.exists() else ""
+        )
+    else:
+        goal = args.goal or ""
+        name = sanitize_project_name(args.name) if args.name else suggest_project_name(goal)
+        project_root = (workspace_root / settings.projects_directory / name).resolve()
+        project_root.mkdir(parents=True, exist_ok=True)
+
+    if not goal.strip():
+        _emit({"ok": False, "exit_reason": "empty_goal",
+               "detail": "依頼文が空です。"}, args.json)
+        return 1
+
+    if args.print_project_path:
+        _emit({"ok": True, "exit_reason": "path_only",
+               "project_name": project_root.name,
+               "project_root": str(project_root)}, args.json)
+        return 0
+
+    initialize_project_files(project_root)
+
+    decision = decide_level(goal, settings)
+    level = args.level or decision.level
+    team = settings.teams[level]
+
+    runner = DemoModelRunner() if args.demo else CliModelRunner(settings)
+    if not args.demo:
+        missing = sorted({
+            role.provider for role in _planning_roles(team)
+            if role.enabled and not runner.available(role.provider)
+        })
+        if missing:
+            _emit({"ok": False, "exit_reason": "cli_missing",
+                   "detail": "必要なCLIが見つかりません: " + ", ".join(missing)}, args.json)
+            return 2
+        failures = []
+        for provider in sorted({r.provider for r in _planning_roles(team) if r.enabled}):
+            ok, detail = runner.auth_status(provider)
+            if not ok:
+                failures.append(f"{provider}: {detail}")
+        if failures:
+            _emit({"ok": False, "exit_reason": "not_authenticated",
+                   "detail": "; ".join(failures),
+                   "hint": "Codex: `codex login`  Claude: `claude auth login`"}, args.json)
+            return 2
+
+    write_text(model_selection_path(project_root), model_selection_markdown(decision, team))
+
+    approver = _HeadlessApprover(auto_approve=bool(args.resume))
+    base = {
+        "project_name": project_root.name,
+        "project_root": str(project_root),
+        "level": level,
+        "level_label": team.label,
+        "matched_keywords": list(decision.matched_keywords),
+        "debate_enabled": team.debate_enabled,
+        "team": _team_summary(team),
+    }
+
+    try:
+        with project_lock(project_root):
+            workflow = CollaborationWorkflow(
+                runner,
+                progress=lambda message: print(f"▶ {message}", file=sys.stderr),
+                approve=approver,
+                confirm_no_forks=True,
+            )
+            outcome = workflow.execute(
+                root=project_root, goal=goal, team=team,
+                forks_override=forks_override,
+                run_dir_override=run_dir_override,
+            )
+    except Exception as exc:
+        _emit({**base, "ok": False, "exit_reason": "error", "detail": str(exc)}, args.json)
+        return 1
+
+    if not outcome.completed:
+        _emit({**base, "ok": False, "exit_reason": "needs_approval",
+               "pending_reason": approver.pending_reason or "unknown",
+               "run_dir": str(outcome.run_dir),
+               "forks_path": str(outcome.run_dir / "01_forks_and_stances.md")}, args.json)
+        return HEADLESS_NEEDS_APPROVAL
+
+    _emit({**base, "ok": True, "exit_reason": "completed",
+           "run_dir": str(outcome.run_dir),
+           "requirements_path": str(requirements_path(project_root)),
+           "requirements_created": outcome.requirements_created,
+           "rounds_used": outcome.rounds_used,
+           "stop_reason": outcome.stop_reason,
+           "issue_ids": list(outcome.issue_ids)}, args.json)
+    return 0
 
 
 def choose_project_directory() -> Path | None:
