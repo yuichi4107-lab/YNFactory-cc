@@ -74,18 +74,24 @@ class CollaborationWorkflow:
         runner: ModelRunner,
         progress: Progress,
         approve: Approve = _always_approve,
+        confirm_no_forks: bool = False,
     ):
         self.runner = runner
         self.progress = progress
         self.approve = approve
+        # 自動起動モードでは、分岐点0件のときも承認経路へ通す。
+        # 分岐点が出ないこと自体が、依頼文か対象フォルダの問題を示すため。
+        self.confirm_no_forks = confirm_no_forks
 
     def execute(
         self,
         root: Path,
         goal: str,
         team: ModelTeam,
+        forks_override: str | None = None,
+        run_dir_override: Path | None = None,
     ) -> WorkflowOutcome:
-        run_dir = create_run_directory(root)
+        run_dir = run_dir_override if run_dir_override is not None else create_run_directory(root)
         final_requirements_path = requirements_path(root)
 
         # 依頼文はGOAL.mdへ保存され、すべての工程のプロンプトへ埋め込まれる。
@@ -101,8 +107,12 @@ class CollaborationWorkflow:
         debate = False
 
         if team.debate_enabled:
-            forks = self._build_forks_document(goal, team, root)
-            write_text(run_dir / "01_forks_and_stances.md", forks)
+            if forks_override is not None:
+                # --resume。ユーザーが承認した文書をそのまま使い、再抽出しない。
+                forks = forks_override
+            else:
+                forks = self._build_forks_document(goal, team, root)
+                write_text(run_dir / "01_forks_and_stances.md", forks)
             facts = _section(forks, "## 確認した事実") or facts
 
             # 対象フォルダのファイルに仕込まれた誘導文が、ここから全工程へ広がる。
@@ -114,7 +124,7 @@ class CollaborationWorkflow:
                 )
 
             no_forks = _has_no_forks(forks)
-            if no_forks and not injection:
+            if no_forks and not injection and not self.confirm_no_forks:
                 self.progress("分岐点がないため、議論を行わず要件定義へ進みます。")
             elif not self.approve(injection_warning(injection) + forks):
                 write_text(
@@ -480,6 +490,20 @@ def _section(document: str, heading: str) -> str:
 def _has_no_forks(forks_document: str) -> bool:
     body = _section(forks_document, "## 分岐点")
     return body.startswith(NO_FORKS_MARKER)
+
+
+def classify_forks_document(document: str) -> str:
+    """自動起動モードで停止すべきかを判定する。
+
+    戻り値: "ok" / "injection_warning" / "no_forks"
+    インジェクション警告を優先する。誘導文がある文書は、
+    分岐点の有無にかかわらず人間が見るべきものだから。
+    """
+    if scan_injection(document):
+        return "injection_warning"
+    if _has_no_forks(document):
+        return "no_forks"
+    return "ok"
 
 
 def _validate_forks(forks_document: str) -> None:
