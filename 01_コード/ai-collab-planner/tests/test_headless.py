@@ -237,6 +237,19 @@ class HeadlessCliTest(unittest.TestCase):
         # AIを呼ばないので --demo を付けなくても成功する
         self.assertNotIn("requirements_path", payload)
 
+    def test_print_project_path_returns_level_and_team(self):
+        """Step 3 でレベルとモデル構成を提示するために必要な情報が揃うこと。"""
+        with TemporaryDirectory() as tmp:
+            code, output = self.run_cli(
+                ["--goal", "READMEの誤字を直す", "--name", "p",
+                 "--project", tmp, "--print-project-path", "--json"]
+            )
+        self.assertEqual(code, 0)
+        payload = json.loads(output[output.index("{"):])
+        self.assertEqual(payload["level"], "light")
+        self.assertFalse(payload["debate_enabled"])
+        self.assertIn("primary_planner", payload["team"])
+
     def test_interactive_mode_is_unchanged_without_goal(self):
         """--goal を渡さなければ従来どおり対話モードへ入ること。"""
         with TemporaryDirectory() as tmp:

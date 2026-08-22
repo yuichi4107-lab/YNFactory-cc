@@ -311,17 +311,22 @@ def run_headless(args: argparse.Namespace, settings: AppSettings) -> int:
                "detail": "依頼文が空です。"}, args.json)
         return 1
 
-    if args.print_project_path:
-        _emit({"ok": True, "exit_reason": "path_only",
-               "project_name": project_root.name,
-               "project_root": str(project_root)}, args.json)
-        return 0
-
     initialize_project_files(project_root)
 
     decision = decide_level(goal, settings)
     level = args.level or decision.level
     team = settings.teams[level]
+
+    if args.print_project_path:
+        _emit({"ok": True, "exit_reason": "path_only",
+               "project_name": project_root.name,
+               "project_root": str(project_root),
+               "level": level,
+               "level_label": team.label,
+               "matched_keywords": list(decision.matched_keywords),
+               "debate_enabled": team.debate_enabled,
+               "team": _team_summary(team)}, args.json)
+        return 0
 
     runner = DemoModelRunner() if args.demo else CliModelRunner(settings)
     if not args.demo:
