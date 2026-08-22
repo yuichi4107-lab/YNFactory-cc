@@ -77,6 +77,15 @@ description: セッション終了時のハンドオフ処理。HANDOFF.md更新
 - 完了したタスクにチェックを入れる
 - 新たに発生したタスクを追加
 
+**このセッション中に完成した要件定義を拾う**:
+
+```bash
+python 01_コード/scripts/company/planner_inbox.py --status ready_for_nagame --json
+```
+
+検出された項目の追記ルールは `start` スキルの Step 3.5 と同一（`## 最優先` と `## オーナー操作`、
+プロジェクト名の部分一致で重複防止）。`/start` で既に追記済みのものは重複防止で自動的に飛ばされる。
+
 ### Step 3: Drive↔ローカルGit同期・commit・push
 
 Drive側そのものでは git コマンドを実行しない。**ローカルGit作業ディレクトリが存在し `.git` があるか**をまず確認する。
@@ -101,13 +110,19 @@ python3 01_コード/scripts/company/sync_drive_git.py commit-push \
   -m "handoff: [作業サマリーを1行で]" \
   .company/secretary/HANDOFF.md \
   .company/secretary/handoff-log/YYYY-MM.md \
-  .company/secretary/todos/YYYY-MM-DD.md [その他更新した相対パス...]
+  .company/secretary/todos/YYYY-MM-DD.md \
+  05_プロジェクト/<プロジェクト名>/01_計画 \
+  [その他更新した相対パス...]
 ```
 
 - `commit-push` は「Drive側の指定パスをローカルGit側へコピー → `git add` → `git commit` → `git push`」までを一括実行する
 - 引数はリポジトリルートからの**相対パス**のみ（絶対パス不可）。今回のセッションでDrive側で更新した相対パスをすべて列挙する
 - コミットメッセージのプレフィックスは必ず `handoff:` にする
 - push が失敗する場合は `01_コード/scripts/company/sync_drive_git.py pull-sync` で最新化してから再実行する
+- **既存ファイルを C 側で編集した場合は、`commit-push` の前に必ず C→G を通す。**
+  `commit-push` は `drive-to-local` 方向にコピーしてから commit するため、
+  Drive 側に古い版があると変更が巻き戻る:
+  `python 01_コード/scripts/company/sync_drive_git.py local-to-drive <相対パス...>`
 
 #### 3-3. 失敗時
 
