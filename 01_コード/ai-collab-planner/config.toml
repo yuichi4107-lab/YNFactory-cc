@@ -1,0 +1,146 @@
+[application]
+language = "ja"
+projects_directory = "05_プロジェクト"
+default_workspace = 'G:\マイドライブ\YNFactory-cc'
+
+[commands]
+codex = "codex"
+claude = "claude"
+timeout_seconds = 3600
+
+[voice]
+# auto: ローカルWhisperを優先し、使えない場合はWindows標準へ戻します。
+backend = "auto"
+whisper_model = "small"
+device = "cpu"
+compute_type = "int8"
+max_recording_seconds = 60
+start_timeout_seconds = 10
+silence_seconds = 1.2
+silence_threshold = 0.012
+input_device = ""
+initial_prompt = "日本語のAI共同開発の依頼です。専門用語: Codex、Claude Code、ChatGPT、GPT-5.6、Sol、Terra、Luna、note、LINEスタンプ、YNFactory、GitHub、Python。"
+
+[voice.corrections]
+"コーデックス" = "Codex"
+"コードエックス" = "Codex"
+"クロードコード" = "Claude Code"
+"チャットGPT" = "ChatGPT"
+"GPT5.6" = "GPT-5.6"
+"YNファクトリー" = "YNFactory"
+
+[models.light]
+# implementer / code_reviewer / final_gate は実行せず、実装プランの候補としてだけ使います。
+# max_debate_rounds = 0 なら議論工程を行わず、案→統合→最終チェックの3工程で終わります。
+label = "軽い・定型"
+max_debate_rounds = 0
+fork_extractor_provider = "none"
+fork_extractor_model = "none"
+fork_auditor_provider = "none"
+fork_auditor_model = "none"
+primary_planner_provider = "codex"
+primary_planner_model = "gpt-5.6-luna"
+secondary_planner_provider = "none"
+secondary_planner_model = "none"
+plan_reviewer_provider = "none"
+plan_reviewer_model = "none"
+final_decider_provider = "codex"
+final_decider_model = "gpt-5.6-luna"
+requirements_final_checker_provider = "claude"
+requirements_final_checker_model = "claude-sonnet-5"
+implementer_provider = "codex"
+implementer_model = "gpt-5.6-luna"
+code_reviewer_provider = "claude"
+code_reviewer_model = "claude-sonnet-5"
+final_gate_provider = "none"
+final_gate_model = "none"
+
+[models.standard]
+label = "通常"
+max_debate_rounds = 2
+fork_extractor_provider = "claude"
+fork_extractor_model = "claude-sonnet-5"
+fork_auditor_provider = "none"
+fork_auditor_model = "none"
+primary_planner_provider = "codex"
+primary_planner_model = "gpt-5.6-terra"
+secondary_planner_provider = "claude"
+secondary_planner_model = "claude-sonnet-5"
+plan_reviewer_provider = "claude"
+plan_reviewer_model = "claude-sonnet-5"
+final_decider_provider = "codex"
+final_decider_model = "gpt-5.6-terra"
+requirements_final_checker_provider = "claude"
+requirements_final_checker_model = "claude-sonnet-5"
+implementer_provider = "codex"
+implementer_model = "gpt-5.6-terra"
+code_reviewer_provider = "claude"
+code_reviewer_model = "claude-sonnet-5"
+final_gate_provider = "none"
+final_gate_model = "none"
+
+[models.complex]
+label = "複雑"
+max_debate_rounds = 3
+fork_extractor_provider = "claude"
+fork_extractor_model = "claude-opus-5"
+fork_auditor_provider = "none"
+fork_auditor_model = "none"
+primary_planner_provider = "codex"
+primary_planner_model = "gpt-5.6-sol"
+secondary_planner_provider = "claude"
+secondary_planner_model = "claude-opus-5"
+plan_reviewer_provider = "claude"
+plan_reviewer_model = "claude-opus-5"
+final_decider_provider = "codex"
+final_decider_model = "gpt-5.6-sol"
+requirements_final_checker_provider = "claude"
+requirements_final_checker_model = "claude-opus-5"
+implementer_provider = "codex"
+implementer_model = "gpt-5.6-sol"
+code_reviewer_provider = "claude"
+code_reviewer_model = "claude-opus-5"
+final_gate_provider = "codex"
+final_gate_model = "gpt-5.6-sol"
+
+[models.critical]
+label = "長期・高リスク"
+max_debate_rounds = 3
+fork_extractor_provider = "claude"
+fork_extractor_model = "claude-opus-5"
+# 抽出役1体の見落としを防ぐため、別会社のモデルが分岐点を補完します。
+fork_auditor_provider = "codex"
+fork_auditor_model = "gpt-5.6-sol"
+primary_planner_provider = "claude"
+primary_planner_model = "claude-fable-5"
+secondary_planner_provider = "codex"
+secondary_planner_model = "gpt-5.6-sol"
+plan_reviewer_provider = "claude"
+plan_reviewer_model = "claude-opus-5"
+final_decider_provider = "codex"
+final_decider_model = "gpt-5.6-sol"
+requirements_final_checker_provider = "claude"
+requirements_final_checker_model = "claude-opus-5"
+implementer_provider = "codex"
+implementer_model = "gpt-5.6-sol"
+code_reviewer_provider = "claude"
+code_reviewer_model = "claude-opus-5"
+final_gate_provider = "codex"
+final_gate_model = "gpt-5.6-sol"
+
+[routing]
+# 高リスク語が1つでもあれば critical にします。
+critical_keywords = [
+  "個人情報", "パスワード", "認証", "権限", "決済", "課金", "クレジットカード",
+  "本番", "デプロイ", "公開", "データ削除", "データベース移行", "セキュリティ",
+  "給与", "医療", "法令", "APIキー", "秘密鍵"
+]
+complex_keywords = [
+  "データベース", "ログイン", "位置情報", "バックグラウンド", "複数サービス",
+  "API連携", "移行", "リファクタリング", "アーキテクチャ", "リアルタイム",
+  "iOS", "Android", "React Native", "大規模", "長期"
+]
+light_keywords = [
+  "誤字", "文言", "文字修正", "名前変更", "コメント", "色変更", "余白",
+  "README", "単純", "軽微"
+]
