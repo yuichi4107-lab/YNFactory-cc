@@ -158,7 +158,20 @@ def rescore_2026(wb, crit):
         ws.cell(r, col_score, pts).font = FONT
         ws.cell(r, col_detail, detail).font = FONT
         n += 1
-    print(f'  募集馬一覧: {n}頭を再採点')
+    # 注記（X列）を今の基準に合わせる
+    notes = {
+        3: '※スコアは4点満点（牡馬／総額2500万円以上／総額4000万円未満／馬体重420kg以上）。'
+           '値は計算済みで入っている（式ではない）。定義と根拠は「検討基準」シート。',
+        4: '※厩舎相性=2020〜2024年度の5年・中央400口・5頭以上預託の厩舎のみ'
+           '（◎=回収≥1が30%以上／○=回収≥1が20%以上または中央勝ち上がり65%以上／△=注意）。'
+           '詳細は「検討基準」シート。地方馬の厩舎は移籍前提のため評価対象外。',
+    }
+    for r, text in notes.items():
+        c = ws.cell(r, hdr.get('スコア内訳', 23) + 1)
+        if isinstance(c.value, str) and c.value.startswith('※'):
+            c.value = text
+            c.font = FONT
+    print(f'  募集馬一覧: {n}頭を再採点・注記を更新')
 
 
 def main():
