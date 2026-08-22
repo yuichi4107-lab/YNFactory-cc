@@ -27,10 +27,14 @@ Codex CLI と Claude Code CLI に**別々の立場で案を書かせ、議論さ
 
 どちらも無ければ、探した場所を提示して停止する。
 
+解決したパスは以降のすべての `main.py` 実行で使う。`app.py` は `config.toml` を
+自分のファイル位置から解決するため、どのディレクトリから実行してもよい。
+`cd` はしないこと（他のコマンドがリポジトリルート起点の相対パスのため）。
+
 ## Step 2: 前提を確認する
 
 ```bash
-py -3 main.py --check
+py -3 <本体パス>/main.py --check
 ```
 
 exit≠0 なら、出力をそのまま提示して停止する。よくある原因:
@@ -75,10 +79,12 @@ py -3 01_コード/scripts/company/input_digest.py --goal "<依頼文>" --json
 保存先を確定させる。`sanitize_project_name` の結果を推測しない。
 
 ```bash
-py -3 main.py --goal "<依頼文>" --name "<プロジェクト名>" --print-project-path --json
+py -3 <本体パス>/main.py --goal "<依頼文>" --name "<プロジェクト名>" --print-project-path --json
 ```
 
 採用した資料の要約を `<project_root>/00_依頼/REFERENCE.md` へ書く。
+`00_依頼/` はこの時点ではまだ存在しない（`--print-project-path` は
+`initialize_project_files` より前に return するため）。無ければ先に作る。
 原文をそのままコピーしない。**依頼内容に効く事実だけを、出典パス付きで箇条書きにする。**
 
 ```markdown
@@ -105,15 +111,16 @@ py -3 main.py --goal "<依頼文>" --name "<プロジェクト名>" --print-proj
 Step 3.5 で参考資料を置いた場合は、依頼文の末尾に1行足す。
 
 ```bash
-py -3 main.py --name "<プロジェクト名>" --json --goal "<依頼文>
+py -3 <本体パス>/main.py --name "<プロジェクト名>" --json --goal "<依頼文>
 
 参考資料: 00_依頼/REFERENCE.md に、04_インプット から抽出した関連資料の要約がある。必要に応じて参照すること。"
 ```
 
 参考資料が無かった場合はこの1行を付けない。任意で `--level <レベル>` を足す。
 
-**`REFERENCE.md` が上書きされない理由**: `initialize_project_files` は
-`_write_if_missing` を使うため、先に置いたファイルはそのまま残る。
+**`REFERENCE.md` が上書きされない理由**: `initialize_project_files` が書き込むのは
+`GOAL.md` `REQUIREMENTS.md` `PLAN.md` `AGENTS.md` `CLAUDE.md` 等の定型ファイルだけで、
+`REFERENCE.md` はその対象に含まれない。したがって触られない。
 
 ## Step 5: 終了コードで分岐する
 
@@ -140,7 +147,7 @@ py -3 main.py --name "<プロジェクト名>" --json --goal "<依頼文>
 ユーザーが承認したら再開する。**分岐点は再抽出されず、提示したものがそのまま使われる。**
 
 ```bash
-py -3 main.py --resume "<run_dir>" --json
+py -3 <本体パス>/main.py --resume "<run_dir>" --json
 ```
 
 ## Step 6: 結果を要約する
