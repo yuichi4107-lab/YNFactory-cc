@@ -7,6 +7,7 @@
 既存の6点満点スコアは、作成に使っていない2023・2024年度募集ではほとんど効いていなかった。
 その後、**血統・母・馬体・価格・人気・厩舎・手法の7方向を並行で洗い直し**、検証を通った
 「価格の下限を独立させる」1件を反映して4点満点にしている。
+さらに母の競走成績・全兄姉の実績・父のクラブ外を含む全産駒成績を取って追試したが、3系統とも効かなかった。
 
 ## 成果物
 
@@ -83,11 +84,12 @@
 - `docs/` — [`5年検証.md`](docs/5年検証.md)：3年→5年に広げた検証の全体。基準を作り直した理由と手順
 - `scripts/` — 収集・分析・成果物生成のスクリプト（レート制限1.5秒・HTMLキャッシュ付き）
   - 収集: `build_roster_new.py` `enrich_2023.py` `match_new.py` `fixup_new.py` `fixup_new2.py`
-    `refresh_old.py` `fetch_race_results.py` `fetch_foals.py`
+    `refresh_old.py` `fetch_race_results.py` `fetch_foals.py` `fix_foals.py`
+    `fetch_family.py`（母・兄姉）`fetch_sire_leading.py`（父）
   - 束ねる: `build_panel.py` → `datasets/panel5.csv`
   - 検算: `qc_repro.py`（既存3年の公表値を再現できるか）`qc_price.py`（募集総額を一口馬主DBと突合）
   - 分析: `analyze5.py` `derive.py` `backtest.py` `compare.py` `verify_price_floor.py`
-    → `build_criteria.py`
+    `analyze_family.py`（母・兄姉・父の追試）→ `build_criteria.py`
   - 7方向の洗い直しで各担当が書いた検定コード51本: `probe/`（使い捨ての検定スクリプト）
   - 成果物: `update_excel5.py` → `build_unified.py`
 
@@ -107,6 +109,8 @@
   - `foal_order.json`: 何番仔。**2023・2024年度は取得できていない**（母名検索からの概算が
     クラブのカタログ値と7割弱しか一致しないため n_foals は空。概算は n_foals_rough に保持）か
   - `dam_alias.csv`: netkeibaで母名が英字登録の外国産馬の対応表
+  - `family.json`: 母288頭の競走成績と全兄姉（母名検索由来）。検定の結果いずれも不採用
+  - `sire_leading.json`: 年度別の種牡馬リーディング8年分。同じく不採用
   - `score2026_old.json`: 基準を作り直す前（6点満点）の2026年度94頭のスコア（前後比較用）
   - `dams2026_v3.json` / `kakutei.json`: 2026年募集馬の母情報・確定94頭
 
