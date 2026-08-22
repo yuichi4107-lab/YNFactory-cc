@@ -223,6 +223,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--max-files", type=int, default=DEFAULT_MAX_FILES)
     parser.add_argument("--max-bytes", type=int, default=DEFAULT_MAX_BYTES)
     args = parser.parse_args(argv)
+    if getattr(args, "json", False) and hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
 
     root = args.root.resolve() if args.root else (detect_git_root() / INPUT_DIRNAME)
     if not root.is_dir():

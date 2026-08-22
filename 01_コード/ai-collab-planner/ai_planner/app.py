@@ -51,6 +51,8 @@ def main(argv: list[str] | None = None) -> int:
         help="プロジェクトの保存先を出力して終了する（AIを呼ばない）",
     )
     args = parser.parse_args(argv)
+    if getattr(args, "json", False) and hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
 
     settings = load_settings(APP_ROOT / "config.toml")
     if args.check:

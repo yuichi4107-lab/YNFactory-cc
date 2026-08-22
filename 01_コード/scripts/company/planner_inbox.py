@@ -198,6 +198,8 @@ def main(argv: list[str] | None = None) -> int:
         help="走査する 05_プロジェクト を明示指定（複数可）",
     )
     args = parser.parse_args(argv)
+    if getattr(args, "json", False) and hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
 
     roots = args.root if args.root else find_roots(detect_git_root())
     items = scan(roots)
